@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-This library strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation.
+`moize` strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation.
 
 ### Table of contents
 * [Installation](#installation)
