@@ -1,5 +1,55 @@
 // @flow
 
+export const INFINITY = Number.POSITIVE_INFINITY;
+
+/**
+ * @private
+ *
+ * @function splice
+ *
+ * @description
+ * faster version of splicing a single item from the array
+ *
+ * @param {Array<*>} array array to splice from
+ * @param {number} index index to splice at
+ */
+export const splice = (array: Array<any>, index: number) => {
+  const length: number = array.length;
+
+  if (!length) {
+    return;
+  }
+
+  while (index < length) {
+    array[index] = array[index + 1];
+    index++;
+  }
+
+  array.length = length - 1;
+};
+
+/**
+ * @private
+ *
+ * @function unshift
+ *
+ * @description
+ * faster version of unshifting a single item into an array
+ *
+ * @param {Array<*>} array array to unshift into
+ * @param {*} item item to unshift into array
+ */
+export const unshift = (array: Array<any>, item: number) => {
+  let length: number = array.length;
+
+  while (length) {
+    array[length] = array[length - 1];
+    length--;
+  }
+
+  array[0] = item;
+};
+
 /**
  * @private
  *
@@ -157,6 +207,34 @@ export const serializeArguments = (args: Array<any>, isCircular: boolean) => {
 /**
  * @private
  *
+ * @function setExpirationOfCache
+ *
+ * @description
+ * set the cache to expire after the maxAge passed (coalesced to 0)
+ *
+ * @param {function} fn memoized function with cache and usage storage
+ * @param {*} key key in cache to expire
+ * @param {number} maxAge number in ms to wait before expiring the cache
+ */
+export const setExpirationOfCache = (fn: Function, key: any, maxAge: number) => {
+  const {
+    cache,
+    usage
+  } = fn;
+
+  const expirationTime = Math.max(maxAge, 0);
+
+  setTimeout(() => {
+    const index: number = usage.indexOf(key);
+
+    splice(usage, index);
+    cache.delete(key);
+  }, expirationTime);
+};
+
+/**
+ * @private
+ *
  * @function setNewCachedValue
  *
  * @description
@@ -166,13 +244,17 @@ export const serializeArguments = (args: Array<any>, isCircular: boolean) => {
  * @param {*} key key in cache to assign value to
  * @param {*} value value to store in cache
  * @param {boolean} isPromise is the value a promise or not
+ * @param {boolean} isMaxAgeFinite does the cache have a maxAge or not
+ * @param {number} maxAge how long should the cache persist
  * @returns {any} value just stored in cache
  */
 export const setNewCachedValue = (
   fn: Function,
   key: any,
   value: any,
-  isPromise: boolean
+  isPromise: boolean,
+  isMaxAgeFinite: boolean,
+  maxAge: number
 ) => {
   if (isPromise) {
     value.then((resolvedValue) => {
@@ -182,55 +264,11 @@ export const setNewCachedValue = (
     fn.cache.set(key, value);
   }
 
+  if (isMaxAgeFinite) {
+    setExpirationOfCache(fn, key, maxAge);
+  }
+
   return value;
-};
-
-/**
- * @private
- *
- * @function splice
- *
- * @description
- * faster version of splicing a single item from the array
- *
- * @param {Array<*>} array array to splice from
- * @param {number} index index to splice at
- */
-export const splice = (array: Array<any>, index: number) => {
-  const length: number = array.length;
-
-  if (!length) {
-    return;
-  }
-
-  while (index < length) {
-    array[index] = array[index + 1];
-    index++;
-  }
-
-  array.length = length - 1;
-};
-
-/**
- * @private
- *
- * @function unshift
- *
- * @description
- * faster version of unshifting a single item into an array
- *
- * @param {Array<*>} array array to unshift into
- * @param {*} item item to unshift into array
- */
-export const unshift = (array: Array<any>, item: number) => {
-  let length: number = array.length;
-
-  while (length) {
-    array[length] = array[length - 1];
-    length--;
-  }
-
-  array[0] = item;
 };
 
 

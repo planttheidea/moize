@@ -10,6 +10,7 @@ import {
   setNewCachedValue,
   splice,
   unshift,
+  setExpirationOfCache,
   setUsageOrder,
   stringify
 } from 'src/utils';
@@ -152,6 +153,25 @@ test('if setNewCachedValue will run the set method upon resolution if a promise'
   t.is(result, resolutionValue);
 });
 
+test('if setNewCachedValue will set the cache to expire if isMaxAgeFinite is true', async (t) => {
+  const keyToSet = 'foo';
+  const valueToSet = 'bar';
+  const maxAge = 100;
+
+  let fn = {
+    cache: new Map(),
+    usage: []
+  };
+
+  await setNewCachedValue(fn, keyToSet, valueToSet, false, true, maxAge);
+
+  t.is(fn.cache.get(keyToSet), valueToSet);
+
+  await sleep(maxAge);
+
+  t.is(fn.cache.get(keyToSet), undefined);
+});
+
 test('if splice performs the same operation as the native splice', (t) => {
   const indexToSpice = 1;
 
@@ -184,6 +204,37 @@ test('if unshift performs the same operation as the native unshift', (t) => {
   unshift(customArray, valueToUnshift);
 
   t.deepEqual(nativeArray, customArray);
+});
+
+test('if setExpirationOfCache will expire the cache after the age passed', async (t) => {
+  const fn = {
+    cache: new Map().set('foo', 'bar'),
+    usage: ['foo']
+  };
+
+  setExpirationOfCache(fn, 'foo', 100);
+
+  t.deepEqual(fn.cache, new Map().set('foo', 'bar'));
+  t.deepEqual(fn.usage, ['foo']);
+
+  await sleep(100);
+
+  t.deepEqual(fn.cache, new Map());
+  t.deepEqual(fn.usage, []);
+});
+
+test('if setExpirationOfCache will expire the cache immediately if less than 0', async (t) => {
+  const fn = {
+    cache: new Map().set('foo', 'bar'),
+    usage: ['foo']
+  };
+
+  setExpirationOfCache(fn, 'foo', -1);
+
+  await sleep(0);
+
+  t.deepEqual(fn.cache, new Map());
+  t.deepEqual(fn.usage, []);
 });
 
 test('if setUsageOrder will add the item to cache in the front', (t) => {

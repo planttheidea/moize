@@ -5,6 +5,7 @@ import Map from 'map-or-similar';
 
 // utils
 import {
+  INFINITY,
   getCacheKey,
   getFunctionWithCacheAdded,
   serializeArguments,
@@ -16,6 +17,7 @@ type Options = {
   cache?: Map|Object,
   isCircular?: boolean,
   isPromise?: boolean,
+  maxAge?: number,
   maxSize?: number,
   serializer?: Function
 };
@@ -23,8 +25,6 @@ type Options = {
 /**
  * @module moize
  */
-
-const INFINITY = Number.POSITIVE_INFINITY;
 
 /**
  * @function moize
@@ -54,8 +54,9 @@ const INFINITY = Number.POSITIVE_INFINITY;
  * @param {Options} [options={}] options to customize how the caching is handled
  * @param {Map} [options.cache=new Map()] caching mechanism to use for method
  * @param {boolean} [options.isPromise=false] is the function return expected to be a promise to resolve
+ * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [options.maxSize=Infinity] the maximum size of the cache to retain
- * @param {function} [options.serializer=JSON.stringify] method to serialize arguments with for cache storage
+ * @param {function} [options.serializer=serializeArguments] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
 const moize = function(fn: Function, options: Options = {}): any {
@@ -63,10 +64,12 @@ const moize = function(fn: Function, options: Options = {}): any {
     cache = new Map(),
     isCircular = false,
     isPromise = false,
+    maxAge = INFINITY,
     maxSize = INFINITY,
     serializer = serializeArguments
   } = options;
-  const isMaxSizeInfinity = maxSize === INFINITY;
+  const isMaxAgeFinite: boolean = maxAge !== INFINITY;
+  const isMaxSizeFinite: boolean = maxSize !== INFINITY;
 
   let key: string = '';
 
@@ -84,7 +87,7 @@ const moize = function(fn: Function, options: Options = {}): any {
   const memoizedFunction = function(...args: Array<any>): any {
     key = getCacheKey(args, serializer, isCircular);
 
-    if (!isMaxSizeInfinity) {
+    if (isMaxSizeFinite) {
       setUsageOrder(memoizedFunction, key, maxSize);
     }
 
@@ -92,7 +95,7 @@ const moize = function(fn: Function, options: Options = {}): any {
       return memoizedFunction.cache.get(key);
     }
 
-    return setNewCachedValue(memoizedFunction, key, fn.apply(this, args), isPromise);
+    return setNewCachedValue(memoizedFunction, key, fn.apply(this, args), isPromise, isMaxAgeFinite, maxAge);
   };
 
   return getFunctionWithCacheAdded(memoizedFunction, cache);

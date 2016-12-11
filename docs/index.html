@@ -119,6 +119,7 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 <pre class="prettyprint source lang-javascript"><code>{
   cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
+  maxAge: number, // amount of time in milliseconds before the cache will expire
   maxSize: number, // maximum size of cache for this method
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
@@ -131,8 +132,10 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 </ul>
 <p><strong>isPromise</strong> <em>defaults to false</em></p>
 <p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>.</p>
+<p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
+<p>The maximum amount of time that you want a computed value to be stored in cache for this method.</p>
 <p><strong>maxSize</strong> <em>defaults to Infinity</em></p>
-<p>What is the maximum size of the cache you want stored for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
+<p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
 <p><strong>seralizer</strong> <em>defaults to an internal serializer</em></p>
 <p>The default seralizer method is highly performant, however it may not cover all possible use cases (recursive objects, for example). In this case, you can pass in a custom serializer, which should return the serialized arguments to be used as a unique key for cache retreival.</p>
 <h3 id="benchmarks">Benchmarks</h3>
@@ -153,14 +156,14 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 </thead>
 <tbody>
 <tr>
-<td>6,130,341</td>
-<td>7,045,195</td>
-<td>252,337</td>
-<td>5,000,097</td>
-<td>6,258,786</td>
-<td>2,091,284</td>
-<td>1,045,459</td>
-<td>10,065,716</td>
+<td>6,173,721</td>
+<td>6,964,896</td>
+<td>251,801</td>
+<td>4,140,779</td>
+<td>5,950,556</td>
+<td>1,786,883</td>
+<td>920,642</td>
+<td>10,105,377</td>
 </tr>
 </tbody>
 </table>
@@ -177,11 +180,11 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 </thead>
 <tbody>
 <tr>
-<td>3,081,413</td>
-<td>268,844</td>
-<td>962,410</td>
-<td>742,436</td>
-<td>3,183,068</td>
+<td>3,121,912</td>
+<td>247,767</td>
+<td>985,573</td>
+<td>742,577</td>
+<td>3,291,722</td>
 </tr>
 </tbody>
 </table>
@@ -198,11 +201,11 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 </thead>
 <tbody>
 <tr>
-<td>3,387</td>
-<td>221,421</td>
-<td>481,269</td>
-<td>32,079</td>
-<td>639,783</td>
+<td>3,363</td>
+<td>221,302</td>
+<td>470,113</td>
+<td>32,307</td>
+<td>650,998</td>
 </tr>
 </tbody>
 </table>

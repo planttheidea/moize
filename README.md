@@ -45,6 +45,7 @@ All parameter types are supported, including circular objects, functions, etc. Y
 {
   cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
+  maxAge: number, // amount of time in milliseconds before the cache will expire
   maxSize: number, // maximum size of cache for this method
   serializer: Function // method to serialize the arguments to build a unique cache key
 }
@@ -62,9 +63,13 @@ The default cache implementation is highly performant, however if you would like
 
 Is the computed value in the function a `Promise`, and should we cache the resolved value from that `Promise`.
 
+**maxAge** *defaults to Infinity*
+
+The maximum amount of time that you want a computed value to be stored in cache for this method.
+
 **maxSize** *defaults to Infinity*
 
-What is the maximum size of the cache you want stored for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
+The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
 
 **seralizer** *defaults to an internal serializer*
 
@@ -78,19 +83,19 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 | underscore | lodash    | ramda   | memoizee  | fast-memoize | addy-osmani | memoizerific | moize      |
 |------------|-----------|---------|-----------|--------------|-------------|--------------|------------|
-| 6,130,341  | 7,045,195 | 252,337 | 5,000,097 | 6,258,786    | 2,091,284   | 1,045,459    | 10,065,716 |
+| 6,173,721  | 6,964,896 | 251,801 | 4,140,779 | 5,950,556    | 1,786,883   | 920,642      | 10,105,377 |
 
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
 | memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
 |-----------|--------------|-------------|--------------|-----------|
-| 3,081,413 | 268,844      | 962,410     | 742,436      | 3,183,068 |
+| 3,121,912 | 247,767      | 985,573     | 742,577      | 3,291,722 |
 
 ![Multiple complex parameters image](img/multiple-parameter-complex.png)
 
 | memoizee | fast-memoize | addy-osmani | memoizerific | moize   |
 |----------|--------------|-------------|--------------|---------|
-| 3,387    | 221,421      | 481,269     | 32,079       | 639,783 |
+| 3,363    | 221,302      | 470,113     | 32,307       | 650,998 |
 
 ### Browser support
 
