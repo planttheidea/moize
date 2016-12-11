@@ -73,7 +73,7 @@ The maximum size of the cache you want stored in cache for this method. Clearanc
 
 **seralizer** *defaults to serializeArguments in utils.js*
 
-The default seralizer method is highly performant, however it may not cover all possible use cases (recursive objects, for example). In this case, you can pass in a custom serializer, which should return the serialized arguments to be used as a unique key for cache retreival.
+The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a `Map`.
 
 ### Benchmarks
 

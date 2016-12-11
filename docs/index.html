@@ -137,7 +137,7 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 <p><strong>maxSize</strong> <em>defaults to Infinity</em></p>
 <p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
 <p><strong>seralizer</strong> <em>defaults to serializeArguments in utils.js</em></p>
-<p>The default seralizer method is highly performant, however it may not cover all possible use cases (recursive objects, for example). In this case, you can pass in a custom serializer, which should return the serialized arguments to be used as a unique key for cache retreival.</p>
+<p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
 <h3 id="benchmarks">Benchmarks</h3>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks.</p>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
