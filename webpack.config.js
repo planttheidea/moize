@@ -57,10 +57,6 @@ module.exports = {
   ],
 
   resolve: {
-    alias: {
-      'map-or-similar': 'map-or-similar/src/map-or-similar.js'
-    },
-
     extensions: [
       '',
       '.js'

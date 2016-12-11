@@ -1,7 +1,7 @@
 // @flow
 
 // external dependencies
-import Map from 'map-or-similar';
+import Map from 'map-or-similar/src/map-or-similar.js';
 
 // utils
 import {
