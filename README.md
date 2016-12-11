@@ -71,7 +71,7 @@ The maximum amount of time in milliseconds that you want a computed value to be 
 
 The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
 
-**seralizer** *defaults to an serializeArguments in utils.js*
+**seralizer** *defaults to serializeArguments in utils.js*
 
 The default seralizer method is highly performant, however it may not cover all possible use cases (recursive objects, for example). In this case, you can pass in a custom serializer, which should return the serialized arguments to be used as a unique key for cache retreival.
 
