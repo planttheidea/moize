@@ -31,8 +31,8 @@ const method = (a, b) => {
 
 const memoized = moize(method);
 
-method(2, 4); // 6
-method(2, 4); // 6, pulled from cache
+memoized(2, 4); // 6
+memoized(2, 4); // 6, pulled from cache
 ```
 
 All parameter types are supported, including circular objects, functions, etc. You can even memoize functional `React` components based on their `props` + `context` combination!

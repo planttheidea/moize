@@ -112,8 +112,8 @@ const method = (a, b) => {
 
 const memoized = moize(method);
 
-method(2, 4); // 6
-method(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination!</p>
+memoized(2, 4); // 6
+memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination!</p>
 <h3 id="advanced-usage">Advanced usage</h3>
 <p><code>moize</code> also accepts an object of options as the second parameter. The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
