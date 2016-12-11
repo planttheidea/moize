@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>moize Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">moize</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-moize.html">moize</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+    <h3>moize 1.0.0</h3>
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1 id="moize">moize</h1>
+<p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
+<p>This library strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation.</p>
+<h3 id="table-of-contents">Table of contents</h3>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#advanced-usage">Advanced usage</a></li>
+<li><a href="#benchmarks">Benchmarks</a></li>
+<li><a href="#browser-support">Browser support</a></li>
+<li><a href="#development">Development</a></li>
+</ul>
+<h3 id="installation">Installation</h3>
+<pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h3 id="usage">Usage</h3>
+<pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
+
+const method = (a, b) => {
+  return a + b;
+};
+
+const memoized = moize(method);
+
+method(2, 4); // 6
+method(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination!</p>
+<h3 id="advanced-usage">Advanced usage</h3>
+<p><code>moize</code> also accepts an object of options as the second parameter. The full shape of these options:</p>
+<pre class="prettyprint source lang-javascript"><code>{
+  cache: Map|Object, // custom cache implementation
+  isPromise: boolean, // is the result a promise
+  maxSize: number, // maximum size of cache for this method
+  serializer: Function // method to serialize the arguments to build a unique cache key
+}</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
+<p>The default cache implementation is highly performant, however if you would like then you can pass in a custom cache implementation. The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods:</p>
+<ul>
+<li>delete</li>
+<li>get</li>
+<li>has</li>
+<li>set</li>
+</ul>
+<p><strong>isPromise</strong> <em>defaults to false</em></p>
+<p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>.</p>
+<p><strong>maxSize</strong> <em>defaults to Infinity</em></p>
+<p>What is the maximum size of the cache you want stored for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
+<p><strong>seralizer</strong> <em>defaults to an internal serializer</em></p>
+<p>The default seralizer method is highly performant, however it may not cover all possible use cases (recursive objects, for example). In this case, you can pass in a custom serializer, which should return the serialized arguments to be used as a unique key for cache retreival.</p>
+<h3 id="benchmarks">Benchmarks</h3>
+<p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks.</p>
+<p><img src="img/single-parameter.png" alt="Single parameter image"></p>
+<table>
+<thead>
+<tr>
+<th>underscore</th>
+<th>lodash</th>
+<th>ramda</th>
+<th>memoizee</th>
+<th>fast-memoize</th>
+<th>addy-osmani</th>
+<th>memoizerific</th>
+<th>moize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6,130,341</td>
+<td>7,045,195</td>
+<td>252,337</td>
+<td>5,000,097</td>
+<td>6,258,786</td>
+<td>2,091,284</td>
+<td>1,045,459</td>
+<td>10,065,716</td>
+</tr>
+</tbody>
+</table>
+<p><img src="img/multiple-parameter-primitives.png" alt="Multiple primitive parameters image"></p>
+<table>
+<thead>
+<tr>
+<th>memoizee</th>
+<th>fast-memoize</th>
+<th>addy-osmani</th>
+<th>memoizerific</th>
+<th>moize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3,081,413</td>
+<td>268,844</td>
+<td>962,410</td>
+<td>742,436</td>
+<td>3,183,068</td>
+</tr>
+</tbody>
+</table>
+<p><img src="img/multiple-parameter-complex.png" alt="Multiple complex parameters image"></p>
+<table>
+<thead>
+<tr>
+<th>memoizee</th>
+<th>fast-memoize</th>
+<th>addy-osmani</th>
+<th>memoizerific</th>
+<th>moize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3,387</td>
+<td>221,421</td>
+<td>481,269</td>
+<td>32,079</td>
+<td>639,783</td>
+</tr>
+</tbody>
+</table>
+<h3 id="browser-support">Browser support</h3>
+<ul>
+<li>Chrome (all versions)</li>
+<li>Firefox (all versions)</li>
+<li>Opera 15+</li>
+<li>Edge (all versions)</li>
+<li>IE 9+</li>
+<li>Safari 6+</li>
+</ul>
+<p>Theoretically the support should go back even farther, these are just the environments that I have tested.</p>
+<h3 id="development">Development</h3>
+<p>Standard stuff, clone the repo and <code>npm install</code> dependencies. The npm scripts available:</p>
+<ul>
+<li><code>build</code> =&gt; run webpack to build development <code>dist</code> file with NODE_ENV=development</li>
+<li><code>build:minifed</code> =&gt; run webpack to build production <code>dist</code> file with NODE_ENV=production</li>
+<li><code>dev</code> =&gt; run webpack dev server to run example app (playground!)</li>
+<li><code>dist</code> =&gt; runs <code>build</code> and <code>build-minified</code></li>
+<li><code>docs</code> =&gt; builds the docs via <code>jsdoc</code></li>
+<li><code>lint</code> =&gt; run ESLint against all files in the <code>src</code> folder</li>
+<li><code>prepublish</code> =&gt; runs <code>compile-for-publish</code></li>
+<li><code>prepublish:compile</code> =&gt; run <code>lint</code>, <code>test</code>, <code>transpile</code>, <code>dist</code></li>
+<li><code>test</code> =&gt; run AVA test functions with <code>NODE_ENV=test</code></li>
+<li><code>test:coverage</code> =&gt; run <code>test</code> but with <code>nyc</code> for coverage checker</li>
+<li><code>test:watch</code> =&gt; run <code>test</code>, but with persistent watcher</li>
+<li><code>transpile</code> =&gt; run babel against all files in <code>src</code> to create files in <code>lib</code></li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

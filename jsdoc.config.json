@@ -1,0 +1,60 @@
+{
+  "babel": {
+    "plugins": [
+      "syntax-flow",
+      "transform-flow-strip-types",
+      "add-module-exports"
+    ],
+    "presets": [
+      ["latest", {
+        "loose": true
+      }],
+      "stage-2"
+    ]
+  },
+  "configHelpUrl": "http://usejsdoc.org/about-configuring-jsdoc.html",
+  "markdown": {
+    "excludeTags": [
+      "author"
+    ],
+    "idInHeadings": true
+  },
+  "opts": {
+    "destination": "./docs",
+    "package": "./package.json",
+    "readme": "./README.md",
+    "recurse": true,
+    "template": "./node_modules/ink-docstrap/template",
+    "verbose": true
+  },
+  "plugins": [
+    "node_modules/jsdoc-babel",
+    "plugins/markdown"
+  ],
+  "source": {
+    "include": [
+      "src"
+    ],
+    "exclude": [],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules/|docs)"
+  },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": [
+      "closure",
+      "jsdoc"
+    ]
+  },
+  "templates": {
+    "collapseSymbols": true,
+    "disablePackagePath": true,
+    "includeDate": false,
+    "linenums": true,
+    "navType": "inline",
+    "outputSourceFiles": true,
+    "syntaxTheme": "dark",
+    "systemName": "moize",
+    "theme": "paper"
+  }
+}
