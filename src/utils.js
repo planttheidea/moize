@@ -77,15 +77,10 @@ export const isComplexObject = (object: any): boolean => {
  *
  * @param {Array<*>} args arguments passed to the method
  * @param {function} serializer method used to serialize keys into a string
- * @param {boolean} isCircular whether the argument should be stringified as a circular object
  * @returns {*}
  */
-export const getCacheKey = (args: Array<any>, serializer: Function, isCircular: boolean) => {
-  if (args.length === 1) {
-    return args[0];
-  }
-
-  return serializer(args, isCircular);
+export const getCacheKey = (args: Array<any>, serializer: Function) => {
+  return args.length === 1 ? args[0] : serializer(args);
 };
 
 /**
@@ -164,15 +159,14 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
  * stringify with a custom replacer if circular, else use standard JSON.stringify
  *
  * @param {*} value value to stringify
- * @param {boolean} isCircular whether the value is a circular object or not
  * @returns {string} the stringified version of value
  */
-export const stringify = (value: any, isCircular: boolean) => {
-  if (isCircular) {
+export const stringify = (value: any) => {
+  try {
+    return JSON.stringify(value);
+  } catch (exception) {
     return cycle.decycle(value);
   }
-
-  return JSON.stringify(value);
 };
 
 /**
@@ -184,11 +178,10 @@ export const stringify = (value: any, isCircular: boolean) => {
  * get the stringified version of the argument passed
  *
  * @param {*} arg argument to stringify
- * @param {boolean} isCircular whether the argument should be stringified as a circular object
  * @returns {string}
  */
-export const getStringifiedArgument = (arg: any, isCircular: boolean) => {
-  return isComplexObject(arg) ? stringify(arg, isCircular) : arg;
+export const getStringifiedArgument = (arg: any) => {
+  return isComplexObject(arg) ? stringify(arg) : arg;
 };
 
 /**
@@ -200,17 +193,16 @@ export const getStringifiedArgument = (arg: any, isCircular: boolean) => {
  * serialize the arguments into a string
  *
  * @param {Array<*>} args arguments to serialize into string
- * @param {boolean} isCircular whether the argument should be stringified as a circular object
  * @returns {string} string of serialized arguments
  */
-export const serializeArguments = (args: Array<any>, isCircular: boolean) => {
+export const serializeArguments = (args: Array<any>) => {
   const length: number = args.length;
 
   let index: number = -1,
       key: string = '|';
 
   while (++index < length) {
-    key += `${getStringifiedArgument(args[index], isCircular)}|`;
+    key += `${getStringifiedArgument(args[index])}|`;
   }
 
   return key;

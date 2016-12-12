@@ -319,14 +319,21 @@ test('if setUsageOrder will remove the item from cache if maxSize is reached', (
   t.deepEqual(fn.usage, ['bar']);
 });
 
-test('if cycle.decycle is called only when object is circular', (t) => {
+test('if cycle.decycle is called only when object is cannot be handled by JSON.stringify', (t) => {
+  const standard = {
+    foo: 'bar'
+  };
+  const circular = {};
+
+  circular.foo = circular;
+
   const stub = sinon.stub(cycle, 'decycle');
 
-  stringify({foo: 'bar'}, false);
+  stringify(standard);
 
   t.false(stub.called);
 
-  stringify({foo: 'bar'}, true);
+  stringify(circular);
 
   t.true(stub.calledOnce);
 

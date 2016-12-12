@@ -15,7 +15,6 @@ import {
 
 type Options = {
   cache?: Map|Object,
-  isCircular?: boolean,
   isPromise?: boolean,
   maxAge?: number,
   maxSize?: number,
@@ -62,7 +61,6 @@ type Options = {
 const moize = function(fn: Function, options: Options = {}): any {
   const {
     cache = new Map(),
-    isCircular = false,
     isPromise = false,
     maxAge = INFINITY,
     maxSize = INFINITY,
@@ -85,7 +83,7 @@ const moize = function(fn: Function, options: Options = {}): any {
    * @returns {any} value resulting from executing of fn passed to memoize
    */
   const memoizedFunction = function(...args: Array<any>): any {
-    key = getCacheKey(args, serializer, isCircular);
+    key = getCacheKey(args, serializer);
 
     if (isMaxSizeFinite) {
       setUsageOrder(memoizedFunction, key, maxSize);
