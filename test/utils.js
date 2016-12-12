@@ -1,11 +1,14 @@
 import test from 'ava';
 import sinon from 'sinon';
 
+import cycle from 'cycle';
+
 import {
-  createCustomReplacer,
+  deleteItemFromCache,
   getCacheKey,
   getFunctionWithCacheAdded,
   getStringifiedArgument,
+  isComplexObject,
   serializeArguments,
   setNewCachedValue,
   splice,
@@ -23,34 +26,26 @@ const sleep = (ms) => {
   });
 };
 
-test('if createCustomReplacer creates a function', (t) => {
-  const result = createCustomReplacer();
+test('if deleteItemFromCache will remove an item from both cache and usage', (t) => {
+  const key = 'foo';
+  const cache = new Map().set(key, 'bar');
+  const usage = [key];
 
-  t.is(typeof result, 'function');
+  deleteItemFromCache(cache, usage, key);
+
+  t.false(cache.has(key));
+  t.deepEqual(usage, []);
 });
 
-test('if createCustomReplacer returns the object when passed the first time', (t) => {
-  const replacer = createCustomReplacer();
-  const object = {
-    foo: 'bar'
-  };
+test('if deleteItemFromCache will only delete something when the key is actually found', (t) => {
+  const key = 'foo';
+  const cache = new Map().set(key, 'bar');
+  const usage = [key];
 
-  const result = replacer('object', object);
+  deleteItemFromCache(cache, usage, 'bar');
 
-  t.is(result, object);
-});
-
-test('if createCustomReplacer returns [Circular] when passed the object twice', (t) => {
-  const replacer = createCustomReplacer();
-  const object = {
-    foo: 'bar'
-  };
-
-  replacer('object', object);
-
-  const result = replacer('object', object);
-
-  t.is(result, '[Circular]');
+  t.true(cache.has(key));
+  t.deepEqual(usage, [key]);
 });
 
 test('if getCacheKey returns the first item in the array if the only item', (t) => {
@@ -88,6 +83,46 @@ test('if getFunctionWithCacheAdded will add the cache passed to the function and
   t.is(result, fn);
   t.is(result.cache, cache);
   t.deepEqual(result.usage, []);
+  t.is(typeof result.clear, 'function');
+  t.is(typeof result.delete, 'function');
+});
+
+test('if getFunctionWithCacheAdded clear method will clear cache', (t) => {
+  const fn = () => {};
+  const key = 'foo';
+  const cache = new Map();
+
+  const result = getFunctionWithCacheAdded(fn, cache);
+
+  result.cache.set(key, 'bar');
+  result.usage.push(key);
+
+  t.true(result.cache.has(key));
+  t.deepEqual(result.usage, [key]);
+
+  result.clear();
+
+  t.is(result.cache.size, 0);
+  t.deepEqual(result.usage, []);
+});
+
+test('if getFunctionWithCacheAdded delete method will remove the key passed from cache', (t) => {
+  const fn = () => {};
+  const key = 'foo';
+  const cache = new Map();
+
+  const result = getFunctionWithCacheAdded(fn, cache);
+
+  result.cache.set(key, 'bar');
+  result.usage.push(key);
+
+  t.true(result.cache.has(key));
+  t.deepEqual(result.usage, [key]);
+
+  result.delete(key);
+
+  t.false(result.cache.has(key));
+  t.deepEqual(result.usage, []);
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
@@ -102,6 +137,19 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
   t.is(getStringifiedArgument(number), number);
   t.is(getStringifiedArgument(boolean), boolean);
   t.is(getStringifiedArgument(object), JSON.stringify(object));
+});
+
+test('if isComplexObject correctly identifies a complex object', (t) => {
+  const fail = ['foo', 123, true, undefined, null, () => {}];
+  const pass = [{foo: 'bar'}, ['foo']];
+
+  fail.forEach((item) => {
+    t.false(isComplexObject(item));
+  });
+
+  pass.forEach((item) => {
+    t.true(isComplexObject(item));
+  });
 });
 
 test('if serializeArguments produces a stringified version of the arguments with a separator', (t) => {
@@ -160,7 +208,7 @@ test('if setNewCachedValue will set the cache to expire if isMaxAgeFinite is tru
 
   let fn = {
     cache: new Map(),
-    usage: []
+    usage: [keyToSet]
   };
 
   await setNewCachedValue(fn, keyToSet, valueToSet, false, true, maxAge);
@@ -271,24 +319,16 @@ test('if setUsageOrder will remove the item from cache if maxSize is reached', (
   t.deepEqual(fn.usage, ['bar']);
 });
 
-test('if stringify is called with the correct arguments depending on isCircular', (t) => {
-  const standardStub = sinon.stub(JSON, 'stringify', (object, replacer) => {
-    t.is(typeof replacer, 'undefined');
-
-    return object;
-  });
+test('if cycle.decycle is called only when object is circular', (t) => {
+  const stub = sinon.stub(cycle, 'decycle');
 
   stringify({foo: 'bar'}, false);
 
-  standardStub.restore();
-
-  const customStub = sinon.stub(JSON, 'stringify', (object, replacer) => {
-    t.is(typeof replacer, 'function');
-
-    return object;
-  });
+  t.false(stub.called);
 
   stringify({foo: 'bar'}, true);
 
-  customStub.restore();
+  t.true(stub.calledOnce);
+
+  stub.restore();
 });

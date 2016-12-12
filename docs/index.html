@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.0.3</h3>
+    <h3>moize 1.1.0</h3>
 
 
 
@@ -98,6 +98,7 @@
 <li><a href="#installation">Installation</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#advanced-usage">Advanced usage</a></li>
+<li><a href="#direct-cache-manipulation">Direct cache manipulation</a></li>
 <li><a href="#benchmarks">Benchmarks</a></li>
 <li><a href="#browser-support">Browser support</a></li>
 <li><a href="#development">Development</a></li>
@@ -130,6 +131,11 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 <li>has</li>
 <li>set</li>
 </ul>
+<p>If you want to have direct cache management using <code>moize</code>, the following methods must also be provided:</p>
+<ul>
+<li>clear</li>
+<li>delete</li>
+</ul>
 <p><strong>isPromise</strong> <em>defaults to false</em></p>
 <p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>.</p>
 <p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
@@ -138,6 +144,12 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 <p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
 <p><strong>seralizer</strong> <em>defaults to serializeArguments in utils.js</em></p>
 <p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
+<h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
+<p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
+<p><strong>clear()</strong></p>
+<p>This will clear all values in the cache, resetting it to a default state.</p>
+<p><strong>delete(key)</strong></p>
+<p>This will delete the provided key from cache.</p>
 <h3 id="benchmarks">Benchmarks</h3>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks.</p>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
