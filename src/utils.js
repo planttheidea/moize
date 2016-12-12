@@ -1,5 +1,7 @@
 // @flow
 
+import cycle from 'cycle';
+
 export const INFINITY = Number.POSITIVE_INFINITY;
 
 /**
@@ -61,46 +63,8 @@ export const unshift = (array: Array<any>, item: number) => {
  * @param {*} object object to test if it is complex
  * @returns {boolean}
  */
-const isComplexObject = (object: any): boolean => {
+export const isComplexObject = (object: any): boolean => {
   return typeof object === 'object' && object !== null;
-};
-
-/**
- * @private
- *
- * @function createCustomReplacer
- *
- * @description
- * create a custom replacer for the stringification of circular objects
- *
- * @returns {function(string, any)}
- */
-export const createCustomReplacer = () => {
-  let cache: Array<Object> = [];
-
-  /**
-   * @private
-   *
-   * @function replacer
-   *
-   * @description
-   * custom replacer that will return [Circular] if object already exists in cache, else the object itself
-   *
-   * @param {string} key object key to parse
-   * @param {*} value object value to parse
-   * @returns {*}
-   */
-  return (key: string, value: any) => {
-    if (isComplexObject(value)) {
-      if (!!~cache.indexOf(value)) {
-        return '[Circular]';
-      }
-
-      cache.push(value);
-    }
-
-    return value;
-  };
 };
 
 /**
@@ -127,6 +91,27 @@ export const getCacheKey = (args: Array<any>, serializer: Function, isCircular: 
 /**
  * @private
  *
+ * @function deleteItemFromCache
+ *
+ * @description
+ * remove an item from cache and the usage list
+ *
+ * @param {Map|Object} cache caching mechanism for method
+ * @param {Array<*>} usage order of key usage
+ * @param {*} key key to delete
+ */
+export const deleteItemFromCache = (cache: Map<any, any>|Object, usage: Array<any>, key: any) => {
+  const index: number = usage.indexOf(key);
+
+  if (index !== -1) {
+    splice(usage, index);
+    cache.delete(key);
+  }
+};
+
+/**
+ * @private
+ *
  * @function getFunctionWithCacheAdded
  *
  * @description
@@ -139,6 +124,33 @@ export const getCacheKey = (args: Array<any>, serializer: Function, isCircular: 
 export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Object) => {
   fn.cache = cache;
   fn.usage = [];
+
+  /**
+   * @private
+   *
+   * @function clear
+   *
+   * @description
+   * clear the current cache for this method
+   */
+  fn.clear = () => {
+    fn.cache.clear();
+    fn.usage = [];
+  };
+
+  /**
+   * @private
+   *
+   * @function delete
+   *
+   * @description
+   * delete the cache for the key passed for this method
+   *
+   * @param {*} key key to remove from cache
+   */
+  fn.delete = (key: any) => {
+    deleteItemFromCache(fn.cache, fn.usage, key);
+  };
 
   return fn;
 };
@@ -157,7 +169,7 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
  */
 export const stringify = (value: any, isCircular: boolean) => {
   if (isCircular) {
-    return JSON.stringify(value, createCustomReplacer());
+    return cycle.decycle(value);
   }
 
   return JSON.stringify(value);
@@ -225,10 +237,7 @@ export const setExpirationOfCache = (fn: Function, key: any, maxAge: number) => 
   const expirationTime = Math.max(maxAge, 0);
 
   setTimeout(() => {
-    const index: number = usage.indexOf(key);
-
-    splice(usage, index);
-    cache.delete(key);
+    deleteItemFromCache(cache, usage, key);
   }, expirationTime);
 };
 
@@ -302,10 +311,7 @@ export const setUsageOrder = (fn: Function, key: any, maxSize: number) => {
     unshift(usage, key);
 
     if (usage.length > maxSize) {
-      const keyToRemove = usage[usage.length - 1];
-
-      usage.pop();
-      cache.delete(keyToRemove);
+      deleteItemFromCache(cache, usage, usage[usage.length - 1]);
     }
   }
 };

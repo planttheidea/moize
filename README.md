@@ -10,6 +10,7 @@
 * [Installation](#installation)
 * [Usage](#usage)
 * [Advanced usage](#advanced-usage)
+* [Direct cache manipulation](#direct-cache-manipulation)
 * [Benchmarks](#benchmarks)
 * [Browser support](#browser-support)
 * [Development](#development)
@@ -59,6 +60,10 @@ The default cache implementation is highly performant, however if you would like
 * has
 * set
 
+If you want to have direct cache management using `moize`, the following methods must also be provided:
+* clear
+* delete
+
 **isPromise** *defaults to false*
 
 Is the computed value in the function a `Promise`, and should we cache the resolved value from that `Promise`.
@@ -74,6 +79,18 @@ The maximum size of the cache you want stored in cache for this method. Clearanc
 **seralizer** *defaults to serializeArguments in utils.js*
 
 The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a `Map`.
+
+### Direct cache manipulation
+
+There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:
+
+**clear()**
+
+This will clear all values in the cache, resetting it to a default state.
+
+**delete(key)**
+
+This will delete the provided key from cache.
 
 ### Benchmarks
 
