@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Source: index.js</title>
+	<title>moize Source: Map.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -65,113 +65,163 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: index.js</h1>
+		<h1 class="page-title">Source: Map.js</h1>
     
 <section>
     <article>
         <pre
             class="sunlight-highlight-javascript linenums">// @flow
 
-// external dependencies
-import Map from './Map';
-
 // utils
 import {
-  INFINITY,
-  getCacheKey,
-  getFunctionWithCacheAdded,
-  serializeArguments,
-  setNewCachedValue,
-  setUsageOrder
+  getIndexOf,
+  isKeyLastItem,
+  splice
 } from './utils';
 
-type Options = {
-  cache?: Object,
-  isPromise?: boolean,
-  maxAge?: number,
-  maxSize?: number,
-  serializer?: Function
-};
+const HAS_MAP_SUPPORT = typeof Map === 'function';
 
 /**
- * @module moize
+ * @private
+ *
+ * @class MapLike
+ * @classdesc class that mimics enough of the Map infrastructure to serve as polyfill for the cache
  */
+class MapLike {
+  constructor() {
+    this.list = [];
+    this.lastItem = undefined;
+    this.size = 0;
 
-/**
- * @function moize
- *
- * @description
- * store cached values returned from calling method with arguments to avoid reprocessing data from same arguments
- *
- * @example
- * import moize from 'moize';
- *
- * // standard implementation
- * const fn = (foo, bar) => {
- *  return `${foo} ${bar}`;
- * };
- * const memoizedFn = moize(fn);
- *
- * // implementation with options
- * const fn = async (id) => {
- *  return get(`http://foo.com/${id}`);
- * };
- * const memoizedFn = moize(fn, {
- *  isPromise: true,
- *  maxSize: 5
- * });
- *
- * @param {function} fn method to memoize
- * @param {Options} [options={}] options to customize how the caching is handled
- * @param {Map} [options.cache=new Map()] caching mechanism to use for method
- * @param {boolean} [options.isPromise=false] is the function return expected to be a promise to resolve
- * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
- * @param {number} [options.maxSize=Infinity] the maximum size of the cache to retain
- * @param {function} [options.serializer=serializeArguments] method to serialize arguments with for cache storage
- * @returns {Function} higher-order function which either returns from cache or newly-computed value
- */
-const moize = function(fn: Function, options: Options = {}): any {
-  const {
-    cache = new Map(),
-    isPromise = false,
-    maxAge = INFINITY,
-    maxSize = INFINITY,
-    serializer = serializeArguments
-  } = options;
-  const isMaxAgeFinite: boolean = maxAge !== INFINITY;
-  const isMaxSizeFinite: boolean = maxSize !== INFINITY;
+    return this;
+  }
 
-  let key: string = '';
+  lastItem: ?Object;
+  list: Array&lt;any>;
+  size: number;
 
   /**
-   * @private
-   *
-   * @function memoizedFunction
+   * @function delete
+   * @memberOf MapLike
+   * @instance
    *
    * @description
-   * higher-order function which either returns from cache or stores newly-computed value and returns it
+   * remove the key from the map
    *
-   * @param {Array&lt;*>} args arguments passed to method
-   * @returns {any} value resulting from executing of fn passed to memoize
+   * @param {*} key key to delete from the map
    */
-  const memoizedFunction = function(...args: Array&lt;any>): any {
-    key = getCacheKey(args, serializer);
-
-    if (isMaxSizeFinite) {
-      setUsageOrder(memoizedFunction, key, maxSize);
+  delete(key: any) {
+    if (isKeyLastItem(this.lastItem, key)) {
+      this.lastItem = undefined;
     }
 
-    if (memoizedFunction.cache.has(key)) {
-      return memoizedFunction.cache.get(key);
+    const index: number = getIndexOf(this, key);
+
+    if (index !== -1) {
+      this.size--;
+      splice(this.list, index);
+    }
+  }
+
+  /**
+   * @function get
+   * @memberOf MapLike
+   * @instance
+   *
+   * @description
+   * get the value for the given key
+   *
+   * @param {*} key key to get the value for
+   * @returns {*} value at the key location
+   */
+  get(key: any) {
+    if (isKeyLastItem(this.lastItem, key)) {
+      // $FlowIgnore: this.lastItem.value exists
+      return this.lastItem.value;
     }
 
-    return setNewCachedValue(memoizedFunction, key, fn.apply(this, args), isPromise, isMaxAgeFinite, maxAge);
-  };
+    const index: number = getIndexOf(this, key);
 
-  return getFunctionWithCacheAdded(memoizedFunction, cache);
-};
+    if (index !== -1) {
+      this.lastItem = this.list[index];
 
-export default moize;
+      return this.list[index].value;
+    }
+
+    return undefined;
+  }
+
+  /**
+   * @function has
+   * @memberOf MapLike
+   * @instance
+   *
+   * @description
+   * does the map have the key provided
+   *
+   * @param {*} key key to test for in the map
+   * @returns {boolean} does the map have the key
+   */
+  has(key: any) {
+    if (isKeyLastItem(this.lastItem, key)) {
+      return true;
+    }
+
+    const index = getIndexOf(this, key);
+
+    if (index !== -1) {
+      this.lastItem = this.list[index];
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * @function set
+   * @memberOf MapLike
+   * @instance
+   *
+   * @description
+   * set the value at the key location, or add a new item with that key value
+   *
+   * @param {*} key key to assign value of
+   * @param {*} value value to store in the map at key
+   * @returns {MapLike} the map object
+   */
+  set(key: any, value: any) {
+    if (isKeyLastItem(this.lastItem, key)) {
+      // $FlowIgnore: this.lastItem.value exists
+      this.lastItem.value = value;
+
+      return this;
+    }
+
+    const index: number = getIndexOf(this, key);
+
+    if (index !== -1) {
+      this.lastItem = this.list[index];
+      this.list[index].value = value;
+
+      return this;
+    }
+
+    this.lastItem = {
+      key,
+      value
+    };
+
+    this.list.push(this.lastItem);
+    this.size++;
+
+    return this;
+  }
+}
+
+export {MapLike};
+
+export default HAS_MAP_SUPPORT ? Map : MapLike;
 </pre>
     </article>
 </section>

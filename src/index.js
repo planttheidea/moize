@@ -1,7 +1,7 @@
 // @flow
 
 // external dependencies
-import Map from 'map-or-similar/src/map-or-similar.js';
+import Map from './Map';
 
 // utils
 import {
@@ -14,7 +14,7 @@ import {
 } from './utils';
 
 type Options = {
-  cache?: Map|Object,
+  cache?: Object,
   isPromise?: boolean,
   maxAge?: number,
   maxSize?: number,
