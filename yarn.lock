@@ -1530,7 +1530,7 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
-cycle@1.0.x, cycle@^1.0.3:
+cycle@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
 
@@ -2502,6 +2502,10 @@ http-signature@~1.1.0:
 https-browserify@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-0.0.1.tgz#3f91365cabe60b77ed0ebba24b454e3e09d95a82"
+
+iMemoized@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/iMemoized/-/iMemoized-1.0.0.tgz#02161c79cfde11e8d08d36049e9dcbae0bc70f54"
 
 iconv-lite@~0.4.13:
   version "0.4.15"

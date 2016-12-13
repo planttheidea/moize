@@ -53,6 +53,7 @@
     "flow-babel-webpack-plugin": "^1.0.1",
     "flow-bin": "^0.36.0",
     "html-webpack-plugin": "^2.24.1",
+    "iMemoized": "^1.0.0",
     "in-publish": "^2.0.0",
     "ink-docstrap": "^1.3.0",
     "jsdoc": "^3.4.3",

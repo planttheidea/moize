@@ -181,21 +181,21 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 ![Single parameter image](img/single-parameter.png)
 
-| underscore | lodash    | ramda   | memoizee  | fast-memoize | addy-osmani | memoizerific | moize      |
-|------------|-----------|---------|-----------|--------------|-------------|--------------|------------|
-| 6,173,721  | 6,964,896 | 251,801 | 4,140,779 | 5,950,556    | 1,786,883   | 920,642      | 10,105,377 |
+| underscore | lodash    | ramda   | memoizee  | fast-memoize | addy-osmani | memoizerific | iMemoized    | moize      |
+|------------|-----------|---------|-----------|--------------|-------------|--------------|--------------|------------|
+| 5,998,566  | 6,402,406 | 242,619 | 4,405,116 | 6,344,116    | 1,945,595   | 1,125,026    | 11,704,638   | 10,037573  |
 
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
-| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
-|-----------|--------------|-------------|--------------|-----------|
-| 3,121,912 | 247,767      | 985,573     | 742,577      | 3,291,722 |
+| memoizee  | fast-memoize | addy-osmani | memoizerific | iMemoized    | moize     |
+|-----------|--------------|-------------|--------------|--------------|-----------|
+| 3,088,475 | 274,799      | 1,042,220   | 747,047      | 3,094,359    | 3,251,022 |
 
 ![Multiple complex parameters image](img/multiple-parameter-complex.png)
 
-| memoizee | fast-memoize | addy-osmani | memoizerific | moize   |
-|----------|--------------|-------------|--------------|---------|
-| 3,363    | 221,302      | 470,113     | 32,307       | 650,998 |
+| memoizee | fast-memoize | addy-osmani | memoizerific | iMemoized | moize   |
+|----------|--------------|-------------|--------------|-----------|---------|
+| 3,475    | 222,977      | 479,436     | 31,704       | 40,044    | 650,998 |
 
 ### Browser support
 
