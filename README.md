@@ -1,10 +1,10 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.58%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation.
+`moize` strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
 
 ### Table of contents
 * [Installation](#installation)
@@ -62,23 +62,88 @@ The default cache implementation is highly performant, however if you would like
 
 If you want to have direct cache management using `moize`, the following methods must also be provided:
 * clear
-* delete
+
+```javascript
+const cache = {
+  delete(key) {
+    delete this[key];
+  },
+  get(key) {
+    return this[key];
+  },
+  has(key) {
+    return this.hasOwnProperty[key];
+  },
+  set(key, value) {
+    this[key] = value;
+    
+    return this;
+  }
+};
+const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  cache
+});
+```
 
 **isPromise** *defaults to false*
 
 Is the computed value in the function a `Promise`, and should we cache the resolved value from that `Promise`.
 
+```javascript
+const fn = async (item) => {
+  return await item;
+};
+
+const memoized = moize(fn, {
+  isPromise: true
+});
+```
+
 **maxAge** *defaults to Infinity*
 
 The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.
+
+```javascript
+const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxAge: 1000 * 60 * 5 // five minutes
+});
+```
 
 **maxSize** *defaults to Infinity*
 
 The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
 
-**seralizer** *defaults to serializeArguments in utils.js*
+```javascript
+const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxSize: 5
+});
+```
+
+**serializer** *defaults to serializeArguments in utils.js*
 
 The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a `Map`.
+
+```javascript
+const serializer = (args) => {
+  return JSON.stringify(args[0]);
+};
+
+const memoized = moize(fn, {
+  serializer
+});
+```
 
 ### Direct cache manipulation
 
@@ -88,9 +153,27 @@ There are a couple of methods provided on the memoized function which allow for 
 
 This will clear all values in the cache, resetting it to a default state.
 
+```javascript
+const memoized = moize((item) => {
+  return item;
+});
+
+memoized.clear();
+```
+
 **delete(key)**
 
 This will delete the provided key from cache.
+
+```javascript
+const memoized = moize((item) => {
+  return item;
+});
+
+memoized('foo');
+
+memoized.delete('foo');
+```
 
 ### Benchmarks
 

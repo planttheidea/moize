@@ -31,10 +31,6 @@
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
-  "dependencies": {
-    "cycle": "^1.0.3",
-    "map-or-similar": "^1.3.0"
-  },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {
     "ava": "^0.17.0",
@@ -98,7 +94,7 @@
     "dev": "NODE_ENV=development webpack-dev-server --progress --colors --config=webpack.config.dev.js",
     "dist": "rimraf dist && npm run build && npm run build:minified",
     "docs": "rimraf docs && jsdoc -c ./jsdoc.config.json && cp img/*.png docs/img && git add --all",
-    "flow": "flow status src",
+    "flow": "flow check src",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "in-publish && npm run prepublish:compile || echo ''",
     "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile && npm run dist && npm run docs",
@@ -108,5 +104,5 @@
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "rimraf lib && NODE_ENV=production babel src --out-dir lib"
   },
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

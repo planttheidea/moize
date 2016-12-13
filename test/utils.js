@@ -1,14 +1,15 @@
 import test from 'ava';
-import sinon from 'sinon';
-
-import cycle from 'cycle';
 
 import {
+  decycle,
   deleteItemFromCache,
   getCacheKey,
   getFunctionWithCacheAdded,
+  getIndexOf,
   getStringifiedArgument,
   isComplexObject,
+  isEqual,
+  isKeyLastItem,
   serializeArguments,
   setNewCachedValue,
   splice,
@@ -25,6 +26,33 @@ const sleep = (ms) => {
     }, ms);
   });
 };
+
+test('if decycle will return an object that has circular references removed', (t) => {
+  const object = {
+    foo: {
+      bar: 'baz'
+    }
+  };
+
+  object.foo.baz = object.foo;
+  object.foo.blah = [object.foo];
+
+  const result = decycle(object);
+
+  t.deepEqual(result, {
+    foo: {
+      bar: 'baz',
+      baz: {
+        $ref: '$["foo"]'
+      },
+      blah: [
+        {
+          $ref: '$["foo"]'
+        }
+      ]
+    }
+  });
+});
 
 test('if deleteItemFromCache will remove an item from both cache and usage', (t) => {
   const key = 'foo';
@@ -125,6 +153,18 @@ test('if getFunctionWithCacheAdded delete method will remove the key passed from
   t.deepEqual(result.usage, []);
 });
 
+test('if getIndexOf returns the index of the item in the map, else -1', (t) => {
+  const map = {
+    list: [{key: 'foo'}, {key: 'bar'}, {key: 'baz'}],
+    size: 3
+  };
+  const foo = 'foo';
+  const notFoo = 'notFoo';
+
+  t.is(getIndexOf(map, foo), 0);
+  t.is(getIndexOf(notFoo), -1);
+});
+
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
   const string = 'foo';
   const number = 123;
@@ -150,6 +190,35 @@ test('if isComplexObject correctly identifies a complex object', (t) => {
   pass.forEach((item) => {
     t.true(isComplexObject(item));
   });
+});
+
+test('if isEqual checks strict equality and if NaN', (t) => {
+  const foo = 'foo';
+  const otherFoo = 'foo';
+  const notFoo = 'bar';
+  const nan = NaN;
+  const otherNan = NaN;
+  const notNan = 123;
+
+  t.true(isEqual(foo, otherFoo));
+  t.false(isEqual(foo, notFoo));
+
+  t.true(isEqual(nan, otherNan));
+  t.false(isEqual(nan, notNan));
+});
+
+test('if isKeyLastItem checks for the existence of the lastItem and then if the key matches the value passed', (t) => {
+  const key = 'foo';
+  const lastItem = {
+    key
+  };
+  const lastItemNotKey = {
+    key: 'bar'
+  };
+
+  t.false(isKeyLastItem(undefined, key));
+  t.true(isKeyLastItem(lastItem, key));
+  t.false(isKeyLastItem(lastItemNotKey, key));
 });
 
 test('if serializeArguments produces a stringified version of the arguments with a separator', (t) => {
@@ -323,19 +392,19 @@ test('if cycle.decycle is called only when object is cannot be handled by JSON.s
   const standard = {
     foo: 'bar'
   };
-  const circular = {};
+  const circular = {
+    foo: {
+      bar: 'baz'
+    }
+  };
 
-  circular.foo = circular;
+  circular.foo.baz = circular.foo;
 
-  const stub = sinon.stub(cycle, 'decycle');
+  const standardResult = stringify(standard);
 
-  stringify(standard);
+  t.is(standardResult, '{"foo":"bar"}');
 
-  t.false(stub.called);
+  const circularResult = stringify(circular);
 
-  stringify(circular);
-
-  t.true(stub.calledOnce);
-
-  stub.restore();
+  t.is(circularResult, '{"foo":{"bar":"baz","baz":{"$ref":"$[\\\"foo\\\"]"}}}');
 });

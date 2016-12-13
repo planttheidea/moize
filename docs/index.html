@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.1.1</h3>
+    <h3>moize 1.1.2</h3>
 
 
 
@@ -90,9 +90,9 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.58%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation.</p>
+<p><code>moize</code> strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation. It has no dependencies, and is less than 2kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
 <li><a href="#installation">Installation</a></li>
@@ -134,23 +134,78 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 <p>If you want to have direct cache management using <code>moize</code>, the following methods must also be provided:</p>
 <ul>
 <li>clear</li>
-<li>delete</li>
 </ul>
-<p><strong>isPromise</strong> <em>defaults to false</em></p>
+<pre class="prettyprint source lang-javascript"><code>const cache = {
+  delete(key) {
+    delete this[key];
+  },
+  get(key) {
+    return this[key];
+  },
+  has(key) {
+    return this.hasOwnProperty[key];
+  },
+  set(key, value) {
+    this[key] = value;
+
+    return this;
+  }
+};
+const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  cache
+});</code></pre><p><strong>isPromise</strong> <em>defaults to false</em></p>
 <p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>.</p>
-<p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
+<pre class="prettyprint source lang-javascript"><code>const fn = async (item) => {
+  return await item;
+};
+
+const memoized = moize(fn, {
+  isPromise: true
+});</code></pre><p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
 <p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.</p>
-<p><strong>maxSize</strong> <em>defaults to Infinity</em></p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxAge: 1000 * 60 * 5 // five minutes
+});</code></pre><p><strong>maxSize</strong> <em>defaults to Infinity</em></p>
 <p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
-<p><strong>seralizer</strong> <em>defaults to serializeArguments in utils.js</em></p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxSize: 5
+});</code></pre><p><strong>serializer</strong> <em>defaults to serializeArguments in utils.js</em></p>
 <p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
-<h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
+<pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {
+  return JSON.stringify(args[0]);
+};
+
+const memoized = moize(fn, {
+  serializer
+});</code></pre><h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
 <p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
 <p><strong>clear()</strong></p>
 <p>This will clear all values in the cache, resetting it to a default state.</p>
-<p><strong>delete(key)</strong></p>
+<pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
+  return item;
+});
+
+memoized.clear();</code></pre><p><strong>delete(key)</strong></p>
 <p>This will delete the provided key from cache.</p>
-<h3 id="benchmarks">Benchmarks</h3>
+<pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
+  return item;
+});
+
+memoized('foo');
+
+memoized.delete('foo');</code></pre><h3 id="benchmarks">Benchmarks</h3>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks.</p>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
 <table>

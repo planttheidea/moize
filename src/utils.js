@@ -1,6 +1,8 @@
 // @flow
 
-import cycle from 'cycle';
+const keys = Object.keys;
+const toString = Object.prototype.toString;
+const jsonStringify = JSON.stringify;
 
 export const INFINITY = Number.POSITIVE_INFINITY;
 
@@ -14,12 +16,13 @@ export const INFINITY = Number.POSITIVE_INFINITY;
  *
  * @param {Array<*>} array array to splice from
  * @param {number} index index to splice at
+ * @returns {Array<*>} array minus the item removed
  */
-export const splice = (array: Array<any>, index: number) => {
+export const splice = (array: Array<any>, index: number): Array<any> => {
   const length: number = array.length;
 
   if (!length) {
-    return;
+    return array;
   }
 
   while (index < length) {
@@ -28,6 +31,8 @@ export const splice = (array: Array<any>, index: number) => {
   }
 
   array.length = length - 1;
+
+  return array;
 };
 
 /**
@@ -40,8 +45,9 @@ export const splice = (array: Array<any>, index: number) => {
  *
  * @param {Array<*>} array array to unshift into
  * @param {*} item item to unshift into array
+ * @returns {Array<*>} array plus the item added to the front
  */
-export const unshift = (array: Array<any>, item: number) => {
+export const unshift = (array: Array<any>, item: number): Array<any> => {
   let length: number = array.length;
 
   while (length) {
@@ -50,6 +56,8 @@ export const unshift = (array: Array<any>, item: number) => {
   }
 
   array[0] = item;
+
+  return array;
 };
 
 /**
@@ -65,6 +73,68 @@ export const unshift = (array: Array<any>, item: number) => {
  */
 export const isComplexObject = (object: any): boolean => {
   return typeof object === 'object' && object !== null;
+};
+
+/**
+ * @private
+ *
+ * @function decycle
+ *
+ * @description
+ * ES2015-ified version of cycle.decyle
+ *
+ * @param {*} object object to stringify
+ * @returns {string} stringified value of object
+ */
+export const decycle = (object: any): string => {
+  let objects = [],
+      paths = [];
+
+  const derez = (value: any, path: string): any => {
+    if (isComplexObject(value) &&
+      !(value instanceof Boolean) &&
+      !(value instanceof Date)    &&
+      !(value instanceof Number)  &&
+      !(value instanceof RegExp)  &&
+      !(value instanceof String)
+    ) {
+      let index = -1;
+
+      while (++index < objects.length) {
+        if (objects[index] === value) {
+          return {
+            $ref: paths[index]
+          };
+        }
+      }
+
+      objects.push(value);
+      paths.push(path);
+
+      if (toString.call(value) === '[object Array]') {
+        let array = [],
+          index = -1;
+
+        while (++index < value.length) {
+          array[index] = derez(value[index], `${path}[${index}]`);
+        }
+
+        return array;
+      }
+
+      let object = {};
+
+      keys(value).forEach((name) => {
+        object[name] = derez(value[name], `${path}[${JSON.stringify(name)}]`);
+      });
+
+      return object;
+    }
+
+    return value;
+  };
+
+  return derez(object, '$');
 };
 
 /**
@@ -153,6 +223,46 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
 /**
  * @private
  *
+ * @function isEqual
+ *
+ * @description
+ * are the two values passed equal or both NaN
+ *
+ * @param {*} value1 first value to check equality for
+ * @param {*} value2 second value to check equality for
+ * @returns {boolean} are the two values equal
+ */
+export const isEqual = (value1: any, value2: any): boolean => {
+  return value1 === value2 || (value1 !== value1 && value2 !== value2);
+};
+
+/**
+ * @private
+ *
+ * @function getIndexOf
+ *
+ * @description
+ * get the index of the key in the map
+ *
+ * @param {MapLike} map map to find key in
+ * @param {*} key key to find in map
+ * @returns {number} index location of key in list
+ */
+export const getIndexOf = (map: Object, key: any): number => {
+  let index: number = -1;
+
+  while (++index < map.size) {
+    if (isEqual(map.list[index].key, key)) {
+      return index;
+    }
+  }
+
+  return -1;
+};
+
+/**
+ * @private
+ *
  * @function stringify
  *
  * @description
@@ -163,9 +273,9 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
  */
 export const stringify = (value: any) => {
   try {
-    return JSON.stringify(value);
+    return jsonStringify(value);
   } catch (exception) {
-    return cycle.decycle(value);
+    return jsonStringify(decycle(value));
   }
 };
 
@@ -182,6 +292,22 @@ export const stringify = (value: any) => {
  */
 export const getStringifiedArgument = (arg: any) => {
   return isComplexObject(arg) ? stringify(arg) : arg;
+};
+
+/**
+ * @private
+ *
+ * @function isKeyLastItem
+ *
+ * @description
+ * is the key passed the same key as the lastItem
+ *
+ * @param {{key: *, value: *}} lastItem the current lastItem in the Map
+ * @param {*} key the key to match on
+ * @returns {boolean} is the key the same as the LastItem
+ */
+export const isKeyLastItem = (lastItem: ?Object, key: any): boolean => {
+  return !!lastItem && isEqual(lastItem.key, key);
 };
 
 /**
