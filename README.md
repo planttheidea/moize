@@ -1,10 +1,10 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.58%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.59%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
+`moize` is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
 
 ### Table of contents
 * [Installation](#installation)
@@ -47,6 +47,7 @@ All parameter types are supported, including circular objects, functions, etc. Y
   cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
   maxAge: number, // amount of time in milliseconds before the cache will expire
+  maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
   serializer: Function // method to serialize the arguments to build a unique cache key
 }
@@ -114,6 +115,20 @@ const fn = (item) => {
 
 const memoized = moize(fn, {
   maxAge: 1000 * 60 * 5 // five minutes
+});
+```
+
+**maxArgs** *defaults to the length of arguments passed to the method*
+
+The maximum number of arguments used in creating the key for the cache.
+
+```javascript
+const fn = (item1, item2, item3) => {
+  return item1 + item2 + item3;
+};
+
+const memoized = moize(fn, {
+  maxArgs: 2
 });
 ```
 

@@ -147,10 +147,12 @@ export const decycle = (object: any): string => {
  *
  * @param {Array<*>} args arguments passed to the method
  * @param {function} serializer method used to serialize keys into a string
+ * @param {boolean} isMaxArgsFinite has the maxArgs option been applied
+ * @param {number} maxArgs the maximum number of arguments to use in the serialization
  * @returns {*}
  */
-export const getCacheKey = (args: Array<any>, serializer: Function) => {
-  return args.length === 1 ? args[0] : serializer(args);
+export const getCacheKey = (args: Array<any>, serializer: Function, isMaxArgsFinite: boolean, maxArgs: number) => {
+  return args.length === 1 ? args[0] : serializer(args, isMaxArgsFinite, maxArgs);
 };
 
 /**
@@ -319,10 +321,12 @@ export const isKeyLastItem = (lastItem: ?Object, key: any): boolean => {
  * serialize the arguments into a string
  *
  * @param {Array<*>} args arguments to serialize into string
+ * @param {boolean} isMaxArgsFinite is there a limit to the args to use when caching
+ * @param {number} maxArgs maximum number of arguments to use for caching the key
  * @returns {string} string of serialized arguments
  */
-export const serializeArguments = (args: Array<any>) => {
-  const length: number = args.length;
+export const serializeArguments = (args: Array<any>, isMaxArgsFinite: boolean, maxArgs: number) => {
+  const length: number = isMaxArgsFinite ? maxArgs : args.length;
 
   let index: number = -1,
       key: string = '|';

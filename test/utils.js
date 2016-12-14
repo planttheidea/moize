@@ -232,6 +232,17 @@ test('if serializeArguments produces a stringified version of the arguments with
   t.is(expectedResult, result);
 });
 
+test('if serializeArguments limits the key creation when maxArgs is passed', (t) => {
+  const args = ['foo', 123, true, {
+    bar: 'baz'
+  }];
+
+  const expectedResult = '|foo|123|';
+  const result = serializeArguments(args, true, 2);
+
+  t.is(expectedResult, result);
+});
+
 test('if setNewCachedValue will run the set method if not a promise', async (t) => {
   const keyToSet = 'foo';
   const valueToSet = 'bar';

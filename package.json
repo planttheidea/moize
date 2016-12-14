@@ -46,14 +46,14 @@
     "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.18.0",
     "benchmark": "^2.1.2",
-    "eslint": "^3.12.0",
+    "eslint": "^3.12.1",
     "eslint-friendly-formatter": "^2.0.6",
     "eslint-loader": "^1.6.1",
     "fast-memoize": "^2.0.2",
     "flow-babel-webpack-plugin": "^1.0.1",
-    "flow-bin": "^0.36.0",
+    "flow-bin": "^0.37.0",
     "html-webpack-plugin": "^2.24.1",
-    "iMemoized": "^1.0.0",
+    "iMemoized": "^1.0.2",
     "in-publish": "^2.0.0",
     "ink-docstrap": "^1.3.0",
     "jsdoc": "^3.4.3",
@@ -105,5 +105,5 @@
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "rimraf lib && NODE_ENV=production babel src --out-dir lib"
   },
-  "version": "1.1.2"
+  "version": "1.2.0"
 }
