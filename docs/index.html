@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.1.2</h3>
+    <h3>moize 1.2.0</h3>
 
 
 
@@ -90,9 +90,9 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.58%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.59%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> strives to be the fastest possible implementation of memoization in JavaScript that supports all arguments passed, while offering flexibility in implementation. It has no dependencies, and is less than 2kb when minified and gzipped.</p>
+<p><code>moize</code> is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
 <li><a href="#installation">Installation</a></li>
@@ -121,6 +121,7 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
   cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
   maxAge: number, // amount of time in milliseconds before the cache will expire
+  maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
@@ -173,6 +174,14 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   maxAge: 1000 * 60 * 5 // five minutes
+});</code></pre><p><strong>maxArgs</strong> <em>defaults to the length of arguments passed to the method</em></p>
+<p>The maximum number of arguments used in creating the key for the cache.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (item1, item2, item3) => {
+  return item1 + item2 + item3;
+};
+
+const memoized = moize(fn, {
+  maxArgs: 2
 });</code></pre><p><strong>maxSize</strong> <em>defaults to Infinity</em></p>
 <p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
