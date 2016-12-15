@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 1.3.1
+* Fix README errors
+
 #### 1.3.0
 * Add keys method to memoized function, to know the size and also get keys for potential deletion
 * Update decycle method with modern techniques and helper functions for better circular reference performance

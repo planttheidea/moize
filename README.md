@@ -188,7 +188,7 @@ const memoized = moize((item) => {
 
 memoized('foo');
 
-memoized.delete('foo');
+memoized.delete('item');
 ```
 
 **keys()**
@@ -202,7 +202,7 @@ const memoized = moize((item) => {
 
 memoized('foo');
 
-const keys = memoized.keys(); // ['foo']
+const keys = memoized.keys(); // ['item']
 ```
 
 ### Benchmarks
