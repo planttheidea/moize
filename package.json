@@ -46,7 +46,7 @@
     "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.18.0",
     "benchmark": "^2.1.2",
-    "eslint": "^3.12.1",
+    "eslint": "^3.12.2",
     "eslint-friendly-formatter": "^2.0.6",
     "eslint-loader": "^1.6.1",
     "fast-memoize": "^2.0.2",
