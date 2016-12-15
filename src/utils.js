@@ -6,6 +6,15 @@ const jsonStringify = JSON.stringify;
 
 export const INFINITY = Number.POSITIVE_INFINITY;
 
+const GOTCHA_OBJECT_CLASSES = [
+  Boolean,
+  Date,
+  Number,
+  RegExp,
+  String
+];
+const GOTCHA_OBJECT_CLASSES_LENGTH = GOTCHA_OBJECT_CLASSES.length;
+
 /**
  * @private
  *
@@ -78,6 +87,33 @@ export const isComplexObject = (object: any): boolean => {
 /**
  * @private
  *
+ * @function isValueObjectOrArray
+ *
+ * @description
+ * check if the object is actually an object or array
+ *
+ * @param {*} object object to test
+ * @returns {boolean} is the object an object or array
+ */
+export const isValueObjectOrArray = (object: any): boolean => {
+  if (!isComplexObject(object)) {
+    return false;
+  }
+
+  let index: number = -1;
+
+  while (++index < GOTCHA_OBJECT_CLASSES_LENGTH) {
+    if (object instanceof GOTCHA_OBJECT_CLASSES[index]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * @private
+ *
  * @function decycle
  *
  * @description
@@ -88,17 +124,24 @@ export const isComplexObject = (object: any): boolean => {
  */
 export const decycle = (object: any): string => {
   let objects = [],
-      paths = [];
+      paths = [],
+      index;
 
-  const derez = (value: any, path: string): any => {
-    if (isComplexObject(value) &&
-      !(value instanceof Boolean) &&
-      !(value instanceof Date)    &&
-      !(value instanceof Number)  &&
-      !(value instanceof RegExp)  &&
-      !(value instanceof String)
-    ) {
-      let index = -1;
+  /**
+   * @private
+   * 
+   * @function coalesceCircularReferences
+   * 
+   * @description
+   * recursive method to replace any circular references with a placeholder
+   *
+   * @param {*} value value in object to decycle
+   * @param {string} path path to reference
+   * @returns {*} clean value
+   */
+  const coalesceCircularReferences = (value: any, path: string): any => {
+    if (isValueObjectOrArray(value)) {
+      index = -1;
 
       while (++index < objects.length) {
         if (objects[index] === value) {
@@ -112,29 +155,22 @@ export const decycle = (object: any): string => {
       paths.push(path);
 
       if (toString.call(value) === '[object Array]') {
-        let array = [],
-          index = -1;
-
-        while (++index < value.length) {
-          array[index] = derez(value[index], `${path}[${index}]`);
-        }
-
-        return array;
+        return value.map((item, itemIndex) => {
+          return coalesceCircularReferences(item, `${path}[${itemIndex}]`);
+        });
       }
 
-      let object = {};
+      return keys(value).reduce((object, name) => {
+        object[name] = coalesceCircularReferences(value[name], `${path}[${JSON.stringify(name)}]`);
 
-      keys(value).forEach((name) => {
-        object[name] = derez(value[name], `${path}[${JSON.stringify(name)}]`);
-      });
-
-      return object;
+        return object;
+      }, {});
     }
 
     return value;
   };
 
-  return derez(object, '$');
+  return coalesceCircularReferences(object, '$');
 };
 
 /**
@@ -217,6 +253,26 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
    */
   fn.delete = (key: any) => {
     deleteItemFromCache(fn.cache, fn.usage, key);
+  };
+
+  /**
+   * @private
+   *
+   * @function keys
+   *
+   * @description
+   * get the list of keys currently in cache
+   *
+   * @returns {Array<*>}
+   */
+  fn.keys = (): Array<any> => {
+    let array: Array<any> = [];
+
+    fn.cache.forEach((value: any, key: any) => {
+      array.push(key);
+    });
+
+    return array;
   };
 
   return fn;

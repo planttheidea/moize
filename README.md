@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.59%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.80%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
@@ -63,6 +63,7 @@ The default cache implementation is highly performant, however if you would like
 
 If you want to have direct cache management using `moize`, the following methods must also be provided:
 * clear
+* forEach
 
 ```javascript
 const cache = {
@@ -188,6 +189,20 @@ const memoized = moize((item) => {
 memoized('foo');
 
 memoized.delete('foo');
+```
+
+**keys()**
+
+This will return a list of the current keys in cache.
+
+```javascript
+const memoized = moize((item) => {
+  return item;
+});
+
+memoized('foo');
+
+const keys = memoized.keys(); // ['foo']
 ```
 
 ### Benchmarks
