@@ -55,6 +55,7 @@ type Options = {
  * @param {Map} [options.cache=new Map()] caching mechanism to use for method
  * @param {boolean} [options.isPromise=false] is the function return expected to be a promise to resolve
  * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
+ * @param {number} [options.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
  * @param {number} [options.maxSize=Infinity] the maximum size of the cache to retain
  * @param {function} [options.serializer=serializeArguments] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value

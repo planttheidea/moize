@@ -124,6 +124,27 @@ class MapLike {
   }
 
   /**
+   * @function forEach
+   * @memberOf MapLike
+   * @instance
+   *
+   * @description
+   * forEach method to loop over items in the list
+   *
+   * @param {function} fn function to call when looping over the list
+   */
+  forEach(fn: Function) {
+    let index: number = -1,
+        item: ?Object;
+
+    while (++index &lt; this.size) {
+      item = this.list[index];
+
+      fn(item.value, item.key);
+    }
+  }
+
+  /**
    * @function get
    * @memberOf MapLike
    * @instance

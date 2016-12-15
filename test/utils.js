@@ -10,6 +10,7 @@ import {
   isComplexObject,
   isEqual,
   isKeyLastItem,
+  isValueObjectOrArray,
   serializeArguments,
   setNewCachedValue,
   splice,
@@ -113,6 +114,7 @@ test('if getFunctionWithCacheAdded will add the cache passed to the function and
   t.deepEqual(result.usage, []);
   t.is(typeof result.clear, 'function');
   t.is(typeof result.delete, 'function');
+  t.is(typeof result.keys, 'function');
 });
 
 test('if getFunctionWithCacheAdded clear method will clear cache', (t) => {
@@ -151,6 +153,23 @@ test('if getFunctionWithCacheAdded delete method will remove the key passed from
 
   t.false(result.cache.has(key));
   t.deepEqual(result.usage, []);
+});
+
+test('if getFunctionWithCacheAdded keys method will return the list of keys in cache', (t) => {
+  const fn = () => {};
+  const key = 'foo';
+  const cache = new Map();
+
+  const cachedFn = getFunctionWithCacheAdded(fn, cache);
+
+  cachedFn.cache.set(key, 'bar');
+  cachedFn.usage.push(key);
+
+  t.true(cachedFn.cache.has(key));
+
+  const result = cachedFn.keys();
+
+  t.deepEqual(result, [key]);
 });
 
 test('if getIndexOf returns the index of the item in the map, else -1', (t) => {
@@ -205,6 +224,24 @@ test('if isEqual checks strict equality and if NaN', (t) => {
 
   t.true(isEqual(nan, otherNan));
   t.false(isEqual(nan, notNan));
+});
+
+test('if isValueObjectOrArray correctly determines if an item is an object / array or not', (t) => {
+  const bool = new Boolean(true);
+  const string = new String('foo');
+  const date = new Date();
+  const number = new Number(1);
+  const regexp = /foo/;
+  const object = {};
+  const array = [];
+
+  t.false(isValueObjectOrArray(bool));
+  t.false(isValueObjectOrArray(string));
+  t.false(isValueObjectOrArray(date));
+  t.false(isValueObjectOrArray(number));
+  t.false(isValueObjectOrArray(regexp));
+  t.true(isValueObjectOrArray(object));
+  t.true(isValueObjectOrArray(array));
 });
 
 test('if isKeyLastItem checks for the existence of the lastItem and then if the key matches the value passed', (t) => {

@@ -29,27 +29,29 @@ memoized(foo);
 memoized(foo);
 memoized(bar);
 
-const promiseMethod = (number) => {
+const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
 
   return new Promise((resolve) => {
-    resolve(number * 2);
+    resolve(number * otherNumber);
   });
 };
 
 const memoizedPromise = moize(promiseMethod);
 
 // get result
-memoizedPromise(2)
+memoizedPromise(2, 2)
   .then((value) => {
     console.log(`computed value: ${value}`)
   });
 
 // pull from cache
-memoizedPromise(2)
+memoizedPromise(2, 2)
   .then((value) => {
     console.log(`cached value: ${value}`)
   });
+
+console.log(memoizedPromise.keys());
 
 const Foo = (props) => {
   console.log('Foo React element fired', props);

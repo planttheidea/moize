@@ -25,6 +25,31 @@ test('if delete will remove the key and value pair from the map', (t) => {
   t.false(map.has(key));
 });
 
+test('if forEach will loop over all items in the array', (t) => {
+  const map = new MapLike();
+  const key = 'foo';
+  const value = 'bar';
+
+  map.set(key, value);
+  map.set(value, key);
+
+  const expectedArray = [
+    {key, value},
+    {key: value, value: key}
+  ];
+
+  let array = [];
+
+  map.forEach((value, key) => {
+    array.push({
+      key,
+      value
+    });
+  });
+
+  t.deepEqual(array, expectedArray);
+});
+
 test('if get will return the value for the passed key in map', (t) => {
   const map = new MapLike();
   const key = 'foo';
