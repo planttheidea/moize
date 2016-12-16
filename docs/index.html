@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.3.0</h3>
+    <h3>moize 1.3.2</h3>
 
 
 
@@ -90,7 +90,7 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.80%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.78%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
@@ -236,21 +236,19 @@ const keys = memoized.keys(); // ['item']</code></pre><h3 id="benchmarks">Benchm
 <th>fast-memoize</th>
 <th>addy-osmani</th>
 <th>memoizerific</th>
-<th>iMemoized</th>
 <th>moize</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>5,998,566</td>
-<td>6,402,406</td>
-<td>242,619</td>
-<td>4,405,116</td>
-<td>6,344,116</td>
-<td>1,945,595</td>
-<td>1,125,026</td>
-<td>11,704,638</td>
-<td>10,037573</td>
+<td>6,119,979</td>
+<td>6,939,684</td>
+<td>245,116</td>
+<td>5,129,629</td>
+<td>6,471,449</td>
+<td>1,923,117</td>
+<td>943,197</td>
+<td>9,807,199</td>
 </tr>
 </tbody>
 </table>
@@ -262,18 +260,16 @@ const keys = memoized.keys(); // ['item']</code></pre><h3 id="benchmarks">Benchm
 <th>fast-memoize</th>
 <th>addy-osmani</th>
 <th>memoizerific</th>
-<th>iMemoized</th>
 <th>moize</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>3,088,475</td>
-<td>274,799</td>
-<td>1,042,220</td>
-<td>747,047</td>
-<td>3,094,359</td>
-<td>3,251,022</td>
+<td>3,741,468</td>
+<td>269,808</td>
+<td>894,831</td>
+<td>622,138</td>
+<td>3,142,202</td>
 </tr>
 </tbody>
 </table>
@@ -285,18 +281,16 @@ const keys = memoized.keys(); // ['item']</code></pre><h3 id="benchmarks">Benchm
 <th>fast-memoize</th>
 <th>addy-osmani</th>
 <th>memoizerific</th>
-<th>iMemoized</th>
 <th>moize</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>3,475</td>
-<td>222,977</td>
-<td>479,436</td>
-<td>31,704</td>
-<td>40,044</td>
-<td>650,998</td>
+<td>3,419</td>
+<td>218,079</td>
+<td>438,387</td>
+<td>31,975</td>
+<td>582,090</td>
 </tr>
 </tbody>
 </table>
