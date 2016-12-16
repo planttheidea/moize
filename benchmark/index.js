@@ -18,7 +18,6 @@ const memoizee = require('memoizee');
 const fastMemoize = require('fast-memoize');
 const addyOsmani = require('./addy-osmani');
 const memoizerific = require('memoizerific');
-const imemoized = require('iMemoized').memoize;
 const moize = require('../lib');
 
 const fibonacci = (number) => {
@@ -62,7 +61,6 @@ const runSingleParameterSuite = () => {
   const mFastMemoize = fastMemoize(fibonacci);
   const mAddyOsmani = addyOsmani(fibonacci);
   const mMemoizerific = memoizerific(Infinity)(fibonacci);
-  const mImemoized = imemoized(fibonacci);
   const mFutz = moize(fibonacci);
 
   return new Promise((resolve) => {
@@ -87,9 +85,6 @@ const runSingleParameterSuite = () => {
       })
       .add('memoizerific', () => {
         mMemoizerific(fibonacciNumber);
-      })
-      .add('iMemoized', () => {
-        mImemoized(fibonacciNumber);
       })
       .add('moize', () => {
         mFutz(fibonacciNumber);
@@ -121,7 +116,6 @@ const runMultiplePrimitiveSuite = () => {
   const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
   const mAddyOsmani = addyOsmani(fibonacciMultiplePrimitive);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
-  const mImemoized = imemoized(fibonacciMultiplePrimitive);
   const mFutz = moize(fibonacciMultiplePrimitive);
 
   return new Promise((resolve) => {
@@ -137,9 +131,6 @@ const runMultiplePrimitiveSuite = () => {
       })
       .add('memoizerific', () => {
         mMemoizerific(fibonacciNumber, false);
-      })
-      .add('iMemoized', () => {
-        mImemoized(fibonacciNumber, false);
       })
       .add('moize', () => {
         mFutz(fibonacciNumber, false);
@@ -171,7 +162,6 @@ const runMultipleObjectSuite = () => {
   const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
-  const mImemoized = imemoized(fibonacciMultipleObject);
   const mFutz = moize(fibonacciMultipleObject);
 
   return new Promise((resolve) => {
@@ -193,11 +183,6 @@ const runMultipleObjectSuite = () => {
       })
       .add('memoizerific', () => {
         mMemoizerific(fibonacciNumber, {
-          isComplete: false
-        });
-      })
-      .add('iMemoized', () => {
-        mImemoized(fibonacciNumber, {
           isComplete: false
         });
       })

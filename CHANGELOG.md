@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 1.3.2
+* Replace array-based decycle with Map (performance on circular objects)
+
 #### 1.3.1
 * Fix README errors
 

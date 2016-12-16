@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.80%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.78%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
@@ -211,21 +211,21 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 ![Single parameter image](img/single-parameter.png)
 
-| underscore | lodash    | ramda   | memoizee  | fast-memoize | addy-osmani | memoizerific | iMemoized    | moize      |
-|------------|-----------|---------|-----------|--------------|-------------|--------------|--------------|------------|
-| 5,998,566  | 6,402,406 | 242,619 | 4,405,116 | 6,344,116    | 1,945,595   | 1,125,026    | 11,704,638   | 10,037573  |
+| underscore | lodash    | ramda   | memoizee  | fast-memoize | addy-osmani | memoizerific | moize      |
+|------------|-----------|---------|-----------|--------------|-------------|--------------|------------|
+| 6,119,979  | 6,939,684 | 245,116 | 5,129,629 | 6,471,449    | 1,923,117   | 943,197      | 9,807,199  |
 
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
-| memoizee  | fast-memoize | addy-osmani | memoizerific | iMemoized    | moize     |
-|-----------|--------------|-------------|--------------|--------------|-----------|
-| 3,088,475 | 274,799      | 1,042,220   | 747,047      | 3,094,359    | 3,251,022 |
+| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
+|-----------|--------------|-------------|--------------|-----------|
+| 3,741,468 | 269,808      | 894,831     | 622,138      | 3,142,202 |
 
 ![Multiple complex parameters image](img/multiple-parameter-complex.png)
 
-| memoizee | fast-memoize | addy-osmani | memoizerific | iMemoized | moize   |
-|----------|--------------|-------------|--------------|-----------|---------|
-| 3,475    | 222,977      | 479,436     | 31,704       | 40,044    | 650,998 |
+| memoizee | fast-memoize | addy-osmani | memoizerific | moize   |
+|----------|--------------|-------------|--------------|---------|
+| 3,419    | 218,079      | 438,387     | 31,975       | 582,090 |
 
 ### Browser support
 

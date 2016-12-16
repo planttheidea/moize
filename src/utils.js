@@ -1,10 +1,15 @@
 // @flow
 
+import Map from './Map';
+
 const keys = Object.keys;
 const toString = Object.prototype.toString;
 const jsonStringify = JSON.stringify;
 
 export const INFINITY = Number.POSITIVE_INFINITY;
+
+const ARRAY_OBJECT_CLASS = '[object Array]';
+const OBJECT_TYPEOF = 'object';
 
 const GOTCHA_OBJECT_CLASSES = [
   Boolean,
@@ -81,7 +86,7 @@ export const unshift = (array: Array<any>, item: number): Array<any> => {
  * @returns {boolean}
  */
 export const isComplexObject = (object: any): boolean => {
-  return typeof object === 'object' && object !== null;
+  return typeof object === OBJECT_TYPEOF && object !== null;
 };
 
 /**
@@ -123,15 +128,14 @@ export const isValueObjectOrArray = (object: any): boolean => {
  * @returns {string} stringified value of object
  */
 export const decycle = (object: any): string => {
-  let objects = [],
-      paths = [],
-      index;
+  // $FlowIgnore: map type
+  let map: Map = new Map();
 
   /**
    * @private
-   * 
+   *
    * @function coalesceCircularReferences
-   * 
+   *
    * @description
    * recursive method to replace any circular references with a placeholder
    *
@@ -141,20 +145,15 @@ export const decycle = (object: any): string => {
    */
   const coalesceCircularReferences = (value: any, path: string): any => {
     if (isValueObjectOrArray(value)) {
-      index = -1;
-
-      while (++index < objects.length) {
-        if (objects[index] === value) {
-          return {
-            $ref: paths[index]
-          };
-        }
+      if (map.has(value)) {
+        return {
+          $ref: map.get(value)
+        };
       }
 
-      objects.push(value);
-      paths.push(path);
+      map.set(value, path);
 
-      if (toString.call(value) === '[object Array]') {
+      if (toString.call(value) === ARRAY_OBJECT_CLASS) {
         return value.map((item, itemIndex) => {
           return coalesceCircularReferences(item, `${path}[${itemIndex}]`);
         });
@@ -206,8 +205,9 @@ export const getCacheKey = (args: Array<any>, serializer: Function, isMaxArgsFin
 export const deleteItemFromCache = (cache: Map<any, any>|Object, usage: Array<any>, key: any) => {
   const index: number = usage.indexOf(key);
 
-  if (index !== -1) {
+  if (!!~index) {
     splice(usage, index);
+    // $FlowIgnore: map type
     cache.delete(key);
   }
 };
@@ -482,7 +482,7 @@ export const setUsageOrder = (fn: Function, key: any, maxSize: number) => {
   const index: number = usage.indexOf(key);
 
   if (index !== 0) {
-    if (index !== -1) {
+    if (!!~index) {
       splice(usage, index);
     }
 
