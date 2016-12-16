@@ -171,7 +171,7 @@ const runMultipleObjectSuite = () => {
   const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
-  const mImemoized = imemoized(fibonacciMultipleObject);
+  const mImemoized = imemoized(fibonacciMultipleObject,"isComplete");
   const mFutz = moize(fibonacciMultipleObject);
 
   return new Promise((resolve) => {
