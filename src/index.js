@@ -5,9 +5,9 @@ import Map from './Map';
 
 // utils
 import {
-  INFINITY,
   getCacheKey,
   getFunctionWithCacheAdded,
+  isFiniteAndPositive,
   serializeArguments,
   setNewCachedValue,
   setUsageOrder
@@ -25,6 +25,8 @@ type Options = {
 /**
  * @module moize
  */
+
+const INFINITY = Number.POSITIVE_INFINITY;
 
 /**
  * @function moize
@@ -69,11 +71,11 @@ const moize = function(fn: Function, options: Options = {}): any {
     maxSize = INFINITY,
     serializer = serializeArguments
   } = options;
-  const isMaxAgeFinite: boolean = maxAge !== INFINITY;
-  const isMaxArgsFinite: boolean = maxArgs !== INFINITY;
-  const isMaxSizeFinite: boolean = maxSize !== INFINITY;
+  const hasMaxAge: boolean = isFiniteAndPositive(maxAge);
+  const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
+  const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
 
-  let key: string = '';
+  let key: any = '';
 
   /**
    * @private
@@ -87,17 +89,14 @@ const moize = function(fn: Function, options: Options = {}): any {
    * @returns {any} value resulting from executing of fn passed to memoize
    */
   const memoizedFunction = function(...args: Array<any>): any {
-    key = getCacheKey(args, serializer, isMaxArgsFinite, maxArgs);
+    key = getCacheKey(args, serializer, hasMaxArgs, maxArgs);
 
-    if (isMaxSizeFinite) {
+    if (hasMaxSize) {
       setUsageOrder(memoizedFunction, key, maxSize);
     }
 
-    if (memoizedFunction.cache.has(key)) {
-      return memoizedFunction.cache.get(key);
-    }
-
-    return setNewCachedValue(memoizedFunction, key, fn.apply(this, args), isPromise, isMaxAgeFinite, maxAge);
+    return cache.has(key) ? cache.get(key) :
+      setNewCachedValue(memoizedFunction, key, fn.apply(this, args), isPromise, hasMaxAge, maxAge);
   };
 
   return getFunctionWithCacheAdded(memoizedFunction, cache);

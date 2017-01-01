@@ -5,11 +5,14 @@ import {
   deleteItemFromCache,
   getCacheKey,
   getFunctionWithCacheAdded,
-  getIndexOf,
+  getIndexOfItemInMap,
   getStringifiedArgument,
+  isArray,
   isComplexObject,
   isEqual,
+  isFiniteAndPositive,
   isKeyLastItem,
+  isFiniteInteger,
   isValueObjectOrArray,
   serializeArguments,
   setNewCachedValue,
@@ -172,7 +175,7 @@ test('if getFunctionWithCacheAdded keys method will return the list of keys in c
   t.deepEqual(result, [key]);
 });
 
-test('if getIndexOf returns the index of the item in the map, else -1', (t) => {
+test('if getIndexOfItemInMap returns the index of the item in the map, else -1', (t) => {
   const map = {
     list: [{key: 'foo'}, {key: 'bar'}, {key: 'baz'}],
     size: 3
@@ -180,8 +183,8 @@ test('if getIndexOf returns the index of the item in the map, else -1', (t) => {
   const foo = 'foo';
   const notFoo = 'notFoo';
 
-  t.is(getIndexOf(map, foo), 0);
-  t.is(getIndexOf(notFoo), -1);
+  t.is(getIndexOfItemInMap(map, foo), 0);
+  t.is(getIndexOfItemInMap(notFoo), -1);
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
@@ -196,6 +199,11 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
   t.is(getStringifiedArgument(number), number);
   t.is(getStringifiedArgument(boolean), boolean);
   t.is(getStringifiedArgument(object), JSON.stringify(object));
+});
+
+test('if isArray correctly tests if array or not', (t) => {
+  t.true(isArray([1, 2, 3]));
+  t.false(isArray(123));
 });
 
 test('if isComplexObject correctly identifies a complex object', (t) => {
@@ -224,6 +232,14 @@ test('if isEqual checks strict equality and if NaN', (t) => {
 
   t.true(isEqual(nan, otherNan));
   t.false(isEqual(nan, notNan));
+});
+
+test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
+  t.false(isFiniteAndPositive(Infinity));
+  t.false(isFiniteAndPositive(0));
+  t.false(isFiniteAndPositive(-123));
+  t.false(isFiniteAndPositive(-Infinity));
+  t.true(isFiniteAndPositive(123));
 });
 
 test('if isValueObjectOrArray correctly determines if an item is an object / array or not', (t) => {
@@ -256,6 +272,16 @@ test('if isKeyLastItem checks for the existence of the lastItem and then if the 
   t.false(isKeyLastItem(undefined, key));
   t.true(isKeyLastItem(lastItem, key));
   t.false(isKeyLastItem(lastItemNotKey, key));
+});
+
+test('if isFiniteInteger checks to ensure that the value passed is an integer', (t) => {
+  t.true(isFiniteInteger(123));
+  t.true(isFiniteInteger(-123));
+
+  t.false(isFiniteInteger('123'));
+  t.false(isFiniteInteger(123.456));
+  t.false(isFiniteInteger(Infinity));
+  t.false(isFiniteInteger(-Infinity));
 });
 
 test('if serializeArguments produces a stringified version of the arguments with a separator', (t) => {

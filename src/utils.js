@@ -6,7 +6,7 @@ const keys = Object.keys;
 const toString = Object.prototype.toString;
 const jsonStringify = JSON.stringify;
 
-export const INFINITY = Number.POSITIVE_INFINITY;
+export
 
 const ARRAY_OBJECT_CLASS = '[object Array]';
 const OBJECT_TYPEOF = 'object';
@@ -72,6 +72,21 @@ export const unshift = (array: Array<any>, item: number): Array<any> => {
   array[0] = item;
 
   return array;
+};
+
+/**
+ * @private
+ *
+ * @function isArray
+ *
+ * @description
+ * provide fallback for native Array.isArray test
+ *
+ * @param {*} object object to test if it is an array
+ * @returns {boolean} is the object passed an array or not
+ */
+export const isArray = Array.isArray || function(object: any): boolean {
+ return toString.call(object) === ARRAY_OBJECT_CLASS;
 };
 
 /**
@@ -153,7 +168,7 @@ export const decycle = (object: any): string => {
 
       map.set(value, path);
 
-      if (toString.call(value) === ARRAY_OBJECT_CLASS) {
+      if (isArray(value)) {
         return value.map((item, itemIndex) => {
           return coalesceCircularReferences(item, `${path}[${itemIndex}]`);
         });
@@ -182,12 +197,12 @@ export const decycle = (object: any): string => {
  *
  * @param {Array<*>} args arguments passed to the method
  * @param {function} serializer method used to serialize keys into a string
- * @param {boolean} isMaxArgsFinite has the maxArgs option been applied
+ * @param {boolean} hasMaxArgs has the maxArgs option been applied
  * @param {number} maxArgs the maximum number of arguments to use in the serialization
  * @returns {*}
  */
-export const getCacheKey = (args: Array<any>, serializer: Function, isMaxArgsFinite: boolean, maxArgs: number) => {
-  return args.length === 1 ? args[0] : serializer(args, isMaxArgsFinite, maxArgs);
+export const getCacheKey = (args: Array<any>, serializer: Function, hasMaxArgs: boolean, maxArgs: number) => {
+  return args.length === 1 ? args[0] : serializer(args, hasMaxArgs, maxArgs);
 };
 
 /**
@@ -281,6 +296,36 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
 /**
  * @private
  *
+ * @function isNAN
+ *
+ * @description
+ * test if the value is NaN
+ *
+ * @param {*} value value to test
+ * @returns {boolean} is value NaN
+ */
+export const isNAN = (value: any): boolean => {
+  return value !== value;
+};
+
+/**
+ * @private
+ * 
+ * @function isFiniteInteger
+ * 
+ * @description
+ * test if the value passed is a finite integer (positive or negative)
+ *
+ * @param {*} value value to test
+ * @returns {boolean} is value finite and an integer
+ */
+export const isFiniteInteger = (value: any): boolean => {
+  return value === ~~value;
+};
+
+/**
+ * @private
+ *
  * @function isEqual
  *
  * @description
@@ -291,13 +336,44 @@ export const getFunctionWithCacheAdded = (fn: Function, cache: Map<any, any>|Obj
  * @returns {boolean} are the two values equal
  */
 export const isEqual = (value1: any, value2: any): boolean => {
-  return value1 === value2 || (value1 !== value1 && value2 !== value2);
+  return value1 === value2 || (isNAN(value1) && isNAN(value2));
 };
 
 /**
  * @private
  *
- * @function getIndexOf
+ * @function isFiniteAndPositive
+ *
+ * @description
+ * is the number passed finite and positive
+ *
+ * @param {number} number number to test for finiteness and positivity
+ * @returns {boolean} is the number finite and positive
+ */
+export const isFiniteAndPositive = (number: number): boolean => {
+  return isFiniteInteger(number) && number > 0;
+};
+
+/**
+ * @private
+ *
+ * @function isKeyLastItem
+ *
+ * @description
+ * is the key passed the same key as the lastItem
+ *
+ * @param {{key: *, value: *}} lastItem the current lastItem in the Map
+ * @param {*} key the key to match on
+ * @returns {boolean} is the key the same as the LastItem
+ */
+export const isKeyLastItem = (lastItem: ?Object, key: any): boolean => {
+  return !!lastItem && isEqual(lastItem.key, key);
+};
+
+/**
+ * @private
+ *
+ * @function getIndexOfItemInMap
  *
  * @description
  * get the index of the key in the map
@@ -306,7 +382,7 @@ export const isEqual = (value1: any, value2: any): boolean => {
  * @param {*} key key to find in map
  * @returns {number} index location of key in list
  */
-export const getIndexOf = (map: Object, key: any): number => {
+export const getIndexOfItemInMap = (map: Object, key: any): number => {
   let index: number = -1;
 
   while (++index < map.size) {
@@ -355,34 +431,18 @@ export const getStringifiedArgument = (arg: any) => {
 /**
  * @private
  *
- * @function isKeyLastItem
- *
- * @description
- * is the key passed the same key as the lastItem
- *
- * @param {{key: *, value: *}} lastItem the current lastItem in the Map
- * @param {*} key the key to match on
- * @returns {boolean} is the key the same as the LastItem
- */
-export const isKeyLastItem = (lastItem: ?Object, key: any): boolean => {
-  return !!lastItem && isEqual(lastItem.key, key);
-};
-
-/**
- * @private
- *
  * @function serializeArguments
  *
  * @description
  * serialize the arguments into a string
  *
  * @param {Array<*>} args arguments to serialize into string
- * @param {boolean} isMaxArgsFinite is there a limit to the args to use when caching
+ * @param {boolean} hasMaxArgs is there a limit to the args to use when caching
  * @param {number} maxArgs maximum number of arguments to use for caching the key
  * @returns {string} string of serialized arguments
  */
-export const serializeArguments = (args: Array<any>, isMaxArgsFinite: boolean, maxArgs: number) => {
-  const length: number = isMaxArgsFinite ? maxArgs : args.length;
+export const serializeArguments = (args: Array<any>, hasMaxArgs: boolean, maxArgs: number) => {
+  const length: number = hasMaxArgs ? maxArgs : args.length;
 
   let index: number = -1,
       key: string = '|';
@@ -407,16 +467,9 @@ export const serializeArguments = (args: Array<any>, isMaxArgsFinite: boolean, m
  * @param {number} maxAge number in ms to wait before expiring the cache
  */
 export const setExpirationOfCache = (fn: Function, key: any, maxAge: number) => {
-  const {
-    cache,
-    usage
-  } = fn;
-
-  const expirationTime = Math.max(maxAge, 0);
-
   setTimeout(() => {
-    deleteItemFromCache(cache, usage, key);
-  }, expirationTime);
+    deleteItemFromCache(fn.cache, fn.usage, key);
+  }, maxAge);
 };
 
 /**
@@ -431,7 +484,7 @@ export const setExpirationOfCache = (fn: Function, key: any, maxAge: number) => 
  * @param {*} key key in cache to assign value to
  * @param {*} value value to store in cache
  * @param {boolean} isPromise is the value a promise or not
- * @param {boolean} isMaxAgeFinite does the cache have a maxAge or not
+ * @param {boolean} hasMaxAge does the cache have a maxAge or not
  * @param {number} maxAge how long should the cache persist
  * @returns {any} value just stored in cache
  */
@@ -440,7 +493,7 @@ export const setNewCachedValue = (
   key: any,
   value: any,
   isPromise: boolean,
-  isMaxAgeFinite: boolean,
+  hasMaxAge: boolean,
   maxAge: number
 ) => {
   if (isPromise) {
@@ -451,7 +504,7 @@ export const setNewCachedValue = (
     fn.cache.set(key, value);
   }
 
-  if (isMaxAgeFinite) {
+  if (hasMaxAge) {
     setExpirationOfCache(fn, key, maxAge);
   }
 
@@ -475,21 +528,17 @@ export const setNewCachedValue = (
  * @param {number} maxSize the maximum size of the cache
  */
 export const setUsageOrder = (fn: Function, key: any, maxSize: number) => {
-  const {
-    cache,
-    usage
-  } = fn;
-  const index: number = usage.indexOf(key);
+  const index: number = fn.usage.indexOf(key);
 
   if (index !== 0) {
     if (!!~index) {
-      splice(usage, index);
+      splice(fn.usage, index);
     }
 
-    unshift(usage, key);
+    unshift(fn.usage, key);
 
-    if (usage.length > maxSize) {
-      deleteItemFromCache(cache, usage, usage[usage.length - 1]);
+    if (fn.usage.length > maxSize) {
+      deleteItemFromCache(fn.cache, fn.usage, fn.usage[fn.usage.length - 1]);
     }
   }
 };
