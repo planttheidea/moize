@@ -2,7 +2,7 @@
 
 // utils
 import {
-  getIndexOf,
+  getIndexOfItemInMap,
   isKeyLastItem,
   splice
 } from './utils';
@@ -43,7 +43,7 @@ class MapLike {
       this.lastItem = undefined;
     }
 
-    const index: number = getIndexOf(this, key);
+    const index: number = getIndexOfItemInMap(this, key);
 
     if (index !== -1) {
       this.size--;
@@ -89,7 +89,7 @@ class MapLike {
       return this.lastItem.value;
     }
 
-    const index: number = getIndexOf(this, key);
+    const index: number = getIndexOfItemInMap(this, key);
 
     if (index !== -1) {
       this.lastItem = this.list[index];
@@ -116,7 +116,7 @@ class MapLike {
       return true;
     }
 
-    const index = getIndexOf(this, key);
+    const index = getIndexOfItemInMap(this, key);
 
     if (index !== -1) {
       this.lastItem = this.list[index];
@@ -147,7 +147,7 @@ class MapLike {
       return this;
     }
 
-    const index: number = getIndexOf(this, key);
+    const index: number = getIndexOfItemInMap(this, key);
 
     if (index !== -1) {
       this.lastItem = this.list[index];

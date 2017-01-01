@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.78%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.27%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.

@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 1.3.3
+* Ensure all numeric parameters (`maxAge`, `maxArgs`, `maxSize`) are a finite positive integer
+
 #### 1.3.2
 * Replace array-based decycle with Map (performance on circular objects)
 
