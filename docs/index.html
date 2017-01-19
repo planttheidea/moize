@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.4.0</h3>
+    <h3>moize 1.4.1</h3>
 
 
 
@@ -194,12 +194,19 @@ const memoized = moize(fn, {
   maxSize: 5
 });</code></pre><p><strong>serializeFunctions</strong> <em>defaults to false</em></p>
 <p>When multiple complex object parameters are used, they are stringified internally for fast caching, however <code>JSON.stringify</code> excludes functions by default. By setting this option to <code>true</code>, a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional <code>React</code> components, as interactivity functions as part of props will now be included in the unique key structure. Please note that this will decrease performance between 10-25% depending on environment.</p>
-<pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {
-  return JSON.stringify(args[0]);
+<pre class="prettyprint source lang-javascript"><code>const FunctionalComponent = ({onClickFoo}) => {
+  return (
+    &lt;button
+      onClick={onClickFoo}
+      type=&quot;button&quot;
+    >
+      Click me!
+    &lt;/button>
+  )
 };
 
-const memoized = moize(fn, {
-  serializer
+const MemoizedFunctionalComponent = moize(FunctionalComponent, {
+  serializeFunctions: true
 });</code></pre><p><strong>serializer</strong> <em>defaults to serializeArguments in utils.js</em></p>
 <p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {

@@ -153,12 +153,19 @@ const memoized = moize(fn, {
 When multiple complex object parameters are used, they are stringified internally for fast caching, however `JSON.stringify` excludes functions by default. By setting this option to `true`, a [custom replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional `React` components, as interactivity functions as part of props will now be included in the unique key structure. Please note that this will decrease performance between 10-25% depending on environment.
 
 ```javascript
-const serializer = (args) => {
-  return JSON.stringify(args[0]);
+const FunctionalComponent = ({onClickFoo}) => {
+  return (
+    <button
+      onClick={onClickFoo}
+      type="button"
+    >
+      Click me!
+    </button>
+  )
 };
 
-const memoized = moize(fn, {
-  serializer
+const MemoizedFunctionalComponent = moize(FunctionalComponent, {
+  serializeFunctions: true
 });
 ```
 

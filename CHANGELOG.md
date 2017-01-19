@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+#### 1.4.1
+* Correct README error explaining `serializeFunctions` option
+
+#### 1.4.0
+* Add `serializeFunctions` option
+
 #### 1.3.3
 * Ensure all numeric parameters (`maxAge`, `maxArgs`, `maxSize`) are a finite positive integer
 
