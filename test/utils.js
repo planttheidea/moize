@@ -12,7 +12,6 @@ import {
   isEqual,
   isFiniteAndPositive,
   isKeyLastItem,
-  isFiniteInteger,
   isValueObjectOrArray,
   serializeArguments,
   setNewCachedValue,
@@ -235,11 +234,13 @@ test('if isEqual checks strict equality and if NaN', (t) => {
 });
 
 test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
+  t.true(isFiniteAndPositive(123));
+
   t.false(isFiniteAndPositive(Infinity));
   t.false(isFiniteAndPositive(0));
+  t.false(isFiniteAndPositive(-0));
   t.false(isFiniteAndPositive(-123));
   t.false(isFiniteAndPositive(-Infinity));
-  t.true(isFiniteAndPositive(123));
 });
 
 test('if isValueObjectOrArray correctly determines if an item is an object / array or not', (t) => {
@@ -274,34 +275,53 @@ test('if isKeyLastItem checks for the existence of the lastItem and then if the 
   t.false(isKeyLastItem(lastItemNotKey, key));
 });
 
-test('if isFiniteInteger checks to ensure that the value passed is an integer', (t) => {
-  t.true(isFiniteInteger(123));
-  t.true(isFiniteInteger(-123));
-
-  t.false(isFiniteInteger('123'));
-  t.false(isFiniteInteger(123.456));
-  t.false(isFiniteInteger(Infinity));
-  t.false(isFiniteInteger(-Infinity));
-});
-
 test('if serializeArguments produces a stringified version of the arguments with a separator', (t) => {
-  const args = ['foo', 123, true, {
+  const string = 'foo';
+  const number = 123;
+  const boolean = true;
+  const fn = () => {};
+  const object = {
+    foo() {},
     bar: 'baz'
-  }];
+  };
+  const args = [string, number, boolean, fn, object];
 
-  const expectedResult = '|foo|123|true|{"bar":"baz"}|';
+  const expectedResult = `|${string}|${number}|${boolean}|${fn}|{"bar":"baz"}|`;
   const result = serializeArguments(args);
 
   t.is(expectedResult, result);
 });
 
 test('if serializeArguments limits the key creation when maxArgs is passed', (t) => {
-  const args = ['foo', 123, true, {
+  const string = 'foo';
+  const number = 123;
+  const boolean = true;
+  const fn = () => {};
+  const object = {
+    foo() {},
     bar: 'baz'
-  }];
+  };
+  const args = [string, number, boolean, fn, object];
 
-  const expectedResult = '|foo|123|';
-  const result = serializeArguments(args, true, 2);
+  const expectedResult = `|${string}|${number}|`;
+  const result = serializeArguments(args, false, true, 2);
+
+  t.is(expectedResult, result);
+});
+
+test('if serializeArguments converts functions nested in objects to string when serializeFunctions is true', (t) => {
+  const string = 'foo';
+  const number = 123;
+  const boolean = true;
+  const fn = () => {};
+  const object = {
+    foo() {},
+    bar: 'baz'
+  };
+  const args = [string, number, boolean, fn, object];
+
+  const expectedResult = `|${string}|${number}|${boolean}|${fn}|{"foo":"${object.foo.toString()}","bar":"baz"}|`;
+  const result = serializeArguments(args, true);
 
   t.is(expectedResult, result);
 });
