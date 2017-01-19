@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.3.3</h3>
+    <h3>moize 1.4.0</h3>
 
 
 
@@ -90,7 +90,7 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.27%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.28%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
@@ -123,6 +123,7 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
+  serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
 <p>The default cache implementation is highly performant, however if you would like then you can pass in a custom cache implementation. The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods:</p>
@@ -191,6 +192,14 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   maxSize: 5
+});</code></pre><p><strong>serializeFunctions</strong> <em>defaults to false</em></p>
+<p>When multiple complex object parameters are used, they are stringified internally for fast caching, however <code>JSON.stringify</code> excludes functions by default. By setting this option to <code>true</code>, a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional <code>React</code> components, as interactivity functions as part of props will now be included in the unique key structure. Please note that this will decrease performance between 10-25% depending on environment.</p>
+<pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {
+  return JSON.stringify(args[0]);
+};
+
+const memoized = moize(fn, {
+  serializer
 });</code></pre><p><strong>serializer</strong> <em>defaults to serializeArguments in utils.js</em></p>
 <p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {

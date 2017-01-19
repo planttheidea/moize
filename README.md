@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.27%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.28%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
@@ -49,6 +49,7 @@ All parameter types are supported, including circular objects, functions, etc. Y
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
+  serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }
 ```
@@ -144,6 +145,20 @@ const fn = (item) => {
 
 const memoized = moize(fn, {
   maxSize: 5
+});
+```
+
+**serializeFunctions** *defaults to false*
+
+When multiple complex object parameters are used, they are stringified internally for fast caching, however `JSON.stringify` excludes functions by default. By setting this option to `true`, a [custom replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional `React` components, as interactivity functions as part of props will now be included in the unique key structure. Please note that this will decrease performance between 10-25% depending on environment.
+
+```javascript
+const serializer = (args) => {
+  return JSON.stringify(args[0]);
+};
+
+const memoized = moize(fn, {
+  serializer
 });
 ```
 

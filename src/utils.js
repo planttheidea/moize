@@ -134,6 +134,22 @@ export const isValueObjectOrArray = (object: any): boolean => {
 /**
  * @private
  *
+ * @function customReplacer
+ *
+ * @description
+ * custom replacer for the stringify function
+ *
+ * @param {string} key key in json object
+ * @param {*} value value in json object
+ * @returns {*} if function then toString of it, else the value itself
+ */
+export const customReplacer = (key: string, value: any): any => {
+  return typeof value === 'function' ? `${value}` : value;
+};
+
+/**
+ * @private
+ *
  * @function decycle
  *
  * @description
@@ -197,12 +213,19 @@ export const decycle = (object: any): string => {
  *
  * @param {Array<*>} args arguments passed to the method
  * @param {function} serializer method used to serialize keys into a string
+ * @param {boolean} serializeFunctions should functions be converted to string in serialization
  * @param {boolean} hasMaxArgs has the maxArgs option been applied
  * @param {number} maxArgs the maximum number of arguments to use in the serialization
  * @returns {*}
  */
-export const getCacheKey = (args: Array<any>, serializer: Function, hasMaxArgs: boolean, maxArgs: number) => {
-  return args.length === 1 ? args[0] : serializer(args, hasMaxArgs, maxArgs);
+export const getCacheKey = (
+  args: Array<any>,
+  serializer: Function,
+  serializeFunctions: boolean,
+  hasMaxArgs: boolean,
+  maxArgs: number
+) => {
+  return args.length === 1 ? args[0] : serializer(args, serializeFunctions, hasMaxArgs, maxArgs);
 };
 
 /**
@@ -310,21 +333,6 @@ export const isNAN = (value: any): boolean => {
 
 /**
  * @private
- * 
- * @function isFiniteInteger
- * 
- * @description
- * test if the value passed is a finite integer (positive or negative)
- *
- * @param {*} value value to test
- * @returns {boolean} is value finite and an integer
- */
-export const isFiniteInteger = (value: any): boolean => {
-  return value === ~~value;
-};
-
-/**
- * @private
  *
  * @function isEqual
  *
@@ -351,7 +359,7 @@ export const isEqual = (value1: any, value2: any): boolean => {
  * @returns {boolean} is the number finite and positive
  */
 export const isFiniteAndPositive = (number: number): boolean => {
-  return isFiniteInteger(number) && number > 0;
+  return number === ~~number && number > 0;
 };
 
 /**
@@ -403,13 +411,14 @@ export const getIndexOfItemInMap = (map: Object, key: any): number => {
  * stringify with a custom replacer if circular, else use standard JSON.stringify
  *
  * @param {*} value value to stringify
+ * @param {function} [replacer] replacer to used in stringification
  * @returns {string} the stringified version of value
  */
-export const stringify = (value: any) => {
+export const stringify = (value: any, replacer: ?Function) => {
   try {
-    return jsonStringify(value);
+    return jsonStringify(value, replacer);
   } catch (exception) {
-    return jsonStringify(decycle(value));
+    return jsonStringify(decycle(value), replacer);
   }
 };
 
@@ -422,10 +431,11 @@ export const stringify = (value: any) => {
  * get the stringified version of the argument passed
  *
  * @param {*} arg argument to stringify
+ * @param {function} [replacer] replacer to used in stringification
  * @returns {string}
  */
-export const getStringifiedArgument = (arg: any) => {
-  return isComplexObject(arg) ? stringify(arg) : arg;
+export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
+  return isComplexObject(arg) ? stringify(arg, replacer) : arg;
 };
 
 /**
@@ -437,18 +447,25 @@ export const getStringifiedArgument = (arg: any) => {
  * serialize the arguments into a string
  *
  * @param {Array<*>} args arguments to serialize into string
+ * @param {boolean} serializeFunctions should functions be converted to string in serialization
  * @param {boolean} hasMaxArgs is there a limit to the args to use when caching
  * @param {number} maxArgs maximum number of arguments to use for caching the key
  * @returns {string} string of serialized arguments
  */
-export const serializeArguments = (args: Array<any>, hasMaxArgs: boolean, maxArgs: number) => {
+export const serializeArguments = (
+  args: Array<any>,
+  serializeFunctions: boolean,
+  hasMaxArgs: boolean,
+  maxArgs: number
+) => {
   const length: number = hasMaxArgs ? maxArgs : args.length;
+  const replacer: ?Function = serializeFunctions ? customReplacer : undefined;
 
   let index: number = -1,
       key: string = '|';
 
   while (++index < length) {
-    key += `${getStringifiedArgument(args[index])}|`;
+    key += `${getStringifiedArgument(args[index], replacer)}|`;
   }
 
   return key;

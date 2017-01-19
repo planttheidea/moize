@@ -6,9 +6,19 @@
       "add-module-exports"
     ],
     "presets": [
-      ["latest", {
-        "loose": true
-      }],
+      [
+        "env",
+        {
+          "loose": true,
+          "targets": {
+            "browsers": [
+              "last 2 versions",
+              "ie >= 9"
+            ]
+          },
+          "useBuiltIns": true
+        }
+      ],
       "stage-2"
     ]
   },

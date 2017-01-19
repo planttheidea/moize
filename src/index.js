@@ -19,6 +19,7 @@ type Options = {
   maxAge?: number,
   maxArgs?: number,
   maxSize?: number,
+  serializeFunctions?: boolean,
   serializer?: Function
 };
 
@@ -69,6 +70,7 @@ const moize = function(fn: Function, options: Options = {}): any {
     maxAge = INFINITY,
     maxArgs = INFINITY,
     maxSize = INFINITY,
+    serializeFunctions = false,
     serializer = serializeArguments
   } = options;
   const hasMaxAge: boolean = isFiniteAndPositive(maxAge);
@@ -89,7 +91,7 @@ const moize = function(fn: Function, options: Options = {}): any {
    * @returns {any} value resulting from executing of fn passed to memoize
    */
   const memoizedFunction = function(...args: Array<any>): any {
-    key = getCacheKey(args, serializer, hasMaxArgs, maxArgs);
+    key = getCacheKey(args, serializer, serializeFunctions, hasMaxArgs, maxArgs);
 
     if (hasMaxSize) {
       setUsageOrder(memoizedFunction, key, maxSize);
