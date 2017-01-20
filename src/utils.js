@@ -6,8 +6,6 @@ const keys = Object.keys;
 const toString = Object.prototype.toString;
 const jsonStringify = JSON.stringify;
 
-export
-
 const ARRAY_OBJECT_CLASS = '[object Array]';
 const OBJECT_TYPEOF = 'object';
 
