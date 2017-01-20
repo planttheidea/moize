@@ -1,10 +1,12 @@
 import test from 'ava';
 
 import {
+  createGetCacheKey,
+  createGetFunctionWithCacheAdded,
+  createSetNewCachedValue,
+  createSetUsageOrder,
   decycle,
   deleteItemFromCache,
-  getCacheKey,
-  getFunctionWithCacheAdded,
   getIndexOfItemInMap,
   getStringifiedArgument,
   isArray,
@@ -14,13 +16,11 @@ import {
   isKeyLastItem,
   isValueObjectOrArray,
   serializeArguments,
-  setNewCachedValue,
   splice,
   unshift,
   setExpirationOfCache,
-  setUsageOrder,
   stringify
-} from 'src/utils';
+} from '../src/utils';
 
 const sleep = (ms) => {
   return new Promise((resolve) => {
@@ -79,7 +79,9 @@ test('if deleteItemFromCache will only delete something when the key is actually
   t.deepEqual(usage, [key]);
 });
 
-test('if getCacheKey returns the first item in the array if the only item', (t) => {
+test('if createGetCacheKey returns a function that returns the first item in the array if the only item', (t) => {
+  const getCacheKey = createGetCacheKey();
+
   const item = {
     foo: 'bar'
   };
@@ -91,6 +93,8 @@ test('if getCacheKey returns the first item in the array if the only item', (t) 
 });
 
 test('if getCacheKey returns a stringified value of the args passed if more than one item', (t) => {
+  const getCacheKey = createGetCacheKey(serializeArguments);
+
   const item = {
     foo: 'bar'
   };
@@ -98,7 +102,7 @@ test('if getCacheKey returns a stringified value of the args passed if more than
   const args = [item, item2];
 
   const expectedResult = '|{"foo":"bar"}|baz|';
-  const result = getCacheKey(args, serializeArguments);
+  const result = getCacheKey(args);
 
   t.is(result, expectedResult);
 });
@@ -109,7 +113,9 @@ test('if getFunctionWithCacheAdded will add the cache passed to the function and
     foo: 'bar'
   };
 
-  const result = getFunctionWithCacheAdded(fn, cache);
+  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+
+  const result = getFunctionWithCacheAdded(fn);
 
   t.is(result, fn);
   t.is(result.cache, cache);
@@ -124,7 +130,9 @@ test('if getFunctionWithCacheAdded clear method will clear cache', (t) => {
   const key = 'foo';
   const cache = new Map();
 
-  const result = getFunctionWithCacheAdded(fn, cache);
+  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+
+  const result = getFunctionWithCacheAdded(fn);
 
   result.cache.set(key, 'bar');
   result.usage.push(key);
@@ -143,7 +151,9 @@ test('if getFunctionWithCacheAdded delete method will remove the key passed from
   const key = 'foo';
   const cache = new Map();
 
-  const result = getFunctionWithCacheAdded(fn, cache);
+  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+
+  const result = getFunctionWithCacheAdded(fn);
 
   result.cache.set(key, 'bar');
   result.usage.push(key);
@@ -162,7 +172,9 @@ test('if getFunctionWithCacheAdded keys method will return the list of keys in c
   const key = 'foo';
   const cache = new Map();
 
-  const cachedFn = getFunctionWithCacheAdded(fn, cache);
+  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+
+  const cachedFn = getFunctionWithCacheAdded(fn);
 
   cachedFn.cache.set(key, 'bar');
   cachedFn.usage.push(key);
@@ -327,6 +339,8 @@ test('if serializeArguments converts functions nested in objects to string when 
 });
 
 test('if setNewCachedValue will run the set method if not a promise', async (t) => {
+  const setNewCachedValue = createSetNewCachedValue(false);
+
   const keyToSet = 'foo';
   const valueToSet = 'bar';
 
@@ -339,12 +353,14 @@ test('if setNewCachedValue will run the set method if not a promise', async (t) 
     }
   };
 
-  const result = await setNewCachedValue(fn, keyToSet, valueToSet, false);
+  const result = await setNewCachedValue(fn, keyToSet, valueToSet);
 
   t.is(result, valueToSet);
 });
 
 test('if setNewCachedValue will run the set method upon resolution if a promise', async (t) => {
+  const setNewCachedValue = createSetNewCachedValue(true);
+
   const resolutionValue = 'bar';
 
   const keyToSet = 'foo';
@@ -359,7 +375,7 @@ test('if setNewCachedValue will run the set method upon resolution if a promise'
     }
   };
 
-  const result = await setNewCachedValue(fn, keyToSet, valueToSet, true);
+  const result = await setNewCachedValue(fn, keyToSet, valueToSet);
 
   t.is(result, resolutionValue);
 });
@@ -369,12 +385,14 @@ test('if setNewCachedValue will set the cache to expire if isMaxAgeFinite is tru
   const valueToSet = 'bar';
   const maxAge = 100;
 
+  const setNewCachedValue = createSetNewCachedValue(false, true, maxAge);
+
   let fn = {
     cache: new Map(),
     usage: [keyToSet]
   };
 
-  await setNewCachedValue(fn, keyToSet, valueToSet, false, true, maxAge);
+  await setNewCachedValue(fn, keyToSet, valueToSet);
 
   t.is(fn.cache.get(keyToSet), valueToSet);
 
@@ -449,34 +467,40 @@ test('if setExpirationOfCache will expire the cache immediately if less than 0',
 });
 
 test('if setUsageOrder will add the item to cache in the front', (t) => {
+  const setUsageOrder = createSetUsageOrder(Infinity);
+
   const fn = {
     cache: new Map().set('foo', 'bar'),
     usage: ['foo']
   };
 
-  setUsageOrder(fn, 'bar', Infinity);
+  setUsageOrder(fn, 'bar');
 
   t.deepEqual(fn.usage, ['bar', 'foo']);
 });
 
 test('if setUsageOrder will move the existing item to the front', (t) => {
+  const setUsageOrder = createSetUsageOrder(Infinity);
+
   const fn = {
     cache: new Map().set('foo', 'bar').set('bar', 'baz'),
     usage: ['foo', 'bar']
   };
 
-  setUsageOrder(fn, 'bar', Infinity);
+  setUsageOrder(fn, 'bar');
 
   t.deepEqual(fn.usage, ['bar', 'foo']);
 });
 
 test('if setUsageOrder will remove the item from cache if maxSize is reached', (t) => {
+  const setUsageOrder = createSetUsageOrder(1);
+
   const fn = {
     cache: new Map().set('foo', 'bar').set('bar', 'baz'),
     usage: ['foo', 'bar']
   };
 
-  setUsageOrder(fn, 'bar', 1);
+  setUsageOrder(fn, 'bar');
 
   t.deepEqual(fn.cache, new Map().set('bar', 'baz'));
   t.deepEqual(fn.usage, ['bar']);
