@@ -92,7 +92,7 @@
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/coverage-97.41%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles one or multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is less than 2kb when minified and gzipped.</p>
+<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.2kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
 <li><a href="#installation">Installation</a></li>
@@ -257,14 +257,14 @@ const keys = memoized.keys(); // ['item']</code></pre><h3 id="benchmarks">Benchm
 </thead>
 <tbody>
 <tr>
-<td>6,119,979</td>
-<td>6,939,684</td>
-<td>245,116</td>
-<td>5,129,629</td>
-<td>6,471,449</td>
-<td>1,923,117</td>
-<td>943,197</td>
-<td>9,807,199</td>
+<td>10,086,332</td>
+<td>10,667,608</td>
+<td>1,144,642</td>
+<td>12,710,414</td>
+<td>11,184,849</td>
+<td>3,789,974</td>
+<td>2,264,786</td>
+<td>21,123,599</td>
 </tr>
 </tbody>
 </table>
@@ -281,11 +281,11 @@ const keys = memoized.keys(); // ['item']</code></pre><h3 id="benchmarks">Benchm
 </thead>
 <tbody>
 <tr>
-<td>3,741,468</td>
-<td>269,808</td>
-<td>894,831</td>
-<td>622,138</td>
-<td>3,142,202</td>
+<td>8,538,129</td>
+<td>949,110</td>
+<td>2,117,096</td>
+<td>1,476,775</td>
+<td>5,006,614</td>
 </tr>
 </tbody>
 </table>
@@ -302,11 +302,11 @@ const keys = memoized.keys(); // ['item']</code></pre><h3 id="benchmarks">Benchm
 </thead>
 <tbody>
 <tr>
-<td>3,419</td>
-<td>218,079</td>
-<td>438,387</td>
-<td>31,975</td>
-<td>582,090</td>
+<td>12,804</td>
+<td>696,059</td>
+<td>1,044,923</td>
+<td>60,687</td>
+<td>1,303,219</td>
 </tr>
 </tbody>
 </table>
