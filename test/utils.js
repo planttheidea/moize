@@ -8,14 +8,15 @@ import {
   decycle,
   deleteItemFromCache,
   getIndexOfItemInMap,
+  getSerializerFunction,
   getStringifiedArgument,
   isArray,
   isComplexObject,
   isEqual,
+  isFunction,
   isFiniteAndPositive,
   isKeyLastItem,
   isValueObjectOrArray,
-  serializeArguments,
   splice,
   unshift,
   setExpirationOfCache,
@@ -93,7 +94,7 @@ test('if createGetCacheKey returns a function that returns the first item in the
 });
 
 test('if getCacheKey returns a stringified value of the args passed if more than one item', (t) => {
-  const getCacheKey = createGetCacheKey(serializeArguments);
+  const getCacheKey = createGetCacheKey(undefined);
 
   const item = {
     foo: 'bar'
@@ -245,6 +246,29 @@ test('if isEqual checks strict equality and if NaN', (t) => {
   t.false(isEqual(nan, notNan));
 });
 
+test('if isFunction tests if the item is a function or not', (t) => {
+  const bool = true;
+  const string = 'foo';
+  const number = 123;
+  const regexp = /foo/;
+  const undef = undefined;
+  const nil = null;
+  const object = {};
+  const array = [];
+  const fn = () => {};
+
+  t.false(isFunction(bool));
+  t.false(isFunction(string));
+  t.false(isFunction(number));
+  t.false(isFunction(regexp));
+  t.false(isFunction(undef));
+  t.false(isFunction(nil));
+  t.false(isFunction(object));
+  t.false(isFunction(array));
+
+  t.true(isFunction(fn));
+});
+
 test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
   t.true(isFiniteAndPositive(123));
 
@@ -287,7 +311,9 @@ test('if isKeyLastItem checks for the existence of the lastItem and then if the 
   t.false(isKeyLastItem(lastItemNotKey, key));
 });
 
-test('if serializeArguments produces a stringified version of the arguments with a separator', (t) => {
+test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
+  const serializeArguments = getSerializerFunction();
+
   const string = 'foo';
   const number = 123;
   const boolean = true;
@@ -305,6 +331,8 @@ test('if serializeArguments produces a stringified version of the arguments with
 });
 
 test('if serializeArguments limits the key creation when maxArgs is passed', (t) => {
+  const serializeArguments = getSerializerFunction(null, false, true, 2);
+
   const string = 'foo';
   const number = 123;
   const boolean = true;
@@ -316,12 +344,14 @@ test('if serializeArguments limits the key creation when maxArgs is passed', (t)
   const args = [string, number, boolean, fn, object];
 
   const expectedResult = `|${string}|${number}|`;
-  const result = serializeArguments(args, false, true, 2);
+  const result = serializeArguments(args);
 
   t.is(expectedResult, result);
 });
 
 test('if serializeArguments converts functions nested in objects to string when serializeFunctions is true', (t) => {
+  const serializeArguments = getSerializerFunction(null, true);
+
   const string = 'foo';
   const number = 123;
   const boolean = true;
@@ -333,7 +363,7 @@ test('if serializeArguments converts functions nested in objects to string when 
   const args = [string, number, boolean, fn, object];
 
   const expectedResult = `|${string}|${number}|${boolean}|${fn}|{"foo":"${object.foo.toString()}","bar":"baz"}|`;
-  const result = serializeArguments(args, true);
+  const result = serializeArguments(args);
 
   t.is(expectedResult, result);
 });

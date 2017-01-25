@@ -9,8 +9,7 @@ import {
   createGetFunctionWithCacheAdded,
   createSetNewCachedValue,
   createSetUsageOrder,
-  isFiniteAndPositive,
-  serializeArguments
+  isFiniteAndPositive
 } from './utils';
 
 type Options = {
@@ -60,7 +59,7 @@ const INFINITY = Number.POSITIVE_INFINITY;
  * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [options.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
  * @param {number} [options.maxSize=Infinity] the maximum size of the cache to retain
- * @param {function} [options.serializer=serializeArguments] method to serialize arguments with for cache storage
+ * @param {function} [options.serializer] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
 const moize = function(fn: Function, options: Options = {}): any {
@@ -71,7 +70,7 @@ const moize = function(fn: Function, options: Options = {}): any {
     maxArgs = INFINITY,
     maxSize = INFINITY,
     serializeFunctions = false,
-    serializer = serializeArguments
+    serializer
   } = options;
   const hasMaxAge: boolean = isFiniteAndPositive(maxAge);
   const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
