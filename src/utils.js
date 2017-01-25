@@ -2,14 +2,15 @@
 
 import Map from './Map';
 
-const keys = Object.keys;
-const toString = Object.prototype.toString;
-const jsonStringify = JSON.stringify;
+const keys: Function = Object.keys;
+const toString: Function = Object.prototype.toString;
+const jsonStringify: Function = JSON.stringify;
 
-const ARRAY_OBJECT_CLASS = '[object Array]';
-const OBJECT_TYPEOF = 'object';
+const ARRAY_OBJECT_CLASS: string = '[object Array]';
+const FUNCTION_TYPEOF: string = 'function';
+const OBJECT_TYPEOF: string = 'object';
 
-const GOTCHA_OBJECT_CLASSES = [
+const GOTCHA_OBJECT_CLASSES: Array<Object> = [
   Boolean,
   Date,
   Number,
@@ -95,10 +96,25 @@ export const isArray = Array.isArray || function(object: any): boolean {
  * is the object passed a complex object
  *
  * @param {*} object object to test if it is complex
- * @returns {boolean}
+ * @returns {boolean} is it a complex object
  */
 export const isComplexObject = (object: any): boolean => {
   return typeof object === OBJECT_TYPEOF && object !== null;
+};
+
+/**
+ * @private
+ *
+ * @function isFunction
+ *
+ * @description
+ * is the object passed a function or not
+ *
+ * @param {*} object object to test
+ * @returns {boolean} is it a function
+ */
+export const isFunction = (object: any): boolean => {
+  return typeof object === FUNCTION_TYPEOF;
 };
 
 /**
@@ -131,7 +147,7 @@ export const isValueObjectOrArray = (object: any): boolean => {
  * @returns {*} if function then toString of it, else the value itself
  */
 export const customReplacer = (key: string, value: any): any => {
-  return typeof value === 'function' ? `${value}` : value;
+  return isFunction(value) ? `${value}` : value;
 };
 
 /**
@@ -188,31 +204,6 @@ export const decycle = (object: any): string => {
   };
 
   return coalesceCircularReferences(object, '$');
-};
-
-/**
- * @private
- *
- * @function createGetCacheKey
- *
- * @description
- * get the key used for storage in the method's cache
- *
- * @param {function} serializer method used to serialize keys into a string
- * @param {boolean} serializeFunctions should functions be converted to string in serialization
- * @param {boolean} hasMaxArgs has the maxArgs option been applied
- * @param {number} maxArgs the maximum number of arguments to use in the serialization
- * @returns {function(Array<*>): *}
- */
-export const createGetCacheKey = (
-  serializer: Function,
-  serializeFunctions: boolean,
-  hasMaxArgs: boolean,
-  maxArgs: number
-): Function => {
-  return (args: Array<any>): any => {
-    return args.length === 1 ? args[0] : serializer(args, serializeFunctions, hasMaxArgs, maxArgs);
-  };
 };
 
 /**
@@ -429,34 +420,86 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
 /**
  * @private
  *
- * @function serializeArguments
+ * @function createArgumentSerializer
  *
  * @description
- * serialize the arguments into a string
+ * create the internal argument serializer based on the options passed
  *
- * @param {Array<*>} args arguments to serialize into string
- * @param {boolean} serializeFunctions should functions be converted to string in serialization
- * @param {boolean} hasMaxArgs is there a limit to the args to use when caching
- * @param {number} maxArgs maximum number of arguments to use for caching the key
- * @returns {string} string of serialized arguments
+ * @param {boolean} serializeFunctions should functions be included in the serialization
+ * @param {boolean} hasMaxArgs is there a cap on the number of arguments used in serialization
+ * @param {number} maxArgs the cap on the number of arguments used in serialization
+ * @returns {function(...Array<*>): string} argument serialization method
  */
-export const serializeArguments = (
-  args: Array<any>,
+export const createArgumentSerializer = (
   serializeFunctions: boolean,
   hasMaxArgs: boolean,
   maxArgs: number
-) => {
-  const length: number = hasMaxArgs ? maxArgs : args.length;
+): Function => {
   const replacer: ?Function = serializeFunctions ? customReplacer : undefined;
 
-  let index: number = -1,
-      key: string = '|';
+  return (args: Array<any>): string => {
+    const length: number = hasMaxArgs ? maxArgs : args.length;
 
-  while (++index < length) {
-    key += `${getStringifiedArgument(args[index], replacer)}|`;
-  }
+    let index: number = -1,
+        key: string = '|';
 
-  return key;
+    while (++index < length) {
+      key += `${getStringifiedArgument(args[index], replacer)}|`;
+    }
+
+    return key;
+  };
+};
+
+/**
+ * @private
+ *
+ * @function getSerializerFunction
+ *
+ * @description
+ * based on the options passed, either use the serializer passed or generate the internal one
+ *
+ * @param {function} [serializerFromOptions] serializer function passed into options
+ * @param {boolean} serializeFunctions should functions be included in the serialization
+ * @param {boolean} hasMaxArgs is there a cap on the number of arguments used in serialization
+ * @param {number} maxArgs the cap on the number of arguments used in serialization
+ * @returns {function} the function to use in serializing the arguments
+ */
+export const getSerializerFunction = (
+  serializerFromOptions: ?Function,
+  serializeFunctions: boolean,
+  hasMaxArgs: boolean,
+  maxArgs: number
+): Function => {
+  // $FlowIgnore
+  return isFunction(serializerFromOptions) ? serializerFromOptions : createArgumentSerializer(serializeFunctions, hasMaxArgs, maxArgs);
+};
+
+/**
+ * @private
+ *
+ * @function createGetCacheKey
+ *
+ * @description
+ * get the key used for storage in the method's cache
+ *
+ * @param {function} serializerFromOptions method used to serialize keys into a string
+ * @param {boolean} serializeFunctions should functions be converted to string in serialization
+ * @param {boolean} hasMaxArgs has the maxArgs option been applied
+ * @param {number} maxArgs the maximum number of arguments to use in the serialization
+ * @returns {function(Array<*>): *}
+ */
+export const createGetCacheKey = (
+  serializerFromOptions: ?Function,
+  serializeFunctions: boolean,
+  hasMaxArgs: boolean,
+  maxArgs: number
+): Function => {
+  const serializeArguments = getSerializerFunction(serializerFromOptions, serializeFunctions, hasMaxArgs, maxArgs);
+
+  return (args: Array<any>): any => {
+    return args.length === 1 ? args[0] : serializeArguments(args);
+  };
 };
 
 /**

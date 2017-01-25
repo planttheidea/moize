@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+#### 1.4.3
+* Move internal serializer generation to utils, for further partial application leveraging
+
+#### 1.4.2
+* Leverage partial functions in a number of places (less arguments passed around, improves performance by ~6%)
+
 #### 1.4.1
 * Correct README error explaining `serializeFunctions` option
 

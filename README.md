@@ -1,10 +1,10 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-97.28%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-97.41%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` is a blazing fast implementation of memoization in JavaScript that supports all types of arguments, while offering flexibility in its implementation. It has no dependencies, and is less than 2kb when minified and gzipped.
+`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.2kb when minified and gzipped.
 
 ### Table of contents
 * [Installation](#installation)
@@ -79,7 +79,7 @@ const cache = {
   },
   set(key, value) {
     this[key] = value;
-    
+
     return this;
   }
 };

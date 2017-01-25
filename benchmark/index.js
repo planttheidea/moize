@@ -61,7 +61,7 @@ const runSingleParameterSuite = () => {
   const mFastMemoize = fastMemoize(fibonacci);
   const mAddyOsmani = addyOsmani(fibonacci);
   const mMemoizerific = memoizerific(Infinity)(fibonacci);
-  const mFutz = moize(fibonacci);
+  const mMoize = moize(fibonacci);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -87,7 +87,7 @@ const runSingleParameterSuite = () => {
         mMemoizerific(fibonacciNumber);
       })
       .add('moize', () => {
-        mFutz(fibonacciNumber);
+        mMoize(fibonacciNumber);
       })
       .on('start', () => {
         logger.info('Starting cycles functions with a single parameter...');
@@ -112,11 +112,13 @@ const runMultiplePrimitiveSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
   const fibonacciNumber = 15;
 
-  const mMemoizee = memoizee(fibonacciMultiplePrimitive);
+  const mMemoizee = memoizee(fibonacciMultiplePrimitive, {
+    length: false
+  });
   const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
   const mAddyOsmani = addyOsmani(fibonacciMultiplePrimitive);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
-  const mFutz = moize(fibonacciMultiplePrimitive);
+  const mMoize = moize(fibonacciMultiplePrimitive);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -133,7 +135,7 @@ const runMultiplePrimitiveSuite = () => {
         mMemoizerific(fibonacciNumber, false);
       })
       .add('moize', () => {
-        mFutz(fibonacciNumber, false);
+        mMoize(fibonacciNumber, false);
       })
       .on('start', () => {
         logger.info('Starting cycles functions with multiple parameters that contain only primitives...');
@@ -158,11 +160,13 @@ const runMultipleObjectSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
   const fibonacciNumber = 15;
 
-  const mMemoizee = memoizee(fibonacciMultipleObject);
+  const mMemoizee = memoizee(fibonacciMultipleObject, {
+    length: false
+  });
   const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
-  const mFutz = moize(fibonacciMultipleObject);
+  const mMoize = moize(fibonacciMultipleObject);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -187,7 +191,7 @@ const runMultipleObjectSuite = () => {
         });
       })
       .add('moize', () => {
-        mFutz(fibonacciNumber, {
+        mMoize(fibonacciNumber, {
           isComplete: false
         });
       })
