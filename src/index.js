@@ -82,8 +82,8 @@ const moize = function(fn: Function, options: Options = {}): any {
   const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
   const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
 
+  const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
   const getCacheKey: Function = createGetCacheKey(serializer, serializeFunctions, hasMaxArgs, maxArgs);
-  const getFunctionWithAdditionalProperties: Function = createAddPropertiesToFunction(cache, fn);
   const setNewCachedValue: Function = createSetNewCachedValue(isPromise, hasMaxAge, maxAge);
   const setUsageOrder: Function = createSetUsageOrder(maxSize);
 
@@ -110,7 +110,7 @@ const moize = function(fn: Function, options: Options = {}): any {
     return cache.has(key) ? cache.get(key) : setNewCachedValue(memoizedFunction, key, fn.apply(this, args));
   };
 
-  return getFunctionWithAdditionalProperties(memoizedFunction);
+  return addPropertiesToFunction(memoizedFunction);
 };
 
 export default moize;
