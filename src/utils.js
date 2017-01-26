@@ -8,6 +8,7 @@ const jsonStringify: Function = JSON.stringify;
 
 const ARRAY_OBJECT_CLASS: string = '[object Array]';
 const FUNCTION_TYPEOF: string = 'function';
+const FUNCTION_NAME_REGEXP = /^\s*function\s+([^\(\s]*)\s*/;
 const OBJECT_TYPEOF: string = 'object';
 
 const GOTCHA_OBJECT_CLASSES: Array<Object> = [
@@ -70,6 +71,39 @@ export const unshift = (array: Array<any>, item: number): Array<any> => {
   array[0] = item;
 
   return array;
+};
+
+/**
+ * @private
+ *
+ * @function getFunctionNameViaRegexp
+ *
+ * @description
+ * use regexp match on stringified function to get the function name
+ *
+ * @param {function} fn function to get the name of
+ * @returns {string} function name
+ */
+export const getFunctionNameViaRegexp = (fn: Function): string => {
+  const match = fn.toString().match(FUNCTION_NAME_REGEXP);
+
+  return match ? match[1] : '';
+};
+
+/**
+ * @private
+ *
+ * @function getFunctionName
+ *
+ * @description
+ * get the function name, either from modern property or regexp match,
+ * falling back to generic string
+ *
+ * @param {function} fn function to get the name of
+ * @returns {string} function name
+ */
+export const getFunctionName = (fn: Function): string => {
+  return fn.name || getFunctionNameViaRegexp(fn) || FUNCTION_TYPEOF;
 };
 
 /**
@@ -231,17 +265,22 @@ export const deleteItemFromCache = (cache: Map<any, any>|Object, usage: Array<an
 /**
  * @private
  *
- * @function getFunctionWithCacheAdded
+ * @function createAddPropertiesToFunction
  *
  * @description
  * add the caching mechanism to the function passed and return the function
  *
  * @param {Map|Object} cache caching mechanism that has get / set / has methods
+ * @param {string} fn function to get the name of
  * @returns {function(function): function} method that has cache mechanism added to it
  */
-export const createGetFunctionWithCacheAdded = (cache: any): Function => {
+export const createAddPropertiesToFunction = (cache: any, fn: Function): Function => {
+  const functionName = getFunctionName(fn);
+  const displayName = `Memoized(${functionName})`;
+
   return (fn: Function): Function => {
     fn.cache = cache;
+    fn.displayName = displayName;
     fn.usage = [];
 
     /**

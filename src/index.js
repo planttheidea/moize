@@ -5,11 +5,12 @@ import Map from './Map';
 
 // utils
 import {
+  createAddPropertiesToFunction,
   createGetCacheKey,
-  createGetFunctionWithCacheAdded,
   createSetNewCachedValue,
   createSetUsageOrder,
-  isFiniteAndPositive
+  isFiniteAndPositive,
+  isFunction
 } from './utils';
 
 type Options = {
@@ -27,6 +28,7 @@ type Options = {
  */
 
 const INFINITY = Number.POSITIVE_INFINITY;
+const NOT_A_FUNCTION_ERROR = 'You must pass a function as the first parameter to moize.';
 
 /**
  * @function moize
@@ -63,6 +65,10 @@ const INFINITY = Number.POSITIVE_INFINITY;
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
 const moize = function(fn: Function, options: Options = {}): any {
+  if (!isFunction(fn)) {
+    throw new TypeError(NOT_A_FUNCTION_ERROR);
+  }
+
   const {
     cache = new Map(),
     isPromise = false,
@@ -76,8 +82,8 @@ const moize = function(fn: Function, options: Options = {}): any {
   const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
   const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
 
+  const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
   const getCacheKey: Function = createGetCacheKey(serializer, serializeFunctions, hasMaxArgs, maxArgs);
-  const getFunctionWithCacheAdded: Function = createGetFunctionWithCacheAdded(cache);
   const setNewCachedValue: Function = createSetNewCachedValue(isPromise, hasMaxAge, maxAge);
   const setUsageOrder: Function = createSetUsageOrder(maxSize);
 
@@ -104,7 +110,7 @@ const moize = function(fn: Function, options: Options = {}): any {
     return cache.has(key) ? cache.get(key) : setNewCachedValue(memoizedFunction, key, fn.apply(this, args));
   };
 
-  return getFunctionWithCacheAdded(memoizedFunction, cache);
+  return addPropertiesToFunction(memoizedFunction);
 };
 
 export default moize;

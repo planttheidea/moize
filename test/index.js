@@ -9,6 +9,12 @@ test('if moize returns a function', (t) => {
   t.is(typeof result, 'function');
 });
 
+test('if moize throws a TypeError when something other than a function is passed.', (t) => {
+  t.throws(() => {
+    moize('foo');
+  }, TypeError);
+});
+
 test('if moize will memoize the result of the function based on the same arguments', (t) => {
   const fn = sinon.spy((foo, bar) => {
     return `${foo} ${bar}`;
