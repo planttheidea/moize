@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+#### 1.4.4
+* Add `displayName` property to memoized function for better display of memoized `react` components in DevTools
+* Throw a `TypeError` when the parameter passed to moize is not a function
+
 #### 1.4.3
 * Move internal serializer generation to utils, for further partial application leveraging
 
