@@ -23,6 +23,9 @@ const loaders = defaultConfig.module.loaders.map((loaderObject) => {
     ]),
     query: {
       cacheDirectory: true,
+      plugins: [
+        'transform-decorators-legacy'
+      ],
       presets: [
         'react'
       ]

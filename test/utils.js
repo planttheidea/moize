@@ -2,12 +2,14 @@ import test from 'ava';
 
 import {
   createGetCacheKey,
-  createGetFunctionWithCacheAdded,
+  createAddPropertiesToFunction,
   createSetNewCachedValue,
   createSetUsageOrder,
   decycle,
   deleteItemFromCache,
   getIndexOfItemInMap,
+  getFunctionName,
+  getFunctionNameViaRegexp,
   getSerializerFunction,
   getStringifiedArgument,
   isArray,
@@ -108,15 +110,44 @@ test('if getCacheKey returns a stringified value of the args passed if more than
   t.is(result, expectedResult);
 });
 
-test('if getFunctionWithCacheAdded will add the cache passed to the function and create the usage array', (t) => {
+test('if getFunctionName returns the name if it exists, else returns function', (t) => {
+  function foo() {};
+
+  const namedResult = getFunctionName(foo);
+
+  t.is(namedResult, 'foo');
+
+  const arrow = () => {};
+  const arrowResult = getFunctionName(arrow);
+
+  t.is(arrowResult, 'arrow');
+
+  const lamdaResult = getFunctionName(() => {});
+
+  t.is(lamdaResult, 'function');
+});
+
+test('if getFunctionNameViaRegexp will match the function name if it exists', (t) => {
+  function foo() {}
+
+  const namedResult = getFunctionNameViaRegexp(foo);
+
+  t.is(namedResult, 'foo');
+
+  const anonymousResult = getFunctionNameViaRegexp(function() {});
+
+  t.is(anonymousResult, '');
+});
+
+test('if getFunctionWithAdditionalProperties will add the cache passed to the function and create the usage array', (t) => {
   let fn = () => {};
   let cache = {
     foo: 'bar'
   };
 
-  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
-  const result = getFunctionWithCacheAdded(fn);
+  const result = getFunctionWithAdditionalProperties(fn);
 
   t.is(result, fn);
   t.is(result.cache, cache);
@@ -126,14 +157,14 @@ test('if getFunctionWithCacheAdded will add the cache passed to the function and
   t.is(typeof result.keys, 'function');
 });
 
-test('if getFunctionWithCacheAdded clear method will clear cache', (t) => {
+test('if getFunctionWithAdditionalProperties clear method will clear cache', (t) => {
   const fn = () => {};
   const key = 'foo';
   const cache = new Map();
 
-  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
-  const result = getFunctionWithCacheAdded(fn);
+  const result = getFunctionWithAdditionalProperties(fn);
 
   result.cache.set(key, 'bar');
   result.usage.push(key);
@@ -147,14 +178,28 @@ test('if getFunctionWithCacheAdded clear method will clear cache', (t) => {
   t.deepEqual(result.usage, []);
 });
 
-test('if getFunctionWithCacheAdded delete method will remove the key passed from cache', (t) => {
+test('if getFunctionWithAdditionalProperties will have a displayName reflecting the original', (t) => {
+  const originalFn = () => {};
+  const key = 'foo';
+  const cache = new Map();
+
+  const getOriginalFn = createAddPropertiesToFunction(cache, originalFn);
+
+  const fn = () => {};
+
+  const originalResult = getOriginalFn(fn);
+
+  t.is(originalResult.displayName, `Memoized(${originalFn.name})`);
+});
+
+test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
   const key = 'foo';
   const cache = new Map();
 
-  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
-  const result = getFunctionWithCacheAdded(fn);
+  const result = getFunctionWithAdditionalProperties(fn);
 
   result.cache.set(key, 'bar');
   result.usage.push(key);
@@ -168,14 +213,14 @@ test('if getFunctionWithCacheAdded delete method will remove the key passed from
   t.deepEqual(result.usage, []);
 });
 
-test('if getFunctionWithCacheAdded keys method will return the list of keys in cache', (t) => {
+test('if getFunctionWithAdditionalProperties keys method will return the list of keys in cache', (t) => {
   const fn = () => {};
   const key = 'foo';
   const cache = new Map();
 
-  const getFunctionWithCacheAdded = createGetFunctionWithCacheAdded(cache);
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
-  const cachedFn = getFunctionWithCacheAdded(fn);
+  const cachedFn = getFunctionWithAdditionalProperties(fn);
 
   cachedFn.cache.set(key, 'bar');
   cachedFn.usage.push(key);
