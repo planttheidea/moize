@@ -52,7 +52,7 @@ const fibonacciMultipleObject = (number, check) => {
 
 const runSingleParameterSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
-  const fibonacciNumber = 15;
+  const fibonacciNumber = 35;
 
   const mUnderscore = underscore(fibonacci);
   const mLodash = lodash(fibonacci);
@@ -110,7 +110,7 @@ const runSingleParameterSuite = () => {
 
 const runMultiplePrimitiveSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
-  const fibonacciNumber = 15;
+  const fibonacciNumber = 35;
 
   const mMemoizee = memoizee(fibonacciMultiplePrimitive, {
     length: false
@@ -158,7 +158,7 @@ const runMultiplePrimitiveSuite = () => {
 
 const runMultipleObjectSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
-  const fibonacciNumber = 15;
+  const fibonacciNumber = 35;
 
   const mMemoizee = memoizee(fibonacciMultipleObject, {
     length: false

@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.45%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.02%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.5kb when minified and gzipped.
@@ -204,13 +204,30 @@ memoized.clear();
 This will delete the provided key from cache.
 
 ```javascript
+// if single parameter, delete with the object itself
 const memoized = moize((item) => {
   return item;
 });
 
-memoized('foo');
+const foo = {
+  bar: 'baz'
+};
 
-memoized.delete('item');
+memoized(foo);
+
+memoized.delete(foo);
+
+// if multi parameter, delete with the serialized key
+const memoized = moize((item1, item2) => {
+  return item1 + item2;
+});
+
+const foo = 1;
+const bar = 2;
+
+memoized(foo, bar);
+
+memoized.delete('|1|2|');
 ```
 
 **keys()**
@@ -222,9 +239,41 @@ const memoized = moize((item) => {
   return item;
 });
 
-memoized('foo');
+const foo = 'foo';
 
-const keys = memoized.keys(); // ['item']
+memoized(foo);
+
+const bar = {
+  baz: 'baz'
+};
+
+memoized(bar);
+
+const keys = memoized.keys(); // ['foo', {baz: 'baz'}]
+```
+
+**values()**
+
+This will return a list of the current keys in cache.
+
+```javascript
+const memoized = moize((item) => {
+  return {
+    item
+  };
+});
+
+const foo = 'foo';
+
+memoized(foo);
+
+const bar = {
+  baz: 'baz'
+};
+
+memoized(bar);
+
+const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 ```
 
 ### Benchmarks

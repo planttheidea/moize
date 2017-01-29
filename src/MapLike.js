@@ -19,6 +19,20 @@ class MapLike {
   size: number = 0;
 
   /**
+   * @function clear
+   * @memberOf MapLike
+   * @instance
+   *
+   * @description
+   * remove all keys from the map
+   */
+  clear() {
+    this.lastItem = undefined;
+    this.list = [];
+    this.size = 0;
+  }
+
+  /**
    * @function delete
    * @memberOf MapLike
    * @instance

@@ -1,7 +1,7 @@
 // @flow
 
 // external dependencies
-import Map from './Map';
+import MapLike from './MapLike';
 
 // utils
 import {
@@ -56,7 +56,7 @@ const NOT_A_FUNCTION_ERROR = 'You must pass a function as the first parameter to
  *
  * @param {function} fn method to memoize
  * @param {Options} [options={}] options to customize how the caching is handled
- * @param {Map} [options.cache=new Map()] caching mechanism to use for method
+ * @param {MapLike} [options.cache=new MapLike()] caching mechanism to use for method
  * @param {boolean} [options.isPromise=false] is the function return expected to be a promise to resolve
  * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [options.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
@@ -69,8 +69,12 @@ const moize = function(fn: Function, options: Options = {}): any {
     throw new TypeError(NOT_A_FUNCTION_ERROR);
   }
 
+  if (fn.isMemoized) {
+    return fn;
+  }
+
   const {
-    cache = new Map(),
+    cache = new MapLike(),
     isPromise = false,
     maxAge = INFINITY,
     maxArgs = INFINITY,
@@ -78,13 +82,11 @@ const moize = function(fn: Function, options: Options = {}): any {
     serializeFunctions = false,
     serializer
   } = options;
-  const hasMaxAge: boolean = isFiniteAndPositive(maxAge);
-  const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
   const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
 
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
-  const getCacheKey: Function = createGetCacheKey(serializer, serializeFunctions, hasMaxArgs, maxArgs);
-  const setNewCachedValue: Function = createSetNewCachedValue(isPromise, hasMaxAge, maxAge);
+  const getCacheKey: Function = createGetCacheKey(serializer, serializeFunctions, maxArgs);
+  const setNewCachedValue: Function = createSetNewCachedValue(isPromise, maxAge);
   const setUsageOrder: Function = createSetUsageOrder(maxSize);
 
   let key: any;
