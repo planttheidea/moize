@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+#### 1.5.0
+* Add `values` method on memoized function (gets list of computed values stored in cache)
+* Fix issue with `clear` method not being present on `MapLike`
+
 #### 1.4.5
 * Switch to using MapLike for caching instead of native Map (was previously only used for polyfilling, but is twice as fast ... I feel silly for not testing its performance prior)
 * Simplify and optimize MapLike to crank out as much speed as possible
