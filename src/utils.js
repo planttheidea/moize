@@ -22,17 +22,63 @@ const GOTCHA_OBJECT_CLASSES: Array<Object> = [
 /**
  * @private
  *
+ * @function every
+ *
+ * @description
+ * faster version of determining every item in array matches fn check
+ *
+ * @param {Array<*>} array array to test
+ * @param {function} fn fn to test each item against
+ * @returns {boolean} do all values match
+ */
+export const every = (array: Array<any>, fn: Function) => {
+  const length: number = array.length;
+
+  let index: number = -1;
+
+  while (++index < length) {
+    if (!fn(array[index], index, array)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * @private
+ *
+ * @function areArraysShallowEqual
+ *
+ * @description
+ * test if the arrays are shallow equal in value
+ *
+ * @param {Array<*>} array1 first array to check
+ * @param {Array<*>} array2 second array to check
+ * @returns {boolean} are arrays shallow equal
+ */
+export const areArraysShallowEqual = (array1: Array<any>, array2: Array<any>): boolean => {
+  return array1.length === array2.length && every(array1, (item: any, index: number) => {
+    return item === array2[index];
+  });
+};
+
+/**
+ * @private
+ *
  * @function splice
  *
  * @description
  * faster version of splicing a single item from the array
  *
  * @param {Array<*>} array array to splice from
- * @param {number} index index to splice at
+ * @param {number} startingIndex index to splice at
  * @returns {Array<*>} array minus the item removed
  */
-export const splice = (array: Array<any>, index: number): Array<any> => {
+export const splice = (array: Array<any>, startingIndex: number): Array<any> => {
   const length: number = array.length;
+
+  let index: number = startingIndex;
 
   if (!length) {
     return array;
@@ -60,17 +106,36 @@ export const splice = (array: Array<any>, index: number): Array<any> => {
  * @param {*} item item to unshift into array
  * @returns {Array<*>} array plus the item added to the front
  */
-export const unshift = (array: Array<any>, item: number): Array<any> => {
-  let length: number = array.length;
+export const unshift = (array: Array<any>, item: any): Array<any> => {
+  let index: number = array.length;
 
-  while (length) {
-    array[length] = array[length - 1];
-    length--;
+  while (index--) {
+    array[index + 1] = array[index];
   }
 
   array[0] = item;
 
   return array;
+};
+
+/**
+ * @private
+ *
+ * @function createPluckFromInstanceList
+ *
+ * @description
+ * get a property from the list on the instance
+ *
+ * @param {{list: Array<Object>}} instance insatnce whose list to map over
+ * @param {string} key key to pluck from list
+ * @returns {Array<*>} array of values plucked at key
+ */
+export const createPluckFromInstanceList = (instance: Object, key: string): Function => {
+  return (): Array<any> => {
+    return instance.list.map((item) => {
+      return item[key];
+    });
+  };
 };
 
 /**
@@ -163,8 +228,8 @@ export const isFunction = (object: any): boolean => {
  * @returns {boolean} is the object an object or array
  */
 export const isValueObjectOrArray = (object: any): boolean => {
-  return isComplexObject(object) && !GOTCHA_OBJECT_CLASSES.some((Class) => {
-    return object instanceof Class;
+  return isComplexObject(object) && every(GOTCHA_OBJECT_CLASSES, (Class) => {
+    return !(object instanceof Class);
   });
 };
 
@@ -245,17 +310,13 @@ export const decycle = (object: any): string => {
  * @function deleteItemFromCache
  *
  * @description
- * remove an item from cache and the usage list
+ * remove an item from cache
  *
  * @param {*} cache caching mechanism for method
- * @param {Array<*>} usage order of key usage
  * @param {*} key key to delete
  */
-export const deleteItemFromCache = (cache: any, usage: Array<any>, key: any) => {
-  const index: number = usage.indexOf(key);
-
-  if (!!~index) {
-    splice(usage, index);
+export const deleteItemFromCache = (cache: any, key: any = cache.list[cache.list.length - 1].key) => {
+  if (key && cache.has(key)) {
     cache.delete(key);
   }
 };
@@ -280,7 +341,6 @@ export const createAddPropertiesToFunction = (cache: any, fn: Function): Functio
     fn.cache = cache;
     fn.displayName = displayName;
     fn.isMemoized = true;
-    fn.usage = [];
 
     /**
      * @private
@@ -292,7 +352,6 @@ export const createAddPropertiesToFunction = (cache: any, fn: Function): Functio
      */
     fn.clear = () => {
       fn.cache.clear();
-      fn.usage = [];
     };
 
     /**
@@ -303,10 +362,12 @@ export const createAddPropertiesToFunction = (cache: any, fn: Function): Functio
      * @description
      * delete the cache for the key passed for this method
      *
-     * @param {*} key key to remove from cache
+     * @param {Array<*>} args combination of args to remove from cache
      */
-    fn.delete = (key: any) => {
-      deleteItemFromCache(fn.cache, fn.usage, key);
+    fn.delete = (...args: Array<any>) => {
+      const key = args.length === 1 && args[0].isMoizeKey ? args[0] : getKeyFromArguments(cache, args);
+
+      deleteItemFromCache(fn.cache, key);
     };
 
     /**
@@ -319,11 +380,7 @@ export const createAddPropertiesToFunction = (cache: any, fn: Function): Functio
      *
      * @returns {Array<*>}
      */
-    fn.keys = (): Array<any> => {
-      return fn.cache.list.map(({key}) => {
-        return key;
-      });
-    };
+    fn.keys = createPluckFromInstanceList(fn.cache, 'key');
 
     /**
      * @private
@@ -335,11 +392,7 @@ export const createAddPropertiesToFunction = (cache: any, fn: Function): Functio
      *
      * @returns {Array<*>}
      */
-    fn.values = (): Array<any> => {
-      return fn.cache.list.map(({value}) => {
-        return value;
-      });
-    };
+    fn.values = createPluckFromInstanceList(fn.cache, 'value');
 
     return fn;
   };
@@ -394,36 +447,21 @@ export const isFiniteAndPositive = (number: number): boolean => {
 /**
  * @private
  *
- * @function isKeyLastItem
- *
- * @description
- * is the key passed the same key as the lastItem
- *
- * @param {{key: *, value: *}} lastItem the current lastItem in the Map
- * @param {*} key the key to match on
- * @returns {boolean} is the key the same as the LastItem
- */
-export const isKeyLastItem = (lastItem: ?Object, key: any): boolean => {
-  return !!lastItem && isEqual(lastItem.key, key);
-};
-
-/**
- * @private
- *
  * @function getIndexOfItemInMap
  *
  * @description
  * get the index of the key in the map
  *
- * @param {MapLike} map map to find key in
- * @param {*} key key to find in map
+ * @param {Array<*>} list list to find key in
+ * @param {number} length length of the list passed
+ * @param {*} key key to find in list
  * @returns {number} index location of key in list
  */
-export const getIndexOfItemInMap = (map: MapLike, key: any): number => {
+export const getIndexOfItemInMap = (list: Array<any>, length: number, key: any): number => {
   let index: number = -1;
 
-  while (++index < map.size) {
-    if (isEqual(map.list[index].key, key)) {
+  while (++index < length) {
+    if (isEqual(list[index].key, key)) {
       return index;
     }
   }
@@ -525,25 +563,86 @@ export const getSerializerFunction = (
 /**
  * @private
  *
+ * @function getKeyFromArguments
+ *
+ * @description
+ * get the existing key from arguments if it is there, else return the new arguments
+ *
+ * @param {*} cache cache used to store arguments
+ * @param {Array<*>} newArgs to test if shallow clone already exists in cache
+ * @returns { Array<*>} array to use as key for cache
+ */
+export const getKeyFromArguments = (cache: any, newArgs: Array<any>): Array<any>  => {
+  let index: number = -1,
+      currentValue: Array<any>;
+
+  while (++index < cache.size) {
+    currentValue = cache.list[index].key;
+
+    if (!isArray(currentValue)) {
+      continue;
+    }
+
+    if (areArraysShallowEqual(currentValue, newArgs)) {
+      return currentValue;
+    }
+  }
+
+  // $FlowIgnore ok to add key to array object
+  newArgs.isMoizeKey = true;
+
+  return newArgs;
+};
+
+/**
+ * @private
+ *
+ * @function hasKey
+ *
+ * @description
+ * does the key currently exist in cache
+ *
+ * @param {*} cache cache used to store arguments
+ * @param {*} key key to check for existence in cache
+ * @param {Array<*>} args args passed to the function
+ * @return {boolean} does the cache contain the key
+ */
+export const hasKey = (cache: any, key: any, args: Array<any>): boolean => {
+  return isArray(key) ? key !== args : cache.has(key);
+};
+
+/**
+ * @private
+ *
  * @function createGetCacheKey
  *
  * @description
  * get the key used for storage in the method's cache
  *
+ * @param {*} cache cache where keys are stored
+ * @param {boolean} serialize should the arguments be serialized into a string
  * @param {function} serializerFromOptions method used to serialize keys into a string
  * @param {boolean} serializeFunctions should functions be converted to string in serialization
  * @param {number} maxArgs the maximum number of arguments to use in the serialization
  * @returns {function(Array<*>): *}
  */
 export const createGetCacheKey = (
+  cache: any,
+  serialize: boolean,
   serializerFromOptions: ?Function,
   serializeFunctions: boolean,
   maxArgs: number
 ): Function => {
-  const serializeArguments = getSerializerFunction(serializerFromOptions, serializeFunctions, maxArgs);
+  if (serialize) {
+    const serializeArguments = getSerializerFunction(serializerFromOptions, serializeFunctions, maxArgs);
+
+    return (args: Array<any>): any => {
+      return serializeArguments(args);
+    };
+  }
 
   return (args: Array<any>): any => {
-    return args.length === 1 ? args[0] : serializeArguments(args);
+    return args.length === 1 ? args[0] : getKeyFromArguments(cache, args);
   };
 };
 
@@ -556,12 +655,12 @@ export const createGetCacheKey = (
  * create function to set the cache to expire after the maxAge passed (coalesced to 0)
  *
  * @param {number} maxAge number in ms to wait before expiring the cache
- * @returns {function(function, *): void} setExpirationOfCache method
+ * @returns {function(function, Array<*>): void} setExpirationOfCache method
  */
 export const createSetExpirationOfCache = (maxAge: number) => {
-  return (fn: Function, key: any) => {
+  return (fn: Function, key: Array<any>) => {
     setTimeout(() => {
-      deleteItemFromCache(fn.cache, fn.usage, key);
+      deleteItemFromCache(fn.cache, key);
     }, maxAge);
   };
 };
@@ -576,19 +675,26 @@ export const createSetExpirationOfCache = (maxAge: number) => {
  *
  * @param {boolean} isPromise is the value a promise or not
  * @param {number} maxAge how long should the cache persist
+ * @param {number} maxSize the maximum number of values to store in cache
  * @returns {function(function, *, *): *} value just stored in cache
  */
 export const createSetNewCachedValue = (
   isPromise: boolean,
-  maxAge: number
+  maxAge: number,
+  maxSize: number
 ): Function => {
   const hasMaxAge: boolean = isFiniteAndPositive(maxAge);
+  const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
   const setExpirationOfCache: Function = createSetExpirationOfCache(maxAge);
 
   if (isPromise) {
     return (fn: Function, key: any, value: any): any => {
       value.then((resolvedValue) => {
         fn.cache.set(key, resolvedValue);
+
+        if (hasMaxSize && fn.cache.list.length > maxSize) {
+          deleteItemFromCache(fn.cache);
+        }
       });
 
       if (hasMaxAge) {
@@ -606,37 +712,10 @@ export const createSetNewCachedValue = (
       setExpirationOfCache(fn, key);
     }
 
-    return value;
-  };
-};
-
-
-/**
- * @private
- *
- * @function setUsageOrder
- *
- * @description
- * place the key passed at the front of the array, removing it from its current index if it
- * exists and removing the last item in the array if it is larger than maxSize
- *
- * @param {number} maxSize the maximum size of the cache
- * @returns {function(function, *): *} function to set the usage order
- */
-export const createSetUsageOrder = (maxSize: number): Function => {
-  return (fn: Function, key: any): void => {
-    const index: number = fn.usage.indexOf(key);
-
-    if (index !== 0) {
-      if (!!~index) {
-        splice(fn.usage, index);
-      }
-
-      unshift(fn.usage, key);
-
-      if (fn.usage.length > maxSize) {
-        deleteItemFromCache(fn.cache, fn.usage, fn.usage[fn.usage.length - 1]);
-      }
+    if (hasMaxSize && fn.cache.list.length > maxSize) {
+      deleteItemFromCache(fn.cache);
     }
+
+    return value;
   };
 };

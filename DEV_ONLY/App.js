@@ -9,25 +9,23 @@ import {
 
 import moize from '../src';
 
-const foo = {
-  bar: 'baz'
-};
-const bar = {
-  bar: 'bar'
-};
+const foo = 'foo';
+const bar = 'bar';
 
-const method = function(fooObject) {
-  console.log('standard method fired', fooObject);
+const method = function(one, two) {
+  console.log('standard method fired', one, two);
 
-  return fooObject.bar;
+  return [one, two].join(' ');
 };
 
 const memoized = moize(method);
 
-memoized(foo);
-memoized(foo);
-memoized(foo);
-memoized(bar);
+memoized(foo, bar);
+memoized(bar, foo);
+memoized(foo, bar);
+memoized(foo, bar);
+
+console.log(memoized.cache);
 
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
@@ -63,7 +61,7 @@ const Foo = (props) => {
   );
 };
 
-const MemoizedFoo = moize(Foo);
+const MemoizedFoo = moize.react(Foo);
 
 const array = ['foo', 'bar', 'baz'];
 

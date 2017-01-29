@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+#### 2.0.0
+* Refactor to use object equality instead of serialization (vast speed improvements over 1.x.x with multiple parameters)
+* Breaking changes:
+  * If you were relying on the serialization (using value equality instead of object equality), it will no longer memoize (you can set `serialize: true` if you want to continue using that option)
+  * If you were using `moize` to memoize React components, you should change your invocations from `moize` to `moize.react` ([see README](README.md#usage-with-functional-react-components))
+
 #### 1.5.0
 * Add `values` method on memoized function (gets list of computed values stored in cache)
 * Fix issue with `clear` method not being present on `MapLike`

@@ -3,8 +3,8 @@
 // utils
 import {
   getIndexOfItemInMap,
-  isKeyLastItem,
-  splice
+  splice,
+  unshift
 } from './utils';
 
 /**
@@ -43,33 +43,15 @@ class MapLike {
    * @param {*} key key to delete from the map
    */
   delete(key: any) {
-    if (isKeyLastItem(this.lastItem, key)) {
-      this.lastItem = undefined;
-    }
-
-    const index: number = getIndexOfItemInMap(this, key);
+    const index: number = getIndexOfItemInMap(this.list, this.size, key);
 
     if (!!~index) {
       splice(this.list, index);
       this.size--;
-    }
-  }
 
-  /**
-   * @function forEach
-   * @memberOf MapLike
-   * @instance
-   *
-   * @description
-   * forEach method to loop over items in the list
-   *
-   * @param {function} fn function to call when looping over the list
-   */
-  forEach(fn: Function) {
-    let index: number = -1;
-
-    while (++index < this.size) {
-      fn(this.list[index].value, this.list[index].key);
+      if (this.size === 0) {
+        this.lastItem = undefined;
+      }
     }
   }
 
@@ -85,16 +67,25 @@ class MapLike {
    * @returns {*} value at the key location
    */
   get(key: any) {
-    if (isKeyLastItem(this.lastItem, key)) {
+    if (!this.size) {
+      return undefined;
+    }
+
+    // $FlowIgnore: this.lastItem.key exists
+    if (this.lastItem.key === key) {
       // $FlowIgnore: this.lastItem.value exists
       return this.lastItem.value;
     }
 
-    const index: number = getIndexOfItemInMap(this, key);
+    const index: number = getIndexOfItemInMap(this.list, this.size, key);
 
     if (!!~index) {
       this.lastItem = this.list[index];
 
+      splice(this.list, index);
+      unshift(this.list, this.lastItem);
+
+      // $FlowIgnore this will still exist after the unshift
       return this.lastItem.value;
     }
   }
@@ -111,11 +102,16 @@ class MapLike {
    * @returns {boolean} does the map have the key
    */
   has(key: any) {
-    if (isKeyLastItem(this.lastItem, key)) {
+    if (!this.size) {
+      return false;
+    }
+
+    // $FlowIgnore last item exists because it has size
+    if (this.lastItem.key === key) {
       return true;
     }
 
-    const index = getIndexOfItemInMap(this, key);
+    const index = getIndexOfItemInMap(this.list, this.size, key);
 
     if (!!~index) {
       this.lastItem = this.list[index];
@@ -143,7 +139,8 @@ class MapLike {
       value
     };
 
-    this.list.push(this.lastItem);
+    unshift(this.list, this.lastItem);
+
     this.size++;
   }
 }

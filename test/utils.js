@@ -1,24 +1,29 @@
+// test
 import test from 'ava';
+import sinon from 'sinon';
 
+//src
 import {
+  areArraysShallowEqual,
   createAddPropertiesToFunction,
   createGetCacheKey,
   createSetExpirationOfCache,
   createSetNewCachedValue,
-  createSetUsageOrder,
   decycle,
   deleteItemFromCache,
+  every,
   getIndexOfItemInMap,
   getFunctionName,
   getFunctionNameViaRegexp,
+  getKeyFromArguments,
   getSerializerFunction,
   getStringifiedArgument,
+  hasKey,
   isArray,
   isComplexObject,
   isEqual,
   isFunction,
   isFiniteAndPositive,
-  isKeyLastItem,
   isValueObjectOrArray,
   splice,
   unshift,
@@ -33,6 +38,100 @@ const sleep = (ms) => {
     }, ms);
   });
 };
+
+test('if areArraysShallowEqual returns true when shallow equal', (t) => {
+  const foo = 'foo';
+  const object = {bar: 'baz'};
+  const a1 = [foo, object];
+  const differentLength = [foo, object, 'bar'];
+  const differentOrder = [object, foo];
+  const differentValue = [foo, {bar: 'baz'}];
+
+  t.false(areArraysShallowEqual(a1, differentLength));
+  t.false(areArraysShallowEqual(a1, differentOrder));
+  t.false(areArraysShallowEqual(a1, differentValue));
+
+  const same = [foo, object];
+
+  t.true(areArraysShallowEqual(a1, same));
+});
+
+test('if every matches the output of the native function', (t) => {
+  const everyFoo = ['foo', 'foo'];
+  const someFoo = ['foo', 'bar'];
+  const noneFoo = ['bar', 'bar'];
+
+  const isFoo = (item) => {
+    return item === 'foo';
+  };
+
+  const everyResult = every(everyFoo, isFoo);
+  const someResult = every(someFoo, isFoo);
+  const noneResult = every(noneFoo, isFoo);
+
+  t.true(everyResult);
+  t.false(someResult);
+  t.false(noneResult);
+
+  t.is(everyResult, everyFoo.every(isFoo));
+  t.is(someResult, someFoo.every(isFoo));
+  t.is(noneResult, noneFoo.every(isFoo));
+});
+
+test('if getKeyFromArguments produces an array of keys arguments when no match is found', (t) => {
+  const cache = {
+    list: [],
+    size: 0
+  };
+  const args = ['foo', 'bar'];
+
+  const result = getKeyFromArguments(cache, args);
+
+  t.is(result, args);
+  t.true(result.isMoizeKey);
+});
+
+test('if getKeyFromArguments returns an existing array of arguments when match is found', (t) => {
+  const existingArgList = [
+    {
+      key: ['foo', 'bar'],
+      value: 'baz'
+    }, {
+      key: ['bar', 'baz'],
+      value: 'foo'
+    }
+  ];
+  const cache = {
+    list: existingArgList,
+    size: 2
+  };
+  const args = ['foo', 'bar'];
+
+  const result = getKeyFromArguments(cache, args);
+
+  t.not(result, args);
+  t.deepEqual(result, args);
+});
+
+test('if hasKey will call has if the key passed is not an array', (t) => {
+  const key = 'foo';
+  const args = [key];
+  const cache = {
+    has: sinon.stub()
+  };
+
+  hasKey(cache, key, args);
+
+  t.true(cache.has.calledOnce);
+});
+
+test('if hasKey will check if key is not equal to arg if the key passed is an array', (t) => {
+  const key = 'foo';
+  const args = ['key'];
+
+  t.true(hasKey(null, [key], args));
+  t.false(hasKey(null, args, args));
+});
 
 test('if decycle will return an object that has circular references removed', (t) => {
   const object = {
@@ -61,30 +160,26 @@ test('if decycle will return an object that has circular references removed', (t
   });
 });
 
-test('if deleteItemFromCache will remove an item from both cache and usage', (t) => {
+test('if deleteItemFromCache will remove an item from both cache', (t) => {
   const key = 'foo';
   const cache = new MapLike();
-  const usage = [key];
 
   cache.set(key, 'bar');
 
-  deleteItemFromCache(cache, usage, key);
+  deleteItemFromCache(cache, key);
 
   t.false(cache.has(key));
-  t.deepEqual(usage, []);
 });
 
 test('if deleteItemFromCache will only delete something when the key is actually found', (t) => {
   const key = 'foo';
   const cache = new MapLike();
-  const usage = [key];
 
   cache.set(key, 'bar');
 
-  deleteItemFromCache(cache, usage, 'bar');
+  deleteItemFromCache(cache, 'bar');
 
   t.true(cache.has(key));
-  t.deepEqual(usage, [key]);
 });
 
 test('if createGetCacheKey returns a function that returns the first item in the array if the only item', (t) => {
@@ -101,7 +196,8 @@ test('if createGetCacheKey returns a function that returns the first item in the
 });
 
 test('if createGetCacheKey returns a function that returns a stringified value of the args passed if more than one item', (t) => {
-  const getCacheKey = createGetCacheKey(undefined);
+  const cache = new MapLike();
+  const getCacheKey = createGetCacheKey(cache);
 
   const item = {
     foo: 'bar'
@@ -109,10 +205,9 @@ test('if createGetCacheKey returns a function that returns a stringified value o
   const item2 = 'baz';
   const args = [item, item2];
 
-  const expectedResult = '|{"foo":"bar"}|baz|';
   const result = getCacheKey(args);
 
-  t.is(result, expectedResult);
+  t.is(result, args);
 });
 
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
@@ -150,7 +245,7 @@ test('if getFunctionNameViaRegexp will match the function name if it exists', (t
   t.is(anonymousResult, '');
 });
 
-test('if getFunctionWithAdditionalProperties will add the cache passed to the function and create the usage array', (t) => {
+test('if getFunctionWithAdditionalProperties will add the cache passed to the function', (t) => {
   let fn = () => {};
   let cache = {
     foo: 'bar'
@@ -162,7 +257,6 @@ test('if getFunctionWithAdditionalProperties will add the cache passed to the fu
 
   t.is(result, fn);
   t.is(result.cache, cache);
-  t.deepEqual(result.usage, []);
   t.is(typeof result.clear, 'function');
   t.is(typeof result.delete, 'function');
   t.is(typeof result.keys, 'function');
@@ -179,15 +273,12 @@ test('if getFunctionWithAdditionalProperties clear method will clear cache', (t)
   const result = getFunctionWithAdditionalProperties(fn);
 
   result.cache.set(key, 'bar');
-  result.usage.push(key);
 
   t.true(result.cache.has(key));
-  t.deepEqual(result.usage, [key]);
 
   result.clear();
 
   t.is(result.cache.size, 0);
-  t.deepEqual(result.usage, []);
 });
 
 test('if getFunctionWithAdditionalProperties will have a displayName reflecting the original', (t) => {
@@ -195,34 +286,33 @@ test('if getFunctionWithAdditionalProperties will have a displayName reflecting 
   const key = 'foo';
   const cache = new MapLike();
 
-  const getOriginalFn = createAddPropertiesToFunction(cache, originalFn);
+  cache.set(key, key);
+
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, originalFn);
 
   const fn = () => {};
 
-  const originalResult = getOriginalFn(fn);
+  const result = getFunctionWithAdditionalProperties(fn);
 
-  t.is(originalResult.displayName, `Memoized(${originalFn.name})`);
+  t.is(result.displayName, `Memoized(${originalFn.name})`);
 });
 
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
-  const key = 'foo';
   const cache = new MapLike();
+  const key = getKeyFromArguments(cache, ['foo']);
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
   const result = getFunctionWithAdditionalProperties(fn);
 
   result.cache.set(key, 'bar');
-  result.usage.push(key);
 
   t.true(result.cache.has(key));
-  t.deepEqual(result.usage, [key]);
 
   result.delete(key);
 
   t.false(result.cache.has(key));
-  t.deepEqual(result.usage, []);
 });
 
 test('if getFunctionWithAdditionalProperties keys method will return the list of keys in cache', (t) => {
@@ -235,7 +325,6 @@ test('if getFunctionWithAdditionalProperties keys method will return the list of
   const cachedFn = getFunctionWithAdditionalProperties(fn);
 
   cachedFn.cache.set(key, 'bar');
-  cachedFn.usage.push(key);
 
   t.true(cachedFn.cache.has(key));
 
@@ -254,7 +343,6 @@ test('if getFunctionWithAdditionalProperties values method will return the list 
   const cachedFn = getFunctionWithAdditionalProperties(fn);
 
   cachedFn.cache.set(key, 'bar');
-  cachedFn.usage.push(key);
 
   t.true(cachedFn.cache.has(key));
 
@@ -271,8 +359,8 @@ test('if getIndexOfItemInMap returns the index of the item in the map, else -1',
   const foo = 'foo';
   const notFoo = 'notFoo';
 
-  t.is(getIndexOfItemInMap(map, foo), 0);
-  t.is(getIndexOfItemInMap(notFoo), -1);
+  t.is(getIndexOfItemInMap(map.list, map.size, foo), 0);
+  t.is(getIndexOfItemInMap(map.list, map.size, notFoo), -1);
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
@@ -371,20 +459,6 @@ test('if isValueObjectOrArray correctly determines if an item is an object / arr
   t.false(isValueObjectOrArray(regexp));
   t.true(isValueObjectOrArray(object));
   t.true(isValueObjectOrArray(array));
-});
-
-test('if isKeyLastItem checks for the existence of the lastItem and then if the key matches the value passed', (t) => {
-  const key = 'foo';
-  const lastItem = {
-    key
-  };
-  const lastItemNotKey = {
-    key: 'bar'
-  };
-
-  t.false(isKeyLastItem(undefined, key));
-  t.true(isKeyLastItem(lastItem, key));
-  t.false(isKeyLastItem(lastItemNotKey, key));
 });
 
 test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
@@ -486,7 +560,7 @@ test('if setNewCachedValue will run the set method upon resolution of a promise'
   t.is(result, resolutionValue);
 });
 
-test('if setNewCachedValue will set the cache to expire if isMaxAgeFinite is true', async (t) => {
+test('if setNewCachedValue will set the cache to expire if maxAge is finite', async (t) => {
   const keyToSet = 'foo';
   const valueToSet = 'bar';
   const maxAge = 100;
@@ -494,8 +568,7 @@ test('if setNewCachedValue will set the cache to expire if isMaxAgeFinite is tru
   const setNewCachedValue = createSetNewCachedValue(false, maxAge);
 
   let fn = {
-    cache: new MapLike(),
-    usage: [keyToSet]
+    cache: new MapLike()
   };
 
   await setNewCachedValue(fn, keyToSet, valueToSet);
@@ -505,6 +578,26 @@ test('if setNewCachedValue will set the cache to expire if isMaxAgeFinite is tru
   await sleep(maxAge);
 
   t.is(fn.cache.get(keyToSet), undefined);
+});
+
+test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
+  const keyToSet = 'foo';
+  const valueToSet = 'bar';
+  const cache = new MapLike();
+
+  cache.set('bar', 'baz');
+
+  const setNewCacheValue = createSetNewCachedValue(false, Infinity, 1);
+
+  const fn = {
+    cache
+  };
+
+  setNewCacheValue(fn, keyToSet, valueToSet);
+
+  t.deepEqual(cache.list, [
+    {key: keyToSet, value: valueToSet}
+  ]);
 });
 
 test('if splice performs the same operation as the native splice', (t) => {
@@ -545,8 +638,7 @@ test('if setExpirationOfCache will expire the cache after the age passed', async
   const setExpirationOfCache = createSetExpirationOfCache(100);
 
   const fn = {
-    cache: new MapLike(),
-    usage: ['foo']
+    cache: new MapLike()
   };
 
   fn.cache.set('foo', 'bar');
@@ -558,20 +650,17 @@ test('if setExpirationOfCache will expire the cache after the age passed', async
   expectedCache.set('foo', 'bar');
 
   t.deepEqual(fn.cache, expectedCache);
-  t.deepEqual(fn.usage, ['foo']);
 
   await sleep(100);
 
   t.deepEqual(fn.cache, new MapLike());
-  t.deepEqual(fn.usage, []);
 });
 
 test('if setExpirationOfCache will expire the cache immediately if less than 0', async (t) => {
   const setExpirationOfCache = createSetExpirationOfCache(-1);
 
   const fn = {
-    cache: new MapLike(),
-    usage: ['foo']
+    cache: new MapLike()
   };
 
   fn.cache.set('foo', 'bar');
@@ -581,59 +670,6 @@ test('if setExpirationOfCache will expire the cache immediately if less than 0',
   await sleep(0);
 
   t.deepEqual(fn.cache, new MapLike());
-  t.deepEqual(fn.usage, []);
-});
-
-test('if setUsageOrder will add the item to cache in the front', (t) => {
-  const setUsageOrder = createSetUsageOrder(Infinity);
-
-  const fn = {
-    cache: new MapLike(),
-    usage: ['foo']
-  };
-
-  fn.cache.set('foo', 'bar');
-
-  setUsageOrder(fn, 'bar');
-
-  t.deepEqual(fn.usage, ['bar', 'foo']);
-});
-
-test('if setUsageOrder will move the existing item to the front', (t) => {
-  const setUsageOrder = createSetUsageOrder(Infinity);
-
-  const fn = {
-    cache: new MapLike(),
-    usage: ['foo', 'bar']
-  };
-
-  fn.cache.set('foo', 'bar');
-  fn.cache.set('bar', 'baz');
-
-  setUsageOrder(fn, 'bar');
-
-  t.deepEqual(fn.usage, ['bar', 'foo']);
-});
-
-test('if setUsageOrder will remove the item from cache if maxSize is reached', (t) => {
-  const setUsageOrder = createSetUsageOrder(1);
-
-  const fn = {
-    cache: new MapLike(),
-    usage: ['foo', 'bar']
-  };
-
-  fn.cache.set('foo', 'bar');
-  fn.cache.set('bar', 'baz');
-
-  setUsageOrder(fn, 'bar');
-
-  const expectedCache = new MapLike();
-
-  expectedCache.set('bar', 'baz');
-
-  t.deepEqual(fn.cache, expectedCache);
-  t.deepEqual(fn.usage, ['bar']);
 });
 
 test('if cycle.decycle is called only when object is cannot be handled by JSON.stringify', (t) => {
