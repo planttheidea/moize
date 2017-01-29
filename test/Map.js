@@ -93,9 +93,7 @@ test('if set will add the key and value passed to the map', (t) => {
   const key = 'foo';
   const value = 'bar';
 
-  const result = map.set(key, value);
-
-  t.is(result, map);
+  map.set(key, value);
 
   const lastItem = {
     key,
@@ -105,55 +103,4 @@ test('if set will add the key and value passed to the map', (t) => {
   t.deepEqual(map.list, [lastItem]);
   t.deepEqual(map.lastItem, lastItem);
   t.is(map.size, 1);
-});
-
-test('if set will update the key and value already in the map', (t) => {
-  const map = new MapLike();
-
-  const key = 'foo';
-  const value = 'bar';
-  const newValue = 'baz';
-
-  const lastItem = {
-    key: value,
-    value: newValue
-  };
-
-  map.set(key, value);
-  map.set(value, newValue);
-
-  const result = map.set(key, newValue);
-
-  t.is(result, map);
-
-  const newLastItem = {
-    key,
-    value: newValue
-  };
-
-  t.deepEqual(map.list, [newLastItem, lastItem]);
-  t.deepEqual(map.lastItem, newLastItem);
-  t.is(map.size, 2);
-
-  map.set(value, newValue);
-
-  const newNewLastItem = {
-    key: value,
-    value: newValue
-  };
-
-  t.deepEqual(map.list, [newLastItem, newNewLastItem]);
-  t.deepEqual(map.lastItem, newNewLastItem);
-  t.is(map.size, 2);
-
-  map.set(value, key);
-
-  const finalLastItem = {
-    key: value,
-    value: key
-  };
-
-  t.deepEqual(map.list, [newLastItem, finalLastItem]);
-  t.deepEqual(map.lastItem, finalLastItem);
-  t.is(map.size, 2);
 });

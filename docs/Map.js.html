@@ -153,7 +153,7 @@ class MapLike {
     if (!!~index) {
       this.lastItem = this.list[index];
 
-      return this.list[index].value;
+      return this.lastItem.value;
     }
   }
 
@@ -194,30 +194,15 @@ class MapLike {
    *
    * @param {*} key key to assign value of
    * @param {*} value value to store in the map at key
-   * @returns {MapLike} the map object
    */
   set(key: any, value: any) {
-    if (isKeyLastItem(this.lastItem, key)) {
-      // $FlowIgnore: this.lastItem.value exists
-      this.lastItem.value = value;
-    } else {
-        const index: number = getIndexOfItemInMap(this, key);
+    this.lastItem = {
+      key,
+      value
+    };
 
-        if (!!~index) {
-          this.lastItem = this.list[index];
-          this.list[index].value = value;
-        } else {
-          this.lastItem = {
-            key,
-            value
-          };
-
-          this.list.push(this.lastItem);
-          this.size++;
-        }
-    }
-
-    return this;
+    this.list.push(this.lastItem);
+    this.size++;
   }
 }
 
