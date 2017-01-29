@@ -196,7 +196,6 @@ export const customReplacer = (key: string, value: any): any => {
  * @returns {string} stringified value of object
  */
 export const decycle = (object: any): string => {
-  // $FlowIgnore: map type
   let map: Map = new Map();
 
   /**
@@ -252,12 +251,11 @@ export const decycle = (object: any): string => {
  * @param {Array<*>} usage order of key usage
  * @param {*} key key to delete
  */
-export const deleteItemFromCache = (cache: Map<any, any>|Object, usage: Array<any>, key: any) => {
+export const deleteItemFromCache = (cache: any, usage: Array<any>, key: any) => {
   const index: number = usage.indexOf(key);
 
   if (!!~index) {
     splice(usage, index);
-    // $FlowIgnore: map type
     cache.delete(key);
   }
 };
@@ -404,11 +402,11 @@ export const isKeyLastItem = (lastItem: ?Object, key: any): boolean => {
  * @description
  * get the index of the key in the map
  *
- * @param {MapLike} map map to find key in
+ * @param {Map} map map to find key in
  * @param {*} key key to find in map
  * @returns {number} index location of key in list
  */
-export const getIndexOfItemInMap = (map: Object, key: any): number => {
+export const getIndexOfItemInMap = (map: Map, key: any): number => {
   let index: number = -1;
 
   while (++index < map.size) {

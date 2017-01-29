@@ -1,8 +1,6 @@
 import test from 'ava';
 
-import {
-  MapLike
-} from 'src/Map';
+import MapLike from 'src/Map';
 
 test('if creating a new MapLike creates an object with the correct instance values', (t) => {
   const result = new MapLike();
