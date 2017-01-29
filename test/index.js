@@ -15,6 +15,17 @@ test('if moize throws a TypeError when something other than a function is passed
   }, TypeError);
 });
 
+test('if moize will return the function passed if it is already memoized', (t) => {
+  const fn = () => {};
+  const moized = moize(fn);
+
+  t.not(moized, fn);
+
+  const moizedAgain = moize(moized);
+
+  t.is(moizedAgain, moized);
+});
+
 test('if moize will memoize the result of the function based on the same arguments', (t) => {
   const fn = sinon.spy((foo, bar) => {
     return `${foo} ${bar}`;
