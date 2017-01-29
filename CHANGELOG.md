@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 1.4.5
+* Switch to using MapLike for caching instead of native Map (was previously only used for polyfilling, but is twice as fast ... I feel silly for not testing its performance prior)
+
 #### 1.4.4
 * Add `displayName` property to memoized function for better display of memoized `react` components in DevTools
 * Throw a `TypeError` when the parameter passed to moize is not a function

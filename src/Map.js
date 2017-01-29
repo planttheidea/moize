@@ -7,26 +7,16 @@ import {
   splice
 } from './utils';
 
-const HAS_MAP_SUPPORT = typeof Map === 'function';
-
 /**
  * @private
  *
  * @class MapLike
- * @classdesc class that mimics enough of the Map infrastructure to serve as polyfill for the cache
+ * @classdesc class that mimics parts of the Map infrastructure, but faster
  */
 class MapLike {
-  constructor() {
-    this.list = [];
-    this.lastItem = undefined;
-    this.size = 0;
-
-    return this;
-  }
-
-  lastItem: ?Object;
-  list: Array<any>;
-  size: number;
+  lastItem: ?Object = undefined;
+  list: Array<any> = [];
+  size: number = 0;
 
   /**
    * @function delete
@@ -45,9 +35,9 @@ class MapLike {
 
     const index: number = getIndexOfItemInMap(this, key);
 
-    if (index !== -1) {
-      this.size--;
+    if (!!~index) {
       splice(this.list, index);
+      this.size--;
     }
   }
 
@@ -62,13 +52,10 @@ class MapLike {
    * @param {function} fn function to call when looping over the list
    */
   forEach(fn: Function) {
-    let index: number = -1,
-        item: ?Object;
+    let index: number = -1;
 
     while (++index < this.size) {
-      item = this.list[index];
-
-      fn(item.value, item.key);
+      fn(this.list[index].value, this.list[index].key);
     }
   }
 
@@ -91,13 +78,11 @@ class MapLike {
 
     const index: number = getIndexOfItemInMap(this, key);
 
-    if (index !== -1) {
+    if (!!~index) {
       this.lastItem = this.list[index];
 
       return this.list[index].value;
     }
-
-    return undefined;
   }
 
   /**
@@ -118,7 +103,7 @@ class MapLike {
 
     const index = getIndexOfItemInMap(this, key);
 
-    if (index !== -1) {
+    if (!!~index) {
       this.lastItem = this.list[index];
 
       return true;
@@ -143,31 +128,25 @@ class MapLike {
     if (isKeyLastItem(this.lastItem, key)) {
       // $FlowIgnore: this.lastItem.value exists
       this.lastItem.value = value;
+    } else {
+        const index: number = getIndexOfItemInMap(this, key);
 
-      return this;
+        if (!!~index) {
+          this.lastItem = this.list[index];
+          this.list[index].value = value;
+        } else {
+          this.lastItem = {
+            key,
+            value
+          };
+
+          this.list.push(this.lastItem);
+          this.size++;
+        }
     }
-
-    const index: number = getIndexOfItemInMap(this, key);
-
-    if (index !== -1) {
-      this.lastItem = this.list[index];
-      this.list[index].value = value;
-
-      return this;
-    }
-
-    this.lastItem = {
-      key,
-      value
-    };
-
-    this.list.push(this.lastItem);
-    this.size++;
 
     return this;
   }
 }
 
-export {MapLike};
-
-export default HAS_MAP_SUPPORT ? Map : MapLike;
+export default MapLike;

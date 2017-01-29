@@ -95,7 +95,7 @@ test('if createGetCacheKey returns a function that returns the first item in the
   t.is(result, item);
 });
 
-test('if getCacheKey returns a stringified value of the args passed if more than one item', (t) => {
+test('if createGetCacheKey returns a function that returns a stringified value of the args passed if more than one item', (t) => {
   const getCacheKey = createGetCacheKey(undefined);
 
   const item = {
