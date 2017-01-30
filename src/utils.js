@@ -365,7 +365,7 @@ export const createAddPropertiesToFunction = (cache: any, fn: Function): Functio
      * @param {Array<*>} args combination of args to remove from cache
      */
     fn.delete = (...args: Array<any>) => {
-      const key = args.length === 1 && args[0].isMoizeKey ? args[0] : getKeyFromArguments(cache, args);
+      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : getKeyFromArguments(cache, args);
 
       deleteItemFromCache(fn.cache, key);
     };
@@ -577,38 +577,17 @@ export const getKeyFromArguments = (cache: any, newArgs: Array<any>): Array<any>
       currentValue: Array<any>;
 
   while (++index < cache.size) {
-    currentValue = cache.list[index].key;
+    currentValue = cache.list[index];
 
-    if (!isArray(currentValue)) {
-      continue;
-    }
-
-    if (areArraysShallowEqual(currentValue, newArgs)) {
-      return currentValue;
+    if (currentValue.isMultiParamKey && areArraysShallowEqual(currentValue.key, newArgs)) {
+      return currentValue.key;
     }
   }
 
   // $FlowIgnore ok to add key to array object
-  newArgs.isMoizeKey = true;
+  newArgs.isMultiParamKey = true;
 
   return newArgs;
-};
-
-/**
- * @private
- *
- * @function hasKey
- *
- * @description
- * does the key currently exist in cache
- *
- * @param {*} cache cache used to store arguments
- * @param {*} key key to check for existence in cache
- * @param {Array<*>} args args passed to the function
- * @return {boolean} does the cache contain the key
- */
-export const hasKey = (cache: any, key: any, args: Array<any>): boolean => {
-  return isArray(key) ? key !== args : cache.has(key);
 };
 
 /**

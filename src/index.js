@@ -8,7 +8,6 @@ import {
   createAddPropertiesToFunction,
   createGetCacheKey,
   createSetNewCachedValue,
-  hasKey,
   isFunction
 } from './utils';
 
@@ -103,7 +102,7 @@ const moize = function(fn: Function, options: Options = {}): any {
   const memoizedFunction = function(...args: Array<any>): any {
     key = getCacheKey(args);
 
-    return hasKey(cache, key, args) ? cache.get(key) : setNewCachedValue(memoizedFunction, key, fn.apply(this, args));
+    return cache.has(key) ? cache.get(key) : setNewCachedValue(memoizedFunction, key, fn.apply(this, args));
   };
 
   return addPropertiesToFunction(memoizedFunction);

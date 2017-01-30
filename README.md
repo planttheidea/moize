@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.21%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.63%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.
@@ -338,13 +338,13 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 | underscore | lodash     | ramda     | memoizee   | fast-memoize | addy-osmani | memoizerific | moize      |
 |------------|------------|-----------|------------|--------------|-------------|--------------|------------|
-| 9,313,172  | 10,063,753 | 1,072,901 | 11,145,989 | 31,208,485   | 3,755,775   | 2,157,874    | 33,995,482 |
+| 9,313,172  | 10,063,753 | 1,072,901 | 11,145,989 | 31,208,485   | 3,755,775   | 2,157,874    | 40,188,210 |
 
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
 | memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
 |-----------|--------------|-------------|--------------|-----------|
-| 8,018,360 | 1,239,470    | 1,681,101   | 1,359,196    | 6,581,210 |
+| 8,018,360 | 1,239,470    | 1,681,101   | 1,359,196    | 6,815,215 |
 
 ![Multiple complex parameters image](img/multiple-parameter-complex.png)
 

@@ -136,6 +136,7 @@ class MapLike {
   set(key: any, value: any) {
     this.lastItem = {
       key,
+      isMultiParamKey: !!(key && key.isMultiParamKey),
       value
     };
 

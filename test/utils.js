@@ -18,7 +18,6 @@ import {
   getKeyFromArguments,
   getSerializerFunction,
   getStringifiedArgument,
-  hasKey,
   isArray,
   isComplexObject,
   isEqual,
@@ -88,16 +87,18 @@ test('if getKeyFromArguments produces an array of keys arguments when no match i
   const result = getKeyFromArguments(cache, args);
 
   t.is(result, args);
-  t.true(result.isMoizeKey);
+  t.true(result.isMultiParamKey);
 });
 
 test('if getKeyFromArguments returns an existing array of arguments when match is found', (t) => {
   const existingArgList = [
     {
       key: ['foo', 'bar'],
+      isMultiParamKey: true,
       value: 'baz'
     }, {
       key: ['bar', 'baz'],
+      isMultiParamKey: true,
       value: 'foo'
     }
   ];
@@ -111,26 +112,6 @@ test('if getKeyFromArguments returns an existing array of arguments when match i
 
   t.not(result, args);
   t.deepEqual(result, args);
-});
-
-test('if hasKey will call has if the key passed is not an array', (t) => {
-  const key = 'foo';
-  const args = [key];
-  const cache = {
-    has: sinon.stub()
-  };
-
-  hasKey(cache, key, args);
-
-  t.true(cache.has.calledOnce);
-});
-
-test('if hasKey will check if key is not equal to arg if the key passed is an array', (t) => {
-  const key = 'foo';
-  const args = ['key'];
-
-  t.true(hasKey(null, [key], args));
-  t.false(hasKey(null, args, args));
 });
 
 test('if decycle will return an object that has circular references removed', (t) => {
@@ -596,7 +577,7 @@ test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
   setNewCacheValue(fn, keyToSet, valueToSet);
 
   t.deepEqual(cache.list, [
-    {key: keyToSet, value: valueToSet}
+    {key: keyToSet, isMultiParamKey: false, value: valueToSet}
   ]);
 });
 

@@ -33,6 +33,7 @@ test('if get will return the value for the passed key in map', (t) => {
   t.is(map.get(key), value);
   t.deepEqual(map.lastItem, {
     key,
+    isMultiParamKey: false,
     value
   });
 
@@ -43,6 +44,7 @@ test('if get will return the value for the passed key in map', (t) => {
   t.is(map.get(value), key);
   t.deepEqual(map.lastItem, {
     key: value,
+    isMultiParamKey: false,
     value: key
   });
 });
@@ -56,39 +58,39 @@ test('if get will keep the order of retrieval correct', (t) => {
   map.set('fourth', 4);
 
   t.deepEqual(map.list, [
-    {key: 'fourth', value: 4},
-    {key: 'third', value: 3},
-    {key: 'second', value: 2},
-    {key: 'first', value: 1},
+    {key: 'fourth', isMultiParamKey: false, value: 4},
+    {key: 'third', isMultiParamKey: false, value: 3},
+    {key: 'second', isMultiParamKey: false, value: 2},
+    {key: 'first', isMultiParamKey: false, value: 1},
   ]);
 
   map.get('third');
   map.get('second');
 
   t.deepEqual(map.list, [
-    {key: 'second', value: 2},
-    {key: 'third', value: 3},
-    {key: 'fourth', value: 4},
-    {key: 'first', value: 1}
+    {key: 'second', isMultiParamKey: false, value: 2},
+    {key: 'third', isMultiParamKey: false, value: 3},
+    {key: 'fourth', isMultiParamKey: false, value: 4},
+    {key: 'first', isMultiParamKey: false, value: 1}
   ]);
 
   map.set('fifth', 5);
 
   t.deepEqual(map.list, [
-    {key: 'fifth', value: 5},
-    {key: 'second', value: 2},
-    {key: 'third', value: 3},
-    {key: 'fourth', value: 4},
-    {key: 'first', value: 1}
+    {key: 'fifth', isMultiParamKey: false, value: 5},
+    {key: 'second', isMultiParamKey: false, value: 2},
+    {key: 'third', isMultiParamKey: false, value: 3},
+    {key: 'fourth', isMultiParamKey: false, value: 4},
+    {key: 'first', isMultiParamKey: false, value: 1}
   ]);
 
   map.delete('fifth');
 
   t.deepEqual(map.list, [
-    {key: 'second', value: 2},
-    {key: 'third', value: 3},
-    {key: 'fourth', value: 4},
-    {key: 'first', value: 1}
+    {key: 'second', isMultiParamKey: false, value: 2},
+    {key: 'third', isMultiParamKey: false, value: 3},
+    {key: 'fourth', isMultiParamKey: false, value: 4},
+    {key: 'first', isMultiParamKey: false, value: 1}
   ]);
 });
 
@@ -102,6 +104,7 @@ test('if has will identify the existence of a key in the map', (t) => {
   t.true(map.has(key));
   t.deepEqual(map.lastItem, {
     key,
+    isMultiParamKey: false,
     value
   });
   t.false(map.has('bar'));
@@ -117,6 +120,7 @@ test('if set will add the key and value passed to the map', (t) => {
 
   const lastItem = {
     key,
+    isMultiParamKey: false,
     value
   };
 
