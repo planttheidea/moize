@@ -7,6 +7,7 @@
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.
 
 ### Table of contents
+* [Upgrade notification](#upgrade-notification)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Usage with functional React components](#usage-with-functional-react-components)
@@ -15,6 +16,10 @@
 * [Benchmarks](#benchmarks)
 * [Browser support](#browser-support)
 * [Development](#development)
+
+### Upgrade notification
+
+Users of `moize` 1.x.x will have some small but breaking changes, especially related to its use with functional components. Please see the [changelog](CHANGELOG.md) for more details about how to manage the upgrade.
 
 ### Installation
 
@@ -41,7 +46,7 @@ All parameter types are supported, including circular objects, functions, etc. Y
 
 ### Usage with functional React components
 
-Now in v2.x.x of `moize` you have a quick shortcut for memoizing functional components in [React](https://github.com/facebook/react):
+Now in 2.x.x of `moize` you have a quick shortcut for memoizing functional components in [React](https://github.com/facebook/react):
 
 ```javascript
 import moize from 'moize';
@@ -176,7 +181,7 @@ const memoized = moize(fn, {
 
 **serialize** *defaults to false*
 
-In `moize` v1.x.x, parameter serialization was used, whereas in v2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the `serialize` parameter as `true` and you will use the performant serializer from v1.x.x.
+In `moize` 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the `serialize` parameter as `true` and you will use the performant serializer from 1.x.x.
 
 ```javascript
 const fn = (mutableObject) => {
