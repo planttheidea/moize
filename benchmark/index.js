@@ -1,15 +1,8 @@
 'use strict';
 
 const Benchmark = require('benchmark');
-const winston = require('winston');
-
-const logger = new winston.Logger({
-  transports: [
-    new winston.transports.Console()
-  ]
-});
-
-logger.cli();
+const Table = require('cli-table2');
+const ora = require('ora');
 
 const underscore = require('underscore').memoize;
 const lodash = require('lodash').memoize;
@@ -19,6 +12,51 @@ const fastMemoize = require('fast-memoize');
 const addyOsmani = require('./addy-osmani');
 const memoizerific = require('memoizerific');
 const moize = require('../lib');
+
+const showResults = (benchmarkResults) => {
+  const table = new Table({
+    head: [
+      'NAME',
+      'OPS/SEC',
+      'RELATIVE MARGIN OF ERROR',
+      'SAMPLE SIZE'
+    ]
+  });
+
+  benchmarkResults.forEach((result) => {
+    table.push([
+      result.target.name,
+      result.target.hz.toLocaleString('en-US', {maximumFractionDigits: 0}),
+      `± ${result.target.stats.rme.toFixed(2)}%`,
+      result.target.stats.sample.length
+    ]);
+  });
+
+  console.log(table.toString());
+};
+
+const sortDescResults  = (benchmarkResults) => {
+  return benchmarkResults.sort((a, b) => {
+    return a.target.hz < b.target.hz ? 1 : -1;
+  });
+};
+
+const spinner = ora('Running benchmark');
+
+let results = [];
+
+const onCycle = (event) => {
+  results.push(event);
+  ora(event.target.name).succeed();
+};
+
+const onComplete = () => {
+  spinner.stop();
+
+  const orderedBenchmarkResults = sortDescResults(results);
+
+  showResults(orderedBenchmarkResults);
+};
 
 const fibonacci = (number) => {
   return number < 2 ? number : fibonacci(number - 1) + fibonacci(number - 2);
@@ -90,16 +128,16 @@ const runSingleParameterSuite = () => {
         mMoize(fibonacciNumber);
       })
       .on('start', () => {
-        logger.info('Starting cycles functions with a single parameter...');
-      })
-      .on('cycle', (event) => {
-        const currentRunning = `${event.target}`.replace(/(.*)\ x/, (match, p1) => `\`${p1}\` x`);
+        console.log('');
+        console.log('Starting cycles functions with a single parameter...');
 
-        logger.info(currentRunning);
-      })
-      .on('complete', function() {
-        logger.info(`Fastest is \`${this.filter('fastest').map('name')}\``);
+        results = [];
 
+        spinner.start();
+      })
+      .on('cycle', onCycle)
+      .on('complete', () => {
+        onComplete();
         resolve();
       })
       .run({
@@ -111,10 +149,9 @@ const runSingleParameterSuite = () => {
 const runMultiplePrimitiveSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
   const fibonacciNumber = 35;
+  const isComplete = false;
 
-  const mMemoizee = memoizee(fibonacciMultiplePrimitive, {
-    length: false
-  });
+  const mMemoizee = memoizee(fibonacciMultiplePrimitive);
   const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
   const mAddyOsmani = addyOsmani(fibonacciMultiplePrimitive);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
@@ -123,31 +160,31 @@ const runMultiplePrimitiveSuite = () => {
   return new Promise((resolve) => {
     fibonacciSuite
       .add('memoizee', () => {
-        mMemoizee(fibonacciNumber, false);
+        mMemoizee(fibonacciNumber, isComplete);
       })
       .add('fast-memoize', () => {
-        mFastMemoize(fibonacciNumber, false);
+        mFastMemoize(fibonacciNumber, isComplete);
       })
       .add('addy-osmani', () => {
-        mAddyOsmani(fibonacciNumber, false);
+        mAddyOsmani(fibonacciNumber, isComplete);
       })
       .add('memoizerific', () => {
-        mMemoizerific(fibonacciNumber, false);
+        mMemoizerific(fibonacciNumber, isComplete);
       })
       .add('moize', () => {
-        mMoize(fibonacciNumber, false);
+        mMoize(fibonacciNumber, isComplete);
       })
       .on('start', () => {
-        logger.info('Starting cycles functions with multiple parameters that contain only primitives...');
-      })
-      .on('cycle', (event) => {
-        const currentRunning = `${event.target}`.replace(/(.*)\ x/, (match, p1) => `\`${p1}\` x`);
+        console.log('');
+        console.log('Starting cycles functions with multiple parameters that contain only primitives...');
 
-        logger.info(currentRunning);
-      })
-      .on('complete', function() {
-        logger.info(`Fastest is \`${this.filter('fastest').map('name')}\``);
+        results = [];
 
+        spinner.start();
+      })
+      .on('cycle', onCycle)
+      .on('complete', () => {
+        onComplete();
         resolve();
       })
       .run({
@@ -159,10 +196,11 @@ const runMultiplePrimitiveSuite = () => {
 const runMultipleObjectSuite = () => {
   const fibonacciSuite = new Benchmark.Suite();
   const fibonacciNumber = 35;
+  const isComplete = {
+    isComplete: false
+  };
 
-  const mMemoizee = memoizee(fibonacciMultipleObject, {
-    length: false
-  });
+  const mMemoizee = memoizee(fibonacciMultipleObject);
   const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
@@ -171,41 +209,31 @@ const runMultipleObjectSuite = () => {
   return new Promise((resolve) => {
     fibonacciSuite
       .add('memoizee', () => {
-        mMemoizee(fibonacciNumber, {
-          isComplete: false
-        });
+        mMemoizee(fibonacciNumber, isComplete);
       })
       .add('fast-memoize', () => {
-        mFastMemoize(fibonacciNumber, {
-          isComplete: false
-        });
+        mFastMemoize(fibonacciNumber, isComplete);
       })
       .add('addy-osmani', () => {
-        mAddyOsmani(fibonacciNumber, {
-          isComplete: false
-        });
+        mAddyOsmani(fibonacciNumber, isComplete);
       })
       .add('memoizerific', () => {
-        mMemoizerific(fibonacciNumber, {
-          isComplete: false
-        });
+        mMemoizerific(fibonacciNumber, isComplete);
       })
       .add('moize', () => {
-        mMoize(fibonacciNumber, {
-          isComplete: false
-        });
+        mMoize(fibonacciNumber, isComplete);
       })
       .on('start', () => {
-        logger.info('Starting cycles for functions with multiple parameters that contain objects...');
-      })
-      .on('cycle', (event) => {
-        const currentRunning = `${event.target}`.replace(/(.*)\ x/, (match, p1) => `\`${p1}\` x`);
+        console.log('');
+        console.log('Starting cycles for functions with multiple parameters that contain objects...');
 
-        logger.info(currentRunning);
-      })
-      .on('complete', function() {
-        logger.info(`Fastest is \`${this.filter('fastest').map('name')}\``);
+        results = [];
 
+        spinner.start();
+      })
+      .on('cycle', onCycle)
+      .on('complete', () => {
+        onComplete();
         resolve();
       })
       .run({

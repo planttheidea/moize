@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 1.5.0</h3>
+    <h3>moize 2.0.0</h3>
 
 
 
@@ -90,13 +90,14 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.02%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.63%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.5kb when minified and gzipped.</p>
+<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#usage">Usage</a></li>
+<li><a href="#usage-with-functional-react-components">Usage with functional React components</a></li>
 <li><a href="#advanced-usage">Advanced usage</a></li>
 <li><a href="#direct-cache-manipulation">Direct cache manipulation</a></li>
 <li><a href="#benchmarks">Benchmarks</a></li>
@@ -115,30 +116,47 @@ const memoized = moize(method);
 
 memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination!</p>
+<h3 id="usage-with-functional-react-components">Usage with functional React components</h3>
+<p>Now in v2.x.x of <code>moize</code> you have a quick shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>:</p>
+<pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
+
+const Foo = ({bar, baz}) => {
+  return (
+    &lt;div>
+      {bar} {baz}
+    &lt;/div>
+  );
+};
+
+export default moize.react(Foo);</code></pre><p><code>moize.react</code> will auto-apply the <code>serialize</code> and <code>serializeFunctions</code> options to <code>true</code>, which allows for a value equality comparison of <code>props</code> and <code>context</code>. You can still pass additional options in the same way you pass them in the default <code>moize</code> method. Please note this will not operate with components made via the <code>class</code> instantiation.</p>
 <h3 id="advanced-usage">Advanced usage</h3>
-<p><code>moize</code> also accepts an object of options as the second parameter. The full shape of these options:</p>
+<p><code>moize</code> optionally accepts an object of options as the second parameter. The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
   cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
+  serialize: boolean, // should the parameters be serialized instead of directly referenced
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
-<p>The default cache implementation is highly performant, however if you would like then you can pass in a custom cache implementation. The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods:</p>
+<p>The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods:</p>
 <ul>
+<li>clear</li>
 <li>delete</li>
 <li>get</li>
 <li>has</li>
 <li>set</li>
 </ul>
-<p>If you want to have direct cache management using <code>moize</code>, the following methods must also be provided:</p>
-<ul>
-<li>clear</li>
-<li>forEach</li>
-</ul>
 <pre class="prettyprint source lang-javascript"><code>const cache = {
+  clear() {
+    Object.keys(this).forEach((key) => {
+      if (typeof this[key] !== 'function') {
+        this.delete(key);
+      }
+    });
+  },
   delete(key) {
     delete this[key];
   },
@@ -192,8 +210,26 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   maxSize: 5
-});</code></pre><p><strong>serializeFunctions</strong> <em>defaults to false</em></p>
-<p>When multiple complex object parameters are used, they are stringified internally for fast caching, however <code>JSON.stringify</code> excludes functions by default. By setting this option to <code>true</code>, a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional <code>React</code> components, as interactivity functions as part of props will now be included in the unique key structure. Please note that this will decrease performance between 10-25% depending on environment.</p>
+});</code></pre><p><strong>serialize</strong> <em>defaults to false</em></p>
+<p>In <code>moize</code> v1.x.x, parameter serialization was used, whereas in v2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from v1.x.x.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (mutableObject) => {
+  return mutableObject.foo;
+};
+
+const memoized = moize(fn, {
+  serialize: true
+});
+
+const object = {
+  foo: 'foo'
+};
+
+memoized(object); // 'foo'
+
+object.foo = 'bar';
+
+memoized(object); // 'bar'</code></pre><p><strong>serializeFunctions</strong> <em>defaults to false</em></p>
+<p>By setting this option to <code>true</code>, a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional <code>React</code> components, as interactivity functions as part of props will now be included in the unique key structure (in fact, this is exactly how <code>moize.react</code> works!). Please note that this will decrease performance of this specific function between 10-25% depending on environment.</p>
 <pre class="prettyprint source lang-javascript"><code>const FunctionalComponent = ({onClickFoo}) => {
   return (
     &lt;button
@@ -207,7 +243,8 @@ const memoized = moize(fn, {
 
 const MemoizedFunctionalComponent = moize(FunctionalComponent, {
   serializeFunctions: true
-});</code></pre><p><strong>serializer</strong> <em>defaults to serializeArguments in utils.js</em></p>
+});</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
+<p><strong>serializer</strong> <em>defaults to serializeArguments in utils.js</em></p>
 <p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {
   return JSON.stringify(args[0]);
@@ -215,7 +252,8 @@ const MemoizedFunctionalComponent = moize(FunctionalComponent, {
 
 const memoized = moize(fn, {
   serializer
-});</code></pre><h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
+});</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
+<h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
 <p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
 <p><strong>clear()</strong></p>
 <p>This will clear all values in the cache, resetting it to a default state.</p>
@@ -238,7 +276,7 @@ memoized(foo);
 
 memoized.delete(foo);
 
-// if multi parameter, delete with the serialized key
+// if multi parameter, delete with the same arguments you passed
 const memoized = moize((item1, item2) => {
   return item1 + item2;
 });
@@ -248,7 +286,7 @@ const bar = 2;
 
 memoized(foo, bar);
 
-memoized.delete('|1|2|');</code></pre><p><strong>keys()</strong></p>
+memoized.delete(foo, bar);</code></pre><p><strong>keys()</strong></p>
 <p>This will return a list of the current keys in cache.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return item;
@@ -283,7 +321,7 @@ const bar = {
 memoized(bar);
 
 const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><h3 id="benchmarks">Benchmarks</h3>
-<p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library.</p>
+<p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
 <table>
 <thead>
@@ -300,14 +338,14 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 </thead>
 <tbody>
 <tr>
-<td>9,387,583</td>
-<td>10,067,976</td>
-<td>1,061,601</td>
-<td>11,206,742</td>
-<td>10,269,410</td>
-<td>3,301,913</td>
-<td>1,913,002</td>
-<td>37,125,142</td>
+<td>9,313,172</td>
+<td>10,063,753</td>
+<td>1,072,901</td>
+<td>11,145,989</td>
+<td>31,208,485</td>
+<td>3,755,775</td>
+<td>2,157,874</td>
+<td>40,188,210</td>
 </tr>
 </tbody>
 </table>
@@ -324,11 +362,11 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 </thead>
 <tbody>
 <tr>
-<td>7,810,317</td>
-<td>853,086</td>
-<td>1,807,141</td>
-<td>1,328,366</td>
-<td>7,356,228</td>
+<td>8,018,360</td>
+<td>1,239,470</td>
+<td>1,681,101</td>
+<td>1,359,196</td>
+<td>6,815,215</td>
 </tr>
 </tbody>
 </table>
@@ -345,14 +383,15 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 </thead>
 <tbody>
 <tr>
-<td>12,000</td>
-<td>617,732</td>
-<td>898,312</td>
-<td>56,988</td>
-<td>1,560,622</td>
+<td>7,198,600</td>
+<td>877,440</td>
+<td>810,924</td>
+<td>1,208,660</td>
+<td>6,011,380</td>
 </tr>
 </tbody>
 </table>
+<p><em>NOTE: benchmarks posted prior were inaccurate for <code>memoizee</code> and <code>memoizerific</code>, as it turns out I was creating new objects instead of using the same ones (sorry). The updated benchmarks are an accurate reflection of default usage.</em></p>
 <h3 id="browser-support">Browser support</h3>
 <ul>
 <li>Chrome (all versions)</li>

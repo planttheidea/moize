@@ -44,24 +44,6 @@ test('if moize will memoize the result of the function based on the same argumen
   t.true(fn.calledOnce);
 });
 
-test('if moize will call setUsageOrder when maxSize is hit', (t) => {
-  const fn = (foo, bar) => {
-    return `${foo} ${bar}`;
-  };
-
-  const result = moize(fn, {
-    maxSize: 1
-  });
-
-  result('foo', 'bar');
-
-  const currentUsage = [...result.usage];
-
-  result('bar', 'foo');
-
-  t.not(result.usage[0], currentUsage[0]);
-});
-
 test('if moize will accept a custom cache as argument', (t) => {
   let cache = {
     delete: sinon.stub(),
@@ -80,10 +62,7 @@ test('if moize will accept a custom cache as argument', (t) => {
     cache
   });
 
-  result('foo', 'bar');
-
-  t.true(cache.has.calledOnce);
-  t.true(cache.set.calledOnce);
+  t.is(result.cache, cache);
 });
 
 test('if moize will accept a custom serializer as argument', (t) => {
@@ -98,6 +77,7 @@ test('if moize will accept a custom serializer as argument', (t) => {
   };
 
   const result = moize(fn, {
+    serialize: true,
     serializer
   });
 
@@ -105,4 +85,17 @@ test('if moize will accept a custom serializer as argument', (t) => {
 
   t.true(serializer.calledOnce);
   t.true(result.cache.has(key));
+});
+
+test('if moize.react will call moize with the correct arguments', (t) => {
+  const fn = (foo, bar, passedFn) => {};
+  const options = {
+    foo: 'bar'
+  };
+
+  const result = moize.react(fn, options);
+
+  result('foo', 'bar', () => {});
+
+  t.is(result.keys()[0], '|foo|bar|() => {}|'); // params serialized, including fn
 });

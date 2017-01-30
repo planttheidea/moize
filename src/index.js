@@ -8,8 +8,6 @@ import {
   createAddPropertiesToFunction,
   createGetCacheKey,
   createSetNewCachedValue,
-  createSetUsageOrder,
-  isFiniteAndPositive,
   isFunction
 } from './utils';
 
@@ -19,6 +17,7 @@ type Options = {
   maxAge?: number,
   maxArgs?: number,
   maxSize?: number,
+  serialize?: boolean,
   serializeFunctions?: boolean,
   serializer?: Function
 };
@@ -79,15 +78,13 @@ const moize = function(fn: Function, options: Options = {}): any {
     maxAge = INFINITY,
     maxArgs = INFINITY,
     maxSize = INFINITY,
+    serialize = false,
     serializeFunctions = false,
     serializer
   } = options;
-  const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
-
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
-  const getCacheKey: Function = createGetCacheKey(serializer, serializeFunctions, maxArgs);
-  const setNewCachedValue: Function = createSetNewCachedValue(isPromise, maxAge);
-  const setUsageOrder: Function = createSetUsageOrder(maxSize);
+  const getCacheKey: Function = createGetCacheKey(cache, serialize, serializer, serializeFunctions, maxArgs);
+  const setNewCachedValue: Function = createSetNewCachedValue(isPromise, maxAge, maxSize);
 
   let key: any;
 
@@ -105,14 +102,29 @@ const moize = function(fn: Function, options: Options = {}): any {
   const memoizedFunction = function(...args: Array<any>): any {
     key = getCacheKey(args);
 
-    if (hasMaxSize) {
-      setUsageOrder(memoizedFunction, key);
-    }
-
     return cache.has(key) ? cache.get(key) : setNewCachedValue(memoizedFunction, key, fn.apply(this, args));
   };
 
   return addPropertiesToFunction(memoizedFunction);
+};
+
+/**
+ * @function moize.react
+ *
+ * @description
+ * react-specific memoization, with auto serialization including functions
+ *
+ *
+ * @param {function} fn React functional component to memoize
+ * @param {Options} [options={}] options to customize how the caching is handled
+ * @returns {Function} higher-order function which either returns from cache or newly-computed ReactElement
+ */
+moize.react = function(fn: Function, options: Options = {}): any {
+  return moize(fn, {
+    ...options,
+    serialize: true,
+    serializeFunctions: true
+  });
 };
 
 export default moize;
