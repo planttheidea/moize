@@ -19,6 +19,31 @@ const GOTCHA_OBJECT_CLASSES: Array<Object> = [
   String
 ];
 
+const STATIC_PROPERTIES_TO_PASS = [
+  'contextTypes',
+  'defaultProps',
+  'propTypes'
+];
+
+/**
+ * @private
+ *
+ * @function addStaticPropertiesToFunction
+ *
+ * @description
+ * add static properties to the memoized function if they exist on the original
+ *
+ * @param {function} originalFn the function to be memoized
+ * @param {function} memoizedFn the higher-order memoized function
+ */
+export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: Function): void => {
+  STATIC_PROPERTIES_TO_PASS.forEach((property) => {
+    if (originalFn[property]) {
+      memoizedFn[property] = originalFn[property];
+    }
+  });
+};
+
 /**
  * @private
  *
@@ -318,31 +343,6 @@ export const decycle = (object: any): string => {
 export const deleteItemFromCache = (cache: any, key: any = cache.list[cache.list.length - 1].key) => {
   if (key && cache.has(key)) {
     cache.delete(key);
-  }
-};
-
-/**
- * @private
- *
- * @function addStaticPropertiesToFunction
- *
- * @description
- * add static properties to the memoized function if they exist on the original
- *
- * @param {function} originalFn the function to be memoized
- * @param {function} memoizedFn the higher-order memoized function
- */
-export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: Function): void => {
-  if (originalFn.contextTypes) {
-    memoizedFn.contextTypes = originalFn.contextTypes;
-  }
-
-  if (originalFn.defaultProps) {
-    memoizedFn.defaultProps = originalFn.defaultProps;
-  }
-
-  if (originalFn.propTypes) {
-    memoizedFn.propTypes = originalFn.propTypes;
   }
 };
 
