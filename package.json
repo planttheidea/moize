@@ -13,13 +13,6 @@
     "verbose": true
   },
   "babel": {
-    "env": {
-      "test": {
-        "presets": [
-          "react"
-        ]
-      }
-    },
     "plugins": [
       "syntax-flow",
       "transform-flow-strip-types",
@@ -105,9 +98,9 @@
     "prepublish": "in-publish && npm run prepublish:compile || echo ''",
     "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile && npm run dist && npm run docs",
     "start": "npm run dev",
-    "test": "NODE_PATH=. NODE_ENV=test BABEL_ENV=test ava --no-cache",
+    "test": "NODE_PATH=. NODE_ENV=test ava --no-cache",
     "test:coverage": "nyc npm test",
-    "test:watch": "NODE_PATH=. NODE_ENV=test BABEL_ENV=test ava --watch",
+    "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "rimraf lib && NODE_ENV=production babel src --out-dir lib"
   },
   "version": "2.0.2"
