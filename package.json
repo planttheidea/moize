@@ -12,17 +12,6 @@
     ],
     "verbose": true
   },
-  "babel": {
-    "plugins": [
-      "syntax-flow",
-      "transform-flow-strip-types",
-      "add-module-exports"
-    ],
-    "presets": [
-      "latest",
-      "stage-2"
-    ]
-  },
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },

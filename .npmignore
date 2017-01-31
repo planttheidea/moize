@@ -1,5 +1,9 @@
-.idea
+.babelrc
+.eslintrc
+.flowconfig
+.gitignore
 .nyc_output
+.idea
 benchmark
 coverage
 DEV_ONLY
@@ -8,10 +12,6 @@ img
 node_modules
 src
 test
-.eslintrc
-.flowconfig
-.gitignore
-.npmignore
 jsdoc.config.json
 webpack.config.dev.js
 webpack.config.js
