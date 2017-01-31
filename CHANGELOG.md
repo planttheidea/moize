@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+#### 2.0.2
+* Prevent memoization on `moize.react` based on third parameter to functional components (object of all internal react functions)
+
+#### 2.0.1
+* Fix static types applied to functional components not being applied to memoized component
+
 #### 2.0.0
 * Refactor to use object equality instead of serialization (vast speed improvements over 1.x.x with multiple parameters)
 * Breaking changes:
