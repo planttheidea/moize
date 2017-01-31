@@ -19,6 +19,31 @@ const GOTCHA_OBJECT_CLASSES: Array<Object> = [
   String
 ];
 
+const STATIC_PROPERTIES_TO_PASS = [
+  'contextTypes',
+  'defaultProps',
+  'propTypes'
+];
+
+/**
+ * @private
+ *
+ * @function addStaticPropertiesToFunction
+ *
+ * @description
+ * add static properties to the memoized function if they exist on the original
+ *
+ * @param {function} originalFn the function to be memoized
+ * @param {function} memoizedFn the higher-order memoized function
+ */
+export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: Function): void => {
+  STATIC_PROPERTIES_TO_PASS.forEach((property) => {
+    if (originalFn[property]) {
+      memoizedFn[property] = originalFn[property];
+    }
+  });
+};
+
 /**
  * @private
  *
@@ -330,17 +355,19 @@ export const deleteItemFromCache = (cache: any, key: any = cache.list[cache.list
  * add the caching mechanism to the function passed and return the function
  *
  * @param {*} cache caching mechanism that has get / set / has methods
- * @param {string} fn function to get the name of
+ * @param {function} originalFn function to get the name of
  * @returns {function(function): function} method that has cache mechanism added to it
  */
-export const createAddPropertiesToFunction = (cache: any, fn: Function): Function => {
-  const functionName = getFunctionName(fn);
+export const createAddPropertiesToFunction = (cache: any, originalFn: Function): Function => {
+  const functionName = getFunctionName(originalFn);
   const displayName = `Memoized(${functionName})`;
 
   return (fn: Function): Function => {
     fn.cache = cache;
     fn.displayName = displayName;
     fn.isMemoized = true;
+
+    addStaticPropertiesToFunction(originalFn, fn);
 
     /**
      * @private

@@ -101,5 +101,5 @@
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "rimraf lib && NODE_ENV=production babel src --out-dir lib"
   },
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

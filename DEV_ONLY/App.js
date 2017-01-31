@@ -51,14 +51,18 @@ memoizedPromise(2, 2)
 
 console.log(memoizedPromise.keys());
 
-const Foo = (props) => {
-  console.log('Foo React element fired', props);
+const Foo = ({bar, value}) => {
+  console.log('Foo React element fired', bar, value);
 
   return (
     <div>
-      {props.value}
+      {value} {bar}
     </div>
   );
+};
+
+Foo.defaultProps = {
+  bar: 'default'
 };
 
 const MemoizedFoo = moize.react(Foo);
