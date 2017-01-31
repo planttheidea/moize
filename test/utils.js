@@ -4,6 +4,7 @@ import sinon from 'sinon';
 
 //src
 import {
+  addStaticPropertiesToFunction,
   areArraysShallowEqual,
   createAddPropertiesToFunction,
   createGetCacheKey,
@@ -37,6 +38,40 @@ const sleep = (ms) => {
     }, ms);
   });
 };
+
+test('if addStaticPropertiesToFunction will add static properties to the originalFn', (t) => {
+  const originalFn = () => {};
+  const memoizedFn = () => {};
+
+  const foo = 'foo';
+  const bar = 'bar';
+  const baz = 'baz';
+
+  originalFn.contextTypes = foo;
+  originalFn.defaultProps = bar;
+  originalFn.propTypes = baz;
+
+  addStaticPropertiesToFunction(originalFn, memoizedFn);
+
+  t.is(memoizedFn.contextTypes, foo);
+  t.is(memoizedFn.defaultProps, bar);
+  t.is(memoizedFn.propTypes, baz);
+});
+
+test('if addStaticPropertiesToFunction will only static properties that exist on the originalFn', (t) => {
+  const originalFn = () => {};
+  const memoizedFn = () => {};
+
+  const foo = 'foo';
+
+  originalFn.defaultProps = foo;
+
+  addStaticPropertiesToFunction(originalFn, memoizedFn);
+
+  t.is(memoizedFn.contextTypes, undefined);
+  t.is(memoizedFn.defaultProps, foo);
+  t.is(memoizedFn.propTypes, undefined);
+});
 
 test('if areArraysShallowEqual returns true when shallow equal', (t) => {
   const foo = 'foo';

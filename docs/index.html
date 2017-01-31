@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 2.0.0</h3>
+    <h3>moize 2.0.1</h3>
 
 
 
@@ -90,11 +90,12 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.63%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.68%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
+<li><a href="#upgrade-notification">Upgrade notification</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#usage-with-functional-react-components">Usage with functional React components</a></li>
@@ -104,6 +105,8 @@
 <li><a href="#browser-support">Browser support</a></li>
 <li><a href="#development">Development</a></li>
 </ul>
+<h3 id="upgrade-notification">Upgrade notification</h3>
+<p>Users of <code>moize</code> 1.x.x will have some small but breaking changes, especially related to its use with functional components. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
 <h3 id="installation">Installation</h3>
 <pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h3 id="usage">Usage</h3>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
@@ -117,7 +120,7 @@ const memoized = moize(method);
 memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination!</p>
 <h3 id="usage-with-functional-react-components">Usage with functional React components</h3>
-<p>Now in v2.x.x of <code>moize</code> you have a quick shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>:</p>
+<p>Now in 2.x.x of <code>moize</code> you have a quick shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>:</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const Foo = ({bar, baz}) => {
@@ -211,7 +214,7 @@ const memoized = moize(fn, {
 const memoized = moize(fn, {
   maxSize: 5
 });</code></pre><p><strong>serialize</strong> <em>defaults to false</em></p>
-<p>In <code>moize</code> v1.x.x, parameter serialization was used, whereas in v2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from v1.x.x.</p>
+<p>In <code>moize</code> 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from 1.x.x.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (mutableObject) => {
   return mutableObject.foo;
 };
