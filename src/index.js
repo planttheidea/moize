@@ -122,6 +122,7 @@ const moize = function(fn: Function, options: Options = {}): any {
 moize.react = function(fn: Function, options: Options = {}): any {
   return moize(fn, {
     ...options,
+    maxArgs: 2,
     serialize: true,
     serializeFunctions: true
   });

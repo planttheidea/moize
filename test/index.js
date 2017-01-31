@@ -1,4 +1,6 @@
 import test from 'ava';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import sinon from 'sinon';
 
 import moize from 'src/index';
@@ -88,14 +90,33 @@ test('if moize will accept a custom serializer as argument', (t) => {
 });
 
 test('if moize.react will call moize with the correct arguments', (t) => {
-  const fn = (foo, bar, passedFn) => {};
+  const jsdom = require('jsdom-global')();
+
+  const Foo = () => {
+    return React.createElement('div', {});
+  };
   const options = {
     foo: 'bar'
   };
 
-  const result = moize.react(fn, options);
+  Foo.defaultProps = {
+    foo: 'foo'
+  };
 
-  result('foo', 'bar', () => {});
+  const Result = moize.react(Foo, options);
 
-  t.is(result.keys()[0], '|foo|bar|() => {}|'); // params serialized, including fn
+  const props = {
+    bar: 'bar',
+    passedFn: () => {}
+  };
+
+  const foo = React.createElement(Result, props);
+
+  const div = document.createElement('div');
+
+  ReactDOM.render(foo, div);
+
+  t.is(Result.keys()[0], '|{"bar":"bar","passedFn":"() => {}","foo":"foo"}|{}|'); // params serialized, including fn
+
+  jsdom();
 });

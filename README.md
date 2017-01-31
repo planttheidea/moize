@@ -62,7 +62,7 @@ const Foo = ({bar, baz}) => {
 export default moize.react(Foo);
 ```
 
-`moize.react` will auto-apply the `serialize` and `serializeFunctions` options to `true`, which allows for a value equality comparison of `props` and `context`. You can still pass additional options in the same way you pass them in the default `moize` method. Please note this will not operate with components made via the `class` instantiation.
+`moize.react` will auto-apply the `serialize` and `serializeFunctions` options, and set `maxArgs` equal to `2`, which allows for a value equality comparison of `props` and `context`. You can still pass additional options in the same way you pass them in the default `moize` method. Please note this will not operate with components made via the `class` instantiation.
 
 ### Advanced usage
 
