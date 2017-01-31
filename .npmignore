@@ -4,6 +4,7 @@
 .gitignore
 .nyc_output
 .idea
+.yarnrc
 benchmark
 coverage
 DEV_ONLY
