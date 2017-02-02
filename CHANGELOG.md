@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+#### 2.0.3
+* Ensure `maxArgs` is respected for unserialized functions
+* Change the arguments length check from `=== 1` to `> ` so that zero arguments (`undefined` key) pulls from cache directly instead of tries to go through key matching for multiparam
+
 #### 2.0.2
 * Prevent memoization on `moize.react` based on third parameter to functional components (object of all internal react functions)
 
