@@ -597,7 +597,6 @@ export const getSerializerFunction = (
  *
  * @param {*} cache cache used to store arguments
  * @param {Array<*>} newArgs to test if shallow clone already exists in cache
- * @param {number} argsLength the length of arguments to cut off at
  * @returns { Array<*>} array to use as key for cache
  */
 export const getKeyFromArguments = (cache: any, newArgs: Array<any>): Array<any>  => {
