@@ -226,6 +226,34 @@ test('if createGetCacheKey returns a function that returns a stringified value o
   t.is(result, args);
 });
 
+test('if createGetCacheKey returns a function that returns a limited arguments key for the arguments passed', (t) => {
+  const cache = new MapLike();
+  const maxArgs = 1;
+  const getCacheKey = createGetCacheKey(cache, false, null, false, maxArgs);
+
+  const item = {
+    foo: 'bar'
+  };
+  const item2 = 'baz';
+  const args = [item, item2];
+
+  const result = getCacheKey(args);
+
+  t.is(result.length, maxArgs);
+  t.deepEqual(result, [item]);
+});
+
+test('if createGetCacheKey will return undefined as a key when no arguments are passed', (t) => {
+  const cache = new MapLike();
+  const getCacheKey = createGetCacheKey(cache);
+
+  const args = [];
+
+  const result = getCacheKey(args);
+
+  t.is(result, undefined);
+});
+
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
   function foo() {};
 
