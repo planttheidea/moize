@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 2.1.0
+* Add `add` method on cache to allow for manual cache insertion
+
 #### 2.0.3
 * Ensure `maxArgs` is respected for unserialized functions
 * Change the arguments length check from `=== 1` to `> ` so that zero arguments (`undefined` key) pulls from cache directly instead of tries to go through key matching for multiparam
