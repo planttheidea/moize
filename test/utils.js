@@ -301,6 +301,7 @@ test('if getFunctionWithAdditionalProperties will add the cache passed to the fu
 
   t.is(result, fn);
   t.is(result.cache, cache);
+  t.is(typeof result.add, 'function');
   t.is(typeof result.clear, 'function');
   t.is(typeof result.delete, 'function');
   t.is(typeof result.keys, 'function');
@@ -339,6 +340,45 @@ test('if getFunctionWithAdditionalProperties will have a displayName reflecting 
   const result = getFunctionWithAdditionalProperties(fn);
 
   t.is(result.displayName, `Memoized(${originalFn.name})`);
+});
+
+test('if getFunctionWithAdditionalProperties add method will add a key => value pair to cache if it doesnt exist', (t) => {
+  const fn = () => {};
+  const cache = new MapLike();
+  const key = ['foo'];
+  const value = 'bar';
+
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+
+  const result = getFunctionWithAdditionalProperties(fn);
+
+  result.add(key, value);
+
+  t.true(result.cache.has(key));
+  t.is(result.cache.get(key), value);
+});
+
+test('if getFunctionWithAdditionalProperties add method will not add a key => value pair to cache if it already exists', (t) => {
+  const fn = () => {};
+  const cache = new MapLike();
+  const key = ['foo'];
+  const value = 'bar';
+
+  cache.set(key, value);
+
+  const spy = sinon.spy(cache, 'set');
+
+  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+
+  const result = getFunctionWithAdditionalProperties(fn);
+
+  result.add(key, value);
+
+  t.true(result.cache.has(key));
+  t.is(result.cache.size, 1);
+  t.false(spy.calledOnce);
+
+  spy.restore();
 });
 
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {

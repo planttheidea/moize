@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.67%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.69%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.
@@ -245,6 +245,26 @@ Please note that you must also set `serialize` to true for this setting to take 
 ### Direct cache manipulation
 
 There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:
+
+**add(key, value)**
+
+This will manually add the *value* at *key* in cache if *key* does not already exist.
+
+```javascript
+// single parameter is straightforward
+const memoized = moize((item) => {
+  return item;
+});
+
+memoized.add('foo', 'bar');
+
+// for multiple parameters, pass an array of arguments as the key
+const memoized = moize((item1, item2) => {
+  return item1 + item2;
+});
+
+memoized.add([1, 2], 3);
+```
 
 **clear()**
 

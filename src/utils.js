@@ -372,13 +372,30 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
     /**
      * @private
      *
+     * @function add
+     *
+     * @description
+     * manually add an item to cache if the key does not already exist
+     *
+     * @param {*} key key to use in cache
+     * @param {*} value value to assign to key
+     */
+    fn.add = (key, value) => {
+      if (!cache.get(key) && getKeyFromArguments(cache, key) === key) {
+        cache.set(key, value);
+      }
+    };
+
+    /**
+     * @private
+     *
      * @function clear
      *
      * @description
      * clear the current cache for this method
      */
     fn.clear = () => {
-      fn.cache.clear();
+      cache.clear();
     };
 
     /**
@@ -394,7 +411,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
     fn.delete = (...args: Array<any>) => {
       const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : getKeyFromArguments(cache, args);
 
-      deleteItemFromCache(fn.cache, key);
+      deleteItemFromCache(cache, key);
     };
 
     /**
@@ -407,7 +424,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      *
      * @returns {Array<*>}
      */
-    fn.keys = createPluckFromInstanceList(fn.cache, 'key');
+    fn.keys = createPluckFromInstanceList(cache, 'key');
 
     /**
      * @private
@@ -419,7 +436,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      *
      * @returns {Array<*>}
      */
-    fn.values = createPluckFromInstanceList(fn.cache, 'value');
+    fn.values = createPluckFromInstanceList(cache, 'value');
 
     return fn;
   };
