@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    "syntax-flow",
+    "transform-flow-strip-types",
+    "add-module-exports"
+  ],
+  "presets": [
+    "latest",
+    "stage-2"
+  ]
+}

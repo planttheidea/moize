@@ -12,17 +12,6 @@
     ],
     "verbose": true
   },
-  "babel": {
-    "plugins": [
-      "syntax-flow",
-      "transform-flow-strip-types",
-      "add-module-exports"
-    ],
-    "presets": [
-      "latest",
-      "stage-2"
-    ]
-  },
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
@@ -103,5 +92,5 @@
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "rimraf lib && NODE_ENV=production babel src --out-dir lib"
   },
-  "version": "2.0.2"
+  "version": "2.0.3"
 }
