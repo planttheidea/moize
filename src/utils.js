@@ -372,7 +372,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
     /**
      * @private
      *
-     * @function clear
+     * @function add
      *
      * @description
      * manually add an item to cache if the key does not already exist
