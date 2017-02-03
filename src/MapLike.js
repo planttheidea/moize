@@ -45,7 +45,7 @@ class MapLike {
   delete(key: any) {
     const index: number = getIndexOfItemInMap(this.list, this.size, key);
 
-    if (!!~index) {
+    if (~index) {
       splice(this.list, index);
       this.size--;
 
@@ -79,13 +79,11 @@ class MapLike {
 
     const index: number = getIndexOfItemInMap(this.list, this.size, key);
 
-    if (!!~index) {
-      this.lastItem = this.list[index];
+    if (~index) {
+      const item = this.list[index];
 
-      splice(this.list, index);
-      unshift(this.list, this.lastItem);
+      this.lastItem = unshift(splice(this.list, index), item);
 
-      // $FlowIgnore this will still exist after the unshift
       return this.lastItem.value;
     }
   }
@@ -106,20 +104,8 @@ class MapLike {
       return false;
     }
 
-    // $FlowIgnore last item exists because it has size
-    if (this.lastItem.key === key) {
-      return true;
-    }
-
-    const index = getIndexOfItemInMap(this.list, this.size, key);
-
-    if (!!~index) {
-      this.lastItem = this.list[index];
-
-      return true;
-    }
-
-    return false;
+    // $FlowIgnore: this.lastItem.key exists
+    return key === this.lastItem.key || !!~getIndexOfItemInMap(this.list, this.size, key);
   }
 
   /**
@@ -134,13 +120,11 @@ class MapLike {
    * @param {*} value value to store in the map at key
    */
   set(key: any, value: any) {
-    this.lastItem = {
+    this.lastItem = unshift(this.list, {
       key,
       isMultiParamKey: !!(key && key.isMultiParamKey),
       value
-    };
-
-    unshift(this.list, this.lastItem);
+    });
 
     this.size++;
   }

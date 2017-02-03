@@ -57,11 +57,13 @@ export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: 
  * @returns {boolean} do all values match
  */
 export const every = (array: Array<any>, fn: Function) => {
-  const length: number = array.length;
+  let index: number = array.length;
 
-  let index: number = -1;
+  if (!index) {
+    return true;
+  }
 
-  while (++index < length) {
+  while (index--) {
     if (!fn(array[index], index, array)) {
       return false;
     }
@@ -103,15 +105,14 @@ export const areArraysShallowEqual = (array1: Array<any>, array2: Array<any>): b
 export const splice = (array: Array<any>, startingIndex: number): Array<any> => {
   const length: number = array.length;
 
-  let index: number = startingIndex;
-
   if (!length) {
     return array;
   }
 
-  while (index < length) {
+  let index: number = startingIndex - 1;
+
+  while (++index < length) {
     array[index] = array[index + 1];
-    index++;
   }
 
   array.length = length - 1;
@@ -129,9 +130,9 @@ export const splice = (array: Array<any>, startingIndex: number): Array<any> => 
  *
  * @param {Array<*>} array array to unshift into
  * @param {*} item item to unshift into array
- * @returns {Array<*>} array plus the item added to the front
+ * @returns {*} the item just added to the array
  */
-export const unshift = (array: Array<any>, item: any): Array<any> => {
+export const unshift = (array: Array<any>, item: any): any => {
   let index: number = array.length;
 
   while (index--) {
@@ -140,7 +141,7 @@ export const unshift = (array: Array<any>, item: any): Array<any> => {
 
   array[0] = item;
 
-  return array;
+  return item;
 };
 
 /**
@@ -341,7 +342,7 @@ export const decycle = (object: any): string => {
  * @param {*} key key to delete
  */
 export const deleteItemFromCache = (cache: any, key: any = cache.list[cache.list.length - 1].key) => {
-  if (key && cache.has(key)) {
+  if (cache.has(key)) {
     cache.delete(key);
   }
 };
@@ -359,8 +360,7 @@ export const deleteItemFromCache = (cache: any, key: any = cache.list[cache.list
  * @returns {function(function): function} method that has cache mechanism added to it
  */
 export const createAddPropertiesToFunction = (cache: any, originalFn: Function): Function => {
-  const functionName = getFunctionName(originalFn);
-  const displayName = `Memoized(${functionName})`;
+  const displayName = `Memoized(${getFunctionName(originalFn)})`;
 
   return (fn: Function): Function => {
     fn.cache = cache;
@@ -656,8 +656,6 @@ export const createGetCacheKey = (
   serializeFunctions: boolean,
   maxArgs: number
 ): Function => {
-  const hasMaxArgs = isFiniteAndPositive(maxArgs);
-
   if (serialize) {
     const serializeArguments = getSerializerFunction(serializerFromOptions, serializeFunctions, maxArgs);
 
@@ -666,8 +664,14 @@ export const createGetCacheKey = (
     };
   }
 
+  if (isFiniteAndPositive(maxArgs)) {
+    return (args: Array<any>): any => {
+      return args.length > 1 ? getKeyFromArguments(cache, args.slice(0, maxArgs)) : args[0];
+    };
+  }
+
   return (args: Array<any>): any => {
-    return args.length > 1 ? getKeyFromArguments(cache, hasMaxArgs ? args.slice(0, maxArgs) : args) : args[0];
+    return args.length > 1 ? getKeyFromArguments(cache, args) : args[0];
   };
 };
 
