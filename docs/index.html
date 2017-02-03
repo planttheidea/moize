@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 2.1.0</h3>
+    <h3>moize 2.1.1</h3>
 
 
 
@@ -90,7 +90,7 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.69%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.65%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
@@ -355,14 +355,14 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 </thead>
 <tbody>
 <tr>
-<td>9,313,172</td>
-<td>10,063,753</td>
-<td>1,072,901</td>
-<td>11,145,989</td>
-<td>31,208,485</td>
-<td>3,755,775</td>
-<td>2,157,874</td>
-<td>40,188,210</td>
+<td>9,389,162</td>
+<td>9,818,299</td>
+<td>1,091,884</td>
+<td>11,501,744</td>
+<td>31,000,515</td>
+<td>3,654,676</td>
+<td>2,155,360</td>
+<td>47,460,493</td>
 </tr>
 </tbody>
 </table>
@@ -379,11 +379,11 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 </thead>
 <tbody>
 <tr>
-<td>8,018,360</td>
-<td>1,239,470</td>
-<td>1,681,101</td>
-<td>1,359,196</td>
-<td>6,815,215</td>
+<td>8,371,681</td>
+<td>1,263,980</td>
+<td>1,788,104</td>
+<td>1,324,819</td>
+<td>7,339,389</td>
 </tr>
 </tbody>
 </table>
@@ -400,11 +400,11 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 </thead>
 <tbody>
 <tr>
-<td>7,198,600</td>
-<td>877,440</td>
-<td>810,924</td>
-<td>1,208,660</td>
-<td>6,011,380</td>
+<td>7,330,256</td>
+<td>924,317</td>
+<td>858,391</td>
+<td>1,217,798</td>
+<td>6,638,806</td>
 </tr>
 </tbody>
 </table>

@@ -17,7 +17,7 @@
   },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {
-    "ava": "0.17.0",
+    "ava": "0.18.0",
     "babel": "6.5.2",
     "babel-cli": "6.22.2",
     "babel-eslint": "7.1.1",
@@ -35,7 +35,7 @@
     "eslint": "3.14.1",
     "eslint-friendly-formatter": "2.0.7",
     "eslint-loader": "1.6.1",
-    "fast-memoize": "2.1.1",
+    "fast-memoize": "2.2.0",
     "flow-babel-webpack-plugin": "1.0.1",
     "flow-bin": "0.38.0",
     "html-webpack-plugin": "2.28.0",
@@ -92,5 +92,5 @@
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "rimraf lib && NODE_ENV=production babel src --out-dir lib"
   },
-  "version": "2.1.0"
+  "version": "2.1.1"
 }

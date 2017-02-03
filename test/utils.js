@@ -112,6 +112,10 @@ test('if every matches the output of the native function', (t) => {
   t.is(noneResult, noneFoo.every(isFoo));
 });
 
+test('if every returns true when the array is empty', (t) => {
+  t.true(every([]));
+});
+
 test('if getKeyFromArguments produces an array of keys arguments when no match is found', (t) => {
   const cache = {
     list: [],
