@@ -51,7 +51,9 @@ test('if addStaticPropertiesToFunction will add static properties to the origina
   originalFn.defaultProps = bar;
   originalFn.propTypes = baz;
 
-  addStaticPropertiesToFunction(originalFn, memoizedFn);
+  const result = addStaticPropertiesToFunction(originalFn, memoizedFn);
+
+  t.is(result, memoizedFn);
 
   t.is(memoizedFn.contextTypes, foo);
   t.is(memoizedFn.defaultProps, bar);

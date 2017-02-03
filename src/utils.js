@@ -24,6 +24,7 @@ const STATIC_PROPERTIES_TO_PASS = [
   'defaultProps',
   'propTypes'
 ];
+const STATIC_PROPERTIES_TO_PASS_LENGTH = STATIC_PROPERTIES_TO_PASS.length;
 
 /**
  * @private
@@ -35,13 +36,21 @@ const STATIC_PROPERTIES_TO_PASS = [
  *
  * @param {function} originalFn the function to be memoized
  * @param {function} memoizedFn the higher-order memoized function
+ * @returns {function} memoizedFn with static properties added
  */
-export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: Function): void => {
-  STATIC_PROPERTIES_TO_PASS.forEach((property) => {
+export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: Function): Function => {
+  let index: number = STATIC_PROPERTIES_TO_PASS_LENGTH,
+      property: string;
+
+  while (index--) {
+    property = STATIC_PROPERTIES_TO_PASS[index];
+
     if (originalFn[property]) {
       memoizedFn[property] = originalFn[property];
     }
-  });
+  }
+
+  return memoizedFn;
 };
 
 /**
@@ -86,7 +95,7 @@ export const every = (array: Array<any>, fn: Function) => {
  */
 export const areArraysShallowEqual = (array1: Array<any>, array2: Array<any>): boolean => {
   return array1.length === array2.length && every(array1, (item: any, index: number) => {
-    return item === array2[index];
+    return isEqual(item, array2[index]);
   });
 };
 
@@ -367,8 +376,6 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
     fn.displayName = displayName;
     fn.isMemoized = true;
 
-    addStaticPropertiesToFunction(originalFn, fn);
-
     /**
      * @private
      *
@@ -438,7 +445,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      */
     fn.values = createPluckFromInstanceList(cache, 'value');
 
-    return fn;
+    return addStaticPropertiesToFunction(originalFn, fn);
   };
 };
 

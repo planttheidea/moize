@@ -61,7 +61,7 @@ test('if get will keep the order of retrieval correct', (t) => {
     {key: 'fourth', isMultiParamKey: false, value: 4},
     {key: 'third', isMultiParamKey: false, value: 3},
     {key: 'second', isMultiParamKey: false, value: 2},
-    {key: 'first', isMultiParamKey: false, value: 1},
+    {key: 'first', isMultiParamKey: false, value: 1}
   ]);
 
   map.get('third');
