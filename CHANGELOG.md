@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+#### 2.1.1
+* Optimize cache class to be more efficient in both `has` and `get` operations
+* Fix issue with `delete` that was preventing delete of falsy keys
+
 #### 2.1.0
 * Add `add` method on cache to allow for manual cache insertion
 
