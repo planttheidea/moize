@@ -3,6 +3,7 @@
 // utils
 import {
   getIndexOfItemInMap,
+  isKeyShallowEqualWithArgs,
   splice,
   unshift
 } from './utils';
@@ -20,7 +21,7 @@ class Cache {
 
   /**
    * @function clear
-   * @memberOf Cache
+   * @memberof Cache
    * @instance
    *
    * @description
@@ -35,7 +36,7 @@ class Cache {
 
   /**
    * @function delete
-   * @memberOf Cache
+   * @memberof Cache
    * @instance
    *
    * @description
@@ -59,7 +60,7 @@ class Cache {
 
   /**
    * @function get
-   * @memberOf Cache
+   * @memberof Cache
    * @instance
    *
    * @description
@@ -92,8 +93,39 @@ class Cache {
   }
 
   /**
+   * @function getMultiParamKey
+   * @memberof Cache
+   * @instance
+   *
+   * @description
+   * get the multi-parameter key that either matches a current one in state or is the same as the one passed
+   *
+   * @param {Array<*>} args arguments passed to moize get key
+   * @returns {Array<*>} either a matching key in cache or the same key as the one passed
+   */
+  getMultiParamKey(args: Array<any>): Array<any> {
+    if (isKeyShallowEqualWithArgs(this.lastItem, args)) {
+      // $FlowIgnore this.lastItem exists
+      return this.lastItem.key;
+    }
+
+    let index: number = 0;
+
+    while (++index < this.size) {
+      if (isKeyShallowEqualWithArgs(this.list[index], args)) {
+        return this.list[index].key;
+      }
+    }
+
+    // $FlowIgnore ok to add key to array object
+    args.isMultiParamKey = true;
+
+    return args;
+  }
+
+  /**
    * @function has
-   * @memberOf Cache
+   * @memberof Cache
    * @instance
    *
    * @description
@@ -113,7 +145,7 @@ class Cache {
 
   /**
    * @function set
-   * @memberOf Cache
+   * @memberof Cache
    * @instance
    *
    * @description

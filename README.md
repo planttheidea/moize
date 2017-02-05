@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.70%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.71%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is less than 3kb when minified and gzipped.
@@ -83,37 +83,89 @@ export default moize.react(Foo);
 
 **cache** *defaults to new Map()*
 
-The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. The only requirements for the cache implementation is that it matches the relevant `Map` API methods:
+The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation.
+
+The only requirements for the cache implementation is that it matches the relevant `Map` API methods and properties:
 * clear
 * delete
 * get
 * has
 * set
+* size
+
+Additional cache-specific methods that need to be implemented:
+
+*getMultiParamKey(args: Array<any>): Array<any>*
+
+Accepts the `arguments` of the function itself as an `Array`, and returns either a key that matches one in cache already or the `args` passed.
+
 
 ```javascript
+import isEqual from 'lodash/isEqual';
+
+// example using a native plain object implementation
 const cache = {
+  _keys: [],
+  _values: [],
+  size: 0,
+
   clear() {
-    Object.keys(this).forEach((key) => {
-      if (typeof this[key] !== 'function') {
-        this.delete(key);
-      }
-    });
+    this._keys.length = 0;
+    this._values.length = 0;
+    this.size = 0;
   },
+
   delete(key) {
-    delete this[key];
+    const index = this._keys.indexOf(key);
+
+    if (!~index) {
+      return;
+    }
+
+    this._keys.splice(index, 1);
+    this._values.splice(index, 1);
+
+    this.size--;
   },
+
   get(key) {
-    return this[key];
+    const index = this._keys.indexOf(key);
+
+    return ~index ? this._values[index] : undefined;
   },
+
+  getMultiParamKey(args) {
+    let index = -1;
+
+    while (++index < this._keys.length) {
+      // does deepEqual comparison with existing keys
+      if (isEqual(this._keys[index], args)) {
+        return this._keys[index];
+      }
+    }
+
+    return args;
+  },
+
   has(key) {
-    return this.hasOwnProperty[key];
+    return !!~this._keys.indexOf(key);
   },
+
   set(key, value) {
-    this[key] = value;
+    const existingIndex = this._keys.indexOf(key);
+
+    if (~existingIndex) {
+      this._values[existingIndex] = value;
+    } else {
+      this._keys.push(key);
+      this._values.push(key);
+      this.size++;
+    }
 
     return this;
   }
 };
+
 const fn = (item) => {
   return item;
 };
@@ -178,6 +230,8 @@ const memoized = moize(fn, {
   maxSize: 5
 });
 ```
+
+*Please note that this does not work with a custom cache implementation.*
 
 **serialize** *defaults to false*
 
@@ -244,7 +298,7 @@ Please note that you must also set `serialize` to true for this setting to take 
 
 ### Direct cache manipulation
 
-There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:
+There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache (*please note that none of these methods will work with a custom `cache` implementation unless that cache implementation also has the method*):
 
 **add(key, value)**
 
@@ -311,7 +365,7 @@ memoized.delete(foo, bar);
 
 **keys()**
 
-This will return a list of the current keys in cache.
+This will return a list of the current keys in `cache`.
 
 ```javascript
 const memoized = moize((item) => {
@@ -331,9 +385,11 @@ memoized(bar);
 const keys = memoized.keys(); // ['foo', {baz: 'baz'}]
 ```
 
+*Please note that this is a no-op when a custom `cache` implementation is used.*
+
 **values()**
 
-This will return a list of the current values in cache.
+This will return a list of the current values in `cache` when the native `Cache`.
 
 ```javascript
 const memoized = moize((item) => {
@@ -354,6 +410,8 @@ memoized(bar);
 
 const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 ```
+
+*Please note that this is a no-op when a custom `cache` implementation is used.*
 
 ### Benchmarks
 

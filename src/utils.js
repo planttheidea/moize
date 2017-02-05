@@ -141,15 +141,15 @@ export const unshift = (array: Array<any>, item: any): any => {
  * @function createPluckFromInstanceList
  *
  * @description
- * get a property from the list on the instance
+ * get a property from the list on the cache
  *
- * @param {{list: Array<Object>}} instance insatnce whose list to map over
+ * @param {{list: Array<Object>}} cache cache whose list to map over
  * @param {string} key key to pluck from list
  * @returns {Array<*>} array of values plucked at key
  */
-export const createPluckFromInstanceList = (instance: Object, key: string): Function => {
-  return (): Array<any> => {
-    return instance.list.map((item) => {
+export const createPluckFromInstanceList = (cache: Object, key: string): Function => {
+  return !isCache(cache) ? () => {} : (): Array<any> => {
+    return cache.list.map((item) => {
       return item[key];
     });
   };
@@ -201,6 +201,21 @@ export const getFunctionName = (fn: Function): string => {
  */
 export const isArray = Array.isArray || function(object: any): boolean {
  return toString.call(object) === ARRAY_OBJECT_CLASS;
+};
+
+/**
+ * @private
+ *
+ * @function isCache
+ *
+ * @description
+ * is the object passed an instance of the native Cache implementation
+ *
+ * @param {*} object object to test
+ * @returns {boolean} is the object an instance of Cache
+ */
+export const isCache = (object: any): boolean => {
+  return object instanceof Cache;
 };
 
 /**
@@ -331,8 +346,13 @@ export const decycle = (object: any): string => {
  *
  * @param {*} cache caching mechanism for method
  * @param {*} key key to delete
+ * @param {boolean} [isKeyLastItem=false] should the key be the last item in the LRU list
  */
-export const deleteItemFromCache = (cache: any, key: any = cache.list[cache.list.length - 1].key) => {
+export const deleteItemFromCache = (cache: any, key: any, isKeyLastItem: boolean = false) => {
+  if (isKeyLastItem && isCache(cache)) {
+    key = cache.list[cache.list.length - 1].key;
+  }
+
   if (cache.has(key)) {
     cache.delete(key);
   }
@@ -370,7 +390,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      * @param {*} value value to assign to key
      */
     fn.add = (key, value) => {
-      if (!cache.get(key) && getKeyFromArguments(cache, key) === key) {
+      if (!cache.get(key) && cache.getMultiParamKey(key) === key) {
         cache.set(key, value);
       }
     };
@@ -398,7 +418,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      * @param {Array<*>} args combination of args to remove from cache
      */
     fn.delete = (...args: Array<any>) => {
-      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : getKeyFromArguments(cache, args);
+      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : cache.getMultiParamKey(args);
 
       deleteItemFromCache(cache, key);
     };
@@ -614,41 +634,6 @@ export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean
 /**
  * @private
  *
- * @function getKeyFromArguments
- *
- * @description
- * get the existing key from arguments if it is there, else return the new arguments
- *
- * @param {*} cache cache used to store arguments
- * @param {Array<*>} newArgs to test if shallow clone already exists in cache
- * @returns { Array<*>} array to use as key for cache
- */
-export const getKeyFromArguments = (cache: any, newArgs: Array<any>): Array<any>  => {
-  let currentValue: any = cache.lastItem;
-
-  if (isKeyShallowEqualWithArgs(currentValue, newArgs)) {
-    return currentValue.key;
-  }
-
-  let index: number = 0;
-
-  while (++index < cache.size) {
-    currentValue = cache.list[index];
-
-    if (isKeyShallowEqualWithArgs(currentValue, newArgs)) {
-      return currentValue.key;
-    }
-  }
-
-  // $FlowIgnore ok to add key to array object
-  newArgs.isMultiParamKey = true;
-
-  return newArgs;
-};
-
-/**
- * @private
- *
  * @function createGetCacheKey
  *
  * @description
@@ -678,12 +663,12 @@ export const createGetCacheKey = (
 
   if (isFiniteAndPositive(maxArgs)) {
     return (args: Array<any>): any => {
-      return args.length > 1 ? getKeyFromArguments(cache, args.slice(0, maxArgs)) : args[0];
+      return args.length > 1 ? cache.getMultiParamKey(args.slice(0, maxArgs)) : args[0];
     };
   }
 
   return (args: Array<any>): any => {
-    return args.length > 1 ? getKeyFromArguments(cache, args) : args[0];
+    return args.length > 1 ? cache.getMultiParamKey(args) : args[0];
   };
 };
 
@@ -733,8 +718,8 @@ export const createSetNewCachedValue = (
       value.then((resolvedValue) => {
         fn.cache.set(key, resolvedValue);
 
-        if (hasMaxSize && fn.cache.list.length > maxSize) {
-          deleteItemFromCache(fn.cache);
+        if (hasMaxSize && fn.cache.size > maxSize) {
+          deleteItemFromCache(fn.cache, undefined, true);
         }
       });
 
@@ -753,8 +738,8 @@ export const createSetNewCachedValue = (
       setExpirationOfCache(fn, key);
     }
 
-    if (hasMaxSize && fn.cache.list.length > maxSize) {
-      deleteItemFromCache(fn.cache);
+    if (hasMaxSize && fn.cache.size > maxSize) {
+      deleteItemFromCache(fn.cache, undefined, true);
     }
 
     return value;

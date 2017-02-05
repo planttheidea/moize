@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+#### 2.1.4
+* Move multiple-parameter key matching to cache (allows for custom `cache` to have its own implementation)
+* Update documentation for the custom `cache` implementation, as it requires `getMultiParamKey` now, plus give a better example of an alternative `cache`
+* Make `keys()` and `values()` methods no-ops when cache implementation is custom
+* Make `deleteItemFromCache` method safe with custom `cache` implementations
+
 #### 2.1.3
 * Enhance `Cache` more for multiple-parameter functions (now benchmarks faster in all categories)
 
