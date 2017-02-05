@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import _ from 'lodash';
 import sinon from 'sinon';
 
 //src
@@ -7,6 +8,7 @@ import {
   addStaticPropertiesToFunction,
   createAddPropertiesToFunction,
   createGetCacheKey,
+  createPluckFromInstanceList,
   createSetExpirationOfCache,
   createSetNewCachedValue,
   decycle,
@@ -15,10 +17,10 @@ import {
   getIndexOfItemInMap,
   getFunctionName,
   getFunctionNameViaRegexp,
-  getKeyFromArguments,
   getSerializerFunction,
   getStringifiedArgument,
   isArray,
+  isCache,
   isComplexObject,
   isEqual,
   isFunction,
@@ -99,41 +101,6 @@ test('if every matches the output of the native function', (t) => {
 
 test('if every returns true when the array is empty', (t) => {
   t.true(every([]));
-});
-
-test('if getKeyFromArguments produces an array of keys arguments when no match is found', (t) => {
-  const cache = new Cache();
-  const args = ['foo', 'bar'];
-
-  const result = getKeyFromArguments(cache, args);
-
-  t.is(result, args);
-  t.true(result.isMultiParamKey);
-});
-
-test('if getKeyFromArguments returns an existing array of arguments when match is found', (t) => {
-  const existingArgList = [
-    {
-      key: ['foo', 'bar'],
-      value: 'baz'
-    }, {
-      key: ['bar', 'baz'],
-      value: 'foo'
-    }
-  ];
-  const cache = new Cache();
-  const args = ['foo', 'bar'];
-
-  existingArgList.forEach((arg) => {
-    arg.key.isMultiParamKey = true;
-
-    cache.set(arg.key, arg.value);
-  });
-
-  const result = getKeyFromArguments(cache, args);
-
-  t.not(result, args);
-  t.deepEqual(result, args);
 });
 
 test('if decycle will return an object that has circular references removed', (t) => {
@@ -239,6 +206,36 @@ test('if createGetCacheKey will return undefined as a key when no arguments are 
   const result = getCacheKey(args);
 
   t.is(result, undefined);
+});
+
+test('if createPluckFromInstanceList will create a method to pluck the key passed from the instance', (t) => {
+  const cache = new Cache();
+
+  cache.set('foo', 'bar');
+  cache.set('bar', 'baz');
+
+  const fn = createPluckFromInstanceList(cache, 'value');
+
+  t.true(_.isFunction(fn));
+
+  t.deepEqual(fn().sort(), ['bar', 'baz']);
+});
+
+test('if createPluckFromInstanceList will return a noop if the cache is not an instance of cache', (t) => {
+  const cache = {
+    list: [
+      {
+        key: 'foo',
+        value: 'bar'
+      }
+    ]
+  };
+
+  const fn = createPluckFromInstanceList(cache, 'value');
+
+  t.true(_.isFunction(fn));
+
+  t.is(fn(), undefined);
 });
 
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
@@ -371,7 +368,7 @@ test('if getFunctionWithAdditionalProperties add method will not add a key => va
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
   const cache = new Cache();
-  const key = getKeyFromArguments(cache, ['foo']);
+  const key = cache.getMultiParamKey(['foo']);
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
@@ -451,6 +448,23 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
 test('if isArray correctly tests if array or not', (t) => {
   t.true(isArray([1, 2, 3]));
   t.false(isArray(123));
+});
+
+test('if isCache correctly tests if object passed is an instance of Cache', (t) => {
+  const string = 'foo';
+  const number = 123;
+  const boolean = true;
+  const object = {
+    foo: 'bar'
+  };
+  const cache = new Cache();
+
+  t.false(isCache(string));
+  t.false(isCache(number));
+  t.false(isCache(boolean));
+  t.false(isCache(object));
+
+  t.true(isCache(cache));
 });
 
 test('if isComplexObject correctly identifies a complex object', (t) => {

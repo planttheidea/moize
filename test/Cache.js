@@ -94,6 +94,42 @@ test('if get will keep the order of retrieval correct', (t) => {
   ]);
 });
 
+test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
+  const cache = new Cache();
+  const args = ['foo', 'bar'];
+
+  const result = cache.getMultiParamKey(args);
+
+  t.is(result, args);
+  t.true(result.isMultiParamKey);
+});
+
+test('if getMultiParamKey returns an existing array of arguments when match is found', (t) => {
+  const existingArgList = [
+    {
+      key: ['foo', 'bar'],
+      value: 'baz'
+    }, {
+      key: ['bar', 'baz'],
+      value: 'foo'
+    }
+  ];
+  const cache = new Cache();
+  const args = ['foo', 'bar'];
+
+  existingArgList.forEach((arg) => {
+    arg.key.isMultiParamKey = true;
+
+    cache.set(arg.key, arg.value);
+  });
+
+  const result = cache.getMultiParamKey(args);
+
+  t.not(result, args);
+  t.is(result, existingArgList[0].key);
+  t.deepEqual(result, args);
+});
+
 test('if has will identify the existence of a key in the cache', (t) => {
   const cache = new Cache();
   const key = 'foo';

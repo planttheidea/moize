@@ -77,7 +77,7 @@
 
 
 
-    <h3>moize 2.1.3</h3>
+    <h3>moize 2.1.4</h3>
 
 
 
@@ -97,7 +97,7 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.68%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.71%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is less than 3kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
@@ -151,37 +151,84 @@ export default moize.react(Foo);</code></pre><p><code>moize.react</code> will au
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
-<p>The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods:</p>
+<p>The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. <strong>This will be deprecated in the next major release.</strong></p>
+<p>The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods and properties:</p>
 <ul>
 <li>clear</li>
 <li>delete</li>
 <li>get</li>
 <li>has</li>
 <li>set</li>
+<li>size</li>
 </ul>
-<pre class="prettyprint source lang-javascript"><code>const cache = {
+<p>Additional cache-specific methods that need to be implemented:</p>
+<p><em>getMultiParamKey(args: Array<any>): Array<any></em></p>
+<p>Accepts the <code>arguments</code> of the function itself as an <code>Array</code>, and returns either a key that matches one in cache already or the <code>args</code> passed.</p>
+<pre class="prettyprint source lang-javascript"><code>import isEqual from 'lodash/isEqual';
+
+// example using a native plain object implementation
+const cache = {
+  _keys: [],
+  _values: [],
+  size: 0,
+
   clear() {
-    Object.keys(this).forEach((key) => {
-      if (typeof this[key] !== 'function') {
-        this.delete(key);
-      }
-    });
+    this._keys.length = 0;
+    this._values.length = 0;
+    this.size = 0;
   },
+
   delete(key) {
-    delete this[key];
+    const index = this._keys.indexOf(key);
+
+    if (!~index) {
+      return;
+    }
+
+    this._keys.splice(index, 1);
+    this._values.splice(index, 1);
+
+    this.size--;
   },
+
   get(key) {
-    return this[key];
+    const index = this._keys.indexOf(key);
+
+    return ~index ? this._values[index] : undefined;
   },
+
+  getMultiParamKey(args) {
+    let index = -1;
+
+    while (++index &lt; this._keys.length) {
+      // does deepEqual comparison with existing keys
+      if (isEqual(this._keys[index], args)) {
+        return this._keys[index];
+      }
+    }
+
+    return args;
+  },
+
   has(key) {
-    return this.hasOwnProperty[key];
+    return !!~this._keys.indexOf(key);
   },
+
   set(key, value) {
-    this[key] = value;
+    const existingIndex = this._keys.indexOf(key);
+
+    if (~existingIndex) {
+      this._values[existingIndex] = value;
+    } else {
+      this._keys.push(key);
+      this._values.push(key);
+      this.size++;
+    }
 
     return this;
   }
 };
+
 const fn = (item) => {
   return item;
 };
@@ -220,7 +267,8 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   maxSize: 5
-});</code></pre><p><strong>serialize</strong> <em>defaults to false</em></p>
+});</code></pre><p><em>Please note that this does not work with a custom cache implementation.</em></p>
+<p><strong>serialize</strong> <em>defaults to false</em></p>
 <p>In <code>moize</code> 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from 1.x.x.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (mutableObject) => {
   return mutableObject.foo;
@@ -264,7 +312,7 @@ const memoized = moize(fn, {
   serializer
 });</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
 <h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
-<p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
+<p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache (<em>please note that none of these methods will work with a custom <code>cache</code> implementation unless that cache implementation also has the method</em>):</p>
 <p><strong>add(key, value)</strong></p>
 <p>This will manually add the <em>value</em> at <em>key</em> in cache if <em>key</em> does not already exist.</p>
 <pre class="prettyprint source lang-javascript"><code>// single parameter is straightforward
@@ -311,7 +359,7 @@ const bar = 2;
 memoized(foo, bar);
 
 memoized.delete(foo, bar);</code></pre><p><strong>keys()</strong></p>
-<p>This will return a list of the current keys in cache.</p>
+<p>This will return a list of the current keys in <code>cache</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return item;
 });
@@ -326,8 +374,9 @@ const bar = {
 
 memoized(bar);
 
-const keys = memoized.keys(); // ['foo', {baz: 'baz'}]</code></pre><p><strong>values()</strong></p>
-<p>This will return a list of the current values in cache.</p>
+const keys = memoized.keys(); // ['foo', {baz: 'baz'}]</code></pre><p><em>Please note that this is a no-op when a custom <code>cache</code> implementation is used.</em></p>
+<p><strong>values()</strong></p>
+<p>This will return a list of the current values in <code>cache</code> when the native <code>Cache</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return {
     item
@@ -344,7 +393,8 @@ const bar = {
 
 memoized(bar);
 
-const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><h3 id="benchmarks">Benchmarks</h3>
+const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><p><em>Please note that this is a no-op when a custom <code>cache</code> implementation is used.</em></p>
+<h3 id="benchmarks">Benchmarks</h3>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
 <table>
