@@ -6,6 +6,7 @@ import React, {
 import {
   render
 } from 'react-dom';
+import memoizee from 'memoizee';
 
 import moize from '../src';
 
@@ -40,16 +41,32 @@ const memoizedPromise = moize(promiseMethod);
 // get result
 memoizedPromise(2, 2)
   .then((value) => {
-    console.log(`computed value: ${value}`)
+    console.log(`computed value: ${value}`);
   });
 
 // pull from cache
 memoizedPromise(2, 2)
   .then((value) => {
-    console.log(`cached value: ${value}`)
+    console.log(`cached value: ${value}`);
   });
 
 console.log(memoizedPromise.keys());
+
+const withDefault = (foo, bar = 'default') => {
+  console.log('withDefault fired');
+
+  return `${foo} ${bar}`;
+};
+const moizedWithDefault = moize(withDefault);
+const memoizeedWithDefault = memoizee(withDefault);
+
+console.log(moizedWithDefault('foo'));
+console.log(moizedWithDefault('foo', 'bar'));
+console.log(moizedWithDefault('foo'));
+
+console.log(memoizeedWithDefault('bar'));
+console.log(memoizeedWithDefault('bar', 'baz'));
+console.log(memoizeedWithDefault('bar'));
 
 const Foo = ({bar, value}) => {
   console.log('Foo React element fired', bar, value);

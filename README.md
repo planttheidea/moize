@@ -1,10 +1,10 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.67%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-98.70%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box, and also offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is about 2.7kb when minified and gzipped.
+`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is less than 3kb when minified and gzipped.
 
 ### Table of contents
 * [Upgrade notification](#upgrade-notification)
@@ -333,7 +333,7 @@ const keys = memoized.keys(); // ['foo', {baz: 'baz'}]
 
 **values()**
 
-This will return a list of the current keys in cache.
+This will return a list of the current values in cache.
 
 ```javascript
 const memoized = moize((item) => {
@@ -363,21 +363,19 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 | underscore | lodash    | ramda     | memoizee   | fast-memoize | addy-osmani | memoizerific | moize      |
 |------------|-----------|-----------|------------|--------------|-------------|--------------|------------|
-| 9,389,162  | 9,818,299 | 1,091,884 | 11,501,744 | 31,000,515   | 3,654,676   | 2,155,360    | 47,460,493 |
+| 9,393,399  | 9,679,995 | 1,102,656 | 11,651,361 | 31,085,245   | 3,656,676   | 2,184,221    | 47,089,212 |
 
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
 | memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
 |-----------|--------------|-------------|--------------|-----------|
-| 8,371,681 | 1,263,980    | 1,788,104   | 1,324,819    | 7,339,389 |
+| 8,144,578 | 1,256,879    | 1,788,762   | 1,433,723    | 9,762,395 |
 
 ![Multiple complex parameters image](img/multiple-parameter-complex.png)
 
 | memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
 |-----------|--------------|-------------|--------------|-----------|
-| 7,330,256 | 924,317      | 858,391     | 1,217,798    | 6,638,806 |
-
-*NOTE: benchmarks posted prior were inaccurate for `memoizee` and `memoizerific`, as it turns out I was creating new objects instead of using the same ones (sorry). The updated benchmarks are an accurate reflection of default usage.*
+| 8,208,516 | 1,019,949    | 922,261     | 1,419,771    | 9,741,543 |
 
 ### Browser support
 

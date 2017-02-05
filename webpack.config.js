@@ -12,32 +12,28 @@ module.exports = {
     path.resolve(__dirname, 'src', 'index.js')
   ],
 
-  eslint: {
-    configFile: '.eslintrc',
-    emitError: true,
-    failOnError: true,
-    failOnWarning: false,
-    formatter: require('eslint-friendly-formatter')
-  },
-
   module: {
-    preLoaders: [
+    rules: [
       {
+        enforce: 'pre',
         include: [
           path.resolve(__dirname, 'src')
         ],
         loader: 'eslint-loader',
+        options: {
+          configFile: '.eslintrc',
+          emitError: true,
+          failOnError: true,
+          failOnWarning: false,
+          formatter: require('eslint-friendly-formatter')
+        },
         test: /\.js$/
-      }
-    ],
-
-    loaders: [
-      {
+      }, {
         include: [
           path.resolve(__dirname, 'src')
         ],
-        loader: 'babel',
-        test: /\.js$/
+        test: /\.js$/,
+        loader: 'babel-loader'
       }
     ]
   },
@@ -57,15 +53,9 @@ module.exports = {
   ],
 
   resolve: {
-    extensions: [
-      '',
-      '.js'
-    ],
-
-    fallback: [
-      path.join(__dirname, 'src')
-    ],
-
-    root: __dirname
+    modules: [
+      path.join(__dirname, 'src'),
+      'node_modules'
+    ]
   }
 };

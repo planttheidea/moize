@@ -1,7 +1,7 @@
 // @flow
 
 // external dependencies
-import MapLike from './MapLike';
+import Cache from './Cache';
 
 // utils
 import {
@@ -55,7 +55,7 @@ const NOT_A_FUNCTION_ERROR = 'You must pass a function as the first parameter to
  *
  * @param {function} fn method to memoize
  * @param {Options} [options={}] options to customize how the caching is handled
- * @param {MapLike} [options.cache=new MapLike()] caching mechanism to use for method
+ * @param {Cache} [options.cache=new Cache()] caching mechanism to use for method
  * @param {boolean} [options.isPromise=false] is the function return expected to be a promise to resolve
  * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [options.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
@@ -73,7 +73,7 @@ const moize = function(fn: Function, options: Options = {}): any {
   }
 
   const {
-    cache = new MapLike(),
+    cache = new Cache(),
     isPromise = false,
     maxAge = INFINITY,
     maxArgs = INFINITY,

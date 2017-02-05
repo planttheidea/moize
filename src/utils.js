@@ -1,6 +1,6 @@
 // @flow
 
-import MapLike from './MapLike';
+import Cache from './Cache';
 
 const keys: Function = Object.keys;
 const toString: Function = Object.prototype.toString;
@@ -73,30 +73,12 @@ export const every = (array: Array<any>, fn: Function) => {
   }
 
   while (index--) {
-    if (!fn(array[index], index, array)) {
+    if (!fn(array[index], index)) {
       return false;
     }
   }
 
   return true;
-};
-
-/**
- * @private
- *
- * @function areArraysShallowEqual
- *
- * @description
- * test if the arrays are shallow equal in value
- *
- * @param {Array<*>} array1 first array to check
- * @param {Array<*>} array2 second array to check
- * @returns {boolean} are arrays shallow equal
- */
-export const areArraysShallowEqual = (array1: Array<any>, array2: Array<any>): boolean => {
-  return array1.length === array2.length && every(array1, (item: any, index: number) => {
-    return isEqual(item, array2[index]);
-  });
 };
 
 /**
@@ -296,7 +278,7 @@ export const customReplacer = (key: string, value: any): any => {
  * @returns {string} stringified value of object
  */
 export const decycle = (object: any): string => {
-  let map: MapLike = new MapLike();
+  let cache: Cache = new Cache();
 
   /**
    * @private
@@ -311,29 +293,29 @@ export const decycle = (object: any): string => {
    * @returns {*} clean value
    */
   const coalesceCircularReferences = (value: any, path: string): any => {
-    if (isValueObjectOrArray(value)) {
-      if (map.has(value)) {
-        return {
-          $ref: map.get(value)
-        };
-      }
-
-      map.set(value, path);
-
-      if (isArray(value)) {
-        return value.map((item, itemIndex) => {
-          return coalesceCircularReferences(item, `${path}[${itemIndex}]`);
-        });
-      }
-
-      return keys(value).reduce((object, name) => {
-        object[name] = coalesceCircularReferences(value[name], `${path}[${JSON.stringify(name)}]`);
-
-        return object;
-      }, {});
+    if (!isValueObjectOrArray(value)) {
+      return value;
     }
 
-    return value;
+    if (cache.has(value)) {
+      return {
+        $ref: cache.get(value)
+      };
+    }
+
+    cache.set(value, path);
+
+    if (isArray(value)) {
+      return value.map((item, itemIndex) => {
+        return coalesceCircularReferences(item, `${path}[${itemIndex}]`);
+      });
+    }
+
+    return keys(value).reduce((object, name) => {
+      object[name] = coalesceCircularReferences(value[name], `${path}[${JSON.stringify(name)}]`);
+
+      return object;
+    }, {});
   };
 
   return coalesceCircularReferences(object, '$');
@@ -614,6 +596,24 @@ export const getSerializerFunction = (
 /**
  * @private
  *
+ * @function isKeyShallowEqualWithArgs
+ *
+ * @description
+ * is the value passed shallowly equal with the args
+ *
+ * @param {*} value the value to compare
+ * @param {Array<*>} args the args to test
+ * @returns {boolean} are the args shallow equal to the value
+ */
+export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean => {
+  return !!(value && value.isMultiParamKey) && value.key.length === args.length && every(args, (arg, index) => {
+    return arg === value.key[index];
+  });
+};
+
+/**
+ * @private
+ *
  * @function getKeyFromArguments
  *
  * @description
@@ -624,13 +624,18 @@ export const getSerializerFunction = (
  * @returns { Array<*>} array to use as key for cache
  */
 export const getKeyFromArguments = (cache: any, newArgs: Array<any>): Array<any>  => {
-  let index: number = -1,
-      currentValue: Array<any>;
+  let currentValue: any = cache.lastItem;
+
+  if (isKeyShallowEqualWithArgs(currentValue, newArgs)) {
+    return currentValue.key;
+  }
+
+  let index: number = 0;
 
   while (++index < cache.size) {
     currentValue = cache.list[index];
 
-    if (currentValue.isMultiParamKey && areArraysShallowEqual(currentValue.key, newArgs)) {
+    if (isKeyShallowEqualWithArgs(currentValue, newArgs)) {
       return currentValue.key;
     }
   }

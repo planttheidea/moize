@@ -23,8 +23,7 @@ module.exports = Object.assign({}, defaultConfig, {
         screw_ie8: true,
         sequences: true,
         warnings: false
-      },
-      sourceMap: false
+      }
     }),
     new OptimizeJsPlugin()
   ])
