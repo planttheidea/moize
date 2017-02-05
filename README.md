@@ -83,7 +83,7 @@ export default moize.react(Foo);
 
 **cache** *defaults to new Map()*
 
-The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation.
+The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. **This will be deprecated in the next major release.**
 
 The only requirements for the cache implementation is that it matches the relevant `Map` API methods and properties:
 * clear

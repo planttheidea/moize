@@ -151,7 +151,7 @@ export default moize.react(Foo);</code></pre><p><code>moize.react</code> will au
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><p><strong>cache</strong> <em>defaults to new Map()</em></p>
-<p>The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation.</p>
+<p>The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. <strong>This will be deprecated in the next major release.</strong></p>
 <p>The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods and properties:</p>
 <ul>
 <li>clear</li>
