@@ -3,3 +3,4 @@
 
 [options]
 suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore
+unsafe.enable_getters_and_setters=true

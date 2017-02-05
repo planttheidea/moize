@@ -10,31 +10,32 @@ import {
 /**
  * @private
  *
- * @class MapLike
+ * @class Cache
  * @classdesc class that mimics parts of the Map infrastructure, but faster
  */
-class MapLike {
+class Cache {
   lastItem: ?Object = undefined;
   list: Array<any> = [];
   size: number = 0;
 
   /**
    * @function clear
-   * @memberOf MapLike
+   * @memberOf Cache
    * @instance
    *
    * @description
    * remove all keys from the map
    */
-  clear() {
-    this.lastItem = undefined;
+  clear(): void {
     this.list = [];
-    this.size = 0;
+
+    this.setLastItem();
+    this.updateSize();
   }
 
   /**
    * @function delete
-   * @memberOf MapLike
+   * @memberOf Cache
    * @instance
    *
    * @description
@@ -42,22 +43,23 @@ class MapLike {
    *
    * @param {*} key key to delete from the map
    */
-  delete(key: any) {
+  delete(key: any): void {
     const index: number = getIndexOfItemInMap(this.list, this.size, key);
 
     if (~index) {
       splice(this.list, index);
-      this.size--;
+
+      this.updateSize();
 
       if (this.size === 0) {
-        this.lastItem = undefined;
+        this.setLastItem();
       }
     }
   }
 
   /**
    * @function get
-   * @memberOf MapLike
+   * @memberOf Cache
    * @instance
    *
    * @description
@@ -66,13 +68,13 @@ class MapLike {
    * @param {*} key key to get the value for
    * @returns {*} value at the key location
    */
-  get(key: any) {
-    if (!this.size) {
+  get(key: any): any {
+    if (this.size === 0) {
       return undefined;
     }
 
     // $FlowIgnore: this.lastItem.key exists
-    if (this.lastItem.key === key) {
+    if (key === this.lastItem.key) {
       // $FlowIgnore: this.lastItem.value exists
       return this.lastItem.value;
     }
@@ -82,15 +84,16 @@ class MapLike {
     if (~index) {
       const item = this.list[index];
 
-      this.lastItem = unshift(splice(this.list, index), item);
+      this.setLastItem(unshift(splice(this.list, index), item));
 
+      // $FlowIgnore this.lastItem exists
       return this.lastItem.value;
     }
   }
 
   /**
    * @function has
-   * @memberOf MapLike
+   * @memberOf Cache
    * @instance
    *
    * @description
@@ -99,8 +102,8 @@ class MapLike {
    * @param {*} key key to test for in the map
    * @returns {boolean} does the map have the key
    */
-  has(key: any) {
-    if (!this.size) {
+  has(key: any): boolean {
+    if (this.size === 0) {
       return false;
     }
 
@@ -110,7 +113,7 @@ class MapLike {
 
   /**
    * @function set
-   * @memberOf MapLike
+   * @memberOf Cache
    * @instance
    *
    * @description
@@ -119,15 +122,36 @@ class MapLike {
    * @param {*} key key to assign value of
    * @param {*} value value to store in the map at key
    */
-  set(key: any, value: any) {
-    this.lastItem = unshift(this.list, {
+  set(key: any, value: any): void {
+    this.setLastItem(unshift(this.list, {
       key,
       isMultiParamKey: !!(key && key.isMultiParamKey),
       value
-    });
+    }));
+    this.updateSize();
+  }
 
-    this.size++;
+  /**
+   * @function setLastItem
+   *
+   * @description
+   * assign the lastItem
+   *
+   * @param {*} lastItem the item to assign
+   */
+  setLastItem(lastItem: any): void {
+    this.lastItem = lastItem;
+  }
+
+  /**
+   * @function updateSize
+   *
+   * @description
+   * update the instance size to that of the list length
+   */
+  updateSize(): void {
+    this.size = this.list.length;
   }
 }
 
-export default MapLike;
+export default Cache;

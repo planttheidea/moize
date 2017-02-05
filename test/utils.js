@@ -5,7 +5,6 @@ import sinon from 'sinon';
 //src
 import {
   addStaticPropertiesToFunction,
-  areArraysShallowEqual,
   createAddPropertiesToFunction,
   createGetCacheKey,
   createSetExpirationOfCache,
@@ -24,12 +23,13 @@ import {
   isEqual,
   isFunction,
   isFiniteAndPositive,
+  isKeyShallowEqualWithArgs,
   isValueObjectOrArray,
   splice,
   unshift,
   stringify
 } from '../src/utils';
-import MapLike from '../src/MapLike';
+import Cache from '../src/Cache';
 
 const sleep = (ms) => {
   return new Promise((resolve) => {
@@ -75,23 +75,6 @@ test('if addStaticPropertiesToFunction will only static properties that exist on
   t.is(memoizedFn.propTypes, undefined);
 });
 
-test('if areArraysShallowEqual returns true when shallow equal', (t) => {
-  const foo = 'foo';
-  const object = {bar: 'baz'};
-  const a1 = [foo, object];
-  const differentLength = [foo, object, 'bar'];
-  const differentOrder = [object, foo];
-  const differentValue = [foo, {bar: 'baz'}];
-
-  t.false(areArraysShallowEqual(a1, differentLength));
-  t.false(areArraysShallowEqual(a1, differentOrder));
-  t.false(areArraysShallowEqual(a1, differentValue));
-
-  const same = [foo, object];
-
-  t.true(areArraysShallowEqual(a1, same));
-});
-
 test('if every matches the output of the native function', (t) => {
   const everyFoo = ['foo', 'foo'];
   const someFoo = ['foo', 'bar'];
@@ -119,10 +102,7 @@ test('if every returns true when the array is empty', (t) => {
 });
 
 test('if getKeyFromArguments produces an array of keys arguments when no match is found', (t) => {
-  const cache = {
-    list: [],
-    size: 0
-  };
+  const cache = new Cache();
   const args = ['foo', 'bar'];
 
   const result = getKeyFromArguments(cache, args);
@@ -135,19 +115,20 @@ test('if getKeyFromArguments returns an existing array of arguments when match i
   const existingArgList = [
     {
       key: ['foo', 'bar'],
-      isMultiParamKey: true,
       value: 'baz'
     }, {
       key: ['bar', 'baz'],
-      isMultiParamKey: true,
       value: 'foo'
     }
   ];
-  const cache = {
-    list: existingArgList,
-    size: 2
-  };
+  const cache = new Cache();
   const args = ['foo', 'bar'];
+
+  existingArgList.forEach((arg) => {
+    arg.key.isMultiParamKey = true;
+
+    cache.set(arg.key, arg.value);
+  });
 
   const result = getKeyFromArguments(cache, args);
 
@@ -184,7 +165,7 @@ test('if decycle will return an object that has circular references removed', (t
 
 test('if deleteItemFromCache will remove an item from both cache', (t) => {
   const key = 'foo';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   cache.set(key, 'bar');
 
@@ -195,7 +176,7 @@ test('if deleteItemFromCache will remove an item from both cache', (t) => {
 
 test('if deleteItemFromCache will only delete something when the key is actually found', (t) => {
   const key = 'foo';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   cache.set(key, 'bar');
 
@@ -218,7 +199,7 @@ test('if createGetCacheKey returns a function that returns the first item in the
 });
 
 test('if createGetCacheKey returns a function that returns a stringified value of the args passed if more than one item', (t) => {
-  const cache = new MapLike();
+  const cache = new Cache();
   const getCacheKey = createGetCacheKey(cache);
 
   const item = {
@@ -233,7 +214,7 @@ test('if createGetCacheKey returns a function that returns a stringified value o
 });
 
 test('if createGetCacheKey returns a function that returns a limited arguments key for the arguments passed', (t) => {
-  const cache = new MapLike();
+  const cache = new Cache();
   const maxArgs = 1;
   const getCacheKey = createGetCacheKey(cache, false, null, false, maxArgs);
 
@@ -250,7 +231,7 @@ test('if createGetCacheKey returns a function that returns a limited arguments k
 });
 
 test('if createGetCacheKey will return undefined as a key when no arguments are passed', (t) => {
-  const cache = new MapLike();
+  const cache = new Cache();
   const getCacheKey = createGetCacheKey(cache);
 
   const args = [];
@@ -317,7 +298,7 @@ test('if getFunctionWithAdditionalProperties will add the cache passed to the fu
 test('if getFunctionWithAdditionalProperties clear method will clear cache', (t) => {
   const fn = () => {};
   const key = 'foo';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
@@ -335,7 +316,7 @@ test('if getFunctionWithAdditionalProperties clear method will clear cache', (t)
 test('if getFunctionWithAdditionalProperties will have a displayName reflecting the original', (t) => {
   const originalFn = () => {};
   const key = 'foo';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   cache.set(key, key);
 
@@ -350,7 +331,7 @@ test('if getFunctionWithAdditionalProperties will have a displayName reflecting 
 
 test('if getFunctionWithAdditionalProperties add method will add a key => value pair to cache if it doesnt exist', (t) => {
   const fn = () => {};
-  const cache = new MapLike();
+  const cache = new Cache();
   const key = ['foo'];
   const value = 'bar';
 
@@ -366,7 +347,7 @@ test('if getFunctionWithAdditionalProperties add method will add a key => value 
 
 test('if getFunctionWithAdditionalProperties add method will not add a key => value pair to cache if it already exists', (t) => {
   const fn = () => {};
-  const cache = new MapLike();
+  const cache = new Cache();
   const key = ['foo'];
   const value = 'bar';
 
@@ -389,7 +370,7 @@ test('if getFunctionWithAdditionalProperties add method will not add a key => va
 
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
-  const cache = new MapLike();
+  const cache = new Cache();
   const key = getKeyFromArguments(cache, ['foo']);
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
@@ -408,7 +389,7 @@ test('if getFunctionWithAdditionalProperties delete method will remove the key p
 test('if getFunctionWithAdditionalProperties keys method will return the list of keys in cache', (t) => {
   const fn = () => {};
   const key = 'foo';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
@@ -426,7 +407,7 @@ test('if getFunctionWithAdditionalProperties keys method will return the list of
 test('if getFunctionWithAdditionalProperties values method will return the list of values in cache', (t) => {
   const fn = () => {};
   const key = 'foo';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
@@ -531,6 +512,61 @@ test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
   t.false(isFiniteAndPositive(-0));
   t.false(isFiniteAndPositive(-123));
   t.false(isFiniteAndPositive(-Infinity));
+});
+
+test('if isKeyShallowEqualWithArgs returns false when value is falsy', (t) => {
+  const value = null;
+  const args = ['foo', 'bar'];
+
+  const result = isKeyShallowEqualWithArgs(value, args);
+
+  t.false(result);
+});
+
+test('if isKeyShallowEqualWithArgs returns false when value is not a multi-parameter key', (t) => {
+  const value = {
+    isMultiParamKey: false
+  };
+  const args = ['foo', 'bar'];
+
+  const result = isKeyShallowEqualWithArgs(value, args);
+
+  t.false(result);
+});
+
+test('if isKeyShallowEqualWithArgs returns false when value is an array whose length is different than that of args', (t) => {
+  const value = ['foo'];
+  const args = ['foo', 'bar'];
+
+  const result = isKeyShallowEqualWithArgs(value, args);
+
+  t.false(result);
+});
+
+test('if isKeyShallowEqualWithArgs returns false when value is an array whose values are different than args', (t) => {
+  const object = {
+    bar: 'baz'
+  };
+  const value = ['foo', object];
+  const args = ['foo', {
+    ...object
+  }];
+
+  const result = isKeyShallowEqualWithArgs(value, args);
+
+  t.false(result);
+});
+
+test('if isKeyShallowEqualWithArgs returns true when value is an array whose values are shallowly equal to args', (t) => {
+  const object = {
+    bar: 'baz'
+  };
+  const value = ['foo', object];
+  const args = ['foo', object];
+
+  const result = isKeyShallowEqualWithArgs(value, args);
+
+  t.false(result);
 });
 
 test('if isValueObjectOrArray correctly determines if an item is an object / array or not', (t) => {
@@ -658,7 +694,7 @@ test('if setNewCachedValue will set the cache to expire if maxAge is finite', as
   const setNewCachedValue = createSetNewCachedValue(false, maxAge);
 
   let fn = {
-    cache: new MapLike()
+    cache: new Cache()
   };
 
   await setNewCachedValue(fn, keyToSet, valueToSet);
@@ -673,7 +709,7 @@ test('if setNewCachedValue will set the cache to expire if maxAge is finite', as
 test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
   const keyToSet = 'foo';
   const valueToSet = 'bar';
-  const cache = new MapLike();
+  const cache = new Cache();
 
   cache.set('bar', 'baz');
 
@@ -728,14 +764,14 @@ test('if setExpirationOfCache will expire the cache after the age passed', async
   const setExpirationOfCache = createSetExpirationOfCache(100);
 
   const fn = {
-    cache: new MapLike()
+    cache: new Cache()
   };
 
   fn.cache.set('foo', 'bar');
 
   setExpirationOfCache(fn, 'foo');
 
-  const expectedCache = new MapLike();
+  const expectedCache = new Cache();
 
   expectedCache.set('foo', 'bar');
 
@@ -743,14 +779,14 @@ test('if setExpirationOfCache will expire the cache after the age passed', async
 
   await sleep(100);
 
-  t.deepEqual(fn.cache, new MapLike());
+  t.deepEqual(fn.cache, new Cache());
 });
 
 test('if setExpirationOfCache will expire the cache immediately if less than 0', async (t) => {
   const setExpirationOfCache = createSetExpirationOfCache(-1);
 
   const fn = {
-    cache: new MapLike()
+    cache: new Cache()
   };
 
   fn.cache.set('foo', 'bar');
@@ -759,7 +795,7 @@ test('if setExpirationOfCache will expire the cache immediately if less than 0',
 
   await sleep(0);
 
-  t.deepEqual(fn.cache, new MapLike());
+  t.deepEqual(fn.cache, new Cache());
 });
 
 test('if cycle.decycle is called only when object is cannot be handled by JSON.stringify', (t) => {

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Module: moize</title>
+	<title>moize Global</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -72,10 +72,15 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Module: moize</h1>
+	<h1 class="page-title">Global</h1>
 <section>
 
 <header>
+    
+        <h2>
+        
+        </h2>
+        
     
 </header>
 
@@ -116,16 +121,6 @@
 
 
 	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-23">line 23</a>
-			</li>
-		</ul>
-	</dd>
-	
 
 	
 
@@ -158,7 +153,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="~moize"><span class="type-signature">&lt;inner> </span>moize(fn [, options])</h4>
+    <h4 class="name" id="setLastItem"><span class="type-signature"></span>setLastItem(lastItem)</h4>
     
     
 </dt>
@@ -166,7 +161,7 @@
 
     
     <div class="description">
-        <p>store cached values returned from calling method with arguments to avoid reprocessing data from same arguments</p>
+        <p>assign the lastItem</p>
     </div>
     
 
@@ -189,11 +184,7 @@
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -205,13 +196,13 @@
 
         <tr>
             
-                <td class="name"><code>fn</code></td>
+                <td class="name"><code>lastItem</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">*</span>
 
 
 
@@ -219,330 +210,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last"><p>method to memoize</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Options</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>options to customize how the caching is handled</p>
-                <h6 class="method-params-label method-subparams-label">Properties</h6>
-                
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>cache</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Cache.html">Cache</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    new Cache()
-                
-                </td>
-            
-
-            <td class="description last"><p>caching mechanism to use for method</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>isPromise</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>is the function return expected to be a promise to resolve</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxAge</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Infinity
-                
-                </td>
-            
-
-            <td class="description last"><p>the maximum age the value should persist in cache</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxArgs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Infinity
-                
-                </td>
-            
-
-            <td class="description last"><p>the maximum number of arguments to be used in serializing the keys</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxSize</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Infinity
-                
-                </td>
-            
-
-            <td class="description last"><p>the maximum size of the cache to retain</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>serializer</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>method to serialize arguments with for cache storage</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last"><p>the item to assign</p></td>
         </tr>
 
     
@@ -586,8 +257,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-30">line 30</a>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-160">line 160</a>
 			</li>
 		</ul>
 	</dd>
@@ -612,51 +283,94 @@
     
 
     
-    <h5>Returns:</h5>
+
     
-            
-<div class="param-desc">
-    <p>higher-order function which either returns from cache or newly-computed value</p>
-</div>
+</dd>
 
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
         
-<span class="param-type">function</span>
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateSize"><span class="type-signature"></span>updateSize()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>update the instance size to that of the list length</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
 
 
 
-    </dd>
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-175">line 175</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
 </dl>
 
 
-        
+    
 
     
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">import moize from &#x27;moize&#x27;;
 
-// standard implementation
-const fn = (foo, bar) =&gt; {
- return &#x60;${foo} ${bar}&#x60;;
-};
-const memoizedFn = moize(fn);
+    
 
-// implementation with options
-const fn = async (id) =&gt; {
- return get(&#x60;http://foo.com/${id}&#x60;);
-};
-const memoizedFn = moize(fn, {
- isPromise: true,
- maxSize: 5
-});</pre>
+    
 
+    
+
+    
 
     
 </dd>

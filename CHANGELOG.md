@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+#### 2.1.3
+* Enhance `Cache` more for multiple-parameter functions (now benchmarks faster in all categories)
+
+#### 2.1.2
+* Have `areArraysShallowEqual` use `isEqual` instead of strict equality to allow for `NaN` as key
+
 #### 2.1.1
 * Optimize cache class to be more efficient in both `has` and `get` operations
 * Fix issue with `delete` that was preventing delete of falsy keys
@@ -25,11 +31,11 @@
 
 #### 1.5.0
 * Add `values` method on memoized function (gets list of computed values stored in cache)
-* Fix issue with `clear` method not being present on `MapLike`
+* Fix issue with `clear` method not being present on `Cache`
 
 #### 1.4.5
-* Switch to using MapLike for caching instead of native Map (was previously only used for polyfilling, but is twice as fast ... I feel silly for not testing its performance prior)
-* Simplify and optimize MapLike to crank out as much speed as possible
+* Switch to using Cache for caching instead of native Map (was previously only used for polyfilling, but is twice as fast ... I feel silly for not testing its performance prior)
+* Simplify and optimize Cache to crank out as much speed as possible
 
 #### 1.4.4
 * Add `displayName` property to memoized function for better display of memoized `react` components in DevTools
@@ -64,7 +70,7 @@
 * Add `maxArgs` configuration option to limit the number of arguments to use in the key creation for cache
 
 #### 1.1.2
-* Remove external dependencies in favor of local `MapLike` and `decycle` implementation (smaller bundle size)
+* Remove external dependencies in favor of local `Cache` and `decycle` implementation (smaller bundle size)
 
 #### 1.1.1
 * Make handling of circular handling automatic by stringifying in `try` / `catch`, and remove manual `isCircular` configuration option

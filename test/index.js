@@ -116,7 +116,11 @@ test('if moize.react will call moize with the correct arguments', (t) => {
 
   ReactDOM.render(foo, div);
 
-  t.is(Result.keys()[0], '|{"bar":"bar","passedFn":"() => {}","foo":"foo"}|{}|'); // params serialized, including fn
+  const keys = Result.keys();
+  const key = keys[0];
+  const expectedKey = '|{"bar":"bar","passedFn":"function passedFn() {}","foo":"foo"}|{}|';
+
+  t.is(key, expectedKey); // params serialized, including fn
 
   jsdom();
 });
