@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 2.1.5
+* Fix issue where `delete` would always set the `lastItem` to `undefined` even when items still remained in cache
+
 #### 2.1.4
 * Move multiple-parameter key matching to cache (allows for custom `cache` to have its own implementation)
 * Update documentation for the custom `cache` implementation, as it requires `getMultiParamKey` now, plus give a better example of an alternative `cache`
