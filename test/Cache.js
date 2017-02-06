@@ -23,6 +23,37 @@ test('if delete will remove the key and value pair from the cache', (t) => {
   t.false(cache.has(key));
 });
 
+test('if delete will set lastItem to undefined when the only item is removed', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+
+  cache.set(key, 'bar');
+
+  t.true(cache.has(key));
+
+  cache.delete(key);
+
+  t.false(cache.has(key));
+  t.is(cache.lastItem, undefined);
+});
+
+test('if delete will set lastItem to the first item in the list when an item is removed', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+
+  cache.set(key, 'bar');
+  cache.set('bar', 'baz');
+  cache.set('baz', 'foo');
+
+  t.true(cache.has(key));
+
+  cache.delete(key);
+
+  t.false(cache.has(key));
+  t.is(cache.size, 2);
+  t.is(cache.lastItem, cache.list[0]);
+});
+
 test('if get will return the value for the passed key in cache', (t) => {
   const cache = new Cache();
   const key = 'foo';

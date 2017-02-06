@@ -51,10 +51,7 @@ class Cache {
       splice(this.list, index);
 
       this.updateSize();
-
-      if (this.size === 0) {
-        this.setLastItem();
-      }
+      this.setLastItem(this.size === 0 ? undefined : this.list[0]);
     }
   }
 
