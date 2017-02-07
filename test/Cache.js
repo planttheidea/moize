@@ -125,42 +125,6 @@ test('if get will keep the order of retrieval correct', (t) => {
   ]);
 });
 
-test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
-  const cache = new Cache();
-  const args = ['foo', 'bar'];
-
-  const result = cache.getMultiParamKey(args);
-
-  t.is(result, args);
-  t.true(result.isMultiParamKey);
-});
-
-test('if getMultiParamKey returns an existing array of arguments when match is found', (t) => {
-  const existingArgList = [
-    {
-      key: ['foo', 'bar'],
-      value: 'baz'
-    }, {
-      key: ['bar', 'baz'],
-      value: 'foo'
-    }
-  ];
-  const cache = new Cache();
-  const args = ['foo', 'bar'];
-
-  existingArgList.forEach((arg) => {
-    arg.key.isMultiParamKey = true;
-
-    cache.set(arg.key, arg.value);
-  });
-
-  const result = cache.getMultiParamKey(args);
-
-  t.not(result, args);
-  t.is(result, existingArgList[0].key);
-  t.deepEqual(result, args);
-});
-
 test('if has will identify the existence of a key in the cache', (t) => {
   const cache = new Cache();
   const key = 'foo';
@@ -196,28 +160,19 @@ test('if set will add the key and value passed to the cache', (t) => {
   t.is(cache.size, 1);
 });
 
-test('if setLastItem will assign the item passed to lastItem', (t) => {
+test('if setLastItem will assign the item passed to lastItem and update the cache size', (t) => {
   const cache = new Cache();
   const value = {
     foo: 'bar'
   };
-
-  cache.setLastItem(value);
-
-  t.is(cache.lastItem, value);
-});
-
-test('if updateSize will assign the list length to the cache size property', (t) => {
-  const cache = new Cache();
 
   cache.list = [
     'foo',
     'bar'
   ];
 
-  t.is(cache.list.length, 2);
+  cache.setLastItem(value);
 
-  cache.updateSize();
-
+  t.is(cache.lastItem, value);
   t.is(cache.size, cache.list.length);
 });
