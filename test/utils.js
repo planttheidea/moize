@@ -14,15 +14,15 @@ import {
   decycle,
   deleteItemFromCache,
   every,
-  getIndexOfItemInMap,
   getFunctionName,
   getFunctionNameViaRegexp,
+  getIndexOfKey,
+  getMultiParamKey,
   getSerializerFunction,
   getStringifiedArgument,
   isArray,
   isCache,
   isComplexObject,
-  isEqual,
   isFunction,
   isFiniteAndPositive,
   isKeyShallowEqualWithArgs,
@@ -368,7 +368,7 @@ test('if getFunctionWithAdditionalProperties add method will not add a key => va
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
   const cache = new Cache();
-  const key = cache.getMultiParamKey(['foo']);
+  const key = getMultiParamKey(cache, ['foo']);
 
   const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
 
@@ -419,7 +419,7 @@ test('if getFunctionWithAdditionalProperties values method will return the list 
   t.deepEqual(result, [cachedFn.cache.get(key)]);
 });
 
-test('if getIndexOfItemInMap returns the index of the item in the map, else -1', (t) => {
+test('if getIndexOfKey returns the index of the item in the map, else -1', (t) => {
   const map = {
     list: [{key: 'foo'}, {key: 'bar'}, {key: 'baz'}],
     size: 3
@@ -427,8 +427,44 @@ test('if getIndexOfItemInMap returns the index of the item in the map, else -1',
   const foo = 'foo';
   const notFoo = 'notFoo';
 
-  t.is(getIndexOfItemInMap(map.list, map.size, foo), 0);
-  t.is(getIndexOfItemInMap(map.list, map.size, notFoo), -1);
+  t.is(getIndexOfKey(map.list, map.size, foo), 0);
+  t.is(getIndexOfKey(map.list, map.size, notFoo), -1);
+});
+
+test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
+  const cache = new Cache();
+  const args = ['foo', 'bar'];
+
+  const result = getMultiParamKey(cache, args);
+
+  t.is(result, args);
+  t.true(result.isMultiParamKey);
+});
+
+test('if getMultiParamKey returns an existing array of arguments when match is found', (t) => {
+  const existingArgList = [
+    {
+      key: ['foo', 'bar'],
+      value: 'baz'
+    }, {
+      key: ['bar', 'baz'],
+      value: 'foo'
+    }
+  ];
+  const cache = new Cache();
+  const args = ['foo', 'bar'];
+
+  existingArgList.forEach((arg) => {
+    arg.key.isMultiParamKey = true;
+
+    cache.set(arg.key, arg.value);
+  });
+
+  const result = getMultiParamKey(cache, args);
+
+  t.not(result, args);
+  t.is(result, existingArgList[0].key);
+  t.deepEqual(result, args);
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
@@ -478,21 +514,6 @@ test('if isComplexObject correctly identifies a complex object', (t) => {
   pass.forEach((item) => {
     t.true(isComplexObject(item));
   });
-});
-
-test('if isEqual checks strict equality and if NaN', (t) => {
-  const foo = 'foo';
-  const otherFoo = 'foo';
-  const notFoo = 'bar';
-  const nan = NaN;
-  const otherNan = NaN;
-  const notNan = 123;
-
-  t.true(isEqual(foo, otherFoo));
-  t.false(isEqual(foo, notFoo));
-
-  t.true(isEqual(nan, otherNan));
-  t.false(isEqual(nan, notNan));
 });
 
 test('if isFunction tests if the item is a function or not', (t) => {
@@ -577,6 +598,15 @@ test('if isKeyShallowEqualWithArgs returns true when value is an array whose val
   };
   const value = ['foo', object];
   const args = ['foo', object];
+
+  const result = isKeyShallowEqualWithArgs(value, args);
+
+  t.false(result);
+});
+
+test('if isKeyShallowEqualWithArgs returns true when value and args both are empty arrays', (t) => {
+  const value = [];
+  const args = [];
 
   const result = isKeyShallowEqualWithArgs(value, args);
 

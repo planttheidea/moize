@@ -2,8 +2,7 @@
 
 // utils
 import {
-  getIndexOfItemInMap,
-  isKeyShallowEqualWithArgs,
+  getIndexOfKey,
   splice,
   unshift
 } from './utils';
@@ -31,7 +30,6 @@ class Cache {
     this.list = [];
 
     this.setLastItem();
-    this.updateSize();
   }
 
   /**
@@ -45,12 +43,11 @@ class Cache {
    * @param {*} key key to delete from the map
    */
   delete(key: any): void {
-    const index: number = getIndexOfItemInMap(this.list, this.size, key);
+    const index: number = getIndexOfKey(this.list, this.size, key);
 
     if (~index) {
       splice(this.list, index);
 
-      this.updateSize();
       this.setLastItem(this.size === 0 ? undefined : this.list[0]);
     }
   }
@@ -77,7 +74,7 @@ class Cache {
       return this.lastItem.value;
     }
 
-    const index: number = getIndexOfItemInMap(this.list, this.size, key);
+    const index: number = getIndexOfKey(this.list, this.size, key);
 
     if (~index) {
       const item = this.list[index];
@@ -87,37 +84,6 @@ class Cache {
       // $FlowIgnore this.lastItem exists
       return this.lastItem.value;
     }
-  }
-
-  /**
-   * @function getMultiParamKey
-   * @memberof Cache
-   * @instance
-   *
-   * @description
-   * get the multi-parameter key that either matches a current one in state or is the same as the one passed
-   *
-   * @param {Array<*>} args arguments passed to moize get key
-   * @returns {Array<*>} either a matching key in cache or the same key as the one passed
-   */
-  getMultiParamKey(args: Array<any>): Array<any> {
-    if (isKeyShallowEqualWithArgs(this.lastItem, args)) {
-      // $FlowIgnore this.lastItem exists
-      return this.lastItem.key;
-    }
-
-    let index: number = 0;
-
-    while (++index < this.size) {
-      if (isKeyShallowEqualWithArgs(this.list[index], args)) {
-        return this.list[index].key;
-      }
-    }
-
-    // $FlowIgnore ok to add key to array object
-    args.isMultiParamKey = true;
-
-    return args;
   }
 
   /**
@@ -137,7 +103,7 @@ class Cache {
     }
 
     // $FlowIgnore: this.lastItem.key exists
-    return key === this.lastItem.key || !!~getIndexOfItemInMap(this.list, this.size, key);
+    return key === this.lastItem.key || !!~getIndexOfKey(this.list, this.size, key);
   }
 
   /**
@@ -157,7 +123,6 @@ class Cache {
       isMultiParamKey: !!(key && key.isMultiParamKey),
       value
     }));
-    this.updateSize();
   }
 
   /**
@@ -170,15 +135,6 @@ class Cache {
    */
   setLastItem(lastItem: any): void {
     this.lastItem = lastItem;
-  }
-
-  /**
-   * @function updateSize
-   *
-   * @description
-   * update the instance size to that of the list length
-   */
-  updateSize(): void {
     this.size = this.list.length;
   }
 }

@@ -147,7 +147,7 @@ export const unshift = (array: Array<any>, item: any): any => {
  * @param {string} key key to pluck from list
  * @returns {Array<*>} array of values plucked at key
  */
-export const createPluckFromInstanceList = (cache: Object, key: string): Function => {
+export const createPluckFromInstanceList = (cache: Cache, key: string): Function => {
   return !isCache(cache) ? () => {} : (): Array<any> => {
     return cache.list.map((item) => {
       return item[key];
@@ -344,11 +344,11 @@ export const decycle = (object: any): string => {
  * @description
  * remove an item from cache
  *
- * @param {*} cache caching mechanism for method
+ * @param {Cache} cache caching mechanism for method
  * @param {*} key key to delete
  * @param {boolean} [isKeyLastItem=false] should the key be the last item in the LRU list
  */
-export const deleteItemFromCache = (cache: any, key: any, isKeyLastItem: boolean = false) => {
+export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boolean = false) => {
   if (isKeyLastItem && isCache(cache)) {
     key = cache.list[cache.list.length - 1].key;
   }
@@ -366,11 +366,11 @@ export const deleteItemFromCache = (cache: any, key: any, isKeyLastItem: boolean
  * @description
  * add the caching mechanism to the function passed and return the function
  *
- * @param {*} cache caching mechanism that has get / set / has methods
+ * @param {Cache} cache caching mechanism that has get / set / has methods
  * @param {function} originalFn function to get the name of
  * @returns {function(function): function} method that has cache mechanism added to it
  */
-export const createAddPropertiesToFunction = (cache: any, originalFn: Function): Function => {
+export const createAddPropertiesToFunction = (cache: Cache, originalFn: Function): Function => {
   const displayName = `Memoized(${getFunctionName(originalFn)})`;
 
   return (fn: Function): Function => {
@@ -390,7 +390,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      * @param {*} value value to assign to key
      */
     fn.add = (key, value) => {
-      if (!cache.get(key) && cache.getMultiParamKey(key) === key) {
+      if (!cache.get(key) && getMultiParamKey(cache, key) === key) {
         cache.set(key, value);
       }
     };
@@ -418,7 +418,7 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
      * @param {Array<*>} args combination of args to remove from cache
      */
     fn.delete = (...args: Array<any>) => {
-      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : cache.getMultiParamKey(args);
+      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : getMultiParamKey(cache, args);
 
       deleteItemFromCache(cache, key);
     };
@@ -454,37 +454,6 @@ export const createAddPropertiesToFunction = (cache: any, originalFn: Function):
 /**
  * @private
  *
- * @function isNAN
- *
- * @description
- * test if the value is NaN
- *
- * @param {*} value value to test
- * @returns {boolean} is value NaN
- */
-export const isNAN = (value: any): boolean => {
-  return value !== value;
-};
-
-/**
- * @private
- *
- * @function isEqual
- *
- * @description
- * are the two values passed equal or both NaN
- *
- * @param {*} value1 first value to check equality for
- * @param {*} value2 second value to check equality for
- * @returns {boolean} are the two values equal
- */
-export const isEqual = (value1: any, value2: any): boolean => {
-  return value1 === value2 || (isNAN(value1) && isNAN(value2));
-};
-
-/**
- * @private
- *
  * @function isFiniteAndPositive
  *
  * @description
@@ -500,7 +469,7 @@ export const isFiniteAndPositive = (number: number): boolean => {
 /**
  * @private
  *
- * @function getIndexOfItemInMap
+ * @function getIndexOfKey
  *
  * @description
  * get the index of the key in the map
@@ -510,16 +479,48 @@ export const isFiniteAndPositive = (number: number): boolean => {
  * @param {*} key key to find in list
  * @returns {number} index location of key in list
  */
-export const getIndexOfItemInMap = (list: Array<any>, length: number, key: any): number => {
+export const getIndexOfKey = (list: Array<any>, length: number, key: any): number => {
   let index: number = -1;
 
   while (++index < length) {
-    if (isEqual(list[index].key, key)) {
+    if (list[index].key === key) {
       return index;
     }
   }
 
   return -1;
+};
+
+/**
+ * @private
+ *
+ * @function getMultiParamKey
+ *
+ * @description
+ * get the multi-parameter key that either matches a current one in state or is the same as the one passed
+ *
+ * @param {Cache} cache cache to compare args to
+ * @param {Array<*>} args arguments passed to moize get key
+ * @returns {Array<*>} either a matching key in cache or the same key as the one passed
+ */
+export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
+  if (isKeyShallowEqualWithArgs(cache.lastItem, args)) {
+    // $FlowIgnore cache.lastItem exists
+    return cache.lastItem.key;
+  }
+
+  let index: number = 0;
+
+  while (++index < cache.size) {
+    if (isKeyShallowEqualWithArgs(cache.list[index], args)) {
+      return cache.list[index].key;
+    }
+  }
+
+  // $FlowIgnore ok to add key to array object
+  args.isMultiParamKey = true;
+
+  return args;
 };
 
 /**
@@ -639,7 +640,7 @@ export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean
  * @description
  * get the key used for storage in the method's cache
  *
- * @param {*} cache cache where keys are stored
+ * @param {Cache} cache cache where keys are stored
  * @param {boolean} serialize should the arguments be serialized into a string
  * @param {function} serializerFromOptions method used to serialize keys into a string
  * @param {boolean} serializeFunctions should functions be converted to string in serialization
@@ -647,7 +648,7 @@ export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean
  * @returns {function(Array<*>): *}
  */
 export const createGetCacheKey = (
-  cache: any,
+  cache: Cache,
   serialize: boolean,
   serializerFromOptions: ?Function,
   serializeFunctions: boolean,
@@ -663,12 +664,12 @@ export const createGetCacheKey = (
 
   if (isFiniteAndPositive(maxArgs)) {
     return (args: Array<any>): any => {
-      return args.length > 1 ? cache.getMultiParamKey(args.slice(0, maxArgs)) : args[0];
+      return args.length > 1 ? getMultiParamKey(cache, args.slice(0, maxArgs)) : args[0];
     };
   }
 
   return (args: Array<any>): any => {
-    return args.length > 1 ? cache.getMultiParamKey(args) : args[0];
+    return args.length > 1 ? getMultiParamKey(cache, args) : args[0];
   };
 };
 
