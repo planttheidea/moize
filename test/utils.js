@@ -689,81 +689,76 @@ test('if serializeArguments converts functions nested in objects to string when 
 });
 
 test('if setNewCachedValue will run the set method if not a promise', async (t) => {
-  const setNewCachedValue = createSetNewCachedValue(false);
+  const cache = {
+    set(key, value) {
+      t.is(key, keyToSet);
+      t.is(value, valueToSet);
+    }
+  };
+  const setNewCachedValue = createSetNewCachedValue(cache, false);
 
   const keyToSet = 'foo';
   const valueToSet = 'bar';
 
-  let fn = {
-    cache: {
-      set(key, value) {
-        t.is(key, keyToSet);
-        t.is(value, valueToSet);
-      }
-    }
-  };
-
-  const result = await setNewCachedValue(fn, keyToSet, valueToSet);
+  const result = await setNewCachedValue(keyToSet, valueToSet);
 
   t.is(result, valueToSet);
 });
 
 test('if setNewCachedValue will run the set method upon resolution of a promise', async (t) => {
-  const setNewCachedValue = createSetNewCachedValue(true);
+  const cache = new Cache();
 
-  const resolutionValue = 'bar';
+  const key = 'foo';
+  const value = 'bar';
 
-  const keyToSet = 'foo';
-  const valueToSet = Promise.resolve(resolutionValue);
+  const setNewCachedValue = createSetNewCachedValue(cache, true);
 
-  let fn = {
-    cache: {
-      set(key, value) {
-        t.is(key, keyToSet);
-        t.is(value, resolutionValue);
-      }
-    }
-  };
+  const result = await setNewCachedValue(key, Promise.resolve(value));
 
-  const result = await setNewCachedValue(fn, keyToSet, valueToSet);
+  t.is(result, value);
+});
 
-  t.is(result, resolutionValue);
+test('if setNewCachedValue will maintain its promise nature for future cached calls', async (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const value = 'bar';
+
+  const setNewCachedValue = createSetNewCachedValue(cache, true);
+
+  await setNewCachedValue(key, Promise.resolve(value));
+
+  await cache.get(key).then((resolvedValue) => {
+    t.is(resolvedValue, value);
+  });
 });
 
 test('if setNewCachedValue will set the cache to expire if maxAge is finite', async (t) => {
+  const cache = new Cache();
   const keyToSet = 'foo';
   const valueToSet = 'bar';
   const maxAge = 100;
 
-  const setNewCachedValue = createSetNewCachedValue(false, maxAge);
+  const setNewCachedValue = createSetNewCachedValue(cache, false, maxAge);
 
-  let fn = {
-    cache: new Cache()
-  };
+  await setNewCachedValue(keyToSet, valueToSet);
 
-  await setNewCachedValue(fn, keyToSet, valueToSet);
-
-  t.is(fn.cache.get(keyToSet), valueToSet);
+  t.is(cache.get(keyToSet), valueToSet);
 
   await sleep(maxAge);
 
-  t.is(fn.cache.get(keyToSet), undefined);
+  t.is(cache.get(keyToSet), undefined);
 });
 
 test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
+  const cache = new Cache();
   const keyToSet = 'foo';
   const valueToSet = 'bar';
-  const cache = new Cache();
 
   cache.set('bar', 'baz');
 
-  const setNewCacheValue = createSetNewCachedValue(false, Infinity, 1);
+  const setNewCacheValue = createSetNewCachedValue(cache, false, Infinity, 1);
 
-  const fn = {
-    cache
-  };
-
-  setNewCacheValue(fn, keyToSet, valueToSet);
+  setNewCacheValue(keyToSet, valueToSet);
 
   t.deepEqual(cache.list, [
     {key: keyToSet, isMultiParamKey: false, value: valueToSet}
@@ -806,40 +801,34 @@ test('if unshift performs the same operation as the native unshift', (t) => {
 
 test('if setExpirationOfCache will expire the cache after the age passed', async (t) => {
   const setExpirationOfCache = createSetExpirationOfCache(100);
+  const cache = new Cache();
 
-  const fn = {
-    cache: new Cache()
-  };
+  cache.set('foo', 'bar');
 
-  fn.cache.set('foo', 'bar');
-
-  setExpirationOfCache(fn, 'foo');
+  setExpirationOfCache(cache, 'foo');
 
   const expectedCache = new Cache();
 
   expectedCache.set('foo', 'bar');
 
-  t.deepEqual(fn.cache, expectedCache);
+  t.deepEqual(cache, expectedCache);
 
   await sleep(100);
 
-  t.deepEqual(fn.cache, new Cache());
+  t.deepEqual(cache, new Cache());
 });
 
 test('if setExpirationOfCache will expire the cache immediately if less than 0', async (t) => {
   const setExpirationOfCache = createSetExpirationOfCache(-1);
+  const cache = new Cache();
 
-  const fn = {
-    cache: new Cache()
-  };
+  cache.set('foo', 'bar');
 
-  fn.cache.set('foo', 'bar');
-
-  setExpirationOfCache(fn, 'foo');
+  setExpirationOfCache(cache, 'foo');
 
   await sleep(0);
 
-  t.deepEqual(fn.cache, new Cache());
+  t.deepEqual(cache, new Cache());
 });
 
 test('if cycle.decycle is called only when object is cannot be handled by JSON.stringify', (t) => {

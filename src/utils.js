@@ -682,12 +682,12 @@ export const createGetCacheKey = (
  * create function to set the cache to expire after the maxAge passed (coalesced to 0)
  *
  * @param {number} maxAge number in ms to wait before expiring the cache
- * @returns {function(function, Array<*>): void} setExpirationOfCache method
+ * @returns {function(Cache, Array<*>): void} setExpirationOfCache method
  */
 export const createSetExpirationOfCache = (maxAge: number) => {
-  return (fn: Function, key: Array<any>) => {
+  return (cache: Cache, key: Array<any>) => {
     setTimeout(() => {
-      deleteItemFromCache(fn.cache, key);
+      deleteItemFromCache(cache, key);
     }, maxAge);
   };
 };
@@ -700,12 +700,14 @@ export const createSetExpirationOfCache = (maxAge: number) => {
  * @description
  * assign the new value to the key in the functions cache and return the value
  *
+ * @param {Cache} cache the cache to assign the value to at key
  * @param {boolean} isPromise is the value a promise or not
  * @param {number} maxAge how long should the cache persist
  * @param {number} maxSize the maximum number of values to store in cache
  * @returns {function(function, *, *): *} value just stored in cache
  */
 export const createSetNewCachedValue = (
+  cache: Cache,
   isPromise: boolean,
   maxAge: number,
   maxSize: number
@@ -715,32 +717,32 @@ export const createSetNewCachedValue = (
   const setExpirationOfCache: Function = createSetExpirationOfCache(maxAge);
 
   if (isPromise) {
-    return (fn: Function, key: any, value: any): any => {
+    return (key: any, value: any): any => {
       value.then((resolvedValue) => {
-        fn.cache.set(key, resolvedValue);
+        cache.set(key, Promise.resolve(resolvedValue));
 
-        if (hasMaxSize && fn.cache.size > maxSize) {
-          deleteItemFromCache(fn.cache, undefined, true);
+        if (hasMaxSize && cache.size > maxSize) {
+          deleteItemFromCache(cache, undefined, true);
+        }
+
+        if (hasMaxAge) {
+          setExpirationOfCache(cache, key);
         }
       });
-
-      if (hasMaxAge) {
-        setExpirationOfCache(fn, key);
-      }
 
       return value;
     };
   }
 
-  return (fn: Function, key: any, value: any): any => {
-    fn.cache.set(key, value);
+  return (key: any, value: any): any => {
+    cache.set(key, value);
 
     if (hasMaxAge) {
-      setExpirationOfCache(fn, key);
+      setExpirationOfCache(cache, key);
     }
 
-    if (hasMaxSize && fn.cache.size > maxSize) {
-      deleteItemFromCache(fn.cache, undefined, true);
+    if (hasMaxSize && cache.size > maxSize) {
+      deleteItemFromCache(cache, undefined, true);
     }
 
     return value;

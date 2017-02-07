@@ -84,7 +84,7 @@ const moize = function(fn: Function, options: Options = {}): any {
   } = options;
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
   const getCacheKey: Function = createGetCacheKey(cache, serialize, serializer, serializeFunctions, maxArgs);
-  const setNewCachedValue: Function = createSetNewCachedValue(isPromise, maxAge, maxSize);
+  const setNewCachedValue: Function = createSetNewCachedValue(cache, isPromise, maxAge, maxSize);
 
   let key: any;
 
@@ -102,7 +102,7 @@ const moize = function(fn: Function, options: Options = {}): any {
   const memoizedFunction = function(...args: Array<any>): any {
     key = getCacheKey(args);
 
-    return cache.has(key) ? cache.get(key) : setNewCachedValue(memoizedFunction, key, fn.apply(this, args));
+    return cache.has(key) ? cache.get(key) : setNewCachedValue(key, fn.apply(this, args));
   };
 
   return addPropertiesToFunction(memoizedFunction);
