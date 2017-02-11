@@ -213,13 +213,11 @@ class Cache {
    *
    * @param {*} key key to assign value of
    * @param {*} value value to store in the map at key
-   * @param {boolean} [isPromise=false] is the value a promise
    */
-  set(key: any, value: any, isPromise: boolean = false): void {
+  set(key: any, value: any): void {
     this.setLastItem(unshift(this.list, {
       key,
       isMultiParamKey: !!(key &amp;&amp; key.isMultiParamKey),
-      isPromise,
       value
     }));
   }

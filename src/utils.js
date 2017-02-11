@@ -764,7 +764,7 @@ export const createSetNewCachedValue = (
           return PromiseLibrary.reject(exception);
         });
 
-      cache.set(key, handler, true);
+      cache.set(key, handler);
 
       if (hasMaxSize && cache.size > maxSize) {
         deleteItemFromCache(cache, undefined, true);

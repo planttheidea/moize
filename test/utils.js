@@ -877,7 +877,6 @@ test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
     {
       key: keyToSet,
       isMultiParamKey: false,
-      isPromise: false,
       value: valueToSet
     }
   ]);

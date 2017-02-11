@@ -65,7 +65,6 @@ test('if get will return the value for the passed key in cache', (t) => {
   t.deepEqual(cache.lastItem, {
     key,
     isMultiParamKey: false,
-    isPromise: false,
     value
   });
 
@@ -77,7 +76,6 @@ test('if get will return the value for the passed key in cache', (t) => {
   t.deepEqual(cache.lastItem, {
     key: value,
     isMultiParamKey: false,
-    isPromise: false,
     value: key
   });
 });
@@ -93,25 +91,21 @@ test('if get will keep the order of retrieval correct', (t) => {
   const first = {
     key: 'first',
     isMultiParamKey: false,
-    isPromise: false,
     value: 1
   };
   const second = {
     key: 'second',
     isMultiParamKey: false,
-    isPromise: false,
     value: 2
   };
   const third = {
     key: 'third',
     isMultiParamKey: false,
-    isPromise: false,
     value: 3
   };
   const fourth = {
     key: 'fourth',
     isMultiParamKey: false,
-    isPromise: false,
     value: 4
   };
 
@@ -137,7 +131,6 @@ test('if get will keep the order of retrieval correct', (t) => {
   const fifth = {
     key: 'fifth',
     isMultiParamKey: false,
-    isPromise: false,
     value: 5
   };
 
@@ -170,7 +163,6 @@ test('if has will identify the existence of a key in the cache', (t) => {
   t.deepEqual(cache.lastItem, {
     key,
     isMultiParamKey: false,
-    isPromise: false,
     value
   });
   t.false(cache.has('bar'));
@@ -187,7 +179,6 @@ test('if set will add the key and value passed to the cache', (t) => {
   const lastItem = {
     key,
     isMultiParamKey: false,
-    isPromise: false,
     value
   };
 
