@@ -1,5 +1,6 @@
 import 'babel-polyfill';
 
+import Bluebird from 'bluebird';
 import React, {
   Component
 } from 'react';
@@ -36,7 +37,47 @@ const promiseMethod = (number, otherNumber) => {
   });
 };
 
-const memoizedPromise = moize(promiseMethod);
+const promiseMethodRejected = (number) => {
+  console.log('promise rejection method fired', number);
+
+  return new Bluebird((resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('foo'));
+    }, 100);
+  });
+};
+
+const memoizedPromise = moize(promiseMethod, {
+  isPromise: true
+});
+const memoizedPromiseRejected = moize(promiseMethodRejected, {
+  isPromise: true,
+  Bluebird
+});
+
+memoizedPromiseRejected(3)
+  .then((foo) => {
+    console.log(foo);
+  })
+  .catch((bar) => {
+    console.error(bar);
+  });
+
+memoizedPromiseRejected(3)
+  .then((foo) => {
+    console.log(foo);
+  })
+  .catch((bar) => {
+    console.error(bar);
+  });
+
+memoizedPromiseRejected(3)
+  .then((foo) => {
+    console.log(foo);
+  })
+  .catch((bar) => {
+    console.error(bar);
+  });
 
 // get result
 memoizedPromise(2, 2)

@@ -474,21 +474,46 @@ export const isFiniteAndPositive = (number: number): boolean => {
  * @description
  * get the index of the key in the map
  *
- * @param {Array<*>} list list to find key in
- * @param {number} length length of the list passed
+ * @param {Cache} cache cache to iterate over
  * @param {*} key key to find in list
  * @returns {number} index location of key in list
  */
-export const getIndexOfKey = (list: Array<any>, length: number, key: any): number => {
-  let index: number = -1;
+export const getIndexOfKey = (cache: Cache, key: any): number => {
+  const iterator = cache.getKeyIterator();
 
-  while (++index < length) {
-    if (list[index].key === key) {
-      return index;
+  let value: Object = iterator.next();
+
+  while (!value.done) {
+    if (value.key === key) {
+      return value.index;
     }
+
+    value = iterator.next();
   }
 
   return -1;
+};
+
+/**
+ * @private
+ *
+ * @function getKeyIteratorObject
+ *
+ * @description
+ * get the object that is returned in the key iterator
+ *
+ * @param {Object} listItem the item in the list being iterated
+ * @param {boolean} listItem.isMultiParamKey is the key a multi-parameter key
+ * @param {*} listItem.key the key currently stored
+ * @param {number} index the index of the iterator
+ * @returns {{index: number, isMultiParamKey: boolean, key: *}} the parameters as an object
+ */
+export const getKeyIteratorObject = (listItem: Object, index: number): Object => {
+  return {
+    index,
+    isMultiParamKey: listItem.isMultiParamKey,
+    key: listItem.key
+  };
 };
 
 /**
@@ -509,12 +534,16 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
     return cache.lastItem.key;
   }
 
-  let index: number = 0;
+  const iterator = cache.getKeyIterator();
 
-  while (++index < cache.size) {
-    if (isKeyShallowEqualWithArgs(cache.list[index], args)) {
-      return cache.list[index].key;
+  let value: Object = iterator.next();
+
+  while (!value.done) {
+    if (isKeyShallowEqualWithArgs(value, args)) {
+      return value.key;
     }
+
+    value = iterator.next();
   }
 
   // $FlowIgnore ok to add key to array object
@@ -704,13 +733,15 @@ export const createSetExpirationOfCache = (maxAge: number) => {
  * @param {boolean} isPromise is the value a promise or not
  * @param {number} maxAge how long should the cache persist
  * @param {number} maxSize the maximum number of values to store in cache
+ * @param {Function} PromiseLibrary the library to use for resolve / reject
  * @returns {function(function, *, *): *} value just stored in cache
  */
 export const createSetNewCachedValue = (
   cache: Cache,
   isPromise: boolean,
   maxAge: number,
-  maxSize: number
+  maxSize: number,
+  PromiseLibrary: Function
 ): Function => {
   const hasMaxAge: boolean = isFiniteAndPositive(maxAge);
   const hasMaxSize: boolean = isFiniteAndPositive(maxSize);
@@ -718,19 +749,28 @@ export const createSetNewCachedValue = (
 
   if (isPromise) {
     return (key: any, value: any): any => {
-      value.then((resolvedValue) => {
-        cache.set(key, Promise.resolve(resolvedValue));
+      const handler = value
+        .then((resolvedValue) => {
+          cache.updateItem(key, PromiseLibrary.resolve(resolvedValue));
 
-        if (hasMaxSize && cache.size > maxSize) {
-          deleteItemFromCache(cache, undefined, true);
-        }
+          if (hasMaxAge) {
+            setExpirationOfCache(cache, key);
+          }
 
-        if (hasMaxAge) {
-          setExpirationOfCache(cache, key);
-        }
-      });
+          return resolvedValue;
+        }, (exception) => {
+          cache.delete(key);
 
-      return value;
+          return PromiseLibrary.reject(exception);
+        });
+
+      cache.set(key, handler, true);
+
+      if (hasMaxSize && cache.size > maxSize) {
+        deleteItemFromCache(cache, undefined, true);
+      }
+
+      return handler;
     };
   }
 
