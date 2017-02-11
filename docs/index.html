@@ -37,13 +37,6 @@
 				</ul>
 			</li>
 			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="global.html#setLastItem">setLastItem</a></li>
-				</ul>
-			</li>
-			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -77,7 +70,7 @@
 
 
 
-    <h3>moize 2.1.6</h3>
+    <h3>moize 2.2.0</h3>
 
 
 
@@ -97,9 +90,9 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.71%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-99.60%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is less than 3kb when minified and gzipped.</p>
+<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
 <ul>
 <li><a href="#upgrade-notification">Upgrade notification</a></li>
@@ -147,6 +140,7 @@ export default moize.react(Foo);</code></pre><p><code>moize.react</code> will au
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
+  promiseLibrary: Function|Object, // promise library to use when isPromise is true, if not using native promises
   serialize: boolean, // should the parameters be serialized instead of directly referenced
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
@@ -243,7 +237,8 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   isPromise: true
-});</code></pre><p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
+});</code></pre><p>The resolved value of the <code>Promise</code> will be stored in cache wrapped in a <code>Promise</code>, so that all calls to that function will return a <code>Promise</code> as well. Please note that if the <code>Promise</code> is rejected, the cache entry will be deleted. Also, if a <code>maxAge</code> is provided, the countdown of that age will begin upon the resolution of the promise rather than at the instantiation of it.</p>
+<p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
 <p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
   return item;
@@ -268,7 +263,52 @@ const memoized = moize(fn, {
 const memoized = moize(fn, {
   maxSize: 5
 });</code></pre><p><em>Please note that this does not work with a custom cache implementation.</em></p>
-<p><strong>serialize</strong> <em>defaults to false</em></p>
+<p><strong>promiseLibrary</strong> <em>defaults to native Promise</em></p>
+<p>The promise library to use for resolution / rejection of promises.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (foo) => {
+  return new Bluebird((resolve) => {
+    resolve(foo);
+  });
+};
+
+const memoized = moize(fn, {
+  isPromise: true,
+  promiseLibrary: Bluebird
+});</code></pre><p><em>Please note that for this option to work <code>isPromise</code> must be set to <code>true</code>.</em></p>
+<p>You can use any library where the following aspects of the <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">specification</a> are included:</p>
+<ul>
+<li>It is thenable (the generated promise has a <code>.then()</code> function)</li>
+<li>The <code>Promise</code> object itself has <code>.resolve()</code> and <code>.reject()</code> functions on it</li>
+</ul>
+<p>Most modern libraries (<code>bluebird</code>, <code>q</code>, etc.) include these by default, however if you are using a custom library that does not meet these requirements then you will need to implement them yourself. An example of a wrapper that creates the <code>.resolve()</code> and <code>.reject()</code> methods:</p>
+<pre class="prettyprint source lang-javascript"><code>import foo from 'my-promise-library';
+
+// create a wrapper so as not to touch the library itself
+
+const customPromise = (fn) => {
+  return foo(fn);
+};
+
+// lets pretend foo has a .result() method that has the first
+// parameter as successful, second as failure
+
+customPromise.resolve = function(value) {
+  return foo.result(value);
+};
+customPromise.reject = function(error) {
+  return foo.result(undefined, error);
+};
+
+const fn = (foo) => {
+  return customPromise((resolve) => {
+    resolve(foo);
+  });
+};
+
+const memoized = moize(fn, {
+  isPromise: true,
+  promiseLibrary: customPromise
+});</code></pre><p><strong>serialize</strong> <em>defaults to false</em></p>
 <p>In <code>moize</code> 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from 1.x.x.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (mutableObject) => {
   return mutableObject.foo;

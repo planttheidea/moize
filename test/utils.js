@@ -420,15 +420,17 @@ test('if getFunctionWithAdditionalProperties values method will return the list 
 });
 
 test('if getIndexOfKey returns the index of the item in the map, else -1', (t) => {
-  const map = {
-    list: [{key: 'foo'}, {key: 'bar'}, {key: 'baz'}],
-    size: 3
-  };
+  const cache = new Cache();
+
+  cache.set('foo', 'foo');
+  cache.set('bar', 'bar');
+  cache.set('baz', 'baz');
+
   const foo = 'foo';
   const notFoo = 'notFoo';
 
-  t.is(getIndexOfKey(map.list, map.size, foo), 0);
-  t.is(getIndexOfKey(map.list, map.size, notFoo), -1);
+  t.is(getIndexOfKey(cache, foo), 2);
+  t.is(getIndexOfKey(cache, notFoo), -1);
 });
 
 test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
@@ -481,11 +483,6 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
   t.is(getStringifiedArgument(object), JSON.stringify(object));
 });
 
-test('if isArray correctly tests if array or not', (t) => {
-  t.true(isArray([1, 2, 3]));
-  t.false(isArray(123));
-});
-
 test('if isCache correctly tests if object passed is an instance of Cache', (t) => {
   const string = 'foo';
   const number = 123;
@@ -514,6 +511,29 @@ test('if isComplexObject correctly identifies a complex object', (t) => {
   pass.forEach((item) => {
     t.true(isComplexObject(item));
   });
+});
+
+test('if isArray will return true if array, false otherwise', (t) => {
+  const bool = true;
+  const string = 'foo';
+  const number = 123;
+  const regexp = /foo/;
+  const undef = undefined;
+  const nil = null;
+  const object = {};
+  const array = [];
+  const fn = () => {};
+
+  t.false(isArray(bool));
+  t.false(isArray(string));
+  t.false(isArray(number));
+  t.false(isArray(regexp));
+  t.false(isArray(undef));
+  t.false(isArray(nil));
+  t.false(isArray(object));
+  t.false(isArray(fn));
+
+  t.true(isArray(array));
 });
 
 test('if isFunction tests if the item is a function or not', (t) => {
@@ -711,7 +731,7 @@ test('if setNewCachedValue will run the set method upon resolution of a promise'
   const key = 'foo';
   const value = 'bar';
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true);
+  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
 
   const result = await setNewCachedValue(key, Promise.resolve(value));
 
@@ -723,13 +743,106 @@ test('if setNewCachedValue will maintain its promise nature for future cached ca
   const key = 'foo';
   const value = 'bar';
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true);
+  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
 
   await setNewCachedValue(key, Promise.resolve(value));
 
   await cache.get(key).then((resolvedValue) => {
     t.is(resolvedValue, value);
   });
+  await cache.get(key).then((resolvedValue) => {
+    t.is(resolvedValue, value);
+  });
+  await cache.get(key).then((resolvedValue) => {
+    t.is(resolvedValue, value);
+  });
+});
+
+test('if setNewCachedValue will delete itself from cache if a rejected promise is returned', async (t) => {
+  const cache = new Cache();
+
+  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+
+  const key = 'foo';
+  const value = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject();
+    }, 100);
+  });
+
+  const result = setNewCachedValue(key, value).catch(() => {});
+
+  t.true(cache.has(key));
+
+  await result;
+
+  t.false(cache.has(key));
+});
+
+test('if setNewCachedValue will retrigger the promise rejection to ensure that the application can catch it', async (t) => {
+  const cache = new Cache();
+
+  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+
+  const key = 'foo';
+  const error = new Error('foo');
+  const value = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(error);
+    }, 100);
+  });
+
+  await setNewCachedValue(key, value).catch((exception) => {
+    t.is(exception, error);
+  });
+});
+
+test('if setNewCachedValue will wait to trigger the expiration timeout until the resolution of the promise', async (t) => {
+  const cache = new Cache();
+
+  const setNewCachedValue = createSetNewCachedValue(cache, true, 100, Infinity, Promise);
+
+  const key = 'foo';
+  const value = new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('bar');
+    }, 100);
+  });
+
+  const result = setNewCachedValue(key, value);
+
+  t.true(cache.has(key));
+
+  await result;
+  await sleep(99);
+
+  t.true(cache.has(key));
+
+  await sleep(2);
+
+  t.false(cache.has(key));
+});
+
+test('if setNewCachedValue will immediately remove the oldest item from cache if the max is reached', async (t) => {
+  const cache = new Cache();
+
+  const keyToDelete = 'bar';
+
+  cache.set(keyToDelete, 'baz');
+
+  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, 1, Promise);
+
+  const key = 'foo';
+  const value = new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('bar');
+    }, 100);
+  });
+
+  setNewCachedValue(key, value);
+
+  t.true(cache.has(key));
+  t.false(cache.has(keyToDelete));
 });
 
 test('if setNewCachedValue will set the cache to expire if maxAge is finite', async (t) => {
@@ -761,7 +874,12 @@ test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
   setNewCacheValue(keyToSet, valueToSet);
 
   t.deepEqual(cache.list, [
-    {key: keyToSet, isMultiParamKey: false, value: valueToSet}
+    {
+      key: keyToSet,
+      isMultiParamKey: false,
+      isPromise: false,
+      value: valueToSet
+    }
   ]);
 });
 

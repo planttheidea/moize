@@ -124,3 +124,14 @@ test('if moize.react will call moize with the correct arguments', (t) => {
 
   jsdom();
 });
+
+test('if moize will throw an error when isPromise is true and promiseLibrary does not exist', (t) => {
+  const fn = () => {};
+
+  t.throws(() => {
+    moize(fn, {
+      isPromise: true,
+      promiseLibrary: null
+    });
+  }, ReferenceError);
+});
