@@ -1,5 +1,14 @@
 # moize CHANGELOG
 
+#### 2.2.0
+* Added `promiseLibrary` option to allow use of custom promise implementation
+* Bolster `isPromise` logic, auto-removing from cache when the promise is rejected
+* Update README for more detailed information on both `isPromise` and `promiseLibrary` options
+* Convert `Cache` key iteration to use custom iterator instead of standard loop for more stable iteration
+
+#### 2.1.6
+* Code cleanup
+
 #### 2.1.5
 * Fix issue where `delete` would always set the `lastItem` to `undefined` even when items still remained in cache
 
