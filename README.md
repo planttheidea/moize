@@ -190,7 +190,7 @@ const memoized = moize(fn, {
 });
 ```
 
-The resolved value of the `Promise` will be stored in cache wrapped in a `Promise`, so that all calls to that function will return a `Promise` as well. Please note that if the `Promise` is rejected, the cache entry will be deleted. Also, if a `maxAge` is provided, the countdown of that age will begin upon the resolution of the promise rather than at the instantiation of it.
+The resolved value of the `Promise` will be stored in cache as a `Promise` itself, so that cached returns will always be in the form of a `Promise`. For common usage reasons, if the `Promise` is rejected, the cache entry will be deleted. Also, if a `maxAge` is provided, the countdown of that TTL will begin upon the resolution of the promise rather than at the instantiation of it.
 
 **maxAge** *defaults to Infinity*
 

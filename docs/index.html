@@ -237,7 +237,7 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   isPromise: true
-});</code></pre><p>The resolved value of the <code>Promise</code> will be stored in cache wrapped in a <code>Promise</code>, so that all calls to that function will return a <code>Promise</code> as well. Please note that if the <code>Promise</code> is rejected, the cache entry will be deleted. Also, if a <code>maxAge</code> is provided, the countdown of that age will begin upon the resolution of the promise rather than at the instantiation of it.</p>
+});</code></pre><p>The resolved value of the <code>Promise</code> will be stored in cache as a <code>Promise</code> itself, so that cached returns will always be in the form of a <code>Promise</code>. For common usage reasons, if the <code>Promise</code> is rejected, the cache entry will be deleted. Also, if a <code>maxAge</code> is provided, the countdown of that TTL will begin upon the resolution of the promise rather than at the instantiation of it.</p>
 <p><strong>maxAge</strong> <em>defaults to Infinity</em></p>
 <p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
