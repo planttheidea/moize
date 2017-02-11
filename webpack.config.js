@@ -22,7 +22,6 @@ module.exports = {
         loader: 'eslint-loader',
         options: {
           configFile: '.eslintrc',
-          emitError: true,
           failOnError: true,
           failOnWarning: false,
           formatter: require('eslint-friendly-formatter')

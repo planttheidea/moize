@@ -88,40 +88,67 @@ test('if get will keep the order of retrieval correct', (t) => {
   cache.set('third', 3);
   cache.set('fourth', 4);
 
+  const first = {
+    key: 'first',
+    isMultiParamKey: false,
+    value: 1
+  };
+  const second = {
+    key: 'second',
+    isMultiParamKey: false,
+    value: 2
+  };
+  const third = {
+    key: 'third',
+    isMultiParamKey: false,
+    value: 3
+  };
+  const fourth = {
+    key: 'fourth',
+    isMultiParamKey: false,
+    value: 4
+  };
+
   t.deepEqual(cache.list, [
-    {key: 'fourth', isMultiParamKey: false, value: 4},
-    {key: 'third', isMultiParamKey: false, value: 3},
-    {key: 'second', isMultiParamKey: false, value: 2},
-    {key: 'first', isMultiParamKey: false, value: 1}
+    fourth,
+    third,
+    second,
+    first
   ]);
 
   cache.get('third');
   cache.get('second');
 
   t.deepEqual(cache.list, [
-    {key: 'second', isMultiParamKey: false, value: 2},
-    {key: 'third', isMultiParamKey: false, value: 3},
-    {key: 'fourth', isMultiParamKey: false, value: 4},
-    {key: 'first', isMultiParamKey: false, value: 1}
+    second,
+    third,
+    fourth,
+    first
   ]);
 
   cache.set('fifth', 5);
 
+  const fifth = {
+    key: 'fifth',
+    isMultiParamKey: false,
+    value: 5
+  };
+
   t.deepEqual(cache.list, [
-    {key: 'fifth', isMultiParamKey: false, value: 5},
-    {key: 'second', isMultiParamKey: false, value: 2},
-    {key: 'third', isMultiParamKey: false, value: 3},
-    {key: 'fourth', isMultiParamKey: false, value: 4},
-    {key: 'first', isMultiParamKey: false, value: 1}
+    fifth,
+    second,
+    third,
+    fourth,
+    first
   ]);
 
   cache.delete('fifth');
 
   t.deepEqual(cache.list, [
-    {key: 'second', isMultiParamKey: false, value: 2},
-    {key: 'third', isMultiParamKey: false, value: 3},
-    {key: 'fourth', isMultiParamKey: false, value: 4},
-    {key: 'first', isMultiParamKey: false, value: 1}
+    second,
+    third,
+    fourth,
+    first
   ]);
 });
 
@@ -175,4 +202,20 @@ test('if setLastItem will assign the item passed to lastItem and update the cach
 
   t.is(cache.lastItem, value);
   t.is(cache.size, cache.list.length);
+});
+
+test('if updateItem will assign a new value to the item already in cache', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const value = 'bar';
+
+  cache.set(key, value);
+
+  t.is(cache.get(key), value);
+
+  const newValue = 'baz';
+
+  cache.updateItem(key, newValue);
+
+  t.is(cache.get(key), newValue);
 });

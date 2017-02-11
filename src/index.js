@@ -17,6 +17,7 @@ type Options = {
   maxAge?: number,
   maxArgs?: number,
   maxSize?: number,
+  promiseLibrary?: Function,
   serialize?: boolean,
   serializeFunctions?: boolean,
   serializer?: Function
@@ -28,6 +29,9 @@ type Options = {
 
 const INFINITY = Number.POSITIVE_INFINITY;
 const NOT_A_FUNCTION_ERROR = 'You must pass a function as the first parameter to moize.';
+const NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE = 'You have not specified a promiseLibrary, and it appears that your browser does not support ' +
+  'native promises. You can either assign the library you are using to the global Promise object, or pass ' +
+  'the library in options via the "promiseLibrary" property.';
 
 /**
  * @function moize
@@ -60,6 +64,8 @@ const NOT_A_FUNCTION_ERROR = 'You must pass a function as the first parameter to
  * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [options.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
  * @param {number} [options.maxSize=Infinity] the maximum size of the cache to retain
+ * @param {function} [options.promiseLibrary=Promise] promise library to use for resolution / rejection
+ * @param {function} [options.serializeFunctions=false] should function parameters be serialized as well
  * @param {function} [options.serializer] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
@@ -78,13 +84,19 @@ const moize = function(fn: Function, options: Options = {}): any {
     maxAge = INFINITY,
     maxArgs = INFINITY,
     maxSize = INFINITY,
+    promiseLibrary = Promise,
     serialize = false,
     serializeFunctions = false,
     serializer
   } = options;
+
+  if (isPromise && !promiseLibrary) {
+    throw new ReferenceError(NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE);
+  }
+
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
   const getCacheKey: Function = createGetCacheKey(cache, serialize, serializer, serializeFunctions, maxArgs);
-  const setNewCachedValue: Function = createSetNewCachedValue(cache, isPromise, maxAge, maxSize);
+  const setNewCachedValue: Function = createSetNewCachedValue(cache, isPromise, maxAge, maxSize, promiseLibrary);
 
   let key: any;
 

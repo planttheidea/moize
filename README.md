@@ -1,10 +1,10 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-98.71%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-99.60%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is less than 3kb when minified and gzipped.
+`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.
 
 ### Table of contents
 * [Upgrade notification](#upgrade-notification)
@@ -75,6 +75,7 @@ export default moize.react(Foo);
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
+  promiseLibrary: Function|Object, // promise library to use when isPromise is true, if not using native promises
   serialize: boolean, // should the parameters be serialized instead of directly referenced
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
@@ -189,6 +190,8 @@ const memoized = moize(fn, {
 });
 ```
 
+The resolved value of the `Promise` will be stored in cache as a `Promise` itself, so that cached returns will always be in the form of a `Promise`. For common usage reasons, if the `Promise` is rejected, the cache entry will be deleted. Also, if a `maxAge` is provided, the countdown of that TTL will begin upon the resolution of the promise rather than at the instantiation of it.
+
 **maxAge** *defaults to Infinity*
 
 The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.
@@ -232,6 +235,62 @@ const memoized = moize(fn, {
 ```
 
 *Please note that this does not work with a custom cache implementation.*
+
+**promiseLibrary** *defaults to native Promise*
+
+The promise library to use for resolution / rejection of promises.
+
+```javascript
+const fn = (foo) => {
+  return new Bluebird((resolve) => {
+    resolve(foo);
+  });
+};
+
+const memoized = moize(fn, {
+  isPromise: true,
+  promiseLibrary: Bluebird
+});
+```
+
+*Please note that for this option to work `isPromise` must be set to `true`.*
+
+You can use any library where the following aspects of the [specification](http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects) are included:
+* It is thenable (the generated promise has a `.then()` function)
+* The `Promise` object itself has `.resolve()` and `.reject()` functions on it
+
+Most modern libraries (`bluebird`, `q`, etc.) include these by default, however if you are using a custom library that does not meet these requirements then you will need to implement them yourself. An example of a wrapper that creates the `.resolve()` and `.reject()` methods:
+
+```javascript
+import foo from 'my-promise-library';
+
+// create a wrapper so as not to touch the library itself
+
+const customPromise = (fn) => {
+  return foo(fn);
+};
+
+// lets pretend foo has a .result() method that has the first
+// parameter as successful, second as failure
+
+customPromise.resolve = function(value) {
+  return foo.result(value);
+};
+customPromise.reject = function(error) {
+  return foo.result(undefined, error);
+};
+
+const fn = (foo) => {
+  return customPromise((resolve) => {
+    resolve(foo);
+  });
+};
+
+const memoized = moize(fn, {
+  isPromise: true,
+  promiseLibrary: customPromise
+});
+```
 
 **serialize** *defaults to false*
 
