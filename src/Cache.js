@@ -8,7 +8,22 @@ import {
   unshift
 } from './utils';
 
-const ITERATOR_DONE_OBJECT = {
+export type ListItem = {
+  key: any,
+  isMultiParamKey: boolean,
+  value: any
+};
+
+export type KeyIterator = {
+  next: Function
+};
+
+/**
+ * @private
+ *
+ * @constant {Object} ITERATOR_DONE_OBJECT
+ */
+const ITERATOR_DONE_OBJECT: Object = {
   done: true
 };
 
@@ -19,8 +34,8 @@ const ITERATOR_DONE_OBJECT = {
  * @classdesc class that mimics parts of the Map infrastructure, but faster
  */
 class Cache {
-  lastItem: ?Object = undefined;
-  list: Array<any> = [];
+  lastItem: ?ListItem = undefined;
+  list: Array<ListItem> = [];
   size: number = 0;
 
   /**
@@ -53,7 +68,7 @@ class Cache {
     if (~index) {
       splice(this.list, index);
 
-      this.setLastItem(this.size === 0 ? undefined : this.list[0]);
+      this.setLastItem(this.list[0]);
     }
   }
 
@@ -73,16 +88,16 @@ class Cache {
       return undefined;
     }
 
-    // $FlowIgnore: this.lastItem.key exists
+    // $FlowIgnore: this.lastItem exists
     if (key === this.lastItem.key) {
-      // $FlowIgnore: this.lastItem.value exists
+      // $FlowIgnore: this.lastItem exists
       return this.lastItem.value;
     }
 
     const index: number = getIndexOfKey(this, key);
 
     if (~index) {
-      const item = this.list[index];
+      const item: ListItem = this.list[index];
 
       this.setLastItem(unshift(splice(this.list, index), item));
 
@@ -101,11 +116,11 @@ class Cache {
    *
    * @returns {{next: (function(): Object)}} iterator instance
    */
-  getKeyIterator() {
+  getKeyIterator(): KeyIterator {
     let index: number = -1;
 
     return {
-      next: () => {
+      next: (): (ListItem|Object) => {
         return ++index < this.size ? getKeyIteratorObject(this.list[index], index) : ITERATOR_DONE_OBJECT;
       }
     };
@@ -158,9 +173,9 @@ class Cache {
    * @description
    * assign the lastItem
    *
-   * @param {*} lastItem the item to assign
+   * @param {ListItem|undefined} lastItem the item to assign
    */
-  setLastItem(lastItem: any): void {
+  setLastItem(lastItem: ?ListItem): void {
     this.lastItem = lastItem;
     this.size = this.list.length;
   }
@@ -177,7 +192,7 @@ class Cache {
    * @param {*} value value to store in the map at key
    */
   updateItem(key: any, value: any): void {
-    const index = getIndexOfKey(this, key);
+    const index: number = getIndexOfKey(this, key);
 
     if (~index) {
       this.list[index].value = value;
