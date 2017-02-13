@@ -2,6 +2,11 @@
 
 import Cache from './Cache';
 
+import type {
+  ListItem,
+  KeyIterator
+} from './Cache';
+
 const keys: Function = Object.keys;
 const toString: Function = Object.prototype.toString;
 const jsonStringify: Function = JSON.stringify;
@@ -149,7 +154,7 @@ export const unshift = (array: Array<any>, item: any): any => {
  */
 export const createPluckFromInstanceList = (cache: Cache, key: string): Function => {
   return !isCache(cache) ? () => {} : (): Array<any> => {
-    return cache.list.map((item) => {
+    return cache.list.map((item: ListItem) => {
       return item[key];
     });
   };
@@ -371,7 +376,7 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
  * @returns {function(function): function} method that has cache mechanism added to it
  */
 export const createAddPropertiesToFunction = (cache: Cache, originalFn: Function): Function => {
-  const displayName = `Memoized(${getFunctionName(originalFn)})`;
+  const displayName: string = `Memoized(${getFunctionName(originalFn)})`;
 
   return (fn: Function): Function => {
     fn.cache = cache;
@@ -479,7 +484,7 @@ export const isFiniteAndPositive = (number: number): boolean => {
  * @returns {number} index location of key in list
  */
 export const getIndexOfKey = (cache: Cache, key: any): number => {
-  const iterator = cache.getKeyIterator();
+  const iterator: KeyIterator = cache.getKeyIterator();
 
   let value: Object = iterator.next();
 
@@ -502,13 +507,13 @@ export const getIndexOfKey = (cache: Cache, key: any): number => {
  * @description
  * get the object that is returned in the key iterator
  *
- * @param {Object} listItem the item in the list being iterated
+ * @param {ListItem} listItem the item in the list being iterated
  * @param {boolean} listItem.isMultiParamKey is the key a multi-parameter key
  * @param {*} listItem.key the key currently stored
  * @param {number} index the index of the iterator
  * @returns {{index: number, isMultiParamKey: boolean, key: *}} the parameters as an object
  */
-export const getKeyIteratorObject = (listItem: Object, index: number): Object => {
+export const getKeyIteratorObject = (listItem: ListItem, index: number): Object => {
   return {
     index,
     isMultiParamKey: listItem.isMultiParamKey,
@@ -748,7 +753,7 @@ export const createSetNewCachedValue = (
   const setExpirationOfCache: Function = createSetExpirationOfCache(maxAge);
 
   if (isPromise) {
-    return (key: any, value: any): any => {
+    return (key: any, value: any): Promise<any> => {
       const handler = value
         .then((resolvedValue) => {
           cache.updateItem(key, PromiseLibrary.resolve(resolvedValue));
