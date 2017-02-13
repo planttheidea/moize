@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+#### 2.2.1
+* Fix issue with `delete` checking `size` of the `Cache` before it had actually updated
+
 #### 2.2.0
 * Added `promiseLibrary` option to allow use of custom promise implementation
 * Bolster `isPromise` logic, auto-removing from cache when the promise is rejected
