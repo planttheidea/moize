@@ -9,6 +9,8 @@ import {
   createAddPropertiesToFunction,
   createGetCacheKey,
   createPluckFromInstanceList,
+  createPromiseRejecter,
+  createPromiseResolver,
   createSetExpirationOfCache,
   createSetNewCachedValue,
   decycle,
@@ -238,8 +240,74 @@ test('if createPluckFromInstanceList will return a noop if the cache is not an i
   t.is(fn(), undefined);
 });
 
+test('if createPromiseRejecter will create a function that will delete the item from cache and return a rejected promise', (t) => {
+  const key = 'foo';
+  const exception = new Error();
+  const cache = {
+    delete(keyToDelete) {
+      t.is(keyToDelete, key);
+    }
+  };
+  const promiseLibrary = {
+    reject(error) {
+      t.is(error, exception);
+    }
+  };
+
+  const result = createPromiseRejecter(cache, key, promiseLibrary);
+
+  t.true(_.isFunction(result));
+
+  result(exception);
+});
+
+test('if createPromiseResolver will create a function that will update the item in cache and return the resolvedValue', (t) => {
+  const key = 'foo';
+  const resolvedValue = 'bar';
+  const cache = {
+    updateItem(keyToUpdate) {
+      t.is(keyToUpdate, key);
+    }
+  };
+  const hasMaxAge = false;
+  const setExpirationOfCache = () => {};
+  const promiseLibrary = {
+    resolve(value) {
+      t.is(value, resolvedValue);
+    }
+  };
+
+  const result = createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
+
+  t.true(_.isFunction(result));
+
+  result(resolvedValue);
+});
+
+test('if createPromiseResolver will create a function that will set the cache to expire if hasMaxAge is true', (t) => {
+  const key = 'foo';
+  const resolvedValue = 'bar';
+  const cache = {
+    updateItem() {}
+  };
+  const hasMaxAge = true;
+  const setExpirationOfCache = (cacheToExpire, keyToExpire) => {
+    t.is(cacheToExpire, cache);
+    t.is(keyToExpire, key);
+  };
+  const promiseLibrary = {
+    resolve() {}
+  };
+
+  const result = createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
+
+  t.true(_.isFunction(result));
+
+  result(resolvedValue);
+});
+
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
-  function foo() {};
+  function foo() {}
 
   const namedResult = getFunctionName(foo);
 
@@ -709,6 +777,9 @@ test('if serializeArguments converts functions nested in objects to string when 
 });
 
 test('if setNewCachedValue will run the set method if not a promise', async (t) => {
+  const keyToSet = 'foo';
+  const valueToSet = 'bar';
+
   const cache = {
     set(key, value) {
       t.is(key, keyToSet);
@@ -716,9 +787,6 @@ test('if setNewCachedValue will run the set method if not a promise', async (t) 
     }
   };
   const setNewCachedValue = createSetNewCachedValue(cache, false);
-
-  const keyToSet = 'foo';
-  const valueToSet = 'bar';
 
   const result = await setNewCachedValue(keyToSet, valueToSet);
 

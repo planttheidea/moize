@@ -13,7 +13,7 @@ const jsonStringify: Function = JSON.stringify;
 
 const ARRAY_OBJECT_CLASS: string = '[object Array]';
 const FUNCTION_TYPEOF: string = 'function';
-const FUNCTION_NAME_REGEXP = /^\s*function\s+([^\(\s]*)\s*/;
+const FUNCTION_NAME_REGEXP: RegExp = /^\s*function\s+([^\(\s]*)\s*/;
 const OBJECT_TYPEOF: string = 'object';
 
 const GOTCHA_OBJECT_CLASSES: Array<Object> = [
@@ -24,12 +24,12 @@ const GOTCHA_OBJECT_CLASSES: Array<Object> = [
   String
 ];
 
-const STATIC_PROPERTIES_TO_PASS = [
+const STATIC_PROPERTIES_TO_PASS: Array<string> = [
   'contextTypes',
   'defaultProps',
   'propTypes'
 ];
-const STATIC_PROPERTIES_TO_PASS_LENGTH = STATIC_PROPERTIES_TO_PASS.length;
+const STATIC_PROPERTIES_TO_PASS_LENGTH: number = STATIC_PROPERTIES_TO_PASS.length;
 
 /**
  * @private
@@ -143,6 +143,21 @@ export const unshift = (array: Array<any>, item: any): any => {
 /**
  * @private
  *
+ * @function isCache
+ *
+ * @description
+ * is the object passed an instance of the native Cache implementation
+ *
+ * @param {*} object object to test
+ * @returns {boolean} is the object an instance of Cache
+ */
+export const isCache = (object: any): boolean => {
+  return object instanceof Cache;
+};
+
+/**
+ * @private
+ *
  * @function createPluckFromInstanceList
  *
  * @description
@@ -172,7 +187,7 @@ export const createPluckFromInstanceList = (cache: Cache, key: string): Function
  * @returns {string} function name
  */
 export const getFunctionNameViaRegexp = (fn: Function): string => {
-  const match = fn.toString().match(FUNCTION_NAME_REGEXP);
+  const match: ?Array<string> = fn.toString().match(FUNCTION_NAME_REGEXP);
 
   return match ? match[1] : '';
 };
@@ -205,22 +220,7 @@ export const getFunctionName = (fn: Function): string => {
  * @returns {boolean} is the object passed an array or not
  */
 export const isArray = Array.isArray || function(object: any): boolean {
- return toString.call(object) === ARRAY_OBJECT_CLASS;
-};
-
-/**
- * @private
- *
- * @function isCache
- *
- * @description
- * is the object passed an instance of the native Cache implementation
- *
- * @param {*} object object to test
- * @returns {boolean} is the object an instance of Cache
- */
-export const isCache = (object: any): boolean => {
-  return object instanceof Cache;
+  return toString.call(object) === ARRAY_OBJECT_CLASS;
 };
 
 /**
@@ -366,6 +366,58 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
 /**
  * @private
  *
+ * @function isKeyShallowEqualWithArgs
+ *
+ * @description
+ * is the value passed shallowly equal with the args
+ *
+ * @param {*} value the value to compare
+ * @param {Array<*>} args the args to test
+ * @returns {boolean} are the args shallow equal to the value
+ */
+export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean => {
+  return !!(value && value.isMultiParamKey) && value.key.length === args.length && every(args, (arg, index) => {
+    return arg === value.key[index];
+  });
+};
+
+/**
+ * @private
+ *
+ * @function getMultiParamKey
+ *
+ * @description
+ * get the multi-parameter key that either matches a current one in state or is the same as the one passed
+ *
+ * @param {Cache} cache cache to compare args to
+ * @param {Array<*>} args arguments passed to moize get key
+ * @returns {Array<*>} either a matching key in cache or the same key as the one passed
+ */
+export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
+  if (isKeyShallowEqualWithArgs(cache.lastItem, args)) {
+    // $FlowIgnore cache.lastItem exists
+    return cache.lastItem.key;
+  }
+
+  const iterator = cache.getKeyIterator();
+
+  let value: Object;
+
+  while ((value = iterator.next()) && !value.done) {
+    if (isKeyShallowEqualWithArgs(value, args)) {
+      return value.key;
+    }
+  }
+
+  // $FlowIgnore ok to add key to array object
+  args.isMultiParamKey = true;
+
+  return args;
+};
+
+/**
+ * @private
+ *
  * @function createAddPropertiesToFunction
  *
  * @description
@@ -376,11 +428,9 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
  * @returns {function(function): function} method that has cache mechanism added to it
  */
 export const createAddPropertiesToFunction = (cache: Cache, originalFn: Function): Function => {
-  const displayName: string = `Memoized(${getFunctionName(originalFn)})`;
-
   return (fn: Function): Function => {
     fn.cache = cache;
-    fn.displayName = displayName;
+    fn.displayName = `Memoized(${getFunctionName(originalFn)})`;
     fn.isMemoized = true;
 
     /**
@@ -486,14 +536,12 @@ export const isFiniteAndPositive = (number: number): boolean => {
 export const getIndexOfKey = (cache: Cache, key: any): number => {
   const iterator: KeyIterator = cache.getKeyIterator();
 
-  let value: Object = iterator.next();
+  let value: Object;
 
-  while (!value.done) {
+  while ((value = iterator.next()) && !value.done) {
     if (value.key === key) {
       return value.index;
     }
-
-    value = iterator.next();
   }
 
   return -1;
@@ -519,42 +567,6 @@ export const getKeyIteratorObject = (listItem: ListItem, index: number): Object 
     isMultiParamKey: listItem.isMultiParamKey,
     key: listItem.key
   };
-};
-
-/**
- * @private
- *
- * @function getMultiParamKey
- *
- * @description
- * get the multi-parameter key that either matches a current one in state or is the same as the one passed
- *
- * @param {Cache} cache cache to compare args to
- * @param {Array<*>} args arguments passed to moize get key
- * @returns {Array<*>} either a matching key in cache or the same key as the one passed
- */
-export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
-  if (isKeyShallowEqualWithArgs(cache.lastItem, args)) {
-    // $FlowIgnore cache.lastItem exists
-    return cache.lastItem.key;
-  }
-
-  const iterator = cache.getKeyIterator();
-
-  let value: Object = iterator.next();
-
-  while (!value.done) {
-    if (isKeyShallowEqualWithArgs(value, args)) {
-      return value.key;
-    }
-
-    value = iterator.next();
-  }
-
-  // $FlowIgnore ok to add key to array object
-  args.isMultiParamKey = true;
-
-  return args;
 };
 
 /**
@@ -645,25 +657,8 @@ export const getSerializerFunction = (
   maxArgs: number
 ): Function => {
   // $FlowIgnore
-  return isFunction(serializerFromOptions) ? serializerFromOptions : createArgumentSerializer(serializeFunctions, maxArgs);
-};
-
-/**
- * @private
- *
- * @function isKeyShallowEqualWithArgs
- *
- * @description
- * is the value passed shallowly equal with the args
- *
- * @param {*} value the value to compare
- * @param {Array<*>} args the args to test
- * @returns {boolean} are the args shallow equal to the value
- */
-export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean => {
-  return !!(value && value.isMultiParamKey) && value.key.length === args.length && every(args, (arg, index) => {
-    return arg === value.key[index];
-  });
+  return isFunction(serializerFromOptions) ? serializerFromOptions :
+    createArgumentSerializer(serializeFunctions, maxArgs);
 };
 
 /**
@@ -729,6 +724,64 @@ export const createSetExpirationOfCache = (maxAge: number) => {
 /**
  * @private
  *
+ * @function createPromiseRejecter
+ *
+ * @description
+ * create method that will reject the promise and delete the key from cache
+ *
+ * @param {Cache} cache cache to update
+ * @param {*} key key to delete from cache
+ * @param {function} PromiseLibrary the promise library used
+ * @returns {function} the rejecter function for the promise
+ */
+export const createPromiseRejecter = (
+  cache: Cache,
+  key: any,
+  PromiseLibrary: Function
+): Function => {
+  return (exception: Error) => {
+    cache.delete(key);
+
+    return PromiseLibrary.reject(exception);
+  };
+};
+
+/**
+ * @private
+ *
+ * @function createPromiseResolver
+ *
+ * @description
+ * create method that will resolve the promise and update the key in cache
+ *
+ * @param {Cache} cache cache to update
+ * @param {*} key key to update in cache
+ * @param {boolean} hasMaxAge should the cache expire after some time
+ * @param {function} setExpirationOfCache function to set the expiration of cache
+ * @param {function} PromiseLibrary the promise library used
+ * @returns {function} the resolver function for the promise
+ */
+export const createPromiseResolver = (
+  cache: Cache,
+  key: any,
+  hasMaxAge: boolean,
+  setExpirationOfCache: Function,
+  PromiseLibrary: Function
+): Function => {
+  return (resolvedValue: any) => {
+    cache.updateItem(key, PromiseLibrary.resolve(resolvedValue));
+
+    if (hasMaxAge) {
+      setExpirationOfCache(cache, key);
+    }
+
+    return resolvedValue;
+  };
+};
+
+/**
+ * @private
+ *
  * @function createSetNewCachedValue
  *
  * @description
@@ -754,20 +807,10 @@ export const createSetNewCachedValue = (
 
   if (isPromise) {
     return (key: any, value: any): Promise<any> => {
-      const handler = value
-        .then((resolvedValue) => {
-          cache.updateItem(key, PromiseLibrary.resolve(resolvedValue));
+      const promiseResolver = createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, PromiseLibrary);
+      const promiseRejecter = createPromiseRejecter(cache, key, PromiseLibrary);
 
-          if (hasMaxAge) {
-            setExpirationOfCache(cache, key);
-          }
-
-          return resolvedValue;
-        }, (exception) => {
-          cache.delete(key);
-
-          return PromiseLibrary.reject(exception);
-        });
+      const handler = value.then(promiseResolver, promiseRejecter);
 
       cache.set(key, handler);
 
