@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+#### 2.2.2
+* Abstract out `promiseResolver` and `promiseRejecter` into separate testable functions
+* Various code cleanups and typing enhancements
+
 #### 2.2.1
 * Fix issue with `delete` checking `size` of the `Cache` before it had actually updated
 
