@@ -54,6 +54,12 @@ const ITERATOR_DONE_OBJECT: IteratorDone = {
   done: true
 };
 
+/**
+ * @private
+ *
+ * @constant {string|symbol} CACHE_IDENTIFIER
+ * @default
+ */
 export const CACHE_IDENTIFIER = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
 
 /**
