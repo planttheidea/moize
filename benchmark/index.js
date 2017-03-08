@@ -104,27 +104,27 @@ const runSingleParameterSuite = () => {
 
   return new Promise((resolve) => {
     fibonacciSuite
-      // .add('underscore', () => {
-      //   mUnderscore(fibonacciNumber);
-      // })
-      // .add('lodash', () => {
-      //   mLodash(fibonacciNumber);
-      // })
-      // .add('ramda', () => {
-      //   mRamda(fibonacciNumber);
-      // })
-      // .add('memoizee', () => {
-      //   mMemoizee(fibonacciNumber);
-      // })
-      // .add('fast-memoize', () => {
-      //   mFastMemoize(fibonacciNumber);
-      // })
-      // .add('addy-osmani', () => {
-      //   mAddyOsmani(fibonacciNumber);
-      // })
-      // .add('memoizerific', () => {
-      //   mMemoizerific(fibonacciNumber);
-      // })
+      .add('underscore', () => {
+        mUnderscore(fibonacciNumber);
+      })
+      .add('lodash', () => {
+        mLodash(fibonacciNumber);
+      })
+      .add('ramda', () => {
+        mRamda(fibonacciNumber);
+      })
+      .add('memoizee', () => {
+        mMemoizee(fibonacciNumber);
+      })
+      .add('fast-memoize', () => {
+        mFastMemoize(fibonacciNumber);
+      })
+      .add('addy-osmani', () => {
+        mAddyOsmani(fibonacciNumber);
+      })
+      .add('memoizerific', () => {
+        mMemoizerific(fibonacciNumber);
+      })
       .add('moize', () => {
         mMoize(fibonacciNumber);
       })
