@@ -38,9 +38,9 @@
 			</li>
 			
 			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu inline">
-					<li><a href="global.html">Global</a></li>
+					<li><a href="Cache.html">Cache</a></li>
 				</ul>
 			</li>
 			
@@ -88,6 +88,8 @@ import {
 } from './utils';
 
 /**
+ * @private
+ *
  * @typedef {Object} ListItem
  *
  * @property {*} key the key stored in cache
@@ -101,6 +103,8 @@ export type ListItem = {
 };
 
 /**
+ * @private
+ *
  * @typedef {Object} IteratorDone
  *
  * @property {true} done is the iterator complete
@@ -110,6 +114,8 @@ export type IteratorDone = {
 };
 
 /**
+ * @private
+ *
  * @typedef {Object} KeyIterator
  *
  * @property {function} next the function to call to get the next iteration
@@ -130,8 +136,6 @@ const ITERATOR_DONE_OBJECT: IteratorDone = {
 export const CACHE_IDENTIFIER = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
 
 /**
- * @private
- *
  * @class Cache
  * @classdesc class that mimics parts of the Map infrastructure, but faster
  */

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Module: moize</title>
+	<title>moize Class: Cache</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -72,10 +72,17 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Module: moize</h1>
+	<h1 class="page-title">Class: Cache</h1>
 <section>
 
 <header>
+    
+        <h2>
+        Cache
+        </h2>
+        
+            <div class="class-description"><p>class that mimics parts of the Map infrastructure, but faster</p></div>
+        
     
 </header>
 
@@ -84,8 +91,24 @@
     <div class="container-overview">
     
         
+<hr>
+<dt>
+    <h4 class="name" id="Cache"><span class="type-signature"></span>new Cache()</h4>
+    
+    
+</dt>
+<dd>
 
-        
+    
+
+    
+
+    
+
+    
+    
+
+    
 <dl class="details">
     
 
@@ -120,8 +143,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-23">line 23</a>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-57">line 57</a>
 			</li>
 		</ul>
 	</dd>
@@ -135,7 +158,21 @@
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
 
@@ -158,7 +195,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="~moize"><span class="type-signature">&lt;inner> </span>moize(fn [, options])</h4>
+    <h4 class="name" id="clear"><span class="type-signature"></span>clear()</h4>
     
     
 </dt>
@@ -166,7 +203,7 @@
 
     
     <div class="description">
-        <p>store cached values returned from calling method with arguments to avoid reprocessing data from same arguments</p>
+        <p>remove all keys from the map</p>
     </div>
     
 
@@ -175,460 +212,6 @@
     
 
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>fn</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>method to memoize</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Options</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>options to customize how the caching is handled</p>
-                <h6 class="method-params-label method-subparams-label">Properties</h6>
-                
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>cache</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Cache.html">Cache</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    new Cache()
-                
-                </td>
-            
-
-            <td class="description last"><p>caching mechanism to use for method</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>isPromise</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>is the function return expected to be a promise to resolve</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxAge</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Infinity
-                
-                </td>
-            
-
-            <td class="description last"><p>the maximum age the value should persist in cache</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxArgs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Infinity
-                
-                </td>
-            
-
-            <td class="description last"><p>the maximum number of arguments to be used in serializing the keys</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>maxSize</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Infinity
-                
-                </td>
-            
-
-            <td class="description last"><p>the maximum size of the cache to retain</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>promiseLibrary</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    Promise
-                
-                </td>
-            
-
-            <td class="description last"><p>promise library to use for resolution / rejection</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>serializeFunctions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    false
-                
-                </td>
-            
-
-            <td class="description last"><p>should function parameters be serialized as well</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>serializer</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>method to serialize arguments with for cache storage</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
     
 
     
@@ -666,8 +249,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-31">line 31</a>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-78">line 78</a>
 			</li>
 		</ul>
 	</dd>
@@ -692,51 +275,6 @@
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>higher-order function which either returns from cache or newly-computed value</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">function</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">import moize from &#x27;moize&#x27;;
-
-// standard implementation
-const fn = (foo, bar) =&gt; {
- return &#x60;${foo} ${bar}&#x60;;
-};
-const memoizedFn = moize(fn);
-
-// implementation with options
-const fn = async (id) =&gt; {
- return get(&#x60;http://foo.com/${id}&#x60;);
-};
-const memoizedFn = moize(fn, {
- isPromise: true,
- maxSize: 5
-});</pre>
-
 
     
 </dd>
@@ -745,7 +283,7 @@ const memoizedFn = moize(fn, {
             
 <hr>
 <dt>
-    <h4 class="name" id="~react"><span class="type-signature">&lt;inner> </span>react(fn [, options])</h4>
+    <h4 class="name" id="delete"><span class="type-signature"></span>delete(key)</h4>
     
     
 </dt>
@@ -753,7 +291,7 @@ const memoizedFn = moize(fn, {
 
     
     <div class="description">
-        <p>react-specific memoization, with auto serialization including functions</p>
+        <p>remove the key from the map</p>
     </div>
     
 
@@ -776,11 +314,7 @@ const memoizedFn = moize(fn, {
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -792,13 +326,13 @@ const memoizedFn = moize(fn, {
 
         <tr>
             
-                <td class="name"><code>fn</code></td>
+                <td class="name"><code>key</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">*</span>
 
 
 
@@ -806,62 +340,10 @@ const memoizedFn = moize(fn, {
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last"><p>React functional component to memoize</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Options</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {}
-                
-                </td>
-            
-
-            <td class="description last"><p>options to customize how the caching is handled</p></td>
+            <td class="description last"><p>key to delete from the map</p></td>
         </tr>
 
     
@@ -905,8 +387,146 @@ const memoizedFn = moize(fn, {
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-131">line 131</a>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-92">line 92</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="get"><span class="type-signature"></span>get(key)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>get the value for the given key</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>key to get the value for</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-115">line 115</a>
 			</li>
 		</ul>
 	</dd>
@@ -935,8 +555,7 @@ const memoizedFn = moize(fn, {
     
             
 <div class="param-desc">
-    <p>higher-order function which returns moized function with
-maxArgs, serialize, and serializeFunctions options pre-applied</p>
+    <p>value at the key location</p>
 </div>
 
 
@@ -947,7 +566,7 @@ maxArgs, serialize, and serializeFunctions options pre-applied</p>
     </dt>
     <dd>
         
-<span class="param-type">function</span>
+<span class="param-type">*</span>
 
 
 
@@ -958,16 +577,743 @@ maxArgs, serialize, and serializeFunctions options pre-applied</p>
         
 
     
-        <h5>Example</h5>
+</dd>
+
         
-    <pre class="sunlight-highlight-javascript">import moize from &#x27;moize&#x27;;
+            
+<hr>
+<dt>
+    <h4 class="name" id="getKeyIterator"><span class="type-signature"></span>getKeyIterator()</h4>
+    
+    
+</dt>
+<dd>
 
-const Foo = ({bar}) =&gt; {
-  return bar * 2;
-};
+    
+    <div class="description">
+        <p>create a custom iterator for the keys in the list</p>
+    </div>
+    
 
-export default moize.react(Foo);</pre>
+    
 
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-151">line 151</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>iterator instance</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="has"><span class="type-signature"></span>has(key)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>does the map have the key provided</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>key to test for in the map</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-176">line 176</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>does the map have the key</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="set"><span class="type-signature"></span>set(key, value)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>set the value at the key location, or add a new item with that key value</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>key to assign value of</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>value to store in the map at key</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-195">line 195</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setLastItem"><span class="type-signature"></span>setLastItem(lastItem)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>assign the lastItem</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>lastItem</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">ListItem</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the item to assign</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-217">line 217</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateItem"><span class="type-signature"></span>updateItem(key, value)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>update an item in-place with a new value</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>key to update value of</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>value to store in the map at key</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="Cache.js.html">Cache.js</a>,
+				 <a href="Cache.js.html#sunlight-1-line-235">line 235</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>

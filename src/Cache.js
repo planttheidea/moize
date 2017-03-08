@@ -9,6 +9,8 @@ import {
 } from './utils';
 
 /**
+ * @private
+ *
  * @typedef {Object} ListItem
  *
  * @property {*} key the key stored in cache
@@ -22,6 +24,8 @@ export type ListItem = {
 };
 
 /**
+ * @private
+ *
  * @typedef {Object} IteratorDone
  *
  * @property {true} done is the iterator complete
@@ -31,6 +35,8 @@ export type IteratorDone = {
 };
 
 /**
+ * @private
+ *
  * @typedef {Object} KeyIterator
  *
  * @property {function} next the function to call to get the next iteration
@@ -51,8 +57,6 @@ const ITERATOR_DONE_OBJECT: IteratorDone = {
 export const CACHE_IDENTIFIER = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
 
 /**
- * @private
- *
  * @class Cache
  * @classdesc class that mimics parts of the Map infrastructure, but faster
  */
