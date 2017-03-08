@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+#### 2.2.3
+* Simplify internal vs custom cache recognition
+* Typing and documentation cleanup
+
 #### 2.2.2
 * Abstract out `promiseResolver` and `promiseRejecter` into separate testable functions
 * Various code cleanups and typing enhancements
