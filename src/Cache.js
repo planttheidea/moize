@@ -8,12 +8,33 @@ import {
   unshift
 } from './utils';
 
+/**
+ * @typedef {Object} ListItem
+ *
+ * @property {*} key the key stored in cache
+ * @property {boolean} isMultiParamKey is the key a multi-parameter key
+ * @property {*} value the value assigned in cache to key
+ */
 export type ListItem = {
   key: any,
   isMultiParamKey: boolean,
   value: any
 };
 
+/**
+ * @typedef {Object} IteratorDone
+ *
+ * @property {true} done is the iterator complete
+ */
+export type IteratorDone = {
+  done: true
+};
+
+/**
+ * @typedef {Object} KeyIterator
+ *
+ * @property {function} next the function to call to get the next iteration
+ */
 export type KeyIterator = {
   next: Function
 };
@@ -21,11 +42,13 @@ export type KeyIterator = {
 /**
  * @private
  *
- * @constant {Object} ITERATOR_DONE_OBJECT
+ * @constant {IteratorDone} ITERATOR_DONE_OBJECT
  */
-const ITERATOR_DONE_OBJECT: Object = {
+const ITERATOR_DONE_OBJECT: IteratorDone = {
   done: true
 };
+
+export const CACHE_IDENTIFIER = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
 
 /**
  * @private
@@ -34,6 +57,9 @@ const ITERATOR_DONE_OBJECT: Object = {
  * @classdesc class that mimics parts of the Map infrastructure, but faster
  */
 class Cache {
+  // $FlowIgnore computed properties not yet supported on classes
+  [CACHE_IDENTIFIER]: boolean = true;
+
   lastItem: ?ListItem = undefined;
   list: Array<ListItem> = [];
   size: number = 0;
@@ -101,8 +127,7 @@ class Cache {
 
       this.setLastItem(unshift(splice(this.list, index), item));
 
-      // $FlowIgnore this.lastItem exists
-      return this.lastItem.value;
+      return item.value;
     }
   }
 
@@ -120,7 +145,7 @@ class Cache {
     let index: number = -1;
 
     return {
-      next: (): (ListItem|Object) => {
+      next: (): (ListItem|IteratorDone) => {
         return ++index < this.size ? getKeyIteratorObject(this.list[index], index) : ITERATOR_DONE_OBJECT;
       }
     };
@@ -138,12 +163,8 @@ class Cache {
    * @returns {boolean} does the map have the key
    */
   has(key: any): boolean {
-    if (this.size === 0) {
-      return false;
-    }
-
-    // $FlowIgnore: this.lastItem.key exists
-    return key === this.lastItem.key || !!~getIndexOfKey(this, key);
+    // $FlowIgnore: this.lastItem exists
+    return this.size !== 0 && (key === this.lastItem.key || !!~getIndexOfKey(this, key));
   }
 
   /**
@@ -197,7 +218,9 @@ class Cache {
     if (~index) {
       this.list[index].value = value;
 
-      if (this.lastItem && key === this.lastItem.key) {
+      // $FlowIgnore: this.lastItem exists
+      if (key === this.lastItem.key) {
+        // $FlowIgnore: this.lastItem exists
         this.lastItem.value = value;
       }
     }

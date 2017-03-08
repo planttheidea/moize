@@ -35,7 +35,7 @@ const showResults = (benchmarkResults) => {
   console.log(table.toString());
 };
 
-const sortDescResults  = (benchmarkResults) => {
+const sortDescResults = (benchmarkResults) => {
   return benchmarkResults.sort((a, b) => {
     return a.target.hz < b.target.hz ? 1 : -1;
   });
@@ -70,7 +70,8 @@ const fibonacciMultiplePrimitive = (number, isComplete) => {
   const firstValue = number - 1;
   const secondValue = number - 2;
 
-  return fibonacciMultiplePrimitive(firstValue, firstValue < 2) + fibonacciMultiplePrimitive(secondValue, secondValue < 2);
+  return fibonacciMultiplePrimitive(firstValue, firstValue < 2) +
+    fibonacciMultiplePrimitive(secondValue, secondValue < 2);
 };
 
 const fibonacciMultipleObject = (number, check) => {
@@ -103,27 +104,27 @@ const runSingleParameterSuite = () => {
 
   return new Promise((resolve) => {
     fibonacciSuite
-      .add('underscore', () => {
-        mUnderscore(fibonacciNumber);
-      })
-      .add('lodash', () => {
-        mLodash(fibonacciNumber);
-      })
-      .add('ramda', () => {
-        mRamda(fibonacciNumber);
-      })
-      .add('memoizee', () => {
-        mMemoizee(fibonacciNumber);
-      })
-      .add('fast-memoize', () => {
-        mFastMemoize(fibonacciNumber);
-      })
-      .add('addy-osmani', () => {
-        mAddyOsmani(fibonacciNumber);
-      })
-      .add('memoizerific', () => {
-        mMemoizerific(fibonacciNumber);
-      })
+      // .add('underscore', () => {
+      //   mUnderscore(fibonacciNumber);
+      // })
+      // .add('lodash', () => {
+      //   mLodash(fibonacciNumber);
+      // })
+      // .add('ramda', () => {
+      //   mRamda(fibonacciNumber);
+      // })
+      // .add('memoizee', () => {
+      //   mMemoizee(fibonacciNumber);
+      // })
+      // .add('fast-memoize', () => {
+      //   mFastMemoize(fibonacciNumber);
+      // })
+      // .add('addy-osmani', () => {
+      //   mAddyOsmani(fibonacciNumber);
+      // })
+      // .add('memoizerific', () => {
+      //   mMemoizerific(fibonacciNumber);
+      // })
       .add('moize', () => {
         mMoize(fibonacciNumber);
       })

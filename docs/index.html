@@ -37,6 +37,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html">Global</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -90,7 +97,7 @@
     <section class="readme-section">
         <article><h1 id="moize">moize</h1>
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-99.60%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.</p>
 <h3 id="table-of-contents">Table of contents</h3>
@@ -131,7 +138,21 @@ const Foo = ({bar, baz}) => {
   );
 };
 
-export default moize.react(Foo);</code></pre><p><code>moize.react</code> will auto-apply the <code>serialize</code> and <code>serializeFunctions</code> options, and set <code>maxArgs</code> equal to <code>2</code>, which allows for a value equality comparison of <code>props</code> and <code>context</code>. You can still pass additional options in the same way you pass them in the default <code>moize</code> method. Please note this will not operate with components made via the <code>class</code> instantiation.</p>
+export default moize.react(Foo);</code></pre><p><code>moize.react</code> will auto-apply the <code>serialize</code> and <code>serializeFunctions</code> options, and set <code>maxArgs</code> equal to <code>2</code>, which allows for a value equality comparison of <code>props</code> and <code>context</code>. You can still pass additional options in the same way you pass them in the default <code>moize</code> method.</p>
+<p>Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a <code>maxSize</code>:</p>
+<pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
+
+const HeavilyReusedFoo = ({bar, baz}) => {
+  return (
+    &lt;div>
+      {bar} {baz}
+    &lt;/div>
+  );
+};
+
+export default moize.react(Foo, {
+  maxSize: 5
+});</code></pre><p>Please note <code>moize.react</code> will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
 <h3 id="advanced-usage">Advanced usage</h3>
 <p><code>moize</code> optionally accepts an object of options as the second parameter. The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
@@ -340,6 +361,7 @@ memoized(object); // 'bar'</code></pre><p><strong>serializeFunctions</strong> <e
 };
 
 const MemoizedFunctionalComponent = moize(FunctionalComponent, {
+  serialize: true,
   serializeFunctions: true
 });</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
 <p><strong>serializer</strong> <em>defaults to serializeArguments in utils.js</em></p>
@@ -349,6 +371,7 @@ const MemoizedFunctionalComponent = moize(FunctionalComponent, {
 };
 
 const memoized = moize(fn, {
+  serialize: true,
   serializer
 });</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
 <h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
