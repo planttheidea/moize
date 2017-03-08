@@ -121,15 +121,24 @@ const moize = function(fn: Function, options: Options = {}): any {
 };
 
 /**
- * @function moize.react
+ * @function react
  *
  * @description
  * react-specific memoization, with auto serialization including functions
  *
+ * @example
+ * import moize from 'moize';
+ *
+ * const Foo = ({bar}) => {
+ *   return bar * 2;
+ * };
+ *
+ * export default moize.react(Foo);
  *
  * @param {function} fn React functional component to memoize
  * @param {Options} [options={}] options to customize how the caching is handled
- * @returns {Function} higher-order function which either returns from cache or newly-computed ReactElement
+ * @returns {Function} higher-order function which returns moized function with
+ * maxArgs, serialize, and serializeFunctions options pre-applied
  */
 moize.react = function(fn: Function, options: Options = {}): any {
   return moize(fn, {

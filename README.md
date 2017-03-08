@@ -1,7 +1,7 @@
 # moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-99.60%25-brightgreen.svg"/>
+<img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.
@@ -62,7 +62,27 @@ const Foo = ({bar, baz}) => {
 export default moize.react(Foo);
 ```
 
-`moize.react` will auto-apply the `serialize` and `serializeFunctions` options, and set `maxArgs` equal to `2`, which allows for a value equality comparison of `props` and `context`. You can still pass additional options in the same way you pass them in the default `moize` method. Please note this will not operate with components made via the `class` instantiation.
+`moize.react` will auto-apply the `serialize` and `serializeFunctions` options, and set `maxArgs` equal to `2`, which allows for a value equality comparison of `props` and `context`. You can still pass additional options in the same way you pass them in the default `moize` method.
+
+Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a `maxSize`:
+
+```javascript
+import moize from 'moize';
+
+const HeavilyReusedFoo = ({bar, baz}) => {
+  return (
+    <div>
+      {bar} {baz}
+    </div>
+  );
+};
+
+export default moize.react(Foo, {
+  maxSize: 5
+});
+```
+
+Please note `moize.react` will not operate with components made via the `class` instantiation, as they do not offer the same [referential transparency](https://en.wikipedia.org/wiki/Referential_transparency).
 
 ### Advanced usage
 
@@ -333,6 +353,7 @@ const FunctionalComponent = ({onClickFoo}) => {
 };
 
 const MemoizedFunctionalComponent = moize(FunctionalComponent, {
+  serialize: true,
   serializeFunctions: true
 });
 ```
@@ -349,6 +370,7 @@ const serializer = (args) => {
 };
 
 const memoized = moize(fn, {
+  serialize: true,
   serializer
 });
 ```

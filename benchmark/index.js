@@ -16,26 +16,31 @@ const moize = require('../lib');
 const showResults = (benchmarkResults) => {
   const table = new Table({
     head: [
-      'NAME',
-      'OPS/SEC',
-      'RELATIVE MARGIN OF ERROR',
-      'SAMPLE SIZE'
+      'Name',
+      'Ops / sec',
+      'Relative margin of error',
+      'Sample size'
     ]
   });
 
   benchmarkResults.forEach((result) => {
+    const name = result.target.name;
+    const opsPerSecond = result.target.hz.toLocaleString('en-US', {maximumFractionDigits: 0});
+    const relativeMarginOferror = `± ${result.target.stats.rme.toFixed(2)}%`;
+    const sampleSize = result.target.stats.sample.length;
+
     table.push([
-      result.target.name,
-      result.target.hz.toLocaleString('en-US', {maximumFractionDigits: 0}),
-      `± ${result.target.stats.rme.toFixed(2)}%`,
-      result.target.stats.sample.length
+      name,
+      opsPerSecond,
+      relativeMarginOferror,
+      sampleSize
     ]);
   });
 
   console.log(table.toString());
 };
 
-const sortDescResults  = (benchmarkResults) => {
+const sortDescResults = (benchmarkResults) => {
   return benchmarkResults.sort((a, b) => {
     return a.target.hz < b.target.hz ? 1 : -1;
   });
@@ -70,7 +75,8 @@ const fibonacciMultiplePrimitive = (number, isComplete) => {
   const firstValue = number - 1;
   const secondValue = number - 2;
 
-  return fibonacciMultiplePrimitive(firstValue, firstValue < 2) + fibonacciMultiplePrimitive(secondValue, secondValue < 2);
+  return fibonacciMultiplePrimitive(firstValue, firstValue < 2) +
+    fibonacciMultiplePrimitive(secondValue, secondValue < 2);
 };
 
 const fibonacciMultipleObject = (number, check) => {
@@ -89,7 +95,7 @@ const fibonacciMultipleObject = (number, check) => {
 };
 
 const runSingleParameterSuite = () => {
-  const fibonacciSuite = new Benchmark.Suite();
+  const fibonacciSuite = new Benchmark.Suite('Single parameter');
   const fibonacciNumber = 35;
 
   const mUnderscore = underscore(fibonacci);
@@ -129,7 +135,7 @@ const runSingleParameterSuite = () => {
       })
       .on('start', () => {
         console.log('');
-        console.log('Starting cycles functions with a single parameter...');
+        console.log('Starting cycles for functions with a single parameter...');
 
         results = [];
 
@@ -147,7 +153,7 @@ const runSingleParameterSuite = () => {
 };
 
 const runMultiplePrimitiveSuite = () => {
-  const fibonacciSuite = new Benchmark.Suite();
+  const fibonacciSuite = new Benchmark.Suite('Multiple parameters (Primitive)');
   const fibonacciNumber = 35;
   const isComplete = false;
 
@@ -176,7 +182,7 @@ const runMultiplePrimitiveSuite = () => {
       })
       .on('start', () => {
         console.log('');
-        console.log('Starting cycles functions with multiple parameters that contain only primitives...');
+        console.log('Starting cycles for functions with multiple parameters that contain only primitives...');
 
         results = [];
 
@@ -194,7 +200,7 @@ const runMultiplePrimitiveSuite = () => {
 };
 
 const runMultipleObjectSuite = () => {
-  const fibonacciSuite = new Benchmark.Suite();
+  const fibonacciSuite = new Benchmark.Suite('Multiple parameters (Object)');
   const fibonacciNumber = 35;
   const isComplete = {
     isComplete: false

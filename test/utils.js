@@ -23,6 +23,7 @@ import {
   getSerializerFunction,
   getStringifiedArgument,
   isArray,
+  isArrayFallback,
   isCache,
   isComplexObject,
   isFunction,
@@ -581,7 +582,7 @@ test('if isComplexObject correctly identifies a complex object', (t) => {
   });
 });
 
-test('if isArray will return true if array, false otherwise', (t) => {
+test('if isArrayFallback will return true if array, false otherwise', (t) => {
   const bool = true;
   const string = 'foo';
   const number = 123;
@@ -592,16 +593,16 @@ test('if isArray will return true if array, false otherwise', (t) => {
   const array = [];
   const fn = () => {};
 
-  t.false(isArray(bool));
-  t.false(isArray(string));
-  t.false(isArray(number));
-  t.false(isArray(regexp));
-  t.false(isArray(undef));
-  t.false(isArray(nil));
-  t.false(isArray(object));
-  t.false(isArray(fn));
+  t.false(isArrayFallback(bool));
+  t.false(isArrayFallback(string));
+  t.false(isArrayFallback(number));
+  t.false(isArrayFallback(regexp));
+  t.false(isArrayFallback(undef));
+  t.false(isArrayFallback(nil));
+  t.false(isArrayFallback(object));
+  t.false(isArrayFallback(fn));
 
-  t.true(isArray(array));
+  t.true(isArrayFallback(array));
 });
 
 test('if isFunction tests if the item is a function or not', (t) => {

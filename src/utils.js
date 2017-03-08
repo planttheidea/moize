@@ -1,6 +1,8 @@
 // @flow
 
-import Cache from './Cache';
+import Cache, {
+  CACHE_IDENTIFIER
+} from './Cache';
 
 import type {
   ListItem,
@@ -152,7 +154,7 @@ export const unshift = (array: Array<any>, item: any): any => {
  * @returns {boolean} is the object an instance of Cache
  */
 export const isCache = (object: any): boolean => {
-  return object instanceof Cache;
+  return !!object[CACHE_IDENTIFIER];
 };
 
 /**
@@ -211,7 +213,7 @@ export const getFunctionName = (fn: Function): string => {
 /**
  * @private
  *
- * @function isArray
+ * @function isArrayFallback
  *
  * @description
  * provide fallback for native Array.isArray test
@@ -219,9 +221,22 @@ export const getFunctionName = (fn: Function): string => {
  * @param {*} object object to test if it is an array
  * @returns {boolean} is the object passed an array or not
  */
-export const isArray = Array.isArray || function(object: any): boolean {
+export const isArrayFallback = function(object: any): boolean {
   return toString.call(object) === ARRAY_OBJECT_CLASS;
 };
+
+/**
+ * @private
+ *
+ * @function isArray
+ *
+ * @description
+ * isArray function to use internally, either the native one or fallback
+ *
+ * @param {*} object object to test if it is an array
+ * @returns {boolean} is the object passed an array or not
+ */
+export const isArray = Array.isArray || isArrayFallback;
 
 /**
  * @private
@@ -354,7 +369,7 @@ export const decycle = (object: any): string => {
  * @param {boolean} [isKeyLastItem=false] should the key be the last item in the LRU list
  */
 export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boolean = false) => {
-  if (isKeyLastItem && isCache(cache)) {
+  if (isCache(cache) && isKeyLastItem) {
     key = cache.list[cache.list.length - 1].key;
   }
 
@@ -401,11 +416,11 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
 
   const iterator = cache.getKeyIterator();
 
-  let value: Object;
+  let iteration: Object;
 
-  while ((value = iterator.next()) && !value.done) {
-    if (isKeyShallowEqualWithArgs(value, args)) {
-      return value.key;
+  while ((iteration = iterator.next()) && !iteration.done) {
+    if (isKeyShallowEqualWithArgs(iteration, args)) {
+      return iteration.key;
     }
   }
 
@@ -536,11 +551,11 @@ export const isFiniteAndPositive = (number: number): boolean => {
 export const getIndexOfKey = (cache: Cache, key: any): number => {
   const iterator: KeyIterator = cache.getKeyIterator();
 
-  let value: Object;
+  let iteration: Object;
 
-  while ((value = iterator.next()) && !value.done) {
-    if (value.key === key) {
-      return value.index;
+  while ((iteration = iterator.next()) && !iteration.done) {
+    if (iteration.key === key) {
+      return iteration.index;
     }
   }
 
