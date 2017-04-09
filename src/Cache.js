@@ -1,5 +1,19 @@
 // @flow
 
+
+// constants
+import {
+  CACHE_IDENTIFIER,
+  ITERATOR_DONE_OBJECT
+} from './constants';
+
+// types
+import type {
+  IteratorDone,
+  KeyIterator,
+  ListItem
+} from './types';
+
 // utils
 import {
   getIndexOfKey,
@@ -7,60 +21,6 @@ import {
   splice,
   unshift
 } from './utils';
-
-/**
- * @private
- *
- * @typedef {Object} ListItem
- *
- * @property {*} key the key stored in cache
- * @property {boolean} isMultiParamKey is the key a multi-parameter key
- * @property {*} value the value assigned in cache to key
- */
-export type ListItem = {
-  key: any,
-  isMultiParamKey: boolean,
-  value: any
-};
-
-/**
- * @private
- *
- * @typedef {Object} IteratorDone
- *
- * @property {true} done is the iterator complete
- */
-export type IteratorDone = {
-  done: true
-};
-
-/**
- * @private
- *
- * @typedef {Object} KeyIterator
- *
- * @property {function} next the function to call to get the next iteration
- */
-export type KeyIterator = {
-  next: Function
-};
-
-/**
- * @private
- *
- * @constant {IteratorDone} ITERATOR_DONE_OBJECT
- */
-const ITERATOR_DONE_OBJECT: IteratorDone = {
-  done: true
-};
-
-/**
- * @private
- *
- * @constant {string|symbol} CACHE_IDENTIFIER
- * @default
- */
-export const CACHE_IDENTIFIER = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
 
 /**
  * @class Cache

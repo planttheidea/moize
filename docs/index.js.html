@@ -79,38 +79,34 @@
         <pre
             class="sunlight-highlight-javascript linenums">// @flow
 
-// external dependencies
+// cache
 import Cache from './Cache';
+
+// constants
+import {
+  INFINITY,
+  INVALID_FIRST_PARAMETER_ERROR,
+  NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE
+} from './constants';
+
+// types
+import type {
+  Options
+} from './types';
 
 // utils
 import {
+  compose,
   createAddPropertiesToFunction,
   createGetCacheKey,
   createSetNewCachedValue,
-  isFunction
+  isFunction,
+  isPlainObject
 } from './utils';
-
-type Options = {
-  cache?: Object,
-  isPromise?: boolean,
-  maxAge?: number,
-  maxArgs?: number,
-  maxSize?: number,
-  promiseLibrary?: Function,
-  serialize?: boolean,
-  serializeFunctions?: boolean,
-  serializer?: Function
-};
 
 /**
  * @module moize
  */
-
-const INFINITY = Number.POSITIVE_INFINITY;
-const NOT_A_FUNCTION_ERROR = 'You must pass a function as the first parameter to moize.';
-const NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE = 'You have not specified a promiseLibrary, and it appears that your browser does not support ' +
-  'native promises. You can either assign the library you are using to the global Promise object, or pass ' +
-  'the library in options via the "promiseLibrary" property.';
 
 /**
  * @function moize
@@ -136,26 +132,40 @@ const NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE = 'You have not specified a promis
  *  maxSize: 5
  * });
  *
- * @param {function} fn method to memoize
- * @param {Options} [options={}] options to customize how the caching is handled
- * @param {Cache} [options.cache=new Cache()] caching mechanism to use for method
- * @param {boolean} [options.isPromise=false] is the function return expected to be a promise to resolve
- * @param {number} [options.maxAge=Infinity] the maximum age the value should persist in cache
- * @param {number} [options.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
- * @param {number} [options.maxSize=Infinity] the maximum size of the cache to retain
- * @param {function} [options.promiseLibrary=Promise] promise library to use for resolution / rejection
- * @param {function} [options.serializeFunctions=false] should function parameters be serialized as well
- * @param {function} [options.serializer] method to serialize arguments with for cache storage
+ * @param {function} functionOrComposableOptions method to memoize
+ * @param {Options} [passedOptions={}] options to customize how the caching is handled
+ * @param {Cache} [passedOptions.cache=new Cache()] caching mechanism to use for method
+ * @param {boolean} [passedOptions.isPromise=false] is the function return expected to be a promise to resolve
+ * @param {number} [passedOptions.maxAge=Infinity] the maximum age the value should persist in cache
+ * @param {number} [passedOptions.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
+ * @param {number} [passedOptions.maxSize=Infinity] the maximum size of the cache to retain
+ * @param {function} [passedOptions.promiseLibrary=Promise] promise library to use for resolution / rejection
+ * @param {function} [passedOptions.serializeFunctions=false] should function parameters be serialized as well
+ * @param {function} [passedOptions.serializer] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
-const moize = function(fn: Function, options: Options = {}): any {
-  if (!isFunction(fn)) {
-    throw new TypeError(NOT_A_FUNCTION_ERROR);
+const moize = function(functionOrComposableOptions: (Function|Object), passedOptions: Options = {}): any {
+  if (isPlainObject(functionOrComposableOptions)) {
+    return function(fn: Function, otherOptions: Options = {}): Function {
+      return moize(fn, {
+        // $FlowIgnore functionOrComposableOptions is object of options
+        ...functionOrComposableOptions,
+        ...otherOptions
+      });
+    };
   }
 
-  if (fn.isMemoized) {
-    return fn;
+  if (!isFunction(functionOrComposableOptions)) {
+    throw new TypeError(INVALID_FIRST_PARAMETER_ERROR);
   }
+
+  const isComposed: boolean = functionOrComposableOptions.isMemoized;
+  // $FlowIgnore the value of the property is a function
+  const fn: Function = isComposed ? functionOrComposableOptions.originalFunction : functionOrComposableOptions;
+  const options: Object = !isComposed ? passedOptions : {
+    ...functionOrComposableOptions.options,
+    ...passedOptions
+  };
 
   const {
     cache = new Cache(),
@@ -173,7 +183,7 @@ const moize = function(fn: Function, options: Options = {}): any {
     throw new ReferenceError(NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE);
   }
 
-  const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn);
+  const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn, options);
   const getCacheKey: Function = createGetCacheKey(cache, serialize, serializer, serializeFunctions, maxArgs);
   const setNewCachedValue: Function = createSetNewCachedValue(cache, isPromise, maxAge, maxSize, promiseLibrary);
 
@@ -200,7 +210,7 @@ const moize = function(fn: Function, options: Options = {}): any {
 };
 
 /**
- * @function react
+ * @function maxSize
  *
  * @description
  * react-specific memoization, with auto serialization including functions
@@ -208,25 +218,60 @@ const moize = function(fn: Function, options: Options = {}): any {
  * @example
  * import moize from 'moize';
  *
- * const Foo = ({bar}) => {
+ * const foo = (bar) => {
  *   return bar * 2;
  * };
  *
- * export default moize.react(Foo);
+ * export default moize.maxAge(5000)(Foo);
  *
- * @param {function} fn React functional component to memoize
- * @param {Options} [options={}] options to customize how the caching is handled
- * @returns {Function} higher-order function which returns moized function with
- * maxArgs, serialize, and serializeFunctions options pre-applied
+ * @param {number} maxAge the max time in milliseconds for the cache to exist
+ * @returns {function(function, Object): function} a higher-order function to return the moize fn with maxAge applied
  */
-moize.react = function(fn: Function, options: Options = {}): any {
-  return moize(fn, {
-    ...options,
-    maxArgs: 2,
-    serialize: true,
-    serializeFunctions: true
+const maxAge = function(maxAge: number): Function {
+  return moize({
+    maxAge
   });
 };
+
+/**
+ * @function maxSize
+ *
+ * @description
+ * react-specific memoization, with auto serialization including functions
+ *
+ * @example
+ * import moize from 'moize';
+ *
+ * const foo = (bar) => {
+ *   return bar * 2;
+ * };
+ *
+ * export default moize.maxSize(5)(Foo);
+ *
+ * @param {number} maxSize the max size of the cache
+ * @returns {function(function, Object): function} a higher-order function to return the moize fn with maxSize applied
+ */
+const maxSize = function(maxSize: number): Function {
+  return moize({
+    maxSize
+  });
+};
+
+moize.compose = compose;
+moize.maxAge = maxAge;
+moize.maxSize = maxSize;
+moize.promise = moize({
+  isPromise: true
+});
+moize.react = moize({
+  maxArgs: 2,
+  serialize: true,
+  serializeFunctions: true
+});
+moize.serialize = moize({
+  serialize: true
+});
+moize.simple = moize.maxSize(1);
 
 export default moize;
 </pre>
