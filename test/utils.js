@@ -4,36 +4,7 @@ import _ from 'lodash';
 import sinon from 'sinon';
 
 //src
-import {
-  addStaticPropertiesToFunction,
-  createAddPropertiesToFunction,
-  createGetCacheKey,
-  createPluckFromInstanceList,
-  createPromiseRejecter,
-  createPromiseResolver,
-  createSetExpirationOfCache,
-  createSetNewCachedValue,
-  decycle,
-  deleteItemFromCache,
-  every,
-  getFunctionName,
-  getFunctionNameViaRegexp,
-  getIndexOfKey,
-  getMultiParamKey,
-  getSerializerFunction,
-  getStringifiedArgument,
-  isArray,
-  isArrayFallback,
-  isCache,
-  isComplexObject,
-  isFunction,
-  isFiniteAndPositive,
-  isKeyShallowEqualWithArgs,
-  isValueObjectOrArray,
-  splice,
-  unshift,
-  stringify
-} from '../src/utils';
+import * as utils from '../src/utils';
 import Cache from '../src/Cache';
 
 const sleep = (ms) => {
@@ -56,7 +27,7 @@ test('if addStaticPropertiesToFunction will add static properties to the origina
   originalFn.defaultProps = bar;
   originalFn.propTypes = baz;
 
-  const result = addStaticPropertiesToFunction(originalFn, memoizedFn);
+  const result = utils.addStaticPropertiesToFunction(originalFn, memoizedFn);
 
   t.is(result, memoizedFn);
 
@@ -73,11 +44,34 @@ test('if addStaticPropertiesToFunction will only static properties that exist on
 
   originalFn.defaultProps = foo;
 
-  addStaticPropertiesToFunction(originalFn, memoizedFn);
+  utils.addStaticPropertiesToFunction(originalFn, memoizedFn);
 
   t.is(memoizedFn.contextTypes, undefined);
   t.is(memoizedFn.defaultProps, foo);
   t.is(memoizedFn.propTypes, undefined);
+});
+
+test('if compose will compose multiple functions to a single function', (t) => {
+  const firstStub = sinon.stub().callsFake(_.identity);
+  const secondStub = sinon.stub().callsFake(_.identity);
+  const thirdStub = sinon.stub().callsFake(_.identity);
+
+  const value = 'foo';
+
+  const composed = utils.compose(thirdStub, secondStub, firstStub);
+
+  const result = composed(value);
+
+  t.true(firstStub.calledOnce);
+  t.true(firstStub.calledWith(value));
+
+  t.true(secondStub.calledOnce);
+  t.true(secondStub.calledWith(value));
+
+  t.true(thirdStub.calledOnce);
+  t.true(thirdStub.calledWith(value));
+
+  t.is(result, value);
 });
 
 test('if every matches the output of the native function', (t) => {
@@ -89,9 +83,9 @@ test('if every matches the output of the native function', (t) => {
     return item === 'foo';
   };
 
-  const everyResult = every(everyFoo, isFoo);
-  const someResult = every(someFoo, isFoo);
-  const noneResult = every(noneFoo, isFoo);
+  const everyResult = utils.every(everyFoo, isFoo);
+  const someResult = utils.every(someFoo, isFoo);
+  const noneResult = utils.every(noneFoo, isFoo);
 
   t.true(everyResult);
   t.false(someResult);
@@ -103,7 +97,7 @@ test('if every matches the output of the native function', (t) => {
 });
 
 test('if every returns true when the array is empty', (t) => {
-  t.true(every([]));
+  t.true(utils.every([]));
 });
 
 test('if decycle will return an object that has circular references removed', (t) => {
@@ -116,7 +110,7 @@ test('if decycle will return an object that has circular references removed', (t
   object.foo.baz = object.foo;
   object.foo.blah = [object.foo];
 
-  const result = decycle(object);
+  const result = utils.decycle(object);
 
   t.deepEqual(result, {
     foo: {
@@ -139,7 +133,7 @@ test('if deleteItemFromCache will remove an item from both cache', (t) => {
 
   cache.set(key, 'bar');
 
-  deleteItemFromCache(cache, key);
+  utils.deleteItemFromCache(cache, key);
 
   t.false(cache.has(key));
 });
@@ -150,13 +144,13 @@ test('if deleteItemFromCache will only delete something when the key is actually
 
   cache.set(key, 'bar');
 
-  deleteItemFromCache(cache, 'bar');
+  utils.deleteItemFromCache(cache, 'bar');
 
   t.true(cache.has(key));
 });
 
 test('if createGetCacheKey returns a function that returns the first item in the array if the only item', (t) => {
-  const getCacheKey = createGetCacheKey();
+  const getCacheKey = utils.createGetCacheKey();
 
   const item = {
     foo: 'bar'
@@ -170,7 +164,7 @@ test('if createGetCacheKey returns a function that returns the first item in the
 
 test('if createGetCacheKey returns a function that returns a stringified value of the args passed if more than one item', (t) => {
   const cache = new Cache();
-  const getCacheKey = createGetCacheKey(cache);
+  const getCacheKey = utils.createGetCacheKey(cache);
 
   const item = {
     foo: 'bar'
@@ -186,7 +180,7 @@ test('if createGetCacheKey returns a function that returns a stringified value o
 test('if createGetCacheKey returns a function that returns a limited arguments key for the arguments passed', (t) => {
   const cache = new Cache();
   const maxArgs = 1;
-  const getCacheKey = createGetCacheKey(cache, false, null, false, maxArgs);
+  const getCacheKey = utils.createGetCacheKey(cache, false, null, false, maxArgs);
 
   const item = {
     foo: 'bar'
@@ -202,7 +196,7 @@ test('if createGetCacheKey returns a function that returns a limited arguments k
 
 test('if createGetCacheKey will return undefined as a key when no arguments are passed', (t) => {
   const cache = new Cache();
-  const getCacheKey = createGetCacheKey(cache);
+  const getCacheKey = utils.createGetCacheKey(cache);
 
   const args = [];
 
@@ -217,7 +211,7 @@ test('if createPluckFromInstanceList will create a method to pluck the key passe
   cache.set('foo', 'bar');
   cache.set('bar', 'baz');
 
-  const fn = createPluckFromInstanceList(cache, 'value');
+  const fn = utils.createPluckFromInstanceList(cache, 'value');
 
   t.true(_.isFunction(fn));
 
@@ -234,7 +228,7 @@ test('if createPluckFromInstanceList will return a noop if the cache is not an i
     ]
   };
 
-  const fn = createPluckFromInstanceList(cache, 'value');
+  const fn = utils.createPluckFromInstanceList(cache, 'value');
 
   t.true(_.isFunction(fn));
 
@@ -255,7 +249,7 @@ test('if createPromiseRejecter will create a function that will delete the item 
     }
   };
 
-  const result = createPromiseRejecter(cache, key, promiseLibrary);
+  const result = utils.createPromiseRejecter(cache, key, promiseLibrary);
 
   t.true(_.isFunction(result));
 
@@ -278,7 +272,7 @@ test('if createPromiseResolver will create a function that will update the item 
     }
   };
 
-  const result = createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
+  const result = utils.createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
 
   t.true(_.isFunction(result));
 
@@ -300,7 +294,7 @@ test('if createPromiseResolver will create a function that will set the cache to
     resolve() {}
   };
 
-  const result = createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
+  const result = utils.createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
 
   t.true(_.isFunction(result));
 
@@ -310,22 +304,22 @@ test('if createPromiseResolver will create a function that will set the cache to
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
   function foo() {}
 
-  const namedResult = getFunctionName(foo);
+  const namedResult = utils.getFunctionName(foo);
 
   t.is(namedResult, 'foo');
 
   foo.displayName = 'bar';
 
-  const displayNameResult = getFunctionName(foo);
+  const displayNameResult = utils.getFunctionName(foo);
 
   t.is(displayNameResult, 'bar');
 
   const arrow = () => {};
-  const arrowResult = getFunctionName(arrow);
+  const arrowResult = utils.getFunctionName(arrow);
 
   t.is(arrowResult, 'arrow');
 
-  const lamdaResult = getFunctionName(() => {});
+  const lamdaResult = utils.getFunctionName(() => {});
 
   t.is(lamdaResult, 'function');
 });
@@ -333,11 +327,11 @@ test('if getFunctionName returns the name if it exists, else returns function', 
 test('if getFunctionNameViaRegexp will match the function name if it exists', (t) => {
   function foo() {}
 
-  const namedResult = getFunctionNameViaRegexp(foo);
+  const namedResult = utils.getFunctionNameViaRegexp(foo);
 
   t.is(namedResult, 'foo');
 
-  const anonymousResult = getFunctionNameViaRegexp(function() {});
+  const anonymousResult = utils.getFunctionNameViaRegexp(function() {});
 
   t.is(anonymousResult, '');
 });
@@ -348,7 +342,7 @@ test('if getFunctionWithAdditionalProperties will add the cache passed to the fu
     foo: 'bar'
   };
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const result = getFunctionWithAdditionalProperties(fn);
 
@@ -366,7 +360,7 @@ test('if getFunctionWithAdditionalProperties clear method will clear cache', (t)
   const key = 'foo';
   const cache = new Cache();
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const result = getFunctionWithAdditionalProperties(fn);
 
@@ -386,7 +380,7 @@ test('if getFunctionWithAdditionalProperties will have a displayName reflecting 
 
   cache.set(key, key);
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, originalFn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, originalFn);
 
   const fn = () => {};
 
@@ -401,7 +395,7 @@ test('if getFunctionWithAdditionalProperties add method will add a key => value 
   const key = ['foo'];
   const value = 'bar';
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const result = getFunctionWithAdditionalProperties(fn);
 
@@ -421,7 +415,7 @@ test('if getFunctionWithAdditionalProperties add method will not add a key => va
 
   const spy = sinon.spy(cache, 'set');
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const result = getFunctionWithAdditionalProperties(fn);
 
@@ -437,9 +431,9 @@ test('if getFunctionWithAdditionalProperties add method will not add a key => va
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
   const cache = new Cache();
-  const key = getMultiParamKey(cache, ['foo']);
+  const key = utils.getMultiParamKey(cache, ['foo']);
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const result = getFunctionWithAdditionalProperties(fn);
 
@@ -457,7 +451,7 @@ test('if getFunctionWithAdditionalProperties keys method will return the list of
   const key = 'foo';
   const cache = new Cache();
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const cachedFn = getFunctionWithAdditionalProperties(fn);
 
@@ -475,7 +469,7 @@ test('if getFunctionWithAdditionalProperties values method will return the list 
   const key = 'foo';
   const cache = new Cache();
 
-  const getFunctionWithAdditionalProperties = createAddPropertiesToFunction(cache, fn);
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
   const cachedFn = getFunctionWithAdditionalProperties(fn);
 
@@ -498,15 +492,15 @@ test('if getIndexOfKey returns the index of the item in the map, else -1', (t) =
   const foo = 'foo';
   const notFoo = 'notFoo';
 
-  t.is(getIndexOfKey(cache, foo), 2);
-  t.is(getIndexOfKey(cache, notFoo), -1);
+  t.is(utils.getIndexOfKey(cache, foo), 2);
+  t.is(utils.getIndexOfKey(cache, notFoo), -1);
 });
 
 test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
   const cache = new Cache();
   const args = ['foo', 'bar'];
 
-  const result = getMultiParamKey(cache, args);
+  const result = utils.getMultiParamKey(cache, args);
 
   t.is(result, args);
   t.true(result.isMultiParamKey);
@@ -531,7 +525,7 @@ test('if getMultiParamKey returns an existing array of arguments when match is f
     cache.set(arg.key, arg.value);
   });
 
-  const result = getMultiParamKey(cache, args);
+  const result = utils.getMultiParamKey(cache, args);
 
   t.not(result, args);
   t.is(result, existingArgList[0].key);
@@ -546,10 +540,10 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
     foo: 'bar'
   };
 
-  t.is(getStringifiedArgument(string), string);
-  t.is(getStringifiedArgument(number), number);
-  t.is(getStringifiedArgument(boolean), boolean);
-  t.is(getStringifiedArgument(object), JSON.stringify(object));
+  t.is(utils.getStringifiedArgument(string), string);
+  t.is(utils.getStringifiedArgument(number), number);
+  t.is(utils.getStringifiedArgument(boolean), boolean);
+  t.is(utils.getStringifiedArgument(object), JSON.stringify(object));
 });
 
 test('if isCache correctly tests if object passed is an instance of Cache', (t) => {
@@ -561,12 +555,12 @@ test('if isCache correctly tests if object passed is an instance of Cache', (t) 
   };
   const cache = new Cache();
 
-  t.false(isCache(string));
-  t.false(isCache(number));
-  t.false(isCache(boolean));
-  t.false(isCache(object));
+  t.false(utils.isCache(string));
+  t.false(utils.isCache(number));
+  t.false(utils.isCache(boolean));
+  t.false(utils.isCache(object));
 
-  t.true(isCache(cache));
+  t.true(utils.isCache(cache));
 });
 
 test('if isComplexObject correctly identifies a complex object', (t) => {
@@ -574,11 +568,11 @@ test('if isComplexObject correctly identifies a complex object', (t) => {
   const pass = [{foo: 'bar'}, ['foo']];
 
   fail.forEach((item) => {
-    t.false(isComplexObject(item));
+    t.false(utils.isComplexObject(item));
   });
 
   pass.forEach((item) => {
-    t.true(isComplexObject(item));
+    t.true(utils.isComplexObject(item));
   });
 });
 
@@ -593,16 +587,16 @@ test('if isArrayFallback will return true if array, false otherwise', (t) => {
   const array = [];
   const fn = () => {};
 
-  t.false(isArrayFallback(bool));
-  t.false(isArrayFallback(string));
-  t.false(isArrayFallback(number));
-  t.false(isArrayFallback(regexp));
-  t.false(isArrayFallback(undef));
-  t.false(isArrayFallback(nil));
-  t.false(isArrayFallback(object));
-  t.false(isArrayFallback(fn));
+  t.false(utils.isArrayFallback(bool));
+  t.false(utils.isArrayFallback(string));
+  t.false(utils.isArrayFallback(number));
+  t.false(utils.isArrayFallback(regexp));
+  t.false(utils.isArrayFallback(undef));
+  t.false(utils.isArrayFallback(nil));
+  t.false(utils.isArrayFallback(object));
+  t.false(utils.isArrayFallback(fn));
 
-  t.true(isArrayFallback(array));
+  t.true(utils.isArrayFallback(array));
 });
 
 test('if isFunction tests if the item is a function or not', (t) => {
@@ -616,33 +610,33 @@ test('if isFunction tests if the item is a function or not', (t) => {
   const array = [];
   const fn = () => {};
 
-  t.false(isFunction(bool));
-  t.false(isFunction(string));
-  t.false(isFunction(number));
-  t.false(isFunction(regexp));
-  t.false(isFunction(undef));
-  t.false(isFunction(nil));
-  t.false(isFunction(object));
-  t.false(isFunction(array));
+  t.false(utils.isFunction(bool));
+  t.false(utils.isFunction(string));
+  t.false(utils.isFunction(number));
+  t.false(utils.isFunction(regexp));
+  t.false(utils.isFunction(undef));
+  t.false(utils.isFunction(nil));
+  t.false(utils.isFunction(object));
+  t.false(utils.isFunction(array));
 
-  t.true(isFunction(fn));
+  t.true(utils.isFunction(fn));
 });
 
 test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
-  t.true(isFiniteAndPositive(123));
+  t.true(utils.isFiniteAndPositive(123));
 
-  t.false(isFiniteAndPositive(Infinity));
-  t.false(isFiniteAndPositive(0));
-  t.false(isFiniteAndPositive(-0));
-  t.false(isFiniteAndPositive(-123));
-  t.false(isFiniteAndPositive(-Infinity));
+  t.false(utils.isFiniteAndPositive(Infinity));
+  t.false(utils.isFiniteAndPositive(0));
+  t.false(utils.isFiniteAndPositive(-0));
+  t.false(utils.isFiniteAndPositive(-123));
+  t.false(utils.isFiniteAndPositive(-Infinity));
 });
 
 test('if isKeyShallowEqualWithArgs returns false when value is falsy', (t) => {
   const value = null;
   const args = ['foo', 'bar'];
 
-  const result = isKeyShallowEqualWithArgs(value, args);
+  const result = utils.isKeyShallowEqualWithArgs(value, args);
 
   t.false(result);
 });
@@ -653,7 +647,7 @@ test('if isKeyShallowEqualWithArgs returns false when value is not a multi-param
   };
   const args = ['foo', 'bar'];
 
-  const result = isKeyShallowEqualWithArgs(value, args);
+  const result = utils.isKeyShallowEqualWithArgs(value, args);
 
   t.false(result);
 });
@@ -662,7 +656,7 @@ test('if isKeyShallowEqualWithArgs returns false when value is an array whose le
   const value = ['foo'];
   const args = ['foo', 'bar'];
 
-  const result = isKeyShallowEqualWithArgs(value, args);
+  const result = utils.isKeyShallowEqualWithArgs(value, args);
 
   t.false(result);
 });
@@ -676,7 +670,7 @@ test('if isKeyShallowEqualWithArgs returns false when value is an array whose va
     ...object
   }];
 
-  const result = isKeyShallowEqualWithArgs(value, args);
+  const result = utils.isKeyShallowEqualWithArgs(value, args);
 
   t.false(result);
 });
@@ -688,7 +682,7 @@ test('if isKeyShallowEqualWithArgs returns true when value is an array whose val
   const value = ['foo', object];
   const args = ['foo', object];
 
-  const result = isKeyShallowEqualWithArgs(value, args);
+  const result = utils.isKeyShallowEqualWithArgs(value, args);
 
   t.false(result);
 });
@@ -697,11 +691,33 @@ test('if isKeyShallowEqualWithArgs returns true when value and args both are emp
   const value = [];
   const args = [];
 
-  const result = isKeyShallowEqualWithArgs(value, args);
+  const result = utils.isKeyShallowEqualWithArgs(value, args);
 
   t.false(result);
 });
 
+test('if isPlainObject tests if the item is a function or not', (t) => {
+  const bool = true;
+  const string = 'foo';
+  const number = 123;
+  const regexp = /foo/;
+  const undef = undefined;
+  const nil = null;
+  const object = {};
+  const array = [];
+  const fn = () => {};
+
+  t.false(utils.isPlainObject(bool));
+  t.false(utils.isPlainObject(string));
+  t.false(utils.isPlainObject(number));
+  t.false(utils.isPlainObject(regexp));
+  t.false(utils.isPlainObject(undef));
+  t.false(utils.isPlainObject(nil));
+  t.false(utils.isPlainObject(fn));
+  t.false(utils.isPlainObject(array));
+
+  t.true(utils.isPlainObject(object));
+});
 test('if isValueObjectOrArray correctly determines if an item is an object / array or not', (t) => {
   const bool = new Boolean(true);
   const string = new String('foo');
@@ -711,17 +727,17 @@ test('if isValueObjectOrArray correctly determines if an item is an object / arr
   const object = {};
   const array = [];
 
-  t.false(isValueObjectOrArray(bool));
-  t.false(isValueObjectOrArray(string));
-  t.false(isValueObjectOrArray(date));
-  t.false(isValueObjectOrArray(number));
-  t.false(isValueObjectOrArray(regexp));
-  t.true(isValueObjectOrArray(object));
-  t.true(isValueObjectOrArray(array));
+  t.false(utils.isValueObjectOrArray(bool));
+  t.false(utils.isValueObjectOrArray(string));
+  t.false(utils.isValueObjectOrArray(date));
+  t.false(utils.isValueObjectOrArray(number));
+  t.false(utils.isValueObjectOrArray(regexp));
+  t.true(utils.isValueObjectOrArray(object));
+  t.true(utils.isValueObjectOrArray(array));
 });
 
 test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
-  const serializeArguments = getSerializerFunction();
+  const serializeArguments = utils.getSerializerFunction();
 
   const string = 'foo';
   const number = 123;
@@ -740,7 +756,7 @@ test('if getSerializerFunction returns a function that produces a stringified ve
 });
 
 test('if serializeArguments limits the key creation when maxArgs is passed', (t) => {
-  const serializeArguments = getSerializerFunction(null, false, 2);
+  const serializeArguments = utils.getSerializerFunction(null, false, 2);
 
   const string = 'foo';
   const number = 123;
@@ -759,7 +775,7 @@ test('if serializeArguments limits the key creation when maxArgs is passed', (t)
 });
 
 test('if serializeArguments converts functions nested in objects to string when serializeFunctions is true', (t) => {
-  const serializeArguments = getSerializerFunction(null, true);
+  const serializeArguments = utils.getSerializerFunction(null, true);
 
   const string = 'foo';
   const number = 123;
@@ -787,7 +803,7 @@ test('if setNewCachedValue will run the set method if not a promise', async (t) 
       t.is(value, valueToSet);
     }
   };
-  const setNewCachedValue = createSetNewCachedValue(cache, false);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, false);
 
   const result = await setNewCachedValue(keyToSet, valueToSet);
 
@@ -800,7 +816,7 @@ test('if setNewCachedValue will run the set method upon resolution of a promise'
   const key = 'foo';
   const value = 'bar';
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
 
   const result = await setNewCachedValue(key, Promise.resolve(value));
 
@@ -812,7 +828,7 @@ test('if setNewCachedValue will maintain its promise nature for future cached ca
   const key = 'foo';
   const value = 'bar';
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
 
   await setNewCachedValue(key, Promise.resolve(value));
 
@@ -830,7 +846,7 @@ test('if setNewCachedValue will maintain its promise nature for future cached ca
 test('if setNewCachedValue will delete itself from cache if a rejected promise is returned', async (t) => {
   const cache = new Cache();
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
 
   const key = 'foo';
   const value = new Promise((resolve, reject) => {
@@ -851,7 +867,7 @@ test('if setNewCachedValue will delete itself from cache if a rejected promise i
 test('if setNewCachedValue will retrigger the promise rejection to ensure that the application can catch it', async (t) => {
   const cache = new Cache();
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
 
   const key = 'foo';
   const error = new Error('foo');
@@ -869,7 +885,7 @@ test('if setNewCachedValue will retrigger the promise rejection to ensure that t
 test('if setNewCachedValue will wait to trigger the expiration timeout until the resolution of the promise', async (t) => {
   const cache = new Cache();
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true, 100, Infinity, Promise);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, 100, Infinity, Promise);
 
   const key = 'foo';
   const value = new Promise((resolve) => {
@@ -899,7 +915,7 @@ test('if setNewCachedValue will immediately remove the oldest item from cache if
 
   cache.set(keyToDelete, 'baz');
 
-  const setNewCachedValue = createSetNewCachedValue(cache, true, Infinity, 1, Promise);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, 1, Promise);
 
   const key = 'foo';
   const value = new Promise((resolve) => {
@@ -920,7 +936,7 @@ test('if setNewCachedValue will set the cache to expire if maxAge is finite', as
   const valueToSet = 'bar';
   const maxAge = 100;
 
-  const setNewCachedValue = createSetNewCachedValue(cache, false, maxAge);
+  const setNewCachedValue = utils.createSetNewCachedValue(cache, false, maxAge);
 
   await setNewCachedValue(keyToSet, valueToSet);
 
@@ -938,7 +954,7 @@ test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
 
   cache.set('bar', 'baz');
 
-  const setNewCacheValue = createSetNewCachedValue(cache, false, Infinity, 1);
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, false, Infinity, 1);
 
   setNewCacheValue(keyToSet, valueToSet);
 
@@ -958,7 +974,7 @@ test('if splice performs the same operation as the native splice', (t) => {
       customArray = [...nativeArray];
 
   nativeArray.splice(indexToSpice, 1);
-  splice(customArray, indexToSpice);
+  utils.splice(customArray, indexToSpice);
 
   t.deepEqual(nativeArray, customArray);
 });
@@ -968,7 +984,7 @@ test('if splice returns immediately when an empty array is passed', (t) => {
 
   const originalArrayLength = array.length;
 
-  splice(array, 0);
+  utils.splice(array, 0);
 
   t.is(array.length, originalArrayLength);
 });
@@ -980,13 +996,13 @@ test('if unshift performs the same operation as the native unshift', (t) => {
       customArray = [...nativeArray];
 
   nativeArray.unshift(valueToUnshift);
-  unshift(customArray, valueToUnshift);
+  utils.unshift(customArray, valueToUnshift);
 
   t.deepEqual(nativeArray, customArray);
 });
 
 test('if setExpirationOfCache will expire the cache after the age passed', async (t) => {
-  const setExpirationOfCache = createSetExpirationOfCache(100);
+  const setExpirationOfCache = utils.createSetExpirationOfCache(100);
   const cache = new Cache();
 
   cache.set('foo', 'bar');
@@ -1005,7 +1021,7 @@ test('if setExpirationOfCache will expire the cache after the age passed', async
 });
 
 test('if setExpirationOfCache will expire the cache immediately if less than 0', async (t) => {
-  const setExpirationOfCache = createSetExpirationOfCache(-1);
+  const setExpirationOfCache = utils.createSetExpirationOfCache(-1);
   const cache = new Cache();
 
   cache.set('foo', 'bar');
@@ -1029,11 +1045,11 @@ test('if cycle.decycle is called only when object is cannot be handled by JSON.s
 
   circular.foo.baz = circular.foo;
 
-  const standardResult = stringify(standard);
+  const standardResult = utils.stringify(standard);
 
   t.is(standardResult, '{"foo":"bar"}');
 
-  const circularResult = stringify(circular);
+  const circularResult = utils.stringify(circular);
 
   t.is(circularResult, '{"foo":{"bar":"baz","baz":{"$ref":"$[\\\"foo\\\"]"}}}');
 });

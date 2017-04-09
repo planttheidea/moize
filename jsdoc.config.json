@@ -6,7 +6,13 @@
       "add-module-exports"
     ],
     "presets": [
-      "latest",
+      ["env", {
+        "loose": true,
+        "targets": [
+          "last 2 versions",
+          "ie 9"
+        ]
+      }],
       "stage-2"
     ]
   },

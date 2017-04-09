@@ -1,37 +1,30 @@
 // @flow
 
-import Cache, {
-  CACHE_IDENTIFIER
-} from './Cache';
+// cache
+import Cache from './Cache';
 
+// constants
+import {
+  jsonStringify,
+  keys,
+  toString,
+
+  ARRAY_OBJECT_CLASS,
+  CACHE_IDENTIFIER,
+  FUNCTION_TYPEOF,
+  FUNCTION_NAME_REGEXP,
+  GOTCHA_OBJECT_CLASSES,
+  OBJECT_TYPEOF,
+  STATIC_PROPERTIES_TO_PASS,
+  STATIC_PROPERTIES_TO_PASS_LENGTH
+} from './constants';
+
+// types
 import type {
+  KeyIterator,
   ListItem,
-  KeyIterator
-} from './Cache';
-
-const keys: Function = Object.keys;
-const toString: Function = Object.prototype.toString;
-const jsonStringify: Function = JSON.stringify;
-
-const ARRAY_OBJECT_CLASS: string = '[object Array]';
-const FUNCTION_TYPEOF: string = 'function';
-const FUNCTION_NAME_REGEXP: RegExp = /^\s*function\s+([^\(\s]*)\s*/;
-const OBJECT_TYPEOF: string = 'object';
-
-const GOTCHA_OBJECT_CLASSES: Array<Object> = [
-  Boolean,
-  Date,
-  Number,
-  RegExp,
-  String
-];
-
-const STATIC_PROPERTIES_TO_PASS: Array<string> = [
-  'contextTypes',
-  'defaultProps',
-  'propTypes'
-];
-const STATIC_PROPERTIES_TO_PASS_LENGTH: number = STATIC_PROPERTIES_TO_PASS.length;
+  Options
+} from './types';
 
 /**
  * @private
@@ -41,23 +34,42 @@ const STATIC_PROPERTIES_TO_PASS_LENGTH: number = STATIC_PROPERTIES_TO_PASS.lengt
  * @description
  * add static properties to the memoized function if they exist on the original
  *
- * @param {function} originalFn the function to be memoized
+ * @param {function} originalFunction the function to be memoized
  * @param {function} memoizedFn the higher-order memoized function
  * @returns {function} memoizedFn with static properties added
  */
-export const addStaticPropertiesToFunction = (originalFn: Function, memoizedFn: Function): Function => {
+export const addStaticPropertiesToFunction = (originalFunction: Function, memoizedFn: Function): Function => {
   let index: number = STATIC_PROPERTIES_TO_PASS_LENGTH,
       property: string;
 
   while (index--) {
     property = STATIC_PROPERTIES_TO_PASS[index];
 
-    if (originalFn[property]) {
-      memoizedFn[property] = originalFn[property];
+    if (originalFunction[property]) {
+      memoizedFn[property] = originalFunction[property];
     }
   }
 
   return memoizedFn;
+};
+
+/**
+ * @private
+ *
+ * @function compose
+ *
+ * @description
+ * method to compose functions and return a single function
+ *
+ * @param {...Array<function>} functions the functions to compose
+ * @returns {function(...Array<*>): *} the composed function
+ */
+export const compose = (...functions: Array<Function>): Function => {
+  return functions.reduce((f: Function, g: Function): Function => {
+    return (...args: Array<any>): any => {
+      return f(g(...args));
+    };
+  });
 };
 
 /**
@@ -271,6 +283,21 @@ export const isFunction = (object: any): boolean => {
 /**
  * @private
  *
+ * @function isPlainObject
+ *
+ * @description
+ * is the object passed a plain object or not
+ *
+ * @param {*} object object to test
+ * @returns {boolean} is it a plain object
+ */
+export const isPlainObject = (object: any): boolean => {
+  return isComplexObject(object) && object.constructor === Object;
+};
+
+/**
+ * @private
+ *
  * @function isValueObjectOrArray
  *
  * @description
@@ -439,14 +466,16 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
  * add the caching mechanism to the function passed and return the function
  *
  * @param {Cache} cache caching mechanism that has get / set / has methods
- * @param {function} originalFn function to get the name of
+ * @param {function} originalFunction function to get the name of
  * @returns {function(function): function} method that has cache mechanism added to it
  */
-export const createAddPropertiesToFunction = (cache: Cache, originalFn: Function): Function => {
+export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Function, options: Options): Function => {
   return (fn: Function): Function => {
     fn.cache = cache;
-    fn.displayName = `Memoized(${getFunctionName(originalFn)})`;
+    fn.displayName = `Memoized(${getFunctionName(originalFunction)})`;
     fn.isMemoized = true;
+    fn.options = options;
+    fn.originalFunction = originalFunction;
 
     /**
      * @private
@@ -517,7 +546,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFn: Function
      */
     fn.values = createPluckFromInstanceList(cache, 'value');
 
-    return addStaticPropertiesToFunction(originalFn, fn);
+    return addStaticPropertiesToFunction(originalFunction, fn);
   };
 };
 

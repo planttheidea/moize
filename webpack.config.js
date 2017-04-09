@@ -31,6 +31,24 @@ module.exports = {
         include: [
           path.resolve(__dirname, 'src')
         ],
+        options: {
+          babelrc: false,
+          plugins: [
+            'syntax-flow',
+            'transform-flow-strip-types'
+          ],
+          presets: [
+            ['env', {
+              loose: true,
+              modules: false,
+              targets: [
+                'last 2 versions',
+                'ie 9'
+              ]
+            }],
+            'stage-2'
+          ]
+        },
         test: /\.js$/,
         loader: 'babel-loader'
       }

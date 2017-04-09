@@ -35,7 +35,7 @@ module.exports = Object.assign({}, defaultConfig, {
           include: rule.include.concat([
             path.resolve(__dirname, 'DEV_ONLY')
           ]),
-          options: Object.assign({}, rule.options, {
+          options: {
             cacheDirectory: true,
             plugins: [
               'transform-decorators-legacy'
@@ -43,7 +43,7 @@ module.exports = Object.assign({}, defaultConfig, {
             presets: [
               'react'
             ]
-          })
+          }
         });
       }
 

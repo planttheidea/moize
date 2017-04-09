@@ -10,10 +10,30 @@
 * [Upgrade notification](#upgrade-notification)
 * [Installation](#installation)
 * [Usage](#usage)
-* [Usage with functional React components](#usage-with-functional-react-components)
 * [Advanced usage](#advanced-usage)
-* [Direct cache manipulation](#direct-cache-manipulation)
+  * [cache](#cache)
+  * [isPromise](#ispromise)
+  * [maxAge](#maxage)
+  * [maxArgs](#maxargs)
+  * [maxSize](#maxsize)
+  * [serialize](#serialize)
+  * [serializeFunctions](#serializeFunctions)
+  * [serializer](#serializer)
+* [Usage with shortcut methods](#usage-with-shortcut-methods)
+  * [moize.maxAge](#moize-maxage)
+  * [moize.maxSize](#moize-maxsize)
+  * [moize.promise](#moize-promise)
+  * [moize.react](#moize-react)
+  * [moize.serialize](#moize-serialize)
+  * [moize.simple](#moize-simple)
+* [Composition](#composition)
 * [Benchmarks](#benchmarks)
+* [Direct cache manipulation](#direct-cache-manipulation)
+  * [add](#addkey-value)
+  * [delete](#deletekey)
+  * [clear](#clear)
+  * [keys](#keys)
+  * [values](#values)
 * [Browser support](#browser-support)
 * [Development](#development)
 
@@ -42,47 +62,7 @@ memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache
 ```
 
-All parameter types are supported, including circular objects, functions, etc. You can even memoize functional `React` components based on their `props` + `context` combination!
-
-### Usage with functional React components
-
-Now in 2.x.x of `moize` you have a quick shortcut for memoizing functional components in [React](https://github.com/facebook/react):
-
-```javascript
-import moize from 'moize';
-
-const Foo = ({bar, baz}) => {
-  return (
-    <div>
-      {bar} {baz}
-    </div>
-  );
-};
-
-export default moize.react(Foo);
-```
-
-`moize.react` will auto-apply the `serialize` and `serializeFunctions` options, and set `maxArgs` equal to `2`, which allows for a value equality comparison of `props` and `context`. You can still pass additional options in the same way you pass them in the default `moize` method.
-
-Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a `maxSize`:
-
-```javascript
-import moize from 'moize';
-
-const HeavilyReusedFoo = ({bar, baz}) => {
-  return (
-    <div>
-      {bar} {baz}
-    </div>
-  );
-};
-
-export default moize.react(Foo, {
-  maxSize: 5
-});
-```
-
-Please note `moize.react` will not operate with components made via the `class` instantiation, as they do not offer the same [referential transparency](https://en.wikipedia.org/wiki/Referential_transparency).
+All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional `React` components based on their `props` + `context` combination (See [Usage with shortcut methods](#usage-with-shortcut-methods))!
 
 ### Advanced usage
 
@@ -102,7 +82,9 @@ Please note `moize.react` will not operate with components made via the `class` 
 }
 ```
 
-**cache** *defaults to new Map()*
+#### cache
+
+*defaults to new Map()*
 
 The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. **This will be deprecated in the next major release.**
 
@@ -196,7 +178,9 @@ const memoized = moize(fn, {
 });
 ```
 
-**isPromise** *defaults to false*
+#### isPromise
+
+*defaults to false*
 
 Is the computed value in the function a `Promise`, and should we cache the resolved value from that `Promise`.
 
@@ -212,7 +196,9 @@ const memoized = moize(fn, {
 
 The resolved value of the `Promise` will be stored in cache as a `Promise` itself, so that cached returns will always be in the form of a `Promise`. For common usage reasons, if the `Promise` is rejected, the cache entry will be deleted. Also, if a `maxAge` is provided, the countdown of that TTL will begin upon the resolution of the promise rather than at the instantiation of it.
 
-**maxAge** *defaults to Infinity*
+#### maxAge
+
+*defaults to Infinity*
 
 The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.
 
@@ -226,7 +212,9 @@ const memoized = moize(fn, {
 });
 ```
 
-**maxArgs** *defaults to the length of arguments passed to the method*
+#### maxArgs
+
+*defaults to the length of arguments passed to the method*
 
 The maximum number of arguments used in creating the key for the cache.
 
@@ -240,7 +228,9 @@ const memoized = moize(fn, {
 });
 ```
 
-**maxSize** *defaults to Infinity*
+#### maxSize
+
+*defaults to Infinity*
 
 The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
 
@@ -312,7 +302,9 @@ const memoized = moize(fn, {
 });
 ```
 
-**serialize** *defaults to false*
+#### serialize
+
+*defaults to false*
 
 In `moize` 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the `serialize` parameter as `true` and you will use the performant serializer from 1.x.x.
 
@@ -336,9 +328,11 @@ object.foo = 'bar';
 memoized(object); // 'bar'
 ```
 
-**serializeFunctions** *defaults to false*
+#### serializeFunctions
 
-By setting this option to `true`, a [custom replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional `React` components, as interactivity functions as part of props will now be included in the unique key structure (in fact, this is exactly how `moize.react` works!). Please note that this will decrease performance of this specific function between 10-25% depending on environment.
+*defaults to false*
+
+By setting this option to `true`, a [custom replacer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional `React` components, as interactivity functions as part of props will now be included in the unique key structure (in fact, this is exactly how `moize.react` works). Please note that this will decrease performance of this specific function between 10-25% depending on environment.
 
 ```javascript
 const FunctionalComponent = ({onClickFoo}) => {
@@ -360,7 +354,9 @@ const MemoizedFunctionalComponent = moize(FunctionalComponent, {
 
 Please note that you must also set `serialize` to true for this setting to take effect.
 
-**serializer** *defaults to serializeArguments in utils.js*
+#### serializer
+
+*defaults to serializeArguments in utils.js*
 
 The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a `Map`.
 
@@ -377,11 +373,175 @@ const memoized = moize(fn, {
 
 Please note that you must also set `serialize` to true for this setting to take effect.
 
+### Usage with shortcut methods
+
+#### moize.maxAge
+
+Pre-applies the `maxAge` option as a curriable method:
+
+```javascript
+import moize from 'moize';
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.maxAge(5000)(foo);
+```
+
+#### moize.maxSize
+
+Pre-applies the `maxSize` option as a curriable method:
+
+```javascript
+import moize from 'moize';
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.maxSize(5)(foo);
+```
+
+#### moize.promise
+
+Pre-applies the `isPromise` option:
+
+```javascript
+import moize from 'moize';
+
+const foo = async (bar, baz) => {
+  return await someApiCall(bar, baz);
+};
+
+export default moize.promise(foo);
+```
+
+#### moize.react
+
+Shortcut for memoizing functional components in [React](https://github.com/facebook/react): Pre-applies `serialize` and `serializeFunctions` both to `true`, and pre-applies `maxArgs` to `2`. This allows for a value equality comparison of `props` and `context`.
+
+```javascript
+import moize from 'moize';
+
+const Foo = ({bar, baz}) => {
+  return (
+    <div>
+      {bar} {baz}
+    </div>
+  );
+};
+
+export default moize.react(Foo);
+```
+
+Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a `maxSize` (see [Composition](#composition) for how to combine with `moize.maxSize` or `moize.simple`).
+
+Please note `moize.react` will not operate with components made via the `class` instantiation, as they do not offer the same [referential transparency](https://en.wikipedia.org/wiki/Referential_transparency).
+
+#### moize.serialize
+
+Pre-applies the `serialize` option:
+
+```javascript
+import moize from 'moize';
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.serialize(foo);
+```
+
+#### moize.simple
+
+Pre-applies the `maxSize` option with `1`:
+
+```javascript
+import moize from 'moize';
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.simple(foo);
+```
+
+### Composition
+
+Starting with version `2.3.0`, you can compose `moize` methods. This will create a new memoized method with the original function that shallowly merges the options of the two setups. Example:
+
+```javascript
+import moize from 'moize';
+
+const Foo = (props) => {
+  return (
+    <div {...props}/>
+  );
+};
+
+// memoizing with react, as since 2.0.0
+const MemoizedFoo = moize.react(Foo);
+
+// creating a separately-memoized method that has maxSize of 1
+const SimpleMemoizedFoo = moize.simple(MemoizedFoo);
+```
+
+You can also create an options-first curriable version of memoize if you just pass the options:
+
+```javascript
+import moize from 'moize';
+
+// creates a function that will memoize what is passed
+const limitedSerializedMoize = moize({
+  maxSize: 5,
+  serialize: true
+});
+
+const foo = (bird) => {
+  return `${bird} is the word`;
+};
+
+const moizedFoo = limitedSerializedMoize(foo);
+```
+
+You can also combine all of these options with `moize.compose` to create `moize` wrappers with pre-defined options.
+
+```javascript
+import moize from 'moize';
+
+// creates a moizer that will have the options of
+// {maxAge: 5000, maxSize: 1, serialize: true, serializeFunctions: true}
+const superLimitedReactMoize = moize.compose(moize.react, moize.simple, moize.maxAge(5000));
+```
+
+### Benchmarks
+
+All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Note that `underscore`, `lodash`, and `ramda` do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (`boolean` for primitives, `object` for complex objects) was used.
+
+![Single parameter image](img/single-parameter.png)
+
+| underscore | lodash    | ramda     | memoizee   | fast-memoize | addy-osmani | memoizerific | moize      |
+|------------|-----------|-----------|------------|--------------|-------------|--------------|------------|
+| 9,393,399  | 9,679,995 | 1,102,656 | 11,651,361 | 31,085,245   | 3,656,676   | 2,184,221    | 47,089,212 |
+
+![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
+
+| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
+|-----------|--------------|-------------|--------------|-----------|
+| 8,144,578 | 1,256,879    | 1,788,762   | 1,433,723    | 9,762,395 |
+
+![Multiple complex parameters image](img/multiple-parameter-complex.png)
+
+| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
+|-----------|--------------|-------------|--------------|-----------|
+| 8,208,516 | 1,019,949    | 922,261     | 1,419,771    | 9,741,543 |
+
 ### Direct cache manipulation
 
 There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache (*please note that none of these methods will work with a custom `cache` implementation unless that cache implementation also has the method*):
 
-**add(key, value)**
+#### add(key, value)
 
 This will manually add the *value* at *key* in cache if *key* does not already exist.
 
@@ -401,7 +561,7 @@ const memoized = moize((item1, item2) => {
 memoized.add([1, 2], 3);
 ```
 
-**clear()**
+#### clear()
 
 This will clear all values in the cache, resetting it to a default state.
 
@@ -413,7 +573,7 @@ const memoized = moize((item) => {
 memoized.clear();
 ```
 
-**delete(key)**
+#### delete(key)
 
 This will delete the provided key from cache.
 
@@ -444,7 +604,7 @@ memoized(foo, bar);
 memoized.delete(foo, bar);
 ```
 
-**keys()**
+#### keys()
 
 This will return a list of the current keys in `cache`.
 
@@ -468,7 +628,7 @@ const keys = memoized.keys(); // ['foo', {baz: 'baz'}]
 
 *Please note that this is a no-op when a custom `cache` implementation is used.*
 
-**values()**
+#### values()
 
 This will return a list of the current values in `cache` when the native `Cache`.
 
@@ -493,28 +653,6 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 ```
 
 *Please note that this is a no-op when a custom `cache` implementation is used.*
-
-### Benchmarks
-
-All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Note that `underscore`, `lodash`, and `ramda` do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (`boolean` for primitives, `object` for complex objects) was used.
-
-![Single parameter image](img/single-parameter.png)
-
-| underscore | lodash    | ramda     | memoizee   | fast-memoize | addy-osmani | memoizerific | moize      |
-|------------|-----------|-----------|------------|--------------|-------------|--------------|------------|
-| 9,393,399  | 9,679,995 | 1,102,656 | 11,651,361 | 31,085,245   | 3,656,676   | 2,184,221    | 47,089,212 |
-
-![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
-
-| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
-|-----------|--------------|-------------|--------------|-----------|
-| 8,144,578 | 1,256,879    | 1,788,762   | 1,433,723    | 9,762,395 |
-
-![Multiple complex parameters image](img/multiple-parameter-complex.png)
-
-| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
-|-----------|--------------|-------------|--------------|-----------|
-| 8,208,516 | 1,019,949    | 922,261     | 1,419,771    | 9,741,543 |
 
 ### Browser support
 
