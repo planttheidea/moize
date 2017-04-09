@@ -17,7 +17,7 @@
   * [maxArgs](#maxargs)
   * [maxSize](#maxsize)
   * [serialize](#serialize)
-  * [serializeFunctions](#serializeFunctions)
+  * [serializeFunctions](#serializefunctions)
   * [serializer](#serializer)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
   * [moize.maxAge](#moizemaxage)
