@@ -170,6 +170,8 @@ export const isCache = (object: any): boolean => {
 };
 
 /**
+ * @private
+ *
  * @function createCurriableOptionMethod
  *
  * @description
