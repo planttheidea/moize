@@ -1,4 +1,90 @@
-// @flow
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>moize Source: utils.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">moize</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-moize.html">moize</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="Cache.html">Cache</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#createCurriableOptionMethod">createCurriableOptionMethod</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: utils.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// @flow
 
 // cache
 import Cache from './Cache';
@@ -61,12 +147,12 @@ export const addStaticPropertiesToFunction = (originalFunction: Function, memoiz
  * @description
  * method to compose functions and return a single function
  *
- * @param {...Array<function>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
+ * @param {...Array&lt;function>} functions the functions to compose
+ * @returns {function(...Array&lt;*>): *} the composed function
  */
-export const compose = (...functions: Array<Function>): Function => {
+export const compose = (...functions: Array&lt;Function>): Function => {
   return functions.reduce((f: Function, g: Function): Function => {
-    return (...args: Array<any>): any => {
+    return (...args: Array&lt;any>): any => {
       return f(g(...args));
     };
   });
@@ -80,11 +166,11 @@ export const compose = (...functions: Array<Function>): Function => {
  * @description
  * faster version of determining every item in array matches fn check
  *
- * @param {Array<*>} array array to test
+ * @param {Array&lt;*>} array array to test
  * @param {function} fn fn to test each item against
  * @returns {boolean} do all values match
  */
-export const every = (array: Array<any>, fn: Function) => {
+export const every = (array: Array&lt;any>, fn: Function) => {
   let index: number = array.length;
 
   if (!index) {
@@ -108,11 +194,11 @@ export const every = (array: Array<any>, fn: Function) => {
  * @description
  * faster version of splicing a single item from the array
  *
- * @param {Array<*>} array array to splice from
+ * @param {Array&lt;*>} array array to splice from
  * @param {number} startingIndex index to splice at
- * @returns {Array<*>} array minus the item removed
+ * @returns {Array&lt;*>} array minus the item removed
  */
-export const splice = (array: Array<any>, startingIndex: number): Array<any> => {
+export const splice = (array: Array&lt;any>, startingIndex: number): Array&lt;any> => {
   const length: number = array.length;
 
   if (!length) {
@@ -121,7 +207,7 @@ export const splice = (array: Array<any>, startingIndex: number): Array<any> => 
 
   let index: number = startingIndex - 1;
 
-  while (++index < length) {
+  while (++index &lt; length) {
     array[index] = array[index + 1];
   }
 
@@ -138,11 +224,11 @@ export const splice = (array: Array<any>, startingIndex: number): Array<any> => 
  * @description
  * faster version of unshifting a single item into an array
  *
- * @param {Array<*>} array array to unshift into
+ * @param {Array&lt;*>} array array to unshift into
  * @param {*} item item to unshift into array
  * @returns {*} the item just added to the array
  */
-export const unshift = (array: Array<any>, item: any): any => {
+export const unshift = (array: Array&lt;any>, item: any): any => {
   let index: number = array.length;
 
   while (index--) {
@@ -196,12 +282,12 @@ export const createCurriableOptionMethod = (fn: Function, option: string): Funct
  * @description
  * get a property from the list on the cache
  *
- * @param {{list: Array<Object>}} cache cache whose list to map over
+ * @param {{list: Array&lt;Object>}} cache cache whose list to map over
  * @param {string} key key to pluck from list
- * @returns {Array<*>} array of values plucked at key
+ * @returns {Array&lt;*>} array of values plucked at key
  */
 export const createPluckFromInstanceList = (cache: Cache, key: string): Function => {
-  return !isCache(cache) ? () => {} : (): Array<any> => {
+  return !isCache(cache) ? () => {} : (): Array&lt;any> => {
     return cache.list.map((item: ListItem) => {
       return item[key];
     });
@@ -220,7 +306,7 @@ export const createPluckFromInstanceList = (cache: Cache, key: string): Function
  * @returns {string} function name
  */
 export const getFunctionNameViaRegexp = (fn: Function): string => {
-  const match: ?Array<string> = fn.toString().match(FUNCTION_NAME_REGEXP);
+  const match: ?Array&lt;string> = fn.toString().match(FUNCTION_NAME_REGEXP);
 
   return match ? match[1] : '';
 };
@@ -281,7 +367,7 @@ export const isArray = Array.isArray || isArrayFallback;
  * @returns {boolean} is it a complex object
  */
 export const isComplexObject = (object: any): boolean => {
-  return typeof object === OBJECT_TYPEOF && object !== null;
+  return typeof object === OBJECT_TYPEOF &amp;&amp; object !== null;
 };
 
 /**
@@ -311,7 +397,7 @@ export const isFunction = (object: any): boolean => {
  * @returns {boolean} is it a plain object
  */
 export const isPlainObject = (object: any): boolean => {
-  return isComplexObject(object) && object.constructor === Object;
+  return isComplexObject(object) &amp;&amp; object.constructor === Object;
 };
 
 /**
@@ -326,7 +412,7 @@ export const isPlainObject = (object: any): boolean => {
  * @returns {boolean} is the object an object or array
  */
 export const isValueObjectOrArray = (object: any): boolean => {
-  return isComplexObject(object) && every(GOTCHA_OBJECT_CLASSES, (Class) => {
+  return isComplexObject(object) &amp;&amp; every(GOTCHA_OBJECT_CLASSES, (Class) => {
     return !(object instanceof Class);
   });
 };
@@ -415,7 +501,7 @@ export const decycle = (object: any): string => {
  * @param {boolean} [isKeyLastItem=false] should the key be the last item in the LRU list
  */
 export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boolean = false) => {
-  if (isCache(cache) && isKeyLastItem) {
+  if (isCache(cache) &amp;&amp; isKeyLastItem) {
     key = cache.list[cache.list.length - 1].key;
   }
 
@@ -433,11 +519,11 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
  * is the value passed shallowly equal with the args
  *
  * @param {*} value the value to compare
- * @param {Array<*>} args the args to test
+ * @param {Array&lt;*>} args the args to test
  * @returns {boolean} are the args shallow equal to the value
  */
-export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean => {
-  return !!(value && value.isMultiParamKey) && value.key.length === args.length && every(args, (arg, index) => {
+export const isKeyShallowEqualWithArgs = (value: any, args: Array&lt;any>): boolean => {
+  return !!(value &amp;&amp; value.isMultiParamKey) &amp;&amp; value.key.length === args.length &amp;&amp; every(args, (arg, index) => {
     return arg === value.key[index];
   });
 };
@@ -451,10 +537,10 @@ export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean
  * get the multi-parameter key that either matches a current one in state or is the same as the one passed
  *
  * @param {Cache} cache cache to compare args to
- * @param {Array<*>} args arguments passed to moize get key
- * @returns {Array<*>} either a matching key in cache or the same key as the one passed
+ * @param {Array&lt;*>} args arguments passed to moize get key
+ * @returns {Array&lt;*>} either a matching key in cache or the same key as the one passed
  */
-export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
+export const getMultiParamKey = (cache: Cache, args: Array&lt;any>): Array&lt;any> => {
   if (isKeyShallowEqualWithArgs(cache.lastItem, args)) {
     // $FlowIgnore cache.lastItem exists
     return cache.lastItem.key;
@@ -464,7 +550,7 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
 
   let iteration: Object;
 
-  while ((iteration = iterator.next()) && !iteration.done) {
+  while ((iteration = iterator.next()) &amp;&amp; !iteration.done) {
     if (isKeyShallowEqualWithArgs(iteration, args)) {
       return iteration.key;
     }
@@ -508,7 +594,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @param {*} value value to assign to key
      */
     fn.add = (key, value) => {
-      if (!cache.get(key) && getMultiParamKey(cache, key) === key) {
+      if (!cache.get(key) &amp;&amp; getMultiParamKey(cache, key) === key) {
         cache.set(key, value);
       }
     };
@@ -533,10 +619,10 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @description
      * delete the cache for the key passed for this method
      *
-     * @param {Array<*>} args combination of args to remove from cache
+     * @param {Array&lt;*>} args combination of args to remove from cache
      */
-    fn.delete = (...args: Array<any>) => {
-      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : getMultiParamKey(cache, args);
+    fn.delete = (...args: Array&lt;any>) => {
+      const key = args.length === 1 &amp;&amp; args[0].isMultiParamKey ? args[0] : getMultiParamKey(cache, args);
 
       deleteItemFromCache(cache, key);
     };
@@ -549,7 +635,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @description
      * get the list of keys currently in cache
      *
-     * @returns {Array<*>}
+     * @returns {Array&lt;*>}
      */
     fn.keys = createPluckFromInstanceList(cache, 'key');
 
@@ -561,7 +647,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @description
      * get the list of values currently in cache
      *
-     * @returns {Array<*>}
+     * @returns {Array&lt;*>}
      */
     fn.values = createPluckFromInstanceList(cache, 'value');
 
@@ -581,7 +667,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
  * @returns {boolean} is the number finite and positive
  */
 export const isFiniteAndPositive = (number: number): boolean => {
-  return number === ~~number && number > 0;
+  return number === ~~number &amp;&amp; number > 0;
 };
 
 /**
@@ -601,7 +687,7 @@ export const getIndexOfKey = (cache: Cache, key: any): number => {
 
   let iteration: Object;
 
-  while ((iteration = iterator.next()) && !iteration.done) {
+  while ((iteration = iterator.next()) &amp;&amp; !iteration.done) {
     if (iteration.key === key) {
       return iteration.index;
     }
@@ -678,7 +764,7 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
  *
  * @param {boolean} serializeFunctions should functions be included in the serialization
  * @param {number} maxArgs the cap on the number of arguments used in serialization
- * @returns {function(...Array<*>): string} argument serialization method
+ * @returns {function(...Array&lt;*>): string} argument serialization method
  */
 export const createArgumentSerializer = (
   serializeFunctions: boolean,
@@ -687,13 +773,13 @@ export const createArgumentSerializer = (
   const replacer: ?Function = serializeFunctions ? customReplacer : null;
   const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
 
-  return (args: Array<any>): string => {
+  return (args: Array&lt;any>): string => {
     const length: number = hasMaxArgs ? maxArgs : args.length;
 
     let index: number = -1,
         key: string = '|';
 
-    while (++index < length) {
+    while (++index &lt; length) {
       key += `${getStringifiedArgument(args[index], replacer)}|`;
     }
 
@@ -737,7 +823,7 @@ export const getSerializerFunction = (
  * @param {function} serializerFromOptions method used to serialize keys into a string
  * @param {boolean} serializeFunctions should functions be converted to string in serialization
  * @param {number} maxArgs the maximum number of arguments to use in the serialization
- * @returns {function(Array<*>): *}
+ * @returns {function(Array&lt;*>): *}
  */
 export const createGetCacheKey = (
   cache: Cache,
@@ -749,18 +835,18 @@ export const createGetCacheKey = (
   if (serialize) {
     const serializeArguments = getSerializerFunction(serializerFromOptions, serializeFunctions, maxArgs);
 
-    return (args: Array<any>): any => {
+    return (args: Array&lt;any>): any => {
       return serializeArguments(args);
     };
   }
 
   if (isFiniteAndPositive(maxArgs)) {
-    return (args: Array<any>): any => {
+    return (args: Array&lt;any>): any => {
       return args.length > 1 ? getMultiParamKey(cache, args.slice(0, maxArgs)) : args[0];
     };
   }
 
-  return (args: Array<any>): any => {
+  return (args: Array&lt;any>): any => {
     return args.length > 1 ? getMultiParamKey(cache, args) : args[0];
   };
 };
@@ -774,10 +860,10 @@ export const createGetCacheKey = (
  * create function to set the cache to expire after the maxAge passed (coalesced to 0)
  *
  * @param {number} maxAge number in ms to wait before expiring the cache
- * @returns {function(Cache, Array<*>): void} setExpirationOfCache method
+ * @returns {function(Cache, Array&lt;*>): void} setExpirationOfCache method
  */
 export const createSetExpirationOfCache = (maxAge: number) => {
-  return (cache: Cache, key: Array<any>) => {
+  return (cache: Cache, key: Array&lt;any>) => {
     setTimeout(() => {
       deleteItemFromCache(cache, key);
     }, maxAge);
@@ -869,7 +955,7 @@ export const createSetNewCachedValue = (
   const setExpirationOfCache: Function = createSetExpirationOfCache(maxAge);
 
   if (isPromise) {
-    return (key: any, value: any): Promise<any> => {
+    return (key: any, value: any): Promise&lt;any> => {
       const promiseResolver = createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, PromiseLibrary);
       const promiseRejecter = createPromiseRejecter(cache, key, PromiseLibrary);
 
@@ -877,7 +963,7 @@ export const createSetNewCachedValue = (
 
       cache.set(key, handler);
 
-      if (hasMaxSize && cache.size > maxSize) {
+      if (hasMaxSize &amp;&amp; cache.size > maxSize) {
         deleteItemFromCache(cache, undefined, true);
       }
 
@@ -892,10 +978,176 @@ export const createSetNewCachedValue = (
       setExpirationOfCache(cache, key);
     }
 
-    if (hasMaxSize && cache.size > maxSize) {
+    if (hasMaxSize &amp;&amp; cache.size > maxSize) {
       deleteItemFromCache(cache, undefined, true);
     }
 
     return value;
   };
 };
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

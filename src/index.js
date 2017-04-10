@@ -19,6 +19,7 @@ import type {
 import {
   compose,
   createAddPropertiesToFunction,
+  createCurriableOptionMethod,
   createGetCacheKey,
   createSetNewCachedValue,
   isFunction,
@@ -28,6 +29,29 @@ import {
 /**
  * @module moize
  */
+
+/**
+ * @constant {{isPromise: true}} PROMISE_OPTIONS
+ */
+const PROMISE_OPTIONS = {
+  isPromise: true
+};
+
+/**
+ * @constant {{maxArgs: number, serialize: boolean, serializeFunctions: boolean}} REACT_OPTIONS
+ */
+const REACT_OPTIONS = {
+  maxArgs: 2,
+  serialize: true,
+  serializeFunctions: true
+};
+
+/**
+ * @constant {{serialize: boolean}} SERIALIZE_OPTIONS
+ */
+const SERIALIZE_OPTIONS = {
+  serialize: true
+};
 
 /**
  * @function moize
@@ -130,68 +154,13 @@ const moize = function(functionOrComposableOptions: (Function|Object), passedOpt
   return addPropertiesToFunction(memoizedFunction);
 };
 
-/**
- * @function maxSize
- *
- * @description
- * react-specific memoization, with auto serialization including functions
- *
- * @example
- * import moize from 'moize';
- *
- * const foo = (bar) => {
- *   return bar * 2;
- * };
- *
- * export default moize.maxAge(5000)(Foo);
- *
- * @param {number} maxAge the max time in milliseconds for the cache to exist
- * @returns {function(function, Object): function} a higher-order function to return the moize fn with maxAge applied
- */
-const maxAge = function(maxAge: number): Function {
-  return moize({
-    maxAge
-  });
-};
-
-/**
- * @function maxSize
- *
- * @description
- * react-specific memoization, with auto serialization including functions
- *
- * @example
- * import moize from 'moize';
- *
- * const foo = (bar) => {
- *   return bar * 2;
- * };
- *
- * export default moize.maxSize(5)(Foo);
- *
- * @param {number} maxSize the max size of the cache
- * @returns {function(function, Object): function} a higher-order function to return the moize fn with maxSize applied
- */
-const maxSize = function(maxSize: number): Function {
-  return moize({
-    maxSize
-  });
-};
-
 moize.compose = compose;
-moize.maxAge = maxAge;
-moize.maxSize = maxSize;
-moize.promise = moize({
-  isPromise: true
-});
-moize.react = moize({
-  maxArgs: 2,
-  serialize: true,
-  serializeFunctions: true
-});
-moize.serialize = moize({
-  serialize: true
-});
+moize.maxAge = createCurriableOptionMethod(moize, 'maxAge');
+moize.maxArgs = createCurriableOptionMethod(moize, 'maxArgs');
+moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');
+moize.promise = moize(PROMISE_OPTIONS);
+moize.react = moize(REACT_OPTIONS);
+moize.serialize = moize(SERIALIZE_OPTIONS);
 moize.simple = moize.maxSize(1);
 
 export default moize;

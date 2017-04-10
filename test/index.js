@@ -135,6 +135,23 @@ test('if moize.maxAge will create a curryable method that accepts the age and th
   });
 });
 
+test('if moize.maxArgs will create a curryable method that accepts the age and then the method to memoize', (t) => {
+  const maxArgs = 3;
+
+  const moizer = moize.maxArgs(maxArgs);
+
+  t.true(_.isFunction(moizer));
+
+  const fn = () => {};
+
+  const result = moizer(fn);
+
+  t.true(_.isFunction(result));
+  t.deepEqual(result.options, {
+    maxArgs
+  });
+});
+
 test('if moize.maxSize will create a curryable method that accepts the size and then the method to memoize', (t) => {
   const maxSize = 5;
 
