@@ -44,6 +44,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#createCurriableOptionMethod">createCurriableOptionMethod</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -77,7 +84,7 @@
 
 
 
-    <h3>moize 2.3.0</h3>
+    <h3>moize 2.3.1</h3>
 
 
 
@@ -111,6 +118,7 @@
 <li><a href="#maxage">maxAge</a></li>
 <li><a href="#maxargs">maxArgs</a></li>
 <li><a href="#maxsize">maxSize</a></li>
+<li><a href="#promiselibrary">promiseLibrary</a></li>
 <li><a href="#serialize">serialize</a></li>
 <li><a href="#serializefunctions">serializeFunctions</a></li>
 <li><a href="#serializer">serializer</a></li>
@@ -118,6 +126,7 @@
 </li>
 <li><a href="#usage-with-shortcut-methods">Usage with shortcut methods</a><ul>
 <li><a href="#moizemaxage">moize.maxAge</a></li>
+<li><a href="#moizemaxargs">moize.maxArgs</a></li>
 <li><a href="#moizemaxsize">moize.maxSize</a></li>
 <li><a href="#moizepromise">moize.promise</a></li>
 <li><a href="#moizereact">moize.react</a></li>
@@ -288,7 +297,8 @@ const memoized = moize(fn, {
 const memoized = moize(fn, {
   maxSize: 5
 });</code></pre><p><em>Please note that this does not work with a custom cache implementation.</em></p>
-<p><strong>promiseLibrary</strong> <em>defaults to native Promise</em></p>
+<h4 id="promiselibrary">promiseLibrary</h4>
+<p><em>defaults to native Promise</em></p>
 <p>The promise library to use for resolution / rejection of promises.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (foo) => {
   return new Bluebird((resolve) => {
@@ -390,7 +400,15 @@ const foo = (bar, baz) => {
   return `${bar} ${baz}`;
 };
 
-export default moize.maxAge(5000)(foo);</code></pre><h4 id="moize-maxsize">moize.maxSize</h4>
+export default moize.maxAge(5000)(foo);</code></pre><h4 id="moize-maxargs">moize.maxArgs</h4>
+<p>Pre-applies the <code>maxArgs</code> option as a curriable method:</p>
+<pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.maxArgs(1)(foo);</code></pre><h4 id="moize-maxsize">moize.maxSize</h4>
 <p>Pre-applies the <code>maxSize</code> option as a curriable method:</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 

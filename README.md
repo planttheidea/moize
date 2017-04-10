@@ -16,11 +16,13 @@
   * [maxAge](#maxage)
   * [maxArgs](#maxargs)
   * [maxSize](#maxsize)
+  * [promiseLibrary](#promiselibrary)
   * [serialize](#serialize)
   * [serializeFunctions](#serializefunctions)
   * [serializer](#serializer)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
   * [moize.maxAge](#moizemaxage)
+  * [moize.maxArgs](#moizemaxargs)
   * [moize.maxSize](#moizemaxsize)
   * [moize.promise](#moizepromise)
   * [moize.react](#moizereact)
@@ -246,7 +248,9 @@ const memoized = moize(fn, {
 
 *Please note that this does not work with a custom cache implementation.*
 
-**promiseLibrary** *defaults to native Promise*
+#### promiseLibrary
+
+*defaults to native Promise*
 
 The promise library to use for resolution / rejection of promises.
 
@@ -387,6 +391,20 @@ const foo = (bar, baz) => {
 };
 
 export default moize.maxAge(5000)(foo);
+```
+
+#### moize.maxArgs
+
+Pre-applies the `maxArgs` option as a curriable method:
+
+```javascript
+import moize from 'moize';
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.maxArgs(1)(foo);
 ```
 
 #### moize.maxSize

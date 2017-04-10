@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 2.3.1
+* Streamline the creation of curriable shortcuts (`moize.maxAge`, `moize.maxSize`)
+
 ### 2.3.0
 * More options have shortcut methods
   * `maxAge`

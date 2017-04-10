@@ -50,10 +50,9 @@ const promiseMethodRejected = (number) => {
 const memoizedPromise = moize(promiseMethod, {
   isPromise: true
 });
-const memoizedPromiseRejected = moize(promiseMethodRejected, {
-  isPromise: true,
-  Bluebird
-});
+const memoizedPromiseRejected = moize.promise({
+  promiseLibrary: Bluebird
+})(promiseMethodRejected);
 
 memoizedPromiseRejected(3)
   .then((foo) => {

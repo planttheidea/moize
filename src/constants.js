@@ -9,7 +9,7 @@ import type{
  * @constant {number} INFINITY
  * @default
  */
-export const INFINITY = Number.POSITIVE_INFINITY;
+export const INFINITY: number = Number.POSITIVE_INFINITY;
 
 /**
  * @private
@@ -17,7 +17,7 @@ export const INFINITY = Number.POSITIVE_INFINITY;
  * @constant {string} INVALID_FIRST_PARAMETER_ERROR
  * @default
  */
-export const INVALID_FIRST_PARAMETER_ERROR = 'You must pass either a function or an object of options as the first parameter to moize.';
+export const INVALID_FIRST_PARAMETER_ERROR: string = 'You must pass either a function or an object of options as the first parameter to moize.';
 
 /**
  * @private
@@ -25,7 +25,7 @@ export const INVALID_FIRST_PARAMETER_ERROR = 'You must pass either a function or
  * @constant {string} NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE
  * @default
  */
-export const NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE = 'You have not specified a promiseLibrary, and it appears that your browser does not support ' +
+export const NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE: string = 'You have not specified a promiseLibrary, and it appears that your browser does not support ' +
   'native promises. You can either assign the library you are using to the global Promise object, or pass ' +
   'the library in options via the "promiseLibrary" property.';
 
@@ -44,28 +44,7 @@ export const ITERATOR_DONE_OBJECT: IteratorDone = {
  * @constant {string|symbol} CACHE_IDENTIFIER
  * @default
  */
-export const CACHE_IDENTIFIER = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
-
-/**
- * @private
- *
- * @constant {function} keys
- */
-export const keys: Function = Object.keys;
-
-/**
- * @private
- *
- * @constant {function} toString
- */
-export const toString: Function = Object.prototype.toString;
-
-/**
- * @private
- *
- * @constant {function} jsonStringify
- */
-export const jsonStringify: Function = JSON.stringify;
+export const CACHE_IDENTIFIER: (string|Symbol) = typeof Symbol === 'function' ? Symbol('isMoizeCache') : '__IS_MOIZE_CACHE__';
 
 /**
  * @private

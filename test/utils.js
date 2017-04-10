@@ -74,6 +74,25 @@ test('if compose will compose multiple functions to a single function', (t) => {
   t.is(result, value);
 });
 
+test('if createCurriableOptionMethod will create a method that accepts a value and passes the option with that value to the function passed', (t) => {
+  const option = 'foo';
+  const value = 'bar';
+
+  const fn = sinon.stub().callsFake((object) => {
+    t.deepEqual(object, {
+      [option]: value
+    });
+  });
+
+  const result = utils.createCurriableOptionMethod(fn, option);
+
+  t.true(_.isFunction(result));
+
+  result(value);
+
+  t.true(fn.calledOnce);
+});
+
 test('if every matches the output of the native function', (t) => {
   const everyFoo = ['foo', 'foo'];
   const someFoo = ['foo', 'bar'];
