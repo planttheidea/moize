@@ -113,19 +113,17 @@ export const every = (array: Array<any>, fn: Function) => {
  * @returns {Array<*>} array minus the item removed
  */
 export const splice = (array: Array<any>, startingIndex: number): Array<any> => {
-  const length: number = array.length;
-
-  if (!length) {
+  if (!array.length) {
     return array;
   }
 
   let index: number = startingIndex - 1;
 
-  while (++index < length) {
+  while (++index < array.length) {
     array[index] = array[index + 1];
   }
 
-  array.length = length - 1;
+  array.length -= 1;
 
   return array;
 };
@@ -488,6 +486,7 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
  *
  * @param {Cache} cache caching mechanism that has get / set / has methods
  * @param {function} originalFunction function to get the name of
+ * @param {Options} options the options for the given memoized function
  * @returns {function(function): function} method that has cache mechanism added to it
  */
 export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Function, options: Options): Function => {

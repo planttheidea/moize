@@ -129,11 +129,15 @@ console.log(SimpleMemoizedFoo.options);
 
 const array = ['foo', 'bar', 'baz'];
 
+const HEADER_STYLE = {
+  margin: 0
+};
+
 class App extends Component {
   render() {
     return (
       <div>
-        <h1>
+        <h1 style={HEADER_STYLE}>
           App
         </h1>
 
@@ -172,6 +176,15 @@ class App extends Component {
 const div = document.createElement('div');
 
 div.id = 'app-container';
+div.style.backgroundColor = '#1d1d1d';
+div.style.boxSizing = 'border-box';
+div.style.color = '#d5d5d5';
+div.style.height = '100vh';
+div.style.padding = '15px';
+div.style.width = '100vw';
+
+document.body.style.margin = 0;
+document.body.style.padding = 0;
 
 render((
   <App/>
