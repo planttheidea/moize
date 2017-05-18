@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 2.3.2
+* Add `lodash-webpack-plugin` for smaller `dist` builds
+
 ### 2.3.1
 * Streamline the creation of curriable shortcuts (`moize.maxAge`, `moize.maxSize`)
 * Add curriable shortcut for `moize.maxArgs` (missed in initial release)
