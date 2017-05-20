@@ -85,11 +85,11 @@ export const compose = (...functions: Array<Function>): Function => {
  * @returns {boolean} do all values match
  */
 export const every = (array: Array<any>, fn: Function) => {
-  let index: number = array.length;
-
-  if (!index) {
+  if (!array.length) {
     return true;
   }
+
+  let index: number = array.length;
 
   while (index--) {
     if (!fn(array[index], index)) {
@@ -147,9 +147,7 @@ export const unshift = (array: Array<any>, item: any): any => {
     array[index + 1] = array[index];
   }
 
-  array[0] = item;
-
-  return item;
+  return array[0] = item;
 };
 
 /**
@@ -281,7 +279,7 @@ export const isArray = Array.isArray || isArrayFallback;
  * @returns {boolean} is it a complex object
  */
 export const isComplexObject = (object: any): boolean => {
-  return typeof object === OBJECT_TYPEOF && object !== null;
+  return !!object && typeof object === OBJECT_TYPEOF;
 };
 
 /**
@@ -415,7 +413,7 @@ export const decycle = (object: any): string => {
  * @param {boolean} [isKeyLastItem=false] should the key be the last item in the LRU list
  */
 export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boolean = false) => {
-  if (isCache(cache) && isKeyLastItem) {
+  if (isKeyLastItem && isCache(cache)) {
     key = cache.list[cache.list.length - 1].key;
   }
 
@@ -437,7 +435,7 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
  * @returns {boolean} are the args shallow equal to the value
  */
 export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean => {
-  return !!(value && value.isMultiParamKey) && value.key.length === args.length && every(args, (arg, index) => {
+  return value.isMultiParamKey && value.key.length === args.length && every(args, (arg, index) => {
     return arg === value.key[index];
   });
 };
@@ -455,8 +453,7 @@ export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean
  * @returns {Array<*>} either a matching key in cache or the same key as the one passed
  */
 export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
-  if (isKeyShallowEqualWithArgs(cache.lastItem, args)) {
-    // $FlowIgnore cache.lastItem exists
+  if (cache.lastItem && isKeyShallowEqualWithArgs(cache.lastItem, args)) {
     return cache.lastItem.key;
   }
 
@@ -509,7 +506,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @param {*} value value to assign to key
      */
     fn.add = (key, value) => {
-      if (!cache.get(key) && getMultiParamKey(cache, key) === key) {
+      if (!cache.has(key) && getMultiParamKey(cache, key) === key) {
         cache.set(key, value);
       }
     };
@@ -609,28 +606,6 @@ export const getIndexOfKey = (cache: Cache, key: any): number => {
   }
 
   return -1;
-};
-
-/**
- * @private
- *
- * @function getKeyIteratorObject
- *
- * @description
- * get the object that is returned in the key iterator
- *
- * @param {ListItem} listItem the item in the list being iterated
- * @param {boolean} listItem.isMultiParamKey is the key a multi-parameter key
- * @param {*} listItem.key the key currently stored
- * @param {number} index the index of the iterator
- * @returns {{index: number, isMultiParamKey: boolean, key: *}} the parameters as an object
- */
-export const getKeyIteratorObject = (listItem: ListItem, index: number): Object => {
-  return {
-    index,
-    isMultiParamKey: listItem.isMultiParamKey,
-    key: listItem.key
-  };
 };
 
 /**

@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+### 2.3.3
+* Remove unneeded iterator key generator method
+* Various micro-optimizations
+
 ### 2.3.2
 * Add `lodash-webpack-plugin` for smaller `dist` builds
 

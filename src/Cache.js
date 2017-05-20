@@ -17,7 +17,6 @@ import type {
 // utils
 import {
   getIndexOfKey,
-  getKeyIteratorObject,
   splice,
   unshift
 } from './utils';
@@ -43,7 +42,7 @@ class Cache {
    * remove all keys from the map
    */
   clear(): void {
-    this.list = [];
+    this.list.length = 0;
 
     this.setLastItem();
   }
@@ -80,13 +79,11 @@ class Cache {
    * @returns {*} value at the key location
    */
   get(key: any): any {
-    if (this.size === 0) {
+    if (!this.lastItem) {
       return undefined;
     }
 
-    // $FlowIgnore: this.lastItem exists
     if (key === this.lastItem.key) {
-      // $FlowIgnore: this.lastItem exists
       return this.lastItem.value;
     }
 
@@ -116,7 +113,11 @@ class Cache {
 
     return {
       next: (): (ListItem|IteratorDone) => {
-        return ++index < this.size ? getKeyIteratorObject(this.list[index], index) : ITERATOR_DONE_OBJECT;
+        return ++index >= this.size ? ITERATOR_DONE_OBJECT : {
+          index,
+          isMultiParamKey: this.list[index].isMultiParamKey,
+          key: this.list[index].key
+        };
       }
     };
   }
@@ -188,9 +189,7 @@ class Cache {
     if (~index) {
       this.list[index].value = value;
 
-      // $FlowIgnore: this.lastItem exists
-      if (key === this.lastItem.key) {
-        // $FlowIgnore: this.lastItem exists
+      if (this.lastItem && key === this.lastItem.key) {
         this.lastItem.value = value;
       }
     }

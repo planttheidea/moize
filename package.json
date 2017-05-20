@@ -54,7 +54,6 @@
     "jsdom": "10.1.0",
     "jsdom-global": "3.0.2",
     "lodash": "4.17.4",
-    "lodash-webpack-plugin": "0.11.3",
     "lru-memoize": "1.0.2",
     "memoizee": "0.4.5",
     "memoizerific": "1.11.2",
@@ -109,5 +108,5 @@
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "npm run clean:lib && NODE_ENV=production babel src --out-dir lib"
   },
-  "version": "2.3.2"
+  "version": "2.3.3"
 }
