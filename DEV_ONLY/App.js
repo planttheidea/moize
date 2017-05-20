@@ -133,16 +133,6 @@ const HEADER_STYLE = {
   margin: 0
 };
 
-const memoizeMultiStuffs = (a, b, c) => {
-  console.log('lru called');
-
-  return JSON.stringify({a, b, c});
-};
-
-const a = 'foo';
-const b = 'bar';
-const c = 'baz';
-
 class App extends Component {
   render() {
     return (
