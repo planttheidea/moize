@@ -59,20 +59,24 @@ test('if get will return the value for the passed key in cache', (t) => {
   const key = 'foo';
   const value = 'bar';
 
+  t.false(cache.has(key));
+
   cache.set(key, value);
 
   t.is(cache.get(key), value);
+
   t.deepEqual(cache.lastItem, {
     key,
     isMultiParamKey: false,
     value
   });
 
-  t.is(cache.get(value), undefined);
+  t.false(cache.has(value));
 
   cache.set(value, key);
 
   t.is(cache.get(value), key);
+
   t.deepEqual(cache.lastItem, {
     key: value,
     isMultiParamKey: false,

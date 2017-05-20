@@ -651,15 +651,6 @@ test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
   t.false(utils.isFiniteAndPositive(-Infinity));
 });
 
-test('if isKeyShallowEqualWithArgs returns false when value is falsy', (t) => {
-  const value = null;
-  const args = ['foo', 'bar'];
-
-  const result = utils.isKeyShallowEqualWithArgs(value, args);
-
-  t.false(result);
-});
-
 test('if isKeyShallowEqualWithArgs returns false when value is not a multi-parameter key', (t) => {
   const value = {
     isMultiParamKey: false
@@ -672,7 +663,10 @@ test('if isKeyShallowEqualWithArgs returns false when value is not a multi-param
 });
 
 test('if isKeyShallowEqualWithArgs returns false when value is an array whose length is different than that of args', (t) => {
-  const value = ['foo'];
+  const value = {
+    isMultiParamKey: true,
+    key: ['foo']
+  };
   const args = ['foo', 'bar'];
 
   const result = utils.isKeyShallowEqualWithArgs(value, args);
@@ -684,7 +678,10 @@ test('if isKeyShallowEqualWithArgs returns false when value is an array whose va
   const object = {
     bar: 'baz'
   };
-  const value = ['foo', object];
+  const value = {
+    isMultiParamKey: true,
+    key: ['foo', object]
+  };
   const args = ['foo', {
     ...object
   }];
@@ -698,21 +695,27 @@ test('if isKeyShallowEqualWithArgs returns true when value is an array whose val
   const object = {
     bar: 'baz'
   };
-  const value = ['foo', object];
+  const value = {
+    isMultiParamKey: true,
+    key: ['foo', object]
+  };
   const args = ['foo', object];
 
   const result = utils.isKeyShallowEqualWithArgs(value, args);
 
-  t.false(result);
+  t.true(result);
 });
 
 test('if isKeyShallowEqualWithArgs returns true when value and args both are empty arrays', (t) => {
-  const value = [];
+  const value = {
+    isMultiParamKey: true,
+    key: []
+  };
   const args = [];
 
   const result = utils.isKeyShallowEqualWithArgs(value, args);
 
-  t.false(result);
+  t.true(result);
 });
 
 test('if isPlainObject tests if the item is a function or not', (t) => {

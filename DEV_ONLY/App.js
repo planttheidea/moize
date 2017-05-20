@@ -8,6 +8,7 @@ import {
   render
 } from 'react-dom';
 import memoizee from 'memoizee';
+import lruMemoize from 'lru-memoize';
 
 import moize from '../src';
 
@@ -132,6 +133,34 @@ const array = ['foo', 'bar', 'baz'];
 const HEADER_STYLE = {
   margin: 0
 };
+
+const memoizeMultiStuffs = (a, b, c) => {
+  console.log('lru called');
+
+  return JSON.stringify({a, b, c});
+};
+
+const a = 'foo';
+const b = 'bar';
+const c = 'baz';
+
+const lru = lruMemoize(5)(memoizeMultiStuffs);
+
+lru(a, b, c);
+
+console.log(1);
+
+lru(a, b, c);
+
+console.log(2);
+
+lru(b, a, c);
+
+console.log(3);
+
+lru(a, b, c);
+
+console.log(4);
 
 class App extends Component {
   render() {
