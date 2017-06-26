@@ -18,6 +18,7 @@ module.exports = Object.assign({}, defaultConfig, {
       minimize: true
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.ModuleConcatenationPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       comments: false,
       compress: {

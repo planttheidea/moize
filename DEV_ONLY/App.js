@@ -28,6 +28,8 @@ memoized(foo, bar);
 memoized(foo, bar);
 
 console.log(memoized.cache);
+console.log(memoized.hasCacheFor(foo, bar));
+console.log(memoized.hasCacheFor(foo, 'baz'));
 
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
