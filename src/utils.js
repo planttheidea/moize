@@ -476,6 +476,22 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
 /**
  * @private
  *
+ * @function getKeyForCache
+ *
+ * @description
+ * get the key that will be used in cache
+ *
+ * @param {Cache} cache the cache the key will be stored in
+ * @param {Array<*>} args the arguments the key is built on
+ * @returns {*} the key used in cache
+ */
+export const getKeyForCache = (cache: Cache, args: Array<any>): any => {
+  return args.length > 1 ? getMultiParamKey(cache, args) : args[0];
+};
+
+/**
+ * @private
+ *
  * @function createAddPropertiesToFunction
  *
  * @description
@@ -534,9 +550,22 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @param {Array<*>} args combination of args to remove from cache
      */
     fn.delete = (...args: Array<any>) => {
-      const key = args.length === 1 && args[0].isMultiParamKey ? args[0] : getMultiParamKey(cache, args);
+      deleteItemFromCache(cache, getKeyForCache(cache, args));
+    };
 
-      deleteItemFromCache(cache, key);
+    /**
+     * @private
+     *
+     * @function hasCacheFor
+     *
+     * @description
+     * does the function have cache for the specific args passed
+     *
+     * @param {Array<*>} args combination of args to remove from cache
+     * @returns {boolean} does the cache for the give args exist
+     */
+    fn.hasCacheFor = (...args: Array<any>): boolean => {
+      return cache.has(getKeyForCache(cache, args));
     };
 
     /**
@@ -732,12 +761,12 @@ export const createGetCacheKey = (
 
   if (isFiniteAndPositive(maxArgs)) {
     return (args: Array<any>): any => {
-      return args.length > 1 ? getMultiParamKey(cache, args.slice(0, maxArgs)) : args[0];
+      return getKeyForCache(cache, args.slice(0, maxArgs));
     };
   }
 
   return (args: Array<any>): any => {
-    return args.length > 1 ? getMultiParamKey(cache, args) : args[0];
+    return getKeyForCache(cache, args);
   };
 };
 

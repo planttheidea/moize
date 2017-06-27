@@ -209,8 +209,7 @@ test('if createGetCacheKey returns a function that returns a limited arguments k
 
   const result = getCacheKey(args);
 
-  t.is(result.length, maxArgs);
-  t.deepEqual(result, [item]);
+  t.is(result, item);
 });
 
 test('if createGetCacheKey will return undefined as a key when no arguments are passed', (t) => {
@@ -370,6 +369,7 @@ test('if getFunctionWithAdditionalProperties will add the cache passed to the fu
   t.is(typeof result.add, 'function');
   t.is(typeof result.clear, 'function');
   t.is(typeof result.delete, 'function');
+  t.is(typeof result.hasCacheFor, 'function');
   t.is(typeof result.keys, 'function');
   t.is(typeof result.values, 'function');
 });
@@ -450,7 +450,7 @@ test('if getFunctionWithAdditionalProperties add method will not add a key => va
 test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
   const fn = () => {};
   const cache = new Cache();
-  const key = utils.getMultiParamKey(cache, ['foo']);
+  const key = utils.getKeyForCache(cache, ['foo']);
 
   const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
 
@@ -463,6 +463,23 @@ test('if getFunctionWithAdditionalProperties delete method will remove the key p
   result.delete(key);
 
   t.false(result.cache.has(key));
+});
+
+test('if getFunctionWithAdditionalProperties hasCacheFor method will determine if the cache for the given keys exists', (t) => {
+  const fn = () => {};
+  const cache = new Cache();
+  const key = utils.getKeyForCache(cache, ['foo', 'bar']);
+
+  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
+
+  const result = getFunctionWithAdditionalProperties(fn);
+
+  result.cache.set(key, 'baz');
+
+  t.true(result.cache.has(key));
+
+  t.true(result.hasCacheFor('foo', 'bar'));
+  t.false(result.hasCacheFor('foo'));
 });
 
 test('if getFunctionWithAdditionalProperties keys method will return the list of keys in cache', (t) => {
@@ -513,6 +530,26 @@ test('if getIndexOfKey returns the index of the item in the map, else -1', (t) =
 
   t.is(utils.getIndexOfKey(cache, foo), 2);
   t.is(utils.getIndexOfKey(cache, notFoo), -1);
+});
+
+test('if getKeyForCache will return the only argument itself if the length is one', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+
+  const result = utils.getKeyForCache(cache, [key]);
+
+  t.is(result, key);
+});
+
+test('if getKeyForCache will return the multi-parameter key if the length more than one', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const key2 = 'bar';
+
+  const result = utils.getKeyForCache(cache, [key, key2]);
+
+  t.deepEqual(result, [key, key2]);
+  t.true(result.isMultiParamKey);
 });
 
 test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
