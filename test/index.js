@@ -84,9 +84,7 @@ test('if moize will accept a custom cache as argument', (t) => {
 test('if moize will accept a custom serializer as argument', (t) => {
   const key = 'baz';
 
-  let serializer = sinon.spy(() => {
-    return key;
-  });
+  let serializer = sinon.stub().returns(key);
 
   const fn = (foo, bar) => {
     return `${foo} ${bar}`;

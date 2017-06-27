@@ -349,7 +349,7 @@ test('if getFunctionNameViaRegexp will match the function name if it exists', (t
 
   t.is(namedResult, 'foo');
 
-  const anonymousResult = utils.getFunctionNameViaRegexp(function() {});
+  const anonymousResult = utils.getFunctionNameViaRegexp(function() {}); //eslint-disable-line prefer-arrow-callback
 
   t.is(anonymousResult, '');
 });
@@ -411,7 +411,7 @@ test('if getFunctionWithAdditionalProperties will have a displayName reflecting 
 test('if getFunctionWithAdditionalProperties add method will add a key => value pair to cache if it doesnt exist', (t) => {
   const fn = () => {};
   const cache = new Cache();
-  const key = ['foo'];
+  const key = 'foo';
   const value = 'bar';
 
   const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
@@ -427,7 +427,7 @@ test('if getFunctionWithAdditionalProperties add method will add a key => value 
 test('if getFunctionWithAdditionalProperties add method will not add a key => value pair to cache if it already exists', (t) => {
   const fn = () => {};
   const cache = new Cache();
-  const key = ['foo'];
+  const key = 'foo';
   const value = 'bar';
 
   cache.set(key, value);

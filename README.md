@@ -32,8 +32,9 @@
 * [Benchmarks](#benchmarks)
 * [Direct cache manipulation](#direct-cache-manipulation)
   * [add](#addkey-value)
-  * [delete](#deletekey)
   * [clear](#clear)
+  * [delete](#deletekey)
+  * [hasCacheFor](#hascachefor)
   * [keys](#keys)
   * [values](#values)
 * [Browser support](#browser-support)
@@ -620,6 +621,21 @@ const bar = 2;
 memoized(foo, bar);
 
 memoized.delete(foo, bar);
+```
+
+#### hasCacheFor(...args)
+
+This will return `true` if a cache entry exists for the `args` passed, else will return `false`.
+
+```javascript
+const memoized = moize((first, second) => {
+  return [first, second];
+});
+
+memoized('foo', 'bar');
+
+console.log(memoized.hasCacheFor('foo', 'bar')); // true
+console.log(memoized.hasCacheFor('bar', 'baz')); // false
 ```
 
 #### keys()

@@ -85,10 +85,6 @@ export const compose = (...functions: Array<Function>): Function => {
  * @returns {boolean} do all values match
  */
 export const every = (array: Array<any>, fn: Function) => {
-  if (!array.length) {
-    return true;
-  }
-
   let index: number = array.length;
 
   while (index--) {
@@ -522,7 +518,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @param {*} value value to assign to key
      */
     fn.add = (key, value) => {
-      if (!cache.has(key) && getMultiParamKey(cache, key) === key) {
+      if (!cache.has(isArray(key) ? getKeyForCache(cache, key) : key)) {
         cache.set(key, value);
       }
     };
