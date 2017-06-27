@@ -34,7 +34,7 @@
   * [add](#addkey-value)
   * [clear](#clear)
   * [delete](#deletekey)
-  * [hasCacheFor](#hascachefor)
+  * [hasCacheFor](#hascachefor-args)
   * [keys](#keys)
   * [values](#values)
 * [Browser support](#browser-support)

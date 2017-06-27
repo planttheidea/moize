@@ -131,8 +131,9 @@
 <li><a href="#benchmarks">Benchmarks</a></li>
 <li><a href="#direct-cache-manipulation">Direct cache manipulation</a><ul>
 <li><a href="#addkey-value">add</a></li>
-<li><a href="#deletekey">delete</a></li>
 <li><a href="#clear">clear</a></li>
+<li><a href="#deletekey">delete</a></li>
+<li><a href="#hascachefor-args">hasCacheFor</a></li>
 <li><a href="#keys">keys</a></li>
 <li><a href="#values">values</a></li>
 </ul>
@@ -597,7 +598,16 @@ const bar = 2;
 
 memoized(foo, bar);
 
-memoized.delete(foo, bar);</code></pre><h4 id="keys-">keys()</h4>
+memoized.delete(foo, bar);</code></pre><h4 id="hascachefor-args-">hasCacheFor(...args)</h4>
+<p>This will return <code>true</code> if a cache entry exists for the <code>args</code> passed, else will return <code>false</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const memoized = moize((first, second) => {
+  return [first, second];
+});
+
+memoized('foo', 'bar');
+
+console.log(memoized.hasCacheFor('foo', 'bar')); // true
+console.log(memoized.hasCacheFor('bar', 'baz')); // false</code></pre><h4 id="keys-">keys()</h4>
 <p>This will return a list of the current keys in <code>cache</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return item;

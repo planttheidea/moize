@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 2.4.0
+* Add `hasCacheFor` method to determine if the memoized function has cache for given arguments
+
 ### 2.3.3
 * Remove unneeded iterator key generator method
 * Various micro-optimizations
