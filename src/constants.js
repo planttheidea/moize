@@ -14,6 +14,13 @@ export const INFINITY: number = Number.POSITIVE_INFINITY;
 /**
  * @private
  *
+ * @constant {RegExp} FINITE_POSITIVE_INTEGER
+ */
+export const FINITE_POSITIVE_INTEGER: RegExp = /^[1-9]\d*$/;
+
+/**
+ * @private
+ *
  * @constant {string} INVALID_FIRST_PARAMETER_ERROR
  * @default
  */

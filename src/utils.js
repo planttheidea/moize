@@ -7,6 +7,7 @@ import Cache from './Cache';
 import {
   ARRAY_OBJECT_CLASS,
   CACHE_IDENTIFIER,
+  FINITE_POSITIVE_INTEGER,
   FUNCTION_TYPEOF,
   FUNCTION_NAME_REGEXP,
   GOTCHA_OBJECT_CLASSES,
@@ -604,7 +605,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
  * @returns {boolean} is the number finite and positive
  */
 export const isFiniteAndPositive = (number: number): boolean => {
-  return number === ~~number && number > 0;
+  return FINITE_POSITIVE_INTEGER.test(number);
 };
 
 /**
