@@ -34,6 +34,45 @@ class Cache {
   size: number = 0;
 
   /**
+   * @function _getKeyIterator
+   * @memberof Cache
+   * @instance
+   *
+   * @description
+   * create a custom iterator for the keys in the list
+   *
+   * @returns {{next: (function(): Object)}} iterator instance
+   */
+  _getKeyIterator(): KeyIterator {
+    let index: number = -1;
+
+    return {
+      next: (): (ListItem|IteratorDone) => {
+        return ++index >= this.size ? ITERATOR_DONE_OBJECT : {
+          index,
+          isMultiParamKey: this.list[index].isMultiParamKey,
+          key: this.list[index].key
+        };
+      }
+    };
+  }
+
+  /**
+   * @function _setLastItem
+   * @memberof Cache
+   * @instance
+   *
+   * @description
+   * assign the lastItem
+   *
+   * @param {ListItem|undefined} lastItem the item to assign
+   */
+  _setLastItem(lastItem: ?ListItem): void {
+    this.lastItem = lastItem;
+    this.size = this.list.length;
+  }
+
+  /**
    * @function clear
    * @memberof Cache
    * @instance
@@ -44,7 +83,7 @@ class Cache {
   clear(): void {
     this.list.length = 0;
 
-    this.setLastItem();
+    this._setLastItem();
   }
 
   /**
@@ -58,12 +97,12 @@ class Cache {
    * @param {*} key key to delete from the map
    */
   delete(key: any): void {
-    const index: number = getIndexOfKey(this, key);
+    const index: number = getIndexOfKey(this, key, false);
 
     if (~index) {
       splice(this.list, index);
 
-      this.setLastItem(this.list[0]);
+      this._setLastItem(this.list[0]);
     }
   }
 
@@ -87,39 +126,15 @@ class Cache {
       return this.lastItem.value;
     }
 
-    const index: number = getIndexOfKey(this, key);
+    const index: number = getIndexOfKey(this, key, true);
 
     if (~index) {
       const item: ListItem = this.list[index];
 
-      this.setLastItem(unshift(splice(this.list, index), item));
+      this._setLastItem(unshift(splice(this.list, index), item));
 
       return item.value;
     }
-  }
-
-  /**
-   * @function getKeyIterator
-   * @memberof Cache
-   * @instance
-   *
-   * @description
-   * create a custom iterator for the keys in the list
-   *
-   * @returns {{next: (function(): Object)}} iterator instance
-   */
-  getKeyIterator(): KeyIterator {
-    let index: number = -1;
-
-    return {
-      next: (): (ListItem|IteratorDone) => {
-        return ++index >= this.size ? ITERATOR_DONE_OBJECT : {
-          index,
-          isMultiParamKey: this.list[index].isMultiParamKey,
-          key: this.list[index].key
-        };
-      }
-    };
   }
 
   /**
@@ -135,7 +150,7 @@ class Cache {
    */
   has(key: any): boolean {
     // $FlowIgnore: this.lastItem exists
-    return this.size !== 0 && (key === this.lastItem.key || !!~getIndexOfKey(this, key));
+    return this.size !== 0 && (key === this.lastItem.key || !!~getIndexOfKey(this, key, true));
   }
 
   /**
@@ -150,7 +165,7 @@ class Cache {
    * @param {*} value value to store in the map at key
    */
   set(key: any, value: any): void {
-    this.setLastItem(unshift(this.list, {
+    this._setLastItem(unshift(this.list, {
       key,
       isMultiParamKey: !!(key && key.isMultiParamKey),
       value
@@ -158,22 +173,7 @@ class Cache {
   }
 
   /**
-   * @function setLastItem
-   * @memberof Cache
-   * @instance
-   *
-   * @description
-   * assign the lastItem
-   *
-   * @param {ListItem|undefined} lastItem the item to assign
-   */
-  setLastItem(lastItem: ?ListItem): void {
-    this.lastItem = lastItem;
-    this.size = this.list.length;
-  }
-
-  /**
-   * @function updateItem
+   * @function update
    * @memberof Cache
    * @instance
    *
@@ -183,8 +183,8 @@ class Cache {
    * @param {*} key key to update value of
    * @param {*} value value to store in the map at key
    */
-  updateItem(key: any, value: any): void {
-    const index: number = getIndexOfKey(this, key);
+  update(key: any, value: any): void {
+    const index: number = getIndexOfKey(this, key, false);
 
     if (~index) {
       this.list[index].value = value;

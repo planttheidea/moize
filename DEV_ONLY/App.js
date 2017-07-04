@@ -127,7 +127,8 @@ Foo.defaultProps = {
 const MemoizedFoo = moize.react(Foo);
 const SimpleMemoizedFoo = moize.compose(moize.simple, moize.react)(Foo);
 
-console.log(SimpleMemoizedFoo.options);
+console.log('MemoizedFoo', MemoizedFoo.options);
+console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
 
 const array = ['foo', 'bar', 'baz'];
 

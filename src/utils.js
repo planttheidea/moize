@@ -454,7 +454,9 @@ export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => 
     return cache.lastItem.key;
   }
 
-  const iterator = cache.getKeyIterator();
+  const iterator = cache._getKeyIterator();
+
+  iterator.next();
 
   let iteration: Object;
 
@@ -618,10 +620,15 @@ export const isFiniteAndPositive = (number: number): boolean => {
  *
  * @param {Cache} cache cache to iterate over
  * @param {*} key key to find in list
+ * @param {boolean} skipFirstEntry should the first entry be skipped
  * @returns {number} index location of key in list
  */
-export const getIndexOfKey = (cache: Cache, key: any): number => {
-  const iterator: KeyIterator = cache.getKeyIterator();
+export const getIndexOfKey = (cache: Cache, key: any, skipFirstEntry: boolean): number => {
+  const iterator: KeyIterator = cache._getKeyIterator();
+
+  if (skipFirstEntry) {
+    iterator.next();
+  }
 
   let iteration: Object;
 
@@ -834,7 +841,7 @@ export const createPromiseResolver = (
   PromiseLibrary: Function
 ): Function => {
   return (resolvedValue: any) => {
-    cache.updateItem(key, PromiseLibrary.resolve(resolvedValue));
+    cache.update(key, PromiseLibrary.resolve(resolvedValue));
 
     if (hasMaxAge) {
       setExpirationOfCache(cache, key);
