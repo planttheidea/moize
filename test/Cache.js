@@ -191,7 +191,7 @@ test('if set will add the key and value passed to the cache', (t) => {
   t.is(cache.size, 1);
 });
 
-test('if setLastItem will assign the item passed to lastItem and update the cache size', (t) => {
+test('if _setLastItem will assign the item passed to lastItem and update the cache size', (t) => {
   const cache = new Cache();
   const value = {
     foo: 'bar'
@@ -202,13 +202,13 @@ test('if setLastItem will assign the item passed to lastItem and update the cach
     'bar'
   ];
 
-  cache.setLastItem(value);
+  cache._setLastItem(value);
 
   t.is(cache.lastItem, value);
   t.is(cache.size, cache.list.length);
 });
 
-test('if updateItem will assign a new value to the item already in cache', (t) => {
+test('if update will assign a new value to the item already in cache', (t) => {
   const cache = new Cache();
   const key = 'foo';
   const value = 'bar';
@@ -219,7 +219,7 @@ test('if updateItem will assign a new value to the item already in cache', (t) =
 
   const newValue = 'baz';
 
-  cache.updateItem(key, newValue);
+  cache.update(key, newValue);
 
   t.is(cache.get(key), newValue);
 });

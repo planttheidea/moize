@@ -278,7 +278,7 @@ test('if createPromiseResolver will create a function that will update the item 
   const key = 'foo';
   const resolvedValue = 'bar';
   const cache = {
-    updateItem(keyToUpdate) {
+    update(keyToUpdate) {
       t.is(keyToUpdate, key);
     }
   };
@@ -301,7 +301,7 @@ test('if createPromiseResolver will create a function that will set the cache to
   const key = 'foo';
   const resolvedValue = 'bar';
   const cache = {
-    updateItem() {}
+    update() {}
   };
   const hasMaxAge = true;
   const setExpirationOfCache = (cacheToExpire, keyToExpire) => {
