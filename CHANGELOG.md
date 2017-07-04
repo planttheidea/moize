@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 2.4.1
+* Make positive integer checker use regex instead of bitwise operation
+
 ### 2.4.0
 * Add `hasCacheFor` method to determine if the memoized function has cache for given arguments
 
