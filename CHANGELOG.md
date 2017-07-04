@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+### 2.5.0
+* Add TypeScript definitions (thanks @vhfmag)
+* Skip unneeded first entry iteration when getting the multi-parameter key or finding the index of a key
+
 ### 2.4.1
 * Make positive integer checker use regex instead of bitwise operation
 
