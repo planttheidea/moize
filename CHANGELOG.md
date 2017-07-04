@@ -1,7 +1,7 @@
 # moize CHANGELOG
 
 ### 2.5.0
-* Add TypeScript definitions (thanks @vhfmag)
+* Add TypeScript definitions (thanks [vhfmag](https://github.com/vhfmag))
 * Skip unneeded first entry iteration when getting the multi-parameter key or finding the index of a key
 
 ### 2.4.1
