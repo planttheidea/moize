@@ -5,6 +5,14 @@ interface Config {
     maxSize?: number; // maximum size of cache for this method
     serialize?: boolean; // should the parameters be serialized instead of directly referenced
     serializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
+    promiseLibrary?: PromiseLibrary<any>; // provide a promise library to be used and override default
+    serializer?: (...args: any[]) => any; // provide a serializer and override default
+}
+
+interface PromiseLibrary<T> {
+    (callback: (resolve: (r?: T | PromiseLike<T>) => void, reject: (e?: any) => void) => void): PromiseLike<T>;
+    reject: (err: Error) => any;
+    resolve: (v: T) => any;
 }
 
 type Fn = (...args: any[]) => any;
