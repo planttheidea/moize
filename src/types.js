@@ -60,3 +60,18 @@ export type IteratorDone = {
 export type KeyIterator = {
   next: Function
 };
+
+/**
+ * @private
+ *
+ * @typedef {Object} Iteration
+ *
+ * @property {number} index the index of the iteration
+ * @property {boolean} isMultiParamKey is the iteration key a multi-parameter key
+ * @property {*} key the iteration key
+ */
+export type Iteration = {
+  index: number,
+  isMultiParamKey: boolean,
+  key: any
+};
