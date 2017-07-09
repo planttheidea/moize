@@ -619,9 +619,14 @@ test('if getKeyForCache will return the multi-parameter key if the length more t
   const key = 'foo';
   const key2 = 'bar';
 
-  const result = utils.getKeyForCache(cache, [key, key2]);
+  const args = [key, key2];
 
-  t.deepEqual(result, [key, key2]);
+  const result = utils.getKeyForCache(cache, args);
+  const expectedResult = [...args];
+
+  expectedResult._isMultiParamKey = true;
+
+  t.deepEqual(result, expectedResult);
   t.true(result._isMultiParamKey);
 });
 
@@ -655,10 +660,13 @@ test('if getMultiParamKey returns an existing array of arguments when match is f
   });
 
   const result = utils.getMultiParamKey(cache, args);
+  const expectedResult = [...args];
+
+  expectedResult._isMultiParamKey = true;
 
   t.not(result, args);
   t.is(result, existingArgList[0].key);
-  t.deepEqual(result, args);
+  t.deepEqual(result, expectedResult);
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
