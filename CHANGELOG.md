@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 2.5.1
+* Surface types for TypeScript correctly
+
 ### 2.5.0
 * Add TypeScript definitions (thanks [vhfmag](https://github.com/vhfmag))
 * Skip unneeded first entry iteration when getting the multi-parameter key or finding the index of a key
