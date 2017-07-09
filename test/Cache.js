@@ -54,6 +54,21 @@ test('if delete will set lastItem to the first item in the list when an item is 
   t.is(cache.lastItem, cache.list[0]);
 });
 
+test('if delete will do nothing when a match for the key is not found', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const otherKey = 'bar';
+
+  cache.set(key, 'baz');
+
+  t.true(cache.has(key));
+
+  cache.delete(otherKey);
+
+  t.true(cache.has(key));
+  t.false(cache.has(otherKey));
+});
+
 test('if get will return the value for the passed key in cache', (t) => {
   const cache = new Cache();
   const key = 'foo';
@@ -156,6 +171,21 @@ test('if get will keep the order of retrieval correct', (t) => {
   ]);
 });
 
+test('if get will return undefined when no match for the key is found', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const otherKey = 'bar';
+
+  cache.set(key, 'baz');
+
+  t.true(cache.has(key));
+  t.false(cache.has(otherKey));
+
+  const result = cache.get(otherKey);
+
+  t.is(result, undefined);
+});
+
 test('if has will identify the existence of a key in the cache', (t) => {
   const cache = new Cache();
   const key = 'foo';
@@ -191,23 +221,6 @@ test('if set will add the key and value passed to the cache', (t) => {
   t.is(cache.size, 1);
 });
 
-test('if _setLastItem will assign the item passed to lastItem and update the cache size', (t) => {
-  const cache = new Cache();
-  const value = {
-    foo: 'bar'
-  };
-
-  cache.list = [
-    'foo',
-    'bar'
-  ];
-
-  cache._setLastItem(value);
-
-  t.is(cache.lastItem, value);
-  t.is(cache.size, cache.list.length);
-});
-
 test('if update will assign a new value to the item already in cache', (t) => {
   const cache = new Cache();
   const key = 'foo';
@@ -222,4 +235,39 @@ test('if update will assign a new value to the item already in cache', (t) => {
   cache.update(key, newValue);
 
   t.is(cache.get(key), newValue);
+});
+
+test('if update will not update anything if no match for the key is found', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const otherKey = 'bar';
+
+  cache.set(key, 'baz');
+
+  t.true(cache.has(key));
+  t.false(cache.has(otherKey));
+
+  cache.update(otherKey, 'quz');
+
+  t.is(cache.get(key), 'baz');
+  t.is(cache.size, 1);
+  t.false(cache.has(otherKey));
+});
+
+test('if update will not update the lastItem if the key does not match the lastItem key', (t) => {
+  const cache = new Cache();
+  const key = 'foo';
+  const otherKey = 'bar';
+
+  cache.set(key, 'baz');
+  cache.set(otherKey, 'quz');
+
+  cache.update(key, 'blah');
+
+  t.is(cache.get(key), 'blah');
+  t.deepEqual(cache.lastItem, {
+    isMultiParamKey: false,
+    key,
+    value: cache.get(key)
+  });
 });

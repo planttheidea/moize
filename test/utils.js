@@ -319,6 +319,61 @@ test('if createPromiseResolver will create a function that will set the cache to
   result(resolvedValue);
 });
 
+test('if isShallowEqual returns false when value is not a multi-parameter key', (t) => {
+  const value = {
+    isMultiParamKey: false
+  };
+  const args = ['foo', 'bar'];
+
+  const result = utils.isShallowEqual(value, args);
+
+  t.false(result);
+});
+
+test('if isShallowEqual returns false when value is an array whose length is different than that of args', (t) => {
+  const value = ['foo'];
+  const args = ['foo', 'bar'];
+
+  const result = utils.isShallowEqual(value, args);
+
+  t.false(result);
+});
+
+test('if isShallowEqual returns false when value is an array whose values are different than args', (t) => {
+  const object = {
+    bar: 'baz'
+  };
+  const value = ['foo', object];
+  const args = ['foo', {
+    ...object
+  }];
+
+  const result = utils.isShallowEqual(value, args);
+
+  t.false(result);
+});
+
+test('if isShallowEqual returns true when value is an array whose values are shallowly equal to args', (t) => {
+  const object = {
+    bar: 'baz'
+  };
+  const value = ['foo', object];
+  const args = ['foo', object];
+
+  const result = utils.isShallowEqual(value, args);
+
+  t.true(result);
+});
+
+test('if isShallowEqual returns true when value and args both are empty arrays', (t) => {
+  const value = [];
+  const args = [];
+
+  const result = utils.isShallowEqual(value, args);
+
+  t.true(result);
+});
+
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
   function foo() {}
 
@@ -352,6 +407,12 @@ test('if getFunctionNameViaRegexp will match the function name if it exists', (t
   const anonymousResult = utils.getFunctionNameViaRegexp(function() {}); //eslint-disable-line prefer-arrow-callback
 
   t.is(anonymousResult, '');
+});
+
+test('if getFunctionNameViaRegexp will coalesce the value if match is not found', (t) => {
+  const invalidResult = utils.getFunctionNameViaRegexp(123);
+
+  t.is(invalidResult, '');
 });
 
 test('if getFunctionWithAdditionalProperties will add the cache passed to the function', (t) => {
@@ -546,10 +607,15 @@ test('if getKeyForCache will return the multi-parameter key if the length more t
   const key = 'foo';
   const key2 = 'bar';
 
-  const result = utils.getKeyForCache(cache, [key, key2]);
+  const args = [key, key2];
 
-  t.deepEqual(result, [key, key2]);
-  t.true(result.isMultiParamKey);
+  const result = utils.getKeyForCache(cache, args);
+  const expectedResult = [...args];
+
+  expectedResult._isMultiParamKey = true;
+
+  t.deepEqual(result, expectedResult);
+  t.true(result._isMultiParamKey);
 });
 
 test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
@@ -559,7 +625,7 @@ test('if getMultiParamKey augments the arguments passed when no match is found',
   const result = utils.getMultiParamKey(cache, args);
 
   t.is(result, args);
-  t.true(result.isMultiParamKey);
+  t.true(result._isMultiParamKey);
 });
 
 test('if getMultiParamKey returns an existing array of arguments when match is found', (t) => {
@@ -576,16 +642,19 @@ test('if getMultiParamKey returns an existing array of arguments when match is f
   const args = ['foo', 'bar'];
 
   existingArgList.forEach((arg) => {
-    arg.key.isMultiParamKey = true;
+    arg.key._isMultiParamKey = true;
 
     cache.set(arg.key, arg.value);
   });
 
   const result = utils.getMultiParamKey(cache, args);
+  const expectedResult = [...args];
+
+  expectedResult._isMultiParamKey = true;
 
   t.not(result, args);
   t.is(result, existingArgList[0].key);
-  t.deepEqual(result, args);
+  t.deepEqual(result, expectedResult);
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
@@ -686,73 +755,6 @@ test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
   t.false(utils.isFiniteAndPositive(-0));
   t.false(utils.isFiniteAndPositive(-123));
   t.false(utils.isFiniteAndPositive(-Infinity));
-});
-
-test('if isKeyShallowEqualWithArgs returns false when value is not a multi-parameter key', (t) => {
-  const value = {
-    isMultiParamKey: false
-  };
-  const args = ['foo', 'bar'];
-
-  const result = utils.isKeyShallowEqualWithArgs(value, args);
-
-  t.false(result);
-});
-
-test('if isKeyShallowEqualWithArgs returns false when value is an array whose length is different than that of args', (t) => {
-  const value = {
-    isMultiParamKey: true,
-    key: ['foo']
-  };
-  const args = ['foo', 'bar'];
-
-  const result = utils.isKeyShallowEqualWithArgs(value, args);
-
-  t.false(result);
-});
-
-test('if isKeyShallowEqualWithArgs returns false when value is an array whose values are different than args', (t) => {
-  const object = {
-    bar: 'baz'
-  };
-  const value = {
-    isMultiParamKey: true,
-    key: ['foo', object]
-  };
-  const args = ['foo', {
-    ...object
-  }];
-
-  const result = utils.isKeyShallowEqualWithArgs(value, args);
-
-  t.false(result);
-});
-
-test('if isKeyShallowEqualWithArgs returns true when value is an array whose values are shallowly equal to args', (t) => {
-  const object = {
-    bar: 'baz'
-  };
-  const value = {
-    isMultiParamKey: true,
-    key: ['foo', object]
-  };
-  const args = ['foo', object];
-
-  const result = utils.isKeyShallowEqualWithArgs(value, args);
-
-  t.true(result);
-});
-
-test('if isKeyShallowEqualWithArgs returns true when value and args both are empty arrays', (t) => {
-  const value = {
-    isMultiParamKey: true,
-    key: []
-  };
-  const args = [];
-
-  const result = utils.isKeyShallowEqualWithArgs(value, args);
-
-  t.true(result);
 });
 
 test('if isPlainObject tests if the item is a function or not', (t) => {

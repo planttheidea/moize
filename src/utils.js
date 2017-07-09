@@ -18,6 +18,7 @@ import {
 
 // types
 import type {
+  Iteration,
   KeyIterator,
   ListItem,
   Options
@@ -86,12 +87,14 @@ export const compose = (...functions: Array<Function>): Function => {
  * @returns {boolean} do all values match
  */
 export const every = (array: Array<any>, fn: Function) => {
-  let index: number = array.length;
+  let index: number = 0;
 
-  while (index--) {
+  while (index < array.length) {
     if (!fn(array[index], index)) {
       return false;
     }
+
+    index++;
   }
 
   return true;
@@ -422,18 +425,18 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
 /**
  * @private
  *
- * @function isKeyShallowEqualWithArgs
+ * @function isShallowEqual
  *
  * @description
- * is the value passed shallowly equal with the args
+ * are the arrays shallowly equal to one another
  *
- * @param {*} value the value to compare
- * @param {Array<*>} args the args to test
- * @returns {boolean} are the args shallow equal to the value
+ * @param {Array<*>} firstArray the first array to test
+ * @param {Array<*>} secondArray the second array to test
+ * @returns {boolean} are the arrays shallow equal to one another
  */
-export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean => {
-  return value.isMultiParamKey && value.key.length === args.length && every(args, (arg, index) => {
-    return arg === value.key[index];
+export const isShallowEqual = (firstArray: Array<any>, secondArray: Array<any>): boolean => {
+  return firstArray.length === secondArray.length && every(firstArray, (firstArrayItem, index) => {
+    return firstArrayItem === secondArray[index];
   });
 };
 
@@ -450,24 +453,23 @@ export const isKeyShallowEqualWithArgs = (value: any, args: Array<any>): boolean
  * @returns {Array<*>} either a matching key in cache or the same key as the one passed
  */
 export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
-  if (cache.lastItem && isKeyShallowEqualWithArgs(cache.lastItem, args)) {
+  if (cache.lastItem && cache.lastItem.isMultiParamKey && isShallowEqual(cache.lastItem.key, args)) {
     return cache.lastItem.key;
   }
 
-  const iterator = cache._getKeyIterator();
+  const iterator: KeyIterator = cache._getKeyIterator();
 
-  iterator.next();
-
-  let iteration: Object;
+  // skip the first iteration as it is the same as lastItem
+  let iteration: Iteration = iterator.next();
 
   while ((iteration = iterator.next()) && !iteration.done) {
-    if (isKeyShallowEqualWithArgs(iteration, args)) {
+    if (iteration.isMultiParamKey && isShallowEqual(iteration.key, args)) {
       return iteration.key;
     }
   }
 
   // $FlowIgnore ok to add key to array object
-  args.isMultiParamKey = true;
+  args._isMultiParamKey = true;
 
   return args;
 };
@@ -630,10 +632,10 @@ export const getIndexOfKey = (cache: Cache, key: any, skipFirstEntry: boolean): 
     iterator.next();
   }
 
-  let iteration: Object;
+  let iteration: Iteration;
 
   while ((iteration = iterator.next()) && !iteration.done) {
-    if (iteration.key === key) {
+    if (key === iteration.key) {
       return iteration.index;
     }
   }

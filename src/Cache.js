@@ -9,6 +9,7 @@ import {
 
 // types
 import type {
+  Iteration,
   IteratorDone,
   KeyIterator,
   ListItem
@@ -47,7 +48,7 @@ class Cache {
     let index: number = -1;
 
     return {
-      next: (): (ListItem|IteratorDone) => {
+      next: (): (Iteration|IteratorDone) => {
         return ++index >= this.size ? ITERATOR_DONE_OBJECT : {
           index,
           isMultiParamKey: this.list[index].isMultiParamKey,
@@ -55,21 +56,6 @@ class Cache {
         };
       }
     };
-  }
-
-  /**
-   * @function _setLastItem
-   * @memberof Cache
-   * @instance
-   *
-   * @description
-   * assign the lastItem
-   *
-   * @param {ListItem|undefined} lastItem the item to assign
-   */
-  _setLastItem(lastItem: ?ListItem): void {
-    this.lastItem = lastItem;
-    this.size = this.list.length;
   }
 
   /**
@@ -81,9 +67,8 @@ class Cache {
    * remove all keys from the map
    */
   clear(): void {
-    this.list.length = 0;
-
-    this._setLastItem();
+    this.lastItem = undefined;
+    this.list.length = this.size = 0;
   }
 
   /**
@@ -102,7 +87,8 @@ class Cache {
     if (~index) {
       splice(this.list, index);
 
-      this._setLastItem(this.list[0]);
+      this.lastItem = this.list[0];
+      this.size = this.list.length;
     }
   }
 
@@ -129,11 +115,12 @@ class Cache {
     const index: number = getIndexOfKey(this, key, true);
 
     if (~index) {
-      const item: ListItem = this.list[index];
+      this.lastItem = this.list[index];
 
-      this._setLastItem(unshift(splice(this.list, index), item));
+      unshift(splice(this.list, index), this.lastItem);
 
-      return item.value;
+      // $FlowIgnore this.lastItem exists because there was a matching index
+      return this.lastItem.value;
     }
   }
 
@@ -149,8 +136,10 @@ class Cache {
    * @returns {boolean} does the map have the key
    */
   has(key: any): boolean {
-    // $FlowIgnore: this.lastItem exists
-    return this.size !== 0 && (key === this.lastItem.key || !!~getIndexOfKey(this, key, true));
+    return this.size !== 0 && (
+      // $FlowIgnore: this.lastItem exists
+      key === this.lastItem.key || !!~getIndexOfKey(this, key, true)
+    );
   }
 
   /**
@@ -165,11 +154,13 @@ class Cache {
    * @param {*} value value to store in the map at key
    */
   set(key: any, value: any): void {
-    this._setLastItem(unshift(this.list, {
+    this.lastItem = unshift(this.list, {
       key,
-      isMultiParamKey: !!(key && key.isMultiParamKey),
+      isMultiParamKey: !!(key && key._isMultiParamKey),
       value
-    }));
+    });
+
+    this.size = this.list.length;
   }
 
   /**
