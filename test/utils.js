@@ -319,69 +319,57 @@ test('if createPromiseResolver will create a function that will set the cache to
   result(resolvedValue);
 });
 
-test('if doArgsShallowEqualKey returns false when value is not a multi-parameter key', (t) => {
+test('if isShallowEqual returns false when value is not a multi-parameter key', (t) => {
   const value = {
     isMultiParamKey: false
   };
   const args = ['foo', 'bar'];
 
-  const result = utils.doArgsShallowEqualKey(value, args);
+  const result = utils.isShallowEqual(value, args);
 
   t.false(result);
 });
 
-test('if doArgsShallowEqualKey returns false when value is an array whose length is different than that of args', (t) => {
-  const value = {
-    isMultiParamKey: true,
-    key: ['foo']
-  };
+test('if isShallowEqual returns false when value is an array whose length is different than that of args', (t) => {
+  const value = ['foo'];
   const args = ['foo', 'bar'];
 
-  const result = utils.doArgsShallowEqualKey(value, args);
+  const result = utils.isShallowEqual(value, args);
 
   t.false(result);
 });
 
-test('if doArgsShallowEqualKey returns false when value is an array whose values are different than args', (t) => {
+test('if isShallowEqual returns false when value is an array whose values are different than args', (t) => {
   const object = {
     bar: 'baz'
   };
-  const value = {
-    isMultiParamKey: true,
-    key: ['foo', object]
-  };
+  const value = ['foo', object];
   const args = ['foo', {
     ...object
   }];
 
-  const result = utils.doArgsShallowEqualKey(value, args);
+  const result = utils.isShallowEqual(value, args);
 
   t.false(result);
 });
 
-test('if doArgsShallowEqualKey returns true when value is an array whose values are shallowly equal to args', (t) => {
+test('if isShallowEqual returns true when value is an array whose values are shallowly equal to args', (t) => {
   const object = {
     bar: 'baz'
   };
-  const value = {
-    isMultiParamKey: true,
-    key: ['foo', object]
-  };
+  const value = ['foo', object];
   const args = ['foo', object];
 
-  const result = utils.doArgsShallowEqualKey(value, args);
+  const result = utils.isShallowEqual(value, args);
 
   t.true(result);
 });
 
-test('if doArgsShallowEqualKey returns true when value and args both are empty arrays', (t) => {
-  const value = {
-    isMultiParamKey: true,
-    key: []
-  };
+test('if isShallowEqual returns true when value and args both are empty arrays', (t) => {
+  const value = [];
   const args = [];
 
-  const result = utils.doArgsShallowEqualKey(value, args);
+  const result = utils.isShallowEqual(value, args);
 
   t.true(result);
 });

@@ -425,18 +425,18 @@ export const deleteItemFromCache = (cache: Cache, key: any, isKeyLastItem: boole
 /**
  * @private
  *
- * @function doArgsShallowEqualKey
+ * @function isShallowEqual
  *
  * @description
- * is the value passed shallowly equal with the args
+ * are the arrays shallowly equal to one another
  *
- * @param {*} entry the cache entry to compare
- * @param {Array<*>} args the args to test
- * @returns {boolean} are the args shallow equal to the value
+ * @param {Array<*>} firstArray the first array to test
+ * @param {Array<*>} secondArray the second array to test
+ * @returns {boolean} are the arrays shallow equal to one another
  */
-export const doArgsShallowEqualKey = (entry: ListItem, args: Array<any>): boolean => {
-  return entry.isMultiParamKey && entry.key.length === args.length && every(args, (arg, index) => {
-    return arg === entry.key[index];
+export const isShallowEqual = (firstArray: Array<any>, secondArray: Array<any>): boolean => {
+  return firstArray.length === secondArray.length && every(firstArray, (firstArrayItem, index) => {
+    return firstArrayItem === secondArray[index];
   });
 };
 
@@ -453,16 +453,17 @@ export const doArgsShallowEqualKey = (entry: ListItem, args: Array<any>): boolea
  * @returns {Array<*>} either a matching key in cache or the same key as the one passed
  */
 export const getMultiParamKey = (cache: Cache, args: Array<any>): Array<any> => {
-  if (cache.lastItem && doArgsShallowEqualKey(cache.lastItem, args)) {
+  if (cache.lastItem && cache.lastItem.isMultiParamKey && isShallowEqual(cache.lastItem.key, args)) {
     return cache.lastItem.key;
   }
 
   const iterator: KeyIterator = cache._getKeyIterator();
 
-  let iteration: Iteration;
+  // skip the first iteration as it is the same as lastItem
+  let iteration: Iteration = iterator.next();
 
   while ((iteration = iterator.next()) && !iteration.done) {
-    if (doArgsShallowEqualKey(iteration, args)) {
+    if (iteration.isMultiParamKey && isShallowEqual(iteration.key, args)) {
       return iteration.key;
     }
   }
