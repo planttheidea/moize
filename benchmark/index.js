@@ -11,6 +11,7 @@ const memoizee = require('memoizee');
 const fastMemoize = require('fast-memoize');
 const addyOsmani = require('./addy-osmani');
 const memoizerific = require('memoizerific');
+const lruMemoize = require('lru-memoize').default;
 const moize = require('../lib');
 
 const showResults = (benchmarkResults) => {
@@ -37,7 +38,7 @@ const showResults = (benchmarkResults) => {
     ]);
   });
 
-  console.log(table.toString());
+  console.log(table.toString()); // eslint-disable-line no-console
 };
 
 const sortDescResults = (benchmarkResults) => {
@@ -105,7 +106,9 @@ const runSingleParameterSuite = () => {
   const mFastMemoize = fastMemoize(fibonacci);
   const mAddyOsmani = addyOsmani(fibonacci);
   const mMemoizerific = memoizerific(Infinity)(fibonacci);
+  const mLruMemoize = lruMemoize(Infinity)(fibonacci);
   const mMoize = moize(fibonacci);
+  const mMoizeSerialize = moize.serialize(fibonacci);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -115,11 +118,11 @@ const runSingleParameterSuite = () => {
       .add('lodash', () => {
         mLodash(fibonacciNumber);
       })
-      .add('ramda', () => {
-        mRamda(fibonacciNumber);
-      })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber);
+      })
+      .add('ramda', () => {
+        mRamda(fibonacciNumber);
       })
       .add('fast-memoize', () => {
         mFastMemoize(fibonacciNumber);
@@ -130,12 +133,18 @@ const runSingleParameterSuite = () => {
       .add('memoizerific', () => {
         mMemoizerific(fibonacciNumber);
       })
+      .add('lru-memoize', () => {
+        mLruMemoize(fibonacciNumber);
+      })
       .add('moize', () => {
         mMoize(fibonacciNumber);
       })
+      .add('moize (serialized)', () => {
+        mMoizeSerialize(fibonacciNumber);
+      })
       .on('start', () => {
-        console.log('');
-        console.log('Starting cycles for functions with a single parameter...');
+        console.log(''); // eslint-disable-line no-console
+        console.log('Starting cycles for functions with a single parameter...'); // eslint-disable-line no-console
 
         results = [];
 
@@ -161,7 +170,9 @@ const runMultiplePrimitiveSuite = () => {
   const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
   const mAddyOsmani = addyOsmani(fibonacciMultiplePrimitive);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
+  const mLruMemoize = lruMemoize(Infinity)(fibonacciMultiplePrimitive);
   const mMoize = moize(fibonacciMultiplePrimitive);
+  const mMoizeSerialize = moize.serialize(fibonacciMultiplePrimitive);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -177,12 +188,18 @@ const runMultiplePrimitiveSuite = () => {
       .add('memoizerific', () => {
         mMemoizerific(fibonacciNumber, isComplete);
       })
+      .add('lru-memoize', () => {
+        mLruMemoize(fibonacciNumber, isComplete);
+      })
       .add('moize', () => {
         mMoize(fibonacciNumber, isComplete);
       })
+      .add('moize (serialized)', () => {
+        mMoizeSerialize(fibonacciNumber, isComplete);
+      })
       .on('start', () => {
-        console.log('');
-        console.log('Starting cycles for functions with multiple parameters that contain only primitives...');
+        console.log(''); // eslint-disable-line no-console
+        console.log('Starting cycles for functions with multiple parameters that contain only primitives...'); // eslint-disable-line no-console
 
         results = [];
 
@@ -210,7 +227,9 @@ const runMultipleObjectSuite = () => {
   const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
+  const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleObject);
   const mMoize = moize(fibonacciMultipleObject);
+  const mMoizeSerialize = moize.serialize(fibonacciMultipleObject);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -226,12 +245,18 @@ const runMultipleObjectSuite = () => {
       .add('memoizerific', () => {
         mMemoizerific(fibonacciNumber, isComplete);
       })
+      .add('lru-memoize', () => {
+        mLruMemoize(fibonacciNumber, isComplete);
+      })
       .add('moize', () => {
         mMoize(fibonacciNumber, isComplete);
       })
+      .add('moize (serialized)', () => {
+        mMoizeSerialize(fibonacciNumber, isComplete);
+      })
       .on('start', () => {
-        console.log('');
-        console.log('Starting cycles for functions with multiple parameters that contain objects...');
+        console.log(''); // eslint-disable-line no-console
+        console.log('Starting cycles for functions with multiple parameters that contain objects...'); // eslint-disable-line no-console
 
         results = [];
 

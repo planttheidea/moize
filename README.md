@@ -11,8 +11,8 @@
 * [Installation](#installation)
 * [Usage](#usage)
 * [Advanced usage](#advanced-usage)
-  * [cache](#cache)
   * [isPromise](#ispromise)
+  * [isReact](#isreact)
   * [maxAge](#maxage)
   * [maxArgs](#maxargs)
   * [maxSize](#maxsize)
@@ -26,6 +26,7 @@
   * [moize.maxSize](#moizemaxsize)
   * [moize.promise](#moizepromise)
   * [moize.react](#moizereact)
+  * [moize.reactSimple](#moizereactsimple)
   * [moize.serialize](#moizeserialize)
   * [moize.simple](#moizesimple)
 * [Composition](#composition)
@@ -73,8 +74,8 @@ All parameter types are supported, including circular objects, functions, etc. T
 
 ```javascript
 {
-  cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
+  isReact: boolean, // is the result a React component
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
@@ -85,107 +86,11 @@ All parameter types are supported, including circular objects, functions, etc. T
 }
 ```
 
-#### cache
-
-*defaults to new Map()*
-
-The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. **This will be deprecated in the next major release.**
-
-The only requirements for the cache implementation is that it matches the relevant `Map` API methods and properties:
-* clear
-* delete
-* get
-* has
-* set
-* size
-
-Additional cache-specific methods that need to be implemented:
-
-*getMultiParamKey(args: Array<any>): Array<any>*
-
-Accepts the `arguments` of the function itself as an `Array`, and returns either a key that matches one in cache already or the `args` passed.
-
-
-```javascript
-import isEqual from 'lodash/isEqual';
-
-// example using a native plain object implementation
-const cache = {
-  _keys: [],
-  _values: [],
-  size: 0,
-
-  clear() {
-    this._keys.length = 0;
-    this._values.length = 0;
-    this.size = 0;
-  },
-
-  delete(key) {
-    const index = this._keys.indexOf(key);
-
-    if (!~index) {
-      return;
-    }
-
-    this._keys.splice(index, 1);
-    this._values.splice(index, 1);
-
-    this.size--;
-  },
-
-  get(key) {
-    const index = this._keys.indexOf(key);
-
-    return ~index ? this._values[index] : undefined;
-  },
-
-  getMultiParamKey(args) {
-    let index = -1;
-
-    while (++index < this._keys.length) {
-      // does deepEqual comparison with existing keys
-      if (isEqual(this._keys[index], args)) {
-        return this._keys[index];
-      }
-    }
-
-    return args;
-  },
-
-  has(key) {
-    return !!~this._keys.indexOf(key);
-  },
-
-  set(key, value) {
-    const existingIndex = this._keys.indexOf(key);
-
-    if (~existingIndex) {
-      this._values[existingIndex] = value;
-    } else {
-      this._keys.push(key);
-      this._values.push(key);
-      this.size++;
-    }
-
-    return this;
-  }
-};
-
-const fn = (item) => {
-  return item;
-};
-
-const memoized = moize(fn, {
-  cache
-});
-```
-
 #### isPromise
 
 *defaults to false*
 
-Is the computed value in the function a `Promise`, and should we cache the resolved value from that `Promise`.
+Is the computed value in the function a `Promise`, and should we cache the resolved value from that `Promise`. This is also available via the shortcut method of [`moize.promise`](#moizepromise).
 
 ```javascript
 const fn = async (item) => {
@@ -199,11 +104,33 @@ const memoized = moize(fn, {
 
 The resolved value of the `Promise` will be stored in cache as a `Promise` itself, so that cached returns will always be in the form of a `Promise`. For common usage reasons, if the `Promise` is rejected, the cache entry will be deleted. Also, if a `maxAge` is provided, the countdown of that TTL will begin upon the resolution of the promise rather than at the instantiation of it.
 
+#### isReact
+
+*defaults to false*
+
+Is the function passed a stateless functional `React` component. This is also available via the shortcut method of [`moize.react`](#moizereact).
+
+```javascript
+const Foo = ({bar, baz}) => {
+  return (
+    <div>
+      {bar}: {baz}
+    </div>
+  );
+};
+
+export default moize(Foo, {
+  isReact: true
+});
+```
+
+The method will do a shallow comparison of both `props` and `context` of the component based on strict equality. If you want to mimic the `PureComponent` optimization, add the parameter `maxSize` set to `1`.
+
 #### maxAge
 
 *defaults to Infinity*
 
-The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.
+The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method. This is also available via the shortcut method of [`moize.maxAge`](#moizemaxage).
 
 ```javascript
 const fn = (item) => {
@@ -235,7 +162,7 @@ const memoized = moize(fn, {
 
 *defaults to Infinity*
 
-The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
+The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis. This is also available via the shortcut method of [`moize.maxSize`](#moizemaxsize).
 
 ```javascript
 const fn = (item) => {
@@ -311,7 +238,7 @@ const memoized = moize(fn, {
 
 *defaults to false*
 
-In `moize` 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the `serialize` parameter as `true` and you will use the performant serializer from 1.x.x.
+In `moize` 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the `serialize` parameter as `true` and you will use the performant serializer from 1.x.x. This is also available via the shortcut method of [`moize.serialize`](#moizeserialize).
 
 ```javascript
 const fn = (mutableObject) => {
@@ -382,7 +309,7 @@ Please note that you must also set `serialize` to true for this setting to take 
 
 #### moize.maxAge
 
-Pre-applies the `maxAge` option as a curriable method:
+Pre-applies the `maxAge` option as a curriable method.
 
 ```javascript
 import moize from 'moize';
@@ -396,7 +323,7 @@ export default moize.maxAge(5000)(foo);
 
 #### moize.maxArgs
 
-Pre-applies the `maxArgs` option as a curriable method:
+Pre-applies the `maxArgs` option as a curriable method.
 
 ```javascript
 import moize from 'moize';
@@ -410,7 +337,7 @@ export default moize.maxArgs(1)(foo);
 
 #### moize.maxSize
 
-Pre-applies the `maxSize` option as a curriable method:
+Pre-applies the `maxSize` option as a curriable method.
 
 ```javascript
 import moize from 'moize';
@@ -424,7 +351,7 @@ export default moize.maxSize(5)(foo);
 
 #### moize.promise
 
-Pre-applies the `isPromise` option:
+Pre-applies the `isPromise` option.
 
 ```javascript
 import moize from 'moize';
@@ -438,7 +365,7 @@ export default moize.promise(foo);
 
 #### moize.react
 
-Shortcut for memoizing functional components in [React](https://github.com/facebook/react): Pre-applies `serialize` and `serializeFunctions` both to `true`, and pre-applies `maxArgs` to `2`. This allows for a value equality comparison of `props` and `context`.
+Shortcut for memoizing functional components in [React](https://github.com/facebook/react). This uses a special cache key that will do a shallow equal comparison of changes to both props and context.
 
 ```javascript
 import moize from 'moize';
@@ -454,13 +381,31 @@ const Foo = ({bar, baz}) => {
 export default moize.react(Foo);
 ```
 
-Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a `maxSize` (see [Composition](#composition) for how to combine with `moize.maxSize` or `moize.simple`).
+Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a `maxSize`, or you can use the new shortcut method [`moize.reactSimple`](#moizereactsimple), which automatically sets the `maxSize` to `1` to mimic the `PureComponent` optimization.
 
-Please note `moize.react` will not operate with components made via the `class` instantiation, as they do not offer the same [referential transparency](https://en.wikipedia.org/wiki/Referential_transparency).
+#### moize.reactsimple
+
+Shortcut for memoizing functional components in [React](https://github.com/facebook/react), with the cache size limited to a single entry. This mimics the `PureComponnt` optimization, where the component will only be re-rendered on change to `props` or `context`.
+
+```javascript
+import moize from 'moize';
+
+const Foo = ({bar, baz}) => {
+  return (
+    <div>
+      {bar} {baz}
+    </div>
+  );
+};
+
+export default moize.reactSimple(Foo);
+```
+
+Please note `moize.reactSimple` will not operate with components made via the `class` instantiation, as they do not offer the same [referential transparency](https://en.wikipedia.org/wiki/Referential_transparency).
 
 #### moize.serialize
 
-Pre-applies the `serialize` option:
+Pre-applies the `serialize` option.
 
 ```javascript
 import moize from 'moize';
@@ -474,7 +419,7 @@ export default moize.serialize(foo);
 
 #### moize.simple
 
-Pre-applies the `maxSize` option with `1`:
+Pre-applies the `maxSize` option with `1`.
 
 ```javascript
 import moize from 'moize';
@@ -531,7 +476,7 @@ import moize from 'moize';
 
 // creates a moizer that will have the options of
 // {maxAge: 5000, maxSize: 1, serialize: true, serializeFunctions: true}
-const superLimitedReactMoize = moize.compose(moize.react, moize.simple, moize.maxAge(5000));
+const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));
 ```
 
 ### Benchmarks

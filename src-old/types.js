@@ -1,13 +1,4 @@
-/**
- * @private
- *
- * @typedef {Object} CacheKey
- *
- * @property {boolean} isMultiParamKey is the key a multi-parameter key
- * @property {*} key the key that is stored
- * @property {function} serializer the method used to serialize the key
- * @property {number} size the size of the key
- */
+
 export type CacheKey = {
   isMultiParamKey: boolean,
   key: any,
@@ -30,15 +21,15 @@ export type CacheKey = {
  * @property {function} [serializer] a custom serializer to use in place of the default
  */
 export type Options = {
-  isPromise: boolean,
-  isReact: boolean,
-  maxAge: number,
-  maxArgs: number,
-  maxSize: number,
+  cache?: Object,
+  isPromise?: boolean,
+  maxAge?: number,
+  maxArgs?: number,
+  maxSize?: number,
   promiseLibrary?: Function,
-  serialize: boolean,
-  serializeFunctions: boolean,
-  serializer: Function
+  serialize?: boolean,
+  serializeFunctions?: boolean,
+  serializer?: Function
 };
 
 /**
@@ -51,6 +42,44 @@ export type Options = {
  * @property {*} value the value assigned in cache to key
  */
 export type ListItem = {
-  key?: any,
-  value?: any
+  key: any,
+  isMultiParamKey: boolean,
+  value: any
+};
+
+/**
+ * @private
+ *
+ * @typedef {Object} IteratorDone
+ *
+ * @property {true} done is the iterator complete
+ */
+export type IteratorDone = {
+  done: true
+};
+
+/**
+ * @private
+ *
+ * @typedef {Object} KeyIterator
+ *
+ * @property {function} next the function to call to get the next iteration
+ */
+export type KeyIterator = {
+  next: Function
+};
+
+/**
+ * @private
+ *
+ * @typedef {Object} Iteration
+ *
+ * @property {number} index the index of the iteration
+ * @property {boolean} isMultiParamKey is the iteration key a multi-parameter key
+ * @property {*} key the iteration key
+ */
+export type Iteration = {
+  index: number,
+  isMultiParamKey: boolean,
+  key: any
 };

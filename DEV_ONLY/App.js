@@ -1,6 +1,7 @@
 import 'babel-polyfill';
 
 import Bluebird from 'bluebird';
+import PropTypes from 'prop-types';
 import React, {
   Component
 } from 'react';
@@ -28,8 +29,8 @@ memoized(foo, bar);
 memoized(foo, bar);
 
 console.log(memoized.cache);
-console.log(memoized.hasCacheFor(foo, bar));
-console.log(memoized.hasCacheFor(foo, 'baz'));
+console.log('hasCacheFor true', memoized.hasCacheFor(foo, bar));
+console.log('hasCacheFor false', memoized.hasCacheFor(foo, 'baz'));
 
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
@@ -110,8 +111,10 @@ console.log(memoizeedWithDefault('bar'));
 console.log(memoizeedWithDefault('bar', 'baz'));
 console.log(memoizeedWithDefault('bar'));
 
-const Foo = ({bar, value}) => {
+const Foo = ({bar, fn, object, value}) => {
   console.log('Foo React element fired', bar, value);
+  console.log('fn', fn);
+  console.log('object', object);
 
   return (
     <div>
@@ -120,17 +123,30 @@ const Foo = ({bar, value}) => {
   );
 };
 
+Foo.propTypes = {
+  bar: PropTypes.string.isRequired,
+  fn: PropTypes.func.isRequired,
+  object: PropTypes.object.isRequired,
+  value: PropTypes.string.isRequired
+};
+
 Foo.defaultProps = {
   bar: 'default'
 };
 
 const MemoizedFoo = moize.react(Foo);
-const SimpleMemoizedFoo = moize.compose(moize.simple, moize.react)(Foo);
+const SimpleMemoizedFoo = moize.reactSimple(Foo);
 
 console.log('MemoizedFoo', MemoizedFoo.options);
 console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
 
-const array = ['foo', 'bar', 'baz'];
+console.log('MemoizedFoo cache', MemoizedFoo.cache);
+
+const array = [
+  {fn() {}, object: {}, value: 'foo'},
+  {fn() {}, object: {}, value: 'bar'},
+  {fn() {}, object: {}, value: 'baz'}
+];
 
 const HEADER_STYLE = {
   margin: 0
@@ -149,11 +165,11 @@ class App extends Component {
             Uncached values (first time running)
           </h3>
 
-          {array.map((value, index) => {
+          {array.map((values) => {
             return (
               <MemoizedFoo
-                key={index}
-                value={value}
+                key={`called-${values.value}`}
+                {...values}
               />
             );
           })}
@@ -162,11 +178,11 @@ class App extends Component {
             Cached values
           </h3>
 
-          {array.map((value, index) => {
+          {array.map((values) => {
             return (
               <MemoizedFoo
-                key={index}
-                value={value}
+                key={`memoized-${values.value}`}
+                {...values}
               />
             );
           })}
