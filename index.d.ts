@@ -1,5 +1,6 @@
 interface Config {
     isPromise?: boolean; // is the result a promise
+    isReact?: boolean; // is the method a functional React component
     maxAge?: number; // amount of time in milliseconds before the cache will expire
     maxArgs?: number; // maximum number of arguments to use as key for caching
     maxSize?: number; // maximum size of cache for this method
@@ -28,6 +29,7 @@ namespace moize {
     function maxSize<T extends Fn>(a: number): (t: T) => T;
     function promise<T extends Fn>(t: T): T;
     function react<T extends Fn>(t: T): T;
+    function reactSimple<T extends Fn>(t: T): T;
     function serialize<T extends Fn>(t: T): T;
     function simple<T extends Fn>(t: T): T;
 

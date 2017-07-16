@@ -33,6 +33,7 @@ import type {
 } from './types';
 
 type StandardCacheKey = MultipleParameterCacheKey | StandardCacheKey;
+type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
 
 /**
  * @private
@@ -398,6 +399,29 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
 /**
  * @private
  *
+ * @function getGetCacheKeyMethod
+ *
+ * @description
+ * based on the options, get the getCacheKey method
+ *
+ * @param {Options} options the options passed to the moized method
+ * @returns {function(Cache, Array<*>): CacheKey} the cache key
+ */
+export const getGetCacheKeyMethod = (options: Options): Function => {
+  if (options.isReact) {
+    return getReactCacheKey;
+  }
+
+  if (options.serialize) {
+    return getSerializedCacheKey;
+  }
+
+  return getStandardCacheKey;
+};
+
+/**
+ * @private
+ *
  * @function createGetCacheKey
  *
  * @description
@@ -405,25 +429,21 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
  *
  * @param {Cache} cache the cache to get the key from
  * @param {Options} options the options passed to the moized method
- * @returns {function(*): (ReactCacheKey|SerializedCacheKey|StandardCacheKey)} the method that will get the cache key
+ * @returns {function(*): CacheKey} the method that will get the cache key
  */
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   const hasMaxArgs: boolean = isFiniteAndPositive(options.maxArgs);
+  const getCacheKeyMethod: Function = getGetCacheKeyMethod(options);
+  const shouldIncludeOptions: boolean = options.serialize;
 
-  if (options.isReact) {
-    return (key: any): ReactCacheKey => {
-      return getReactCacheKey(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key);
+  if (shouldIncludeOptions) {
+    return (key: any): CacheKey => {
+      return getCacheKeyMethod(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key, options);
     };
   }
 
-  if (options.serialize) {
-    return (key: any): SerializedCacheKey => {
-      return getSerializedCacheKey(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key, options);
-    };
-  }
-
-  return (key: any): StandardCacheKey => {
-    return getStandardCacheKey(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key);
+  return (key: any): CacheKey => {
+    return getCacheKeyMethod(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key);
   };
 };
 
@@ -441,7 +461,7 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
  * @returns {function} the rejecter function for the promise
  */
 export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: Options): Function => {
-  return (exception: Error) => {
+  return (exception: Error): Promise<any> => {
     cache.remove(key);
 
     // $FlowIgnore promiseLibrary can have property methods
@@ -470,7 +490,7 @@ export const createPromiseResolver = (
   hasMaxAge: boolean,
   {maxAge, promiseLibrary}: Options
 ) => {
-  return (resolvedValue: any) => {
+  return (resolvedValue: any): Promise<any> => {
     // $FlowIgnore promiseLibrary can have property methods
     cache.update(key, promiseLibrary.resolve(resolvedValue));
 
@@ -499,12 +519,11 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
   const hasMaxSize: boolean = isFiniteAndPositive(options.maxSize);
 
   const {
-    isPromise,
     maxAge,
     maxSize
   } = options;
 
-  if (isPromise) {
+  if (options.isPromise) {
     if (!isFunction(options.promiseLibrary) && !isPlainObject(options.promiseLibrary)) {
       throw new TypeError(INVALID_PROMISE_LIBRARY_ERROR);
     }
@@ -539,6 +558,17 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
   };
 };
 
+/**
+ * @private
+ *
+ * @function getDefaultedOptions
+ *
+ * @description
+ * get the options coalesced to their defaults
+ *
+ * @param {Object} options the options passed to the moize method
+ * @returns {Options} the coalesced options object
+ */
 export const getDefaultedOptions = (options: Object): Options => {
   let coalescedOptions: Object = {
     ...DEFAULT_OPTIONS,
@@ -600,6 +630,19 @@ export const unshift = (array: Array<any>, item: any): any => {
   return array[0] = item;
 };
 
+/**
+ * @private
+ *
+ * @function createAddPropertiesToFunction
+ *
+ * @description
+ * add the static properties to the moized function
+ *
+ * @param {Cache} cache the cache for the moized function
+ * @param {function} originalFunction the function to be moized
+ * @param {Options} options the options passed to the moize method
+ * @returns {function(function): function} the method which will add the static properties
+ */
 export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Function, options: Options) => {
   const getCacheKey = createGetCacheKey(cache, options);
 
