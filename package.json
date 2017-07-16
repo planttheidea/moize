@@ -111,5 +111,5 @@
     "transpile": "npm run clean:lib && NODE_ENV=production babel src --out-dir lib"
   },
   "types": "./index.d.ts",
-  "version": "2.5.1"
+  "version": "3.0.0"
 }
