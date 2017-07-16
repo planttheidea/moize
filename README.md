@@ -43,7 +43,7 @@
 
 ### Upgrade notification
 
-Users of `moize` 1.x.x will have some small but breaking changes, especially related to its use with functional components. Please see the [changelog](CHANGELOG.md) for more details about how to manage the upgrade.
+Users of `moize` 1.x.x may have experience breaking changes, especially if using a custom cache or using `moize.react` in a mutative way. Please see the [changelog](CHANGELOG.md) for more details about how to manage the upgrade.
 
 ### Installation
 
@@ -507,7 +507,7 @@ There are a couple of methods provided on the memoized function which allow for 
 
 #### add(key, value)
 
-This will manually add the *value* at *key* in cache if *key* does not already exist.
+This will manually add the *value* at *key* in cache if *key* does not already exist. *key* is an `Array` of values, meant to reflect the arguments passed to the method.
 
 ```javascript
 // single parameter is straightforward
@@ -515,7 +515,7 @@ const memoized = moize((item) => {
   return item;
 });
 
-memoized.add('foo', 'bar');
+memoized.add(['foo'], 'bar');
 
 // for multiple parameters, pass an array of arguments as the key
 const memoized = moize((item1, item2) => {

@@ -7,7 +7,6 @@ import sinon from 'sinon';
 
 // src
 import moize from 'src/index';
-import * as constants from 'src/constants';
 import * as utils from 'src/utils';
 
 test('if moize returns a function', (t) => {
@@ -38,10 +37,8 @@ test('if moize will return a new moized function with a mixture of the options i
 
   t.is(moizedAgain.originalFunction, moized.originalFunction);
   t.deepEqual(moizedAgain.options, {
-    ...constants.DEFAULT_OPTIONS,
     maxArgs: 1,
-    maxAge: 10,
-    serializer: null
+    maxAge: 10
   });
 });
 
@@ -63,7 +60,28 @@ test('if moize will memoize the result of the function based on the same argumen
   t.true(fn.calledOnce);
 });
 
-test.skip('if moize will accept a custom serializer as argument', (t) => {
+test('if moize will accept a custom cache as argument', (t) => {
+  let cache = {
+    delete: sinon.stub(),
+    get: sinon.stub(),
+    has: sinon.spy(() => {
+      return false;
+    }),
+    set: sinon.stub()
+  };
+
+  const fn = (foo, bar) => {
+    return `${foo} ${bar}`;
+  };
+
+  const result = moize(fn, {
+    cache
+  });
+
+  t.is(result.cache, cache);
+});
+
+test('if moize will accept a custom serializer as argument', (t) => {
   const key = 'baz';
 
   let serializer = sinon.stub().returns(key);
@@ -91,7 +109,7 @@ test('if moize will throw an error when isPromise is true and promiseLibrary doe
       isPromise: true,
       promiseLibrary: null
     });
-  }, TypeError);
+  }, ReferenceError);
 });
 
 test('if moize.compose is the same as the compose util', (t) => {
@@ -111,9 +129,7 @@ test('if moize.maxAge will create a curryable method that accepts the age and th
 
   t.true(_.isFunction(result));
   t.deepEqual(result.options, {
-    ...constants.DEFAULT_OPTIONS,
-    maxAge,
-    serializer: null
+    maxAge
   });
 });
 
@@ -130,9 +146,7 @@ test('if moize.maxArgs will create a curryable method that accepts the age and t
 
   t.true(_.isFunction(result));
   t.deepEqual(result.options, {
-    ...constants.DEFAULT_OPTIONS,
-    maxArgs,
-    serializer: null
+    maxArgs
   });
 });
 
@@ -149,9 +163,7 @@ test('if moize.maxSize will create a curryable method that accepts the size and 
 
   t.true(_.isFunction(result));
   t.deepEqual(result.options, {
-    ...constants.DEFAULT_OPTIONS,
-    maxSize,
-    serializer: null
+    maxSize
   });
 });
 
@@ -163,13 +175,11 @@ test('if moize.promise will create a memoized method with isPromise set to true'
   t.true(_.isFunction(result));
 
   t.deepEqual(result.options, {
-    ...constants.DEFAULT_OPTIONS,
-    isPromise: true,
-    serializer: null
+    isPromise: true
   });
 });
 
-test.skip('if moize.react will call moize with the correct arguments', (t) => {
+test('if moize.react will call moize with the correct arguments', (t) => {
   const jsdom = require('jsdom-global')();
 
   const Foo = () => {
@@ -209,9 +219,7 @@ test.skip('if moize.react will call moize with the correct arguments', (t) => {
   jsdom();
 });
 
-test.todo('if moize.reactSimple has the same options as moize.react, but also has a maxSize of 1');
-
-test.skip('if moize.serialize will create a memoized method with serialize set to true', (t) => {
+test('if moize.serialize will create a memoized method with serialize set to true', (t) => {
   const fn = () => {};
 
   const result = moize.serialize(fn);
@@ -219,7 +227,6 @@ test.skip('if moize.serialize will create a memoized method with serialize set t
   t.true(_.isFunction(result));
 
   t.deepEqual(result.options, {
-    ...constants.DEFAULT_OPTIONS,
     serialize: true
   });
 });
@@ -232,8 +239,6 @@ test('if moize.simple will create a memoized method with maxAge set to 1', (t) =
   t.true(_.isFunction(result));
 
   t.deepEqual(result.options, {
-    ...constants.DEFAULT_OPTIONS,
-    maxSize: 1,
-    serializer: null
+    maxSize: 1
   });
 });

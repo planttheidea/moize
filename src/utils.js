@@ -38,113 +38,6 @@ type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
 /**
  * @private
  *
- * @function compose
- *
- * @description
- * method to compose functions and return a single function
- *
- * @param {...Array<function>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
- */
-export const compose = (...functions: Array<Function>): Function => {
-  return functions.reduce((f: Function, g: Function): Function => {
-    return (...args: Array<any>): any => {
-      return f(g(...args));
-    };
-  });
-};
-
-/**
- * @private
- *
- * @function createFindIndex
- *
- * @description
- * create a findIndex method based on the startingIndex passed
- *
- * @param {number} startingIndex the index to start in the find method returned
- * @returns {function(Array<ListItem>, *): number} the findIndex method
- */
-export const createFindIndex = (startingIndex: number): Function => { // eslint-disable-line no-use-before-define
-  return (list: Array<ListItem>, key: any): number => {
-    let index: number = startingIndex;
-
-    while (index < list.length) {
-      if (key === list[index].key) {
-        return index;
-      }
-
-      index++;
-    }
-
-    return -1;
-  };
-};
-
-/**
- * @private
- *
- * @function findIndex
- *
- * @description
- * find the index of the key starting at the first index
- *
- * @param {Array<ListItem>} list the list to find the key in
- * @param {*} key the key to test against
- * @returns {number} the index of the matching key, or -1
- */
-export const findIndex: Function = createFindIndex(0);
-
-/**
- * @private
- *
- * @function findIndexAfterFirst
- *
- * @description
- * find the index of the key starting at the second index
- *
- * @param {Array<ListItem>} list the list to find the key in
- * @param {*} key the key to test against
- * @returns {number} the index of the matching key, or -1
- */
-export const findIndexAfterFirst: Function = createFindIndex(1);
-
-/**
- * @private
- *
- * @function getFunctionNameViaRegexp
- *
- * @description
- * use regexp match on stringified function to get the function name
- *
- * @param {function} fn function to get the name of
- * @returns {string} function name
- */
-export const getFunctionNameViaRegexp = (fn: Function): string => {
-  const match: ?Array<string> = fn.toString().match(FUNCTION_NAME_REGEXP);
-
-  return match ? match[1] : '';
-};
-
-/**
- * @private
- *
- * @function getFunctionName
- *
- * @description
- * get the function name, either from modern property or regexp match,
- * falling back to generic string
- *
- * @param {function} fn function to get the name of
- * @returns {string} function name
- */
-export const getFunctionName = (fn: Function): string => {
-  return fn.displayName || fn.name || getFunctionNameViaRegexp(fn) || FUNCTION_TYPEOF;
-};
-
-/**
- * @private
- *
  * @function isComplexObject
  *
  * @description
@@ -221,7 +114,7 @@ export const isValueObjectOrArray = (object: any): boolean => {
   let index = 0;
 
   while (index < GOTCHA_OBJECT_CLASSES.length) {
-    if (!(object instanceof GOTCHA_OBJECT_CLASSES[index])) {
+    if (object instanceof GOTCHA_OBJECT_CLASSES[index]) {
       return false;
     }
 
@@ -261,21 +154,20 @@ export const addStaticPropertiesToFunction = (originalFunction: Function, memoiz
 /**
  * @private
  *
- * @function createPluckFromInstanceList
+ * @function compose
  *
  * @description
- * get a property from the list on the cache
+ * method to compose functions and return a single function
  *
- * @param {{list: Array<Object>}} cache cache whose list to map over
- * @param {string} key key to pluck from list
- * @returns {Array<*>} array of values plucked at key
+ * @param {...Array<function>} functions the functions to compose
+ * @returns {function(...Array<*>): *} the composed function
  */
-export const createPluckFromInstanceList = (cache: Cache, key: string): Function => {
-  return (): Array<any> => {
-    return cache.list.map((item: ListItem) => {
-      return item[key];
-    });
-  };
+export const compose = (...functions: Array<Function>): Function => {
+  return functions.reduce((f: Function, g: Function): Function => {
+    return (...args: Array<any>): any => {
+      return f(g(...args));
+    };
+  });
 };
 
 /**
@@ -297,6 +189,191 @@ export const createCurriableOptionMethod = (fn: Function, option: string): Funct
       [option]: value
     });
   };
+};
+
+/**
+ * @private
+ *
+ * @function createFindIndex
+ *
+ * @description
+ * create a findIndex method based on the startingIndex passed
+ *
+ * @param {number} startingIndex the index to start in the find method returned
+ * @returns {function(Array<ListItem>, *): number} the findIndex method
+ */
+export const createFindIndex = (startingIndex: number): Function => { // eslint-disable-line no-use-before-define
+  return (list: Array<ListItem>, key: any): number => {
+    let index: number = startingIndex;
+
+    while (index < list.length) {
+      if (key === list[index].key) {
+        return index;
+      }
+
+      index++;
+    }
+
+    return -1;
+  };
+};
+
+/**
+ * @private
+ *
+ * @function createPluckFromInstanceList
+ *
+ * @description
+ * get a property from the list on the cache
+ *
+ * @param {{list: Array<Object>}} cache cache whose list to map over
+ * @param {string} key key to pluck from list
+ * @returns {Array<*>} array of values plucked at key
+ */
+export const createPluckFromInstanceList = (cache: Cache, key: string): Function => {
+  return (): Array<any> => {
+    return cache.list.map((item: ListItem) => {
+      return item[key];
+    });
+  };
+};
+
+/**
+ * @private
+ *
+ * @function createPromiseRejecter
+ *
+ * @description
+ * create method that will reject the promise and delete the key from cache
+ *
+ * @param {Cache} cache cache to update
+ * @param {*} key key to delete from cache
+ * @param {function} promiseLibrary the promise library used
+ * @returns {function} the rejecter function for the promise
+ */
+export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: Options): Function => {
+  return (exception: Error): Promise<any> => {
+    cache.remove(key);
+
+    // $FlowIgnore promiseLibrary can have property methods
+    return promiseLibrary.reject(exception);
+  };
+};
+
+/**
+ * @private
+ *
+ * @function createPromiseResolver
+ *
+ * @description
+ * create method that will resolve the promise and update the key in cache
+ *
+ * @param {Cache} cache cache to update
+ * @param {*} key key to update in cache
+ * @param {boolean} hasMaxAge should the cache expire after some time
+ * @param {number} maxAge the age after which the cache will be expired
+ * @param {function} promiseLibrary the promise library used
+ * @returns {function} the resolver function for the promise
+ */
+export const createPromiseResolver = (
+  cache: Cache,
+  key: any,
+  hasMaxAge: boolean,
+  {maxAge, promiseLibrary}: Options
+) => {
+  return (resolvedValue: any): Promise<any> => {
+    // $FlowIgnore promiseLibrary can have property methods
+    cache.update(key, promiseLibrary.resolve(resolvedValue));
+
+    if (hasMaxAge) {
+      cache.expireAfter(key, maxAge);
+    }
+
+    return resolvedValue;
+  };
+};
+
+/**
+ * @private
+ *
+ * @function findIndex
+ *
+ * @description
+ * find the index of the key starting at the first index
+ *
+ * @param {Array<ListItem>} list the list to find the key in
+ * @param {*} key the key to test against
+ * @returns {number} the index of the matching key, or -1
+ */
+export const findIndex: Function = createFindIndex(0);
+
+/**
+ * @private
+ *
+ * @function findIndexAfterFirst
+ *
+ * @description
+ * find the index of the key starting at the second index
+ *
+ * @param {Array<ListItem>} list the list to find the key in
+ * @param {*} key the key to test against
+ * @returns {number} the index of the matching key, or -1
+ */
+export const findIndexAfterFirst: Function = createFindIndex(1);
+
+/**
+ * @private
+ *
+ * @function getDefaultedOptions
+ *
+ * @description
+ * get the options coalesced to their defaults
+ *
+ * @param {Object} options the options passed to the moize method
+ * @returns {Options} the coalesced options object
+ */
+export const getDefaultedOptions = (options: Object): Options => {
+  let coalescedOptions: Object = {
+    ...DEFAULT_OPTIONS,
+    ...options
+  };
+
+  coalescedOptions.serializer = coalescedOptions.serialize ? getSerializerFunction(coalescedOptions) : null;
+
+  return coalescedOptions;
+};
+
+/**
+ * @private
+ *
+ * @function getFunctionNameViaRegexp
+ *
+ * @description
+ * use regexp match on stringified function to get the function name
+ *
+ * @param {function} fn function to get the name of
+ * @returns {string} function name
+ */
+export const getFunctionNameViaRegexp = (fn: Function): string => {
+  const match: ?Array<string> = fn.toString().match(FUNCTION_NAME_REGEXP);
+
+  return match ? match[1] : '';
+};
+
+/**
+ * @private
+ *
+ * @function getFunctionName
+ *
+ * @description
+ * get the function name, either from modern property or regexp match,
+ * falling back to generic string
+ *
+ * @param {function} fn function to get the name of
+ * @returns {string} function name
+ */
+export const getFunctionName = (fn: Function): string => {
+  return fn.displayName || fn.name || getFunctionNameViaRegexp(fn) || FUNCTION_TYPEOF;
 };
 
 /**
@@ -450,61 +527,6 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
 /**
  * @private
  *
- * @function createPromiseRejecter
- *
- * @description
- * create method that will reject the promise and delete the key from cache
- *
- * @param {Cache} cache cache to update
- * @param {*} key key to delete from cache
- * @param {function} promiseLibrary the promise library used
- * @returns {function} the rejecter function for the promise
- */
-export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: Options): Function => {
-  return (exception: Error): Promise<any> => {
-    cache.remove(key);
-
-    // $FlowIgnore promiseLibrary can have property methods
-    return promiseLibrary.reject(exception);
-  };
-};
-
-/**
- * @private
- *
- * @function createPromiseResolver
- *
- * @description
- * create method that will resolve the promise and update the key in cache
- *
- * @param {Cache} cache cache to update
- * @param {*} key key to update in cache
- * @param {boolean} hasMaxAge should the cache expire after some time
- * @param {number} maxAge the age after which the cache will be expired
- * @param {function} promiseLibrary the promise library used
- * @returns {function} the resolver function for the promise
- */
-export const createPromiseResolver = (
-  cache: Cache,
-  key: any,
-  hasMaxAge: boolean,
-  {maxAge, promiseLibrary}: Options
-) => {
-  return (resolvedValue: any): Promise<any> => {
-    // $FlowIgnore promiseLibrary can have property methods
-    cache.update(key, promiseLibrary.resolve(resolvedValue));
-
-    if (hasMaxAge) {
-      cache.expireAfter(key, maxAge);
-    }
-
-    return resolvedValue;
-  };
-};
-
-/**
- * @private
- *
  * @function createSetNewCachedValue
  *
  * @description
@@ -556,28 +578,6 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
 
     return value;
   };
-};
-
-/**
- * @private
- *
- * @function getDefaultedOptions
- *
- * @description
- * get the options coalesced to their defaults
- *
- * @param {Object} options the options passed to the moize method
- * @returns {Options} the coalesced options object
- */
-export const getDefaultedOptions = (options: Object): Options => {
-  let coalescedOptions: Object = {
-    ...DEFAULT_OPTIONS,
-    ...options
-  };
-
-  coalescedOptions.serializer = coalescedOptions.serialize ? getSerializerFunction(coalescedOptions) : null;
-
-  return coalescedOptions;
 };
 
 /**
@@ -661,10 +661,10 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @description
      * manually add an item to cache if the key does not already exist
      *
-     * @param {*} key key to use in cache
+     * @param {Array<any>} key key to use in cache
      * @param {*} value value to assign to key
      */
-    moizedFunction.add = ({key, value}: Object) => {
+    moizedFunction.add = (key: Array<any>, value: any) => {
       const internalKey = getCacheKey(key);
 
       if (!cache.has(internalKey)) {

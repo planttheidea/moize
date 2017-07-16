@@ -1,5 +1,18 @@
 # moize CHANGELOG
 
+### 3.0.0
+* Improve performance of multiple parameter cache matching (~3x faster)
+* Improve performance of `react` functional component cache matching (~9.5x faster)
+* Add `moize.reactSimple` to limit `react` cache size to `1`, which mimics the `PureComponent` optimization for functional components
+
+**BREAKING CHANGES**
+
+* Custom `cache` is no longer available in `options`
+* `moize.react` now performs a shallow equal comparison of `props` and `context` instead of deep value comparison
+  * Mutations to properties on these objects will no longer trigger a new cache entry, they must be new objects
+* The `key` passed to direct cache manipulation methods (`add`, `delete`, etc.) must now be an array
+  * The array reflects the arguments passed to the method
+
 ### 2.5.1
 * Surface types for TypeScript correctly
 
@@ -89,9 +102,11 @@
 
 ### 2.0.0
 * Refactor to use object equality instead of serialization (vast speed improvements over 1.x.x with multiple parameters)
-* Breaking changes:
-  * If you were relying on the serialization (using value equality instead of object equality), it will no longer memoize (you can set `serialize: true` if you want to continue using that option)
-  * If you were using `moize` to memoize React components, you should change your invocations from `moize` to `moize.react` ([see README](README.md#usage-with-functional-react-components))
+
+**BREAKING CHANGES**
+
+* If you were relying on the serialization (using value equality instead of object equality), it will no longer memoize (you can set `serialize: true` if you want to continue using that option)
+* If you were using `moize` to memoize React components, you should change your invocations from `moize` to `moize.react` ([see README](README.md#usage-with-functional-react-components))
 
 ### 1.5.0
 * Add `values` method on memoized function (gets list of computed values stored in cache)
