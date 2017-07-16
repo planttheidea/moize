@@ -107,7 +107,7 @@
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
 <p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.</p>
-<h3 id="table-of-contents">Table of contents</h3>
+<h2 id="table-of-contents">Table of contents</h2>
 <ul>
 <li><a href="#upgrade-notification">Upgrade notification</a></li>
 <li><a href="#installation">Installation</a></li>
@@ -136,7 +136,12 @@
 </ul>
 </li>
 <li><a href="#composition">Composition</a></li>
-<li><a href="#benchmarks">Benchmarks</a></li>
+<li><a href="#benchmarks">Benchmarks</a><ul>
+<li><a href="#single-parameter">Single parameter</a></li>
+<li><a href="#multiple-parameters-primitives-only">Multiple parameters (primitives only)</a></li>
+<li><a href="#multiple-parameters-complex-objects">Multiple parameters (complex objects)</a></li>
+</ul>
+</li>
 <li><a href="#direct-cache-manipulation">Direct cache manipulation</a><ul>
 <li><a href="#addkey-value">add</a></li>
 <li><a href="#clear">clear</a></li>
@@ -149,10 +154,10 @@
 <li><a href="#browser-support">Browser support</a></li>
 <li><a href="#development">Development</a></li>
 </ul>
-<h3 id="upgrade-notification">Upgrade notification</h3>
+<h2 id="upgrade-notification">Upgrade notification</h2>
 <p>Users of <code>moize</code> 1.x.x may have experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
-<h3 id="installation">Installation</h3>
-<pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h3 id="usage">Usage</h3>
+<h2 id="installation">Installation</h2>
+<pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h2 id="usage">Usage</h2>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const method = (a, b) => {
@@ -163,7 +168,7 @@ const memoized = moize(method);
 
 memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination (See <a href="#usage-with-shortcut-methods">Usage with shortcut methods</a>)!</p>
-<h3 id="advanced-usage">Advanced usage</h3>
+<h2 id="advanced-usage">Advanced usage</h2>
 <p><code>moize</code> optionally accepts an object of options as the second parameter. The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
   isPromise: boolean, // is the result a promise
@@ -320,7 +325,7 @@ const memoized = moize(fn, {
   serialize: true,
   serializer
 });</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
-<h3 id="usage-with-shortcut-methods">Usage with shortcut methods</h3>
+<h2 id="usage-with-shortcut-methods">Usage with shortcut methods</h2>
 <h4 id="moize-maxage">moize.maxAge</h4>
 <p>Pre-applies the <code>maxAge</code> option as a curriable method.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
@@ -395,7 +400,7 @@ const foo = (bar, baz) => {
   return `${bar} ${baz}`;
 };
 
-export default moize.simple(foo);</code></pre><h3 id="composition">Composition</h3>
+export default moize.simple(foo);</code></pre><h2 id="composition">Composition</h2>
 <p>Starting with version <code>2.3.0</code>, you can compose <code>moize</code> methods. This will create a new memoized method with the original function that shallowly merges the options of the two setups. Example:</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
@@ -427,9 +432,71 @@ const moizedFoo = limitedSerializedMoize(foo);</code></pre><p>You can also combi
 
 // creates a moizer that will have the options of
 // {maxAge: 5000, maxSize: 1, serialize: true, serializeFunctions: true}
-const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));</code></pre><h3 id="benchmarks">Benchmarks</h3>
+const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));</code></pre><h2 id="benchmarks">Benchmarks</h2>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
+<h4 id="single-parameter">Single parameter</h4>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Operations / second</th>
+<th>Relative margin of error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>moize</td>
+<td>40,053,118</td>
+<td>0.60%</td>
+</tr>
+<tr>
+<td>fast-memoize</td>
+<td>30,697,717</td>
+<td>0.75%</td>
+</tr>
+<tr>
+<td>moize (serialized)</td>
+<td>13,368,025</td>
+<td>0.84%</td>
+</tr>
+<tr>
+<td>underscore</td>
+<td>13,288,319</td>
+<td>0.91%</td>
+</tr>
+<tr>
+<td>memoizee</td>
+<td>11,607,458</td>
+<td>0.79%</td>
+</tr>
+<tr>
+<td>lru-memoize</td>
+<td>9,663,298</td>
+<td>1.14%</td>
+</tr>
+<tr>
+<td>lodash</td>
+<td>9.428,550</td>
+<td>0.60%</td>
+</tr>
+<tr>
+<td>Addy Osmani</td>
+<td>4,365,704</td>
+<td>0.86%</td>
+</tr>
+<tr>
+<td>memoizerific</td>
+<td>2,166,492</td>
+<td>1.02%</td>
+</tr>
+<tr>
+<td>ramda</td>
+<td>1,147,866</td>
+<td>0.58%</td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -456,49 +523,103 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 </tr>
 </tbody>
 </table>
+<h4 id="multiple-parameters-primitives-only-">Multiple parameters (primitives only)</h4>
 <p><img src="img/multiple-parameter-primitives.png" alt="Multiple primitive parameters image"></p>
 <table>
 <thead>
 <tr>
-<th>memoizee</th>
-<th>fast-memoize</th>
-<th>addy-osmani</th>
-<th>memoizerific</th>
-<th>moize</th>
+<th></th>
+<th>Operations / second</th>
+<th>Relative margin of error</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>8,144,578</td>
-<td>1,256,879</td>
-<td>1,788,762</td>
-<td>1,433,723</td>
-<td>9,762,395</td>
+<td>moize</td>
+<td>23,194,668</td>
+<td>0.71%</td>
+</tr>
+<tr>
+<td>moize (serialized)</td>
+<td>11,466,193</td>
+<td>0.65%</td>
+</tr>
+<tr>
+<td>memoizee</td>
+<td>8,475,388</td>
+<td>0.77%</td>
+</tr>
+<tr>
+<td>lru-memoize</td>
+<td>7,565,765</td>
+<td>1.11%</td>
+</tr>
+<tr>
+<td>Addy Osmani</td>
+<td>1,999,833</td>
+<td>0.69%</td>
+</tr>
+<tr>
+<td>memoizerific</td>
+<td>1,411,535</td>
+<td>0.87%</td>
+</tr>
+<tr>
+<td>fast-memoize</td>
+<td>875,786</td>
+<td>0.80%</td>
 </tr>
 </tbody>
 </table>
+<h4 id="multiple-parameters-complex-objects-">Multiple parameters (complex objects)</h4>
 <p><img src="img/multiple-parameter-complex.png" alt="Multiple complex parameters image"></p>
 <table>
 <thead>
 <tr>
-<th>memoizee</th>
-<th>fast-memoize</th>
-<th>addy-osmani</th>
-<th>memoizerific</th>
-<th>moize</th>
+<th></th>
+<th>Operations / second</th>
+<th>Relative margin of error</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>8,208,516</td>
-<td>1,019,949</td>
-<td>922,261</td>
-<td>1,419,771</td>
-<td>9,741,543</td>
+<td>moize</td>
+<td>23,285,445</td>
+<td>0.83%</td>
+</tr>
+<tr>
+<td>memoizee</td>
+<td>8,448,823</td>
+<td>0.74%</td>
+</tr>
+<tr>
+<td>lru-memoize</td>
+<td>7,625,557</td>
+<td>0.93%</td>
+</tr>
+<tr>
+<td>moize (serialized)</td>
+<td>1,883,552</td>
+<td>0.69%</td>
+</tr>
+<tr>
+<td>memoizerific</td>
+<td>1,393,975</td>
+<td>0.82%</td>
+</tr>
+<tr>
+<td>Addy Osmani</td>
+<td>1,065,637</td>
+<td>0.91%</td>
+</tr>
+<tr>
+<td>fast-memoize</td>
+<td>760,402</td>
+<td>0.74%</td>
 </tr>
 </tbody>
 </table>
-<h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
+<h2 id="direct-cache-manipulation">Direct cache manipulation</h2>
 <p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
 <h4 id="add-key-value-">add(key, value)</h4>
 <p>This will manually add the <em>value</em> at <em>key</em> in cache if <em>key</em> does not already exist. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
@@ -574,7 +695,7 @@ const bar = {
 
 memoized(bar);
 
-const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><h3 id="browser-support">Browser support</h3>
+const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><h2 id="browser-support">Browser support</h2>
 <ul>
 <li>Chrome (all versions)</li>
 <li>Firefox (all versions)</li>
@@ -584,7 +705,7 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 <li>Safari 6+</li>
 </ul>
 <p>Theoretically the support should go back even farther, these are just the environments that I have tested.</p>
-<h3 id="development">Development</h3>
+<h2 id="development">Development</h2>
 <p>Standard stuff, clone the repo and <code>npm install</code> dependencies. The npm scripts available:</p>
 <ul>
 <li><code>build</code> =&gt; run webpack to build development <code>dist</code> file with NODE_ENV=development</li>

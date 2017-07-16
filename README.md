@@ -6,7 +6,7 @@
 
 `moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.
 
-### Table of contents
+## Table of contents
 * [Upgrade notification](#upgrade-notification)
 * [Installation](#installation)
 * [Usage](#usage)
@@ -31,6 +31,9 @@
   * [moize.simple](#moizesimple)
 * [Composition](#composition)
 * [Benchmarks](#benchmarks)
+  * [Single parameter](#single-parameter)
+  * [Multiple parameters (primitives only)](#multiple-parameters-primitives-only)
+  * [Multiple parameters (complex objects)](#multiple-parameters-complex-objects)
 * [Direct cache manipulation](#direct-cache-manipulation)
   * [add](#addkey-value)
   * [clear](#clear)
@@ -41,17 +44,17 @@
 * [Browser support](#browser-support)
 * [Development](#development)
 
-### Upgrade notification
+## Upgrade notification
 
 Users of `moize` 1.x.x may have experience breaking changes, especially if using a custom cache or using `moize.react` in a mutative way. Please see the [changelog](CHANGELOG.md) for more details about how to manage the upgrade.
 
-### Installation
+## Installation
 
 ```
 $ npm i moize --save
 ```
 
-### Usage
+## Usage
 
 ```javascript
 import moize from 'moize';
@@ -68,7 +71,7 @@ memoized(2, 4); // 6, pulled from cache
 
 All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional `React` components based on their `props` + `context` combination (See [Usage with shortcut methods](#usage-with-shortcut-methods))!
 
-### Advanced usage
+## Advanced usage
 
 `moize` optionally accepts an object of options as the second parameter. The full shape of these options:
 
@@ -303,7 +306,7 @@ const memoized = moize(fn, {
 
 Please note that you must also set `serialize` to true for this setting to take effect.
 
-### Usage with shortcut methods
+## Usage with shortcut methods
 
 #### moize.maxAge
 
@@ -429,7 +432,7 @@ const foo = (bar, baz) => {
 export default moize.simple(foo);
 ```
 
-### Composition
+## Composition
 
 Starting with version `2.3.0`, you can compose `moize` methods. This will create a new memoized method with the original function that shallowly merges the options of the two setups. Example:
 
@@ -477,29 +480,60 @@ import moize from 'moize';
 const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));
 ```
 
-### Benchmarks
+## Benchmarks
 
 All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Note that `underscore`, `lodash`, and `ramda` do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (`boolean` for primitives, `object` for complex objects) was used.
 
+#### Single parameter
+
 ![Single parameter image](img/single-parameter.png)
+
+|                    | Operations / second | Relative margin of error |
+|--------------------|---------------------|--------------------------|
+| moize              | 40,053,118          | 0.60%                    |
+| fast-memoize       | 30,697,717          | 0.75%                    |
+| moize (serialized) | 13,368,025          | 0.84%                    |
+| underscore         | 13,288,319          | 0.91%                    |
+| memoizee           | 11,607,458          | 0.79%                    |
+| lru-memoize        |  9,663,298          | 1.14%                    |
+| lodash             |  9.428,550          | 0.60%                    |
+| Addy Osmani        |  4,365,704          | 0.86%                    |
+| memoizerific       |  2,166,492          | 1.02%                    |
+| ramda              |  1,147,866          | 0.58%                    |
 
 | underscore | lodash    | ramda     | memoizee   | fast-memoize | addy-osmani | memoizerific | moize      |
 |------------|-----------|-----------|------------|--------------|-------------|--------------|------------|
 | 9,393,399  | 9,679,995 | 1,102,656 | 11,651,361 | 31,085,245   | 3,656,676   | 2,184,221    | 47,089,212 |
 
+#### Multiple parameters (primitives only)
+
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
-| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
-|-----------|--------------|-------------|--------------|-----------|
-| 8,144,578 | 1,256,879    | 1,788,762   | 1,433,723    | 9,762,395 |
+|                    | Operations / second | Relative margin of error |
+|--------------------|---------------------|--------------------------|
+| moize              | 23,194,668          | 0.71%                    |
+| moize (serialized) | 11,466,193          | 0.65%                    |
+| memoizee           |  8,475,388          | 0.77%                    |
+| lru-memoize        |  7,565,765          | 1.11%                    |
+| Addy Osmani        |  1,999,833          | 0.69%                    |
+| memoizerific       |  1,411,535          | 0.87%                    |
+| fast-memoize       |    875,786          | 0.80%                    |
+
+#### Multiple parameters (complex objects)
 
 ![Multiple complex parameters image](img/multiple-parameter-complex.png)
 
-| memoizee  | fast-memoize | addy-osmani | memoizerific | moize     |
-|-----------|--------------|-------------|--------------|-----------|
-| 8,208,516 | 1,019,949    | 922,261     | 1,419,771    | 9,741,543 |
+|                    | Operations / second | Relative margin of error |
+|--------------------|---------------------|--------------------------|
+| moize              | 23,285,445          | 0.83%                    |
+| memoizee           |  8,448,823          | 0.74%                    |
+| lru-memoize        |  7,625,557          | 0.93%                    |
+| moize (serialized) |  1,883,552          | 0.69%                    |
+| memoizerific       |  1,393,975          | 0.82%                    |
+| Addy Osmani        |  1,065,637          | 0.91%                    |
+| fast-memoize       |    760,402          | 0.74%                    |
 
-### Direct cache manipulation
+## Direct cache manipulation
 
 There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:
 
@@ -613,7 +647,7 @@ memoized(bar);
 const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 ```
 
-### Browser support
+## Browser support
 
 * Chrome (all versions)
 * Firefox (all versions)
@@ -624,7 +658,7 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 
 Theoretically the support should go back even farther, these are just the environments that I have tested.
 
-### Development
+## Development
 
 Standard stuff, clone the repo and `npm install` dependencies. The npm scripts available:
 * `build` => run webpack to build development `dist` file with NODE_ENV=development
