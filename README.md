@@ -490,7 +490,7 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 |                    | Operations / second | Relative margin of error |
 |--------------------|---------------------|--------------------------|
-| moize              | 40,053,118          | 0.60%                    |
+| **moize**          | **40,053,118**      | **0.60%**                |
 | fast-memoize       | 30,697,717          | 0.75%                    |
 | moize (serialized) | 13,368,025          | 0.84%                    |
 | underscore         | 13,288,319          | 0.91%                    |
@@ -501,17 +501,13 @@ All values provided are the number of operations per second (ops/sec) calculated
 | memoizerific       |  2,166,492          | 1.02%                    |
 | ramda              |  1,147,866          | 0.58%                    |
 
-| underscore | lodash    | ramda     | memoizee   | fast-memoize | addy-osmani | memoizerific | moize      |
-|------------|-----------|-----------|------------|--------------|-------------|--------------|------------|
-| 9,393,399  | 9,679,995 | 1,102,656 | 11,651,361 | 31,085,245   | 3,656,676   | 2,184,221    | 47,089,212 |
-
 #### Multiple parameters (primitives only)
 
 ![Multiple primitive parameters image](img/multiple-parameter-primitives.png)
 
 |                    | Operations / second | Relative margin of error |
 |--------------------|---------------------|--------------------------|
-| moize              | 23,194,668          | 0.71%                    |
+| **moize**          | **23,194,668**      | **0.71%**                |
 | moize (serialized) | 11,466,193          | 0.65%                    |
 | memoizee           |  8,475,388          | 0.77%                    |
 | lru-memoize        |  7,565,765          | 1.11%                    |
@@ -525,7 +521,7 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 |                    | Operations / second | Relative margin of error |
 |--------------------|---------------------|--------------------------|
-| moize              | 23,285,445          | 0.83%                    |
+| **moize**          | **23,285,445**      | **0.83%**                |
 | memoizee           |  8,448,823          | 0.74%                    |
 | lru-memoize        |  7,625,557          | 0.93%                    |
 | moize (serialized) |  1,883,552          | 0.69%                    |
