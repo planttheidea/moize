@@ -690,25 +690,25 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @description
      * delete the cache for the key passed for this method
      *
-     * @param {Array<*>} args combination of args to remove from cache
+     * @param {Array<*>} key combination of args to remove from cache
      */
-    moizedFunction.delete = (...args: Array<any>) => {
-      cache.remove(getCacheKey(args));
+    moizedFunction.delete = (key: Array<any>) => {
+      cache.remove(getCacheKey(key));
     };
 
     /**
      * @private
      *
-     * @function hasCacheFor
+     * @function has
      *
      * @description
      * does the function have cache for the specific args passed
      *
-     * @param {Array<*>} args combination of args to remove from cache
+     * @param {Array<*>} key combination of args to remove from cache
      * @returns {boolean} does the cache for the give args exist
      */
-    moizedFunction.hasCacheFor = (...args: Array<any>) => {
-      return cache.has(getCacheKey(args));
+    moizedFunction.has = (key: Array<any>) => {
+      return cache.has(getCacheKey(key));
     };
 
     /**

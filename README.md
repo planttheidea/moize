@@ -35,7 +35,7 @@
   * [add](#addkey-value)
   * [clear](#clear)
   * [delete](#deletekey)
-  * [hasCacheFor](#hascacheforargs)
+  * [has](#hasargs)
   * [keys](#keys)
   * [values](#values)
 * [Browser support](#browser-support)
@@ -383,9 +383,9 @@ export default moize.react(Foo);
 
 Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a `maxSize`, or you can use the new shortcut method [`moize.reactSimple`](#moizereactsimple), which automatically sets the `maxSize` to `1` to mimic the `PureComponent` optimization.
 
-#### moize.reactsimple
+#### moize.reactSimple
 
-Shortcut for memoizing functional components in [React](https://github.com/facebook/react), with the cache size limited to a single entry. This mimics the `PureComponnt` optimization, where the component will only be re-rendered on change to `props` or `context`.
+Shortcut for memoizing functional components in [React](https://github.com/facebook/react), with the cache size limited to a single entry. This mimics the `PureComponnt` optimization, where the component will only be re-rendered on change to `props` or `context`, and the only element cached is the most recent.
 
 ```javascript
 import moize from 'moize';
@@ -517,12 +517,8 @@ const memoized = moize((item) => {
 
 memoized.add(['foo'], 'bar');
 
-// for multiple parameters, pass an array of arguments as the key
-const memoized = moize((item1, item2) => {
-  return item1 + item2;
-});
-
-memoized.add([1, 2], 3);
+// pulls from cache
+memoized('foo');
 ```
 
 #### clear()
@@ -539,7 +535,7 @@ memoized.clear();
 
 #### delete(key)
 
-This will delete the provided key from cache.
+This will delete the provided *key* from cache. *key* is an `Array` of values, meant to reflect the arguments passed to the method.
 
 ```javascript
 // if single parameter, delete with the object itself
@@ -553,24 +549,15 @@ const foo = {
 
 memoized(foo);
 
-memoized.delete(foo);
+memoized.delete([foo]);
 
-// if multi parameter, delete with the same arguments you passed
-const memoized = moize((item1, item2) => {
-  return item1 + item2;
-});
-
-const foo = 1;
-const bar = 2;
-
-memoized(foo, bar);
-
-memoized.delete(foo, bar);
+// will re-execute, as it is no longer in cache
+memoized(foo);
 ```
 
-#### hasCacheFor(...args)
+#### has(key)
 
-This will return `true` if a cache entry exists for the `args` passed, else will return `false`.
+This will return `true` if a cache entry exists for the `args` passed, else will return `false`. *key* is an `Array` of values, meant to reflect the arguments passed to the method.
 
 ```javascript
 const memoized = moize((first, second) => {
@@ -579,8 +566,8 @@ const memoized = moize((first, second) => {
 
 memoized('foo', 'bar');
 
-console.log(memoized.hasCacheFor('foo', 'bar')); // true
-console.log(memoized.hasCacheFor('bar', 'baz')); // false
+console.log(memoized.has(['foo', 'bar'])); // true
+console.log(memoized.has(['bar', 'baz'])); // false
 ```
 
 #### keys()

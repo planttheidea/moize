@@ -10,7 +10,8 @@
 * Custom `cache` is no longer available in `options`
 * `moize.react` now performs a shallow equal comparison of `props` and `context` instead of deep value comparison
   * Mutations to properties on these objects will no longer trigger a new cache entry, they must be new objects
-* The `key` passed to direct cache manipulation methods (`add`, `delete`, etc.) must now be an array
+* The direct cache manipulation `hasCacheFor` method has been renamed to `has`
+* The `key` passed to direct cache manipulation methods (`add`, `delete`, `has`, etc.) must now be an array
   * The array reflects the arguments passed to the method
 
 ### 2.5.1
