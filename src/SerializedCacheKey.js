@@ -6,6 +6,8 @@ import {
 } from './serialize';
 
 /**
+ * @private
+ *
  * @class SerializedCacheKey
  *
  * @classdesc
@@ -24,6 +26,8 @@ class SerializedCacheKey {
 
   /**
    * @function matches
+   * @memberof SerializedCacheKey
+   * @instance
    *
    * @description
    * does the passed key match the key in the instance

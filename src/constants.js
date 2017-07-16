@@ -102,6 +102,8 @@ export const STATIC_PROPERTIES_TO_PASS: Array<string> = [
 ];
 
 /**
+ * @private
+ *
  * @constant {{isPromise: true}} PROMISE_OPTIONS
  */
 export const PROMISE_OPTIONS = {
@@ -109,6 +111,8 @@ export const PROMISE_OPTIONS = {
 };
 
 /**
+ * @private
+ *
  * @constant {{maxArgs: number, serialize: boolean, serializeFunctions: boolean}} REACT_OPTIONS
  */
 export const REACT_OPTIONS = {
@@ -116,6 +120,8 @@ export const REACT_OPTIONS = {
 };
 
 /**
+ * @private
+ *
  * @constant {{serialize: boolean}} SERIALIZE_OPTIONS
  */
 export const SERIALIZE_OPTIONS = {

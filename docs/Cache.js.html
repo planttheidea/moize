@@ -37,20 +37,6 @@
 				</ul>
 			</li>
 			
-			<li class="dropdown">
-				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="Cache.html">Cache</a></li><li><a href="MultipleParameterCacheKey.html">MultipleParameterCacheKey</a></li><li><a href="ReactCacheKey.html">ReactCacheKey</a></li><li><a href="SerializedCacheKey.html">SerializedCacheKey</a></li><li><a href="SingleParameterCacheKey.html">SingleParameterCacheKey</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="global.html#_isPropShallowEqual">_isPropShallowEqual</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getReactCacheKey">getReactCacheKey</a></li><li><a href="global.html#getSerializedCacheKey">getSerializedCacheKey</a></li><li><a href="global.html#getStandardCacheKey">getStandardCacheKey</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#matches">matches</a></li><li><a href="global.html#PROMISE_OPTIONS">PROMISE_OPTIONS</a></li><li><a href="global.html#REACT_OPTIONS">REACT_OPTIONS</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#SERIALIZE_OPTIONS">SERIALIZE_OPTIONS</a></li>
-				</ul>
-			</li>
-			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -100,6 +86,8 @@ import {
 } from './utils';
 
 /**
+ * @private
+ *
  * @class Cache
  *
  * @classdesc
@@ -113,6 +101,8 @@ class Cache {
 
   /**
    * @function add
+   * @memberof Cache
+   * @instance
    *
    * @description
    * add a new item to cache
@@ -131,6 +121,8 @@ class Cache {
 
   /**
    * @function clear
+   * @memberof Cache
+   * @instance
    *
    * @description
    * clear the cache of all items
@@ -140,6 +132,17 @@ class Cache {
     this.list.length = this.size = 0;
   }
 
+  /**
+   * @function expireAfter
+   * @memberof Cache
+   * @instance
+   *
+   * @description
+   * remove from cache after maxAge time has passed
+   *
+   * @param {*} key the key to remove
+   * @param {number} maxAge the time in milliseconds to wait before removing key
+   */
   expireAfter(key: any, maxAge: number) {
     setTimeout(() => {
       this.remove(key);
@@ -148,6 +151,8 @@ class Cache {
 
   /**
    * @function get
+   * @memberof Cache
+   * @instance
    *
    * @description
    * get the value of an item from cache if it exists
@@ -174,6 +179,8 @@ class Cache {
   }
 
   /**
+   * @private
+   *
    * @function has
    *
    * @description
@@ -186,8 +193,10 @@ class Cache {
     return this.size !== 0 &amp;&amp; (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key));
   }
 
-  /**
+  /**=
    * @function remove
+   * @memberof Cache
+   * @instance
    *
    * @description
    * remove the item at key from cach

@@ -37,20 +37,6 @@
 				</ul>
 			</li>
 			
-			<li class="dropdown">
-				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="Cache.html">Cache</a></li><li><a href="MultipleParameterCacheKey.html">MultipleParameterCacheKey</a></li><li><a href="ReactCacheKey.html">ReactCacheKey</a></li><li><a href="SerializedCacheKey.html">SerializedCacheKey</a></li><li><a href="SingleParameterCacheKey.html">SingleParameterCacheKey</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="global.html#_isPropShallowEqual">_isPropShallowEqual</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getReactCacheKey">getReactCacheKey</a></li><li><a href="global.html#getSerializedCacheKey">getSerializedCacheKey</a></li><li><a href="global.html#getStandardCacheKey">getStandardCacheKey</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#matches">matches</a></li><li><a href="global.html#PROMISE_OPTIONS">PROMISE_OPTIONS</a></li><li><a href="global.html#REACT_OPTIONS">REACT_OPTIONS</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#SERIALIZE_OPTIONS">SERIALIZE_OPTIONS</a></li>
-				</ul>
-			</li>
-			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -87,6 +73,8 @@
             class="sunlight-highlight-javascript linenums">// @flow
 
 /**
+ * @private
+ *
  * @class SingleParameterCacheKey
  *
  * @classdesc
@@ -104,6 +92,8 @@ class SingleParameterCacheKey {
 
   /**
    * @function matches
+   * @memberof SingleParameterCacheKey
+   * @instance
    *
    * @description
    * does the passed key match the key in the instance

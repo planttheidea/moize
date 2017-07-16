@@ -1,6 +1,8 @@
 // @flow
 
 /**
+ * @private
+ *
  * @class ReactCacheKey
  *
  * @classdesc
@@ -25,6 +27,8 @@ class ReactCacheKey {
 
   /**
    * @function _isPropShallowEqual
+   * @memberof ReactCacheKey
+   * @instance
    *
    * @description
    * check if the prop value passed is equal to the key's value
@@ -55,6 +59,8 @@ class ReactCacheKey {
 
   /**
    * @function matches
+   * @memberof ReactCacheKey
+   * @instance
    *
    * @description
    * does the passed key match the key in the instance

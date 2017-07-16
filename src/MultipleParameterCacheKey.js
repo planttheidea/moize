@@ -1,6 +1,8 @@
 // @flow
 
 /**
+ * @private
+ *
  * @class MultipleParameterCacheKey
  *
  * @classdesc
@@ -20,6 +22,8 @@ class MultipleParameterCacheKey {
 
   /**
    * @function matches
+   * @memberof MultipleParameterCacheKey
+   * @instance
    *
    * @description
    * does the passed key match the key in the instance

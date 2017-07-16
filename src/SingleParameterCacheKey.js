@@ -1,6 +1,8 @@
 // @flow
 
 /**
+ * @private
+ *
  * @class SingleParameterCacheKey
  *
  * @classdesc
@@ -18,6 +20,8 @@ class SingleParameterCacheKey {
 
   /**
    * @function matches
+   * @memberof SingleParameterCacheKey
+   * @instance
    *
    * @description
    * does the passed key match the key in the instance

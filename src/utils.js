@@ -377,6 +377,8 @@ export const getFunctionName = (fn: Function): string => {
 };
 
 /**
+ * @private
+ *
  * @function getReactCacheKey
  *
  * @description
@@ -409,6 +411,8 @@ export const getReactCacheKey = (cache: Cache, key: Array<any>): ReactCacheKey =
 };
 
 /**
+ * @private
+ *
  * @function getSerializedCacheKey
  *
  * @description
@@ -442,6 +446,8 @@ export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Op
 };
 
 /**
+ * @private
+ *
  * @function getStandardCacheKey
  *
  * @description

@@ -14,6 +14,8 @@ import {
 } from './utils';
 
 /**
+ * @private
+ *
  * @class Cache
  *
  * @classdesc
@@ -27,6 +29,8 @@ class Cache {
 
   /**
    * @function add
+   * @memberof Cache
+   * @instance
    *
    * @description
    * add a new item to cache
@@ -45,6 +49,8 @@ class Cache {
 
   /**
    * @function clear
+   * @memberof Cache
+   * @instance
    *
    * @description
    * clear the cache of all items
@@ -54,6 +60,17 @@ class Cache {
     this.list.length = this.size = 0;
   }
 
+  /**
+   * @function expireAfter
+   * @memberof Cache
+   * @instance
+   *
+   * @description
+   * remove from cache after maxAge time has passed
+   *
+   * @param {*} key the key to remove
+   * @param {number} maxAge the time in milliseconds to wait before removing key
+   */
   expireAfter(key: any, maxAge: number) {
     setTimeout(() => {
       this.remove(key);
@@ -62,6 +79,8 @@ class Cache {
 
   /**
    * @function get
+   * @memberof Cache
+   * @instance
    *
    * @description
    * get the value of an item from cache if it exists
@@ -88,6 +107,8 @@ class Cache {
   }
 
   /**
+   * @private
+   *
    * @function has
    *
    * @description
@@ -100,8 +121,10 @@ class Cache {
     return this.size !== 0 && (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key));
   }
 
-  /**
+  /**=
    * @function remove
+   * @memberof Cache
+   * @instance
    *
    * @description
    * remove the item at key from cach
