@@ -153,7 +153,7 @@ const method = (a, b) => {
 const memoized = moize(method);
 
 memoized(2, 4); // 6
-memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination (See <a href="#usage-with-shortcut-methods">Usage with shortcut methods</a>)!</p>
+memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination (see the <a href="#isreact"><code>isReact</code></a> option, or the <a href="#moizereact"><code>moize.react</code></a> shortcut method)!</p>
 <h2 id="advanced-usage">Advanced usage</h2>
 <p><code>moize</code> optionally accepts an object of options as either the second parameter or as the first step in a curried function:</p>
 <pre class="prettyprint source lang-javascript"><code>// inline
@@ -206,7 +206,7 @@ const memoized = moize(fn, {
   maxAge: 1000 * 60 * 5 // five minutes
 });</code></pre><h4 id="maxargs">maxArgs</h4>
 <p><em>defaults to the length of arguments passed to the method</em></p>
-<p>The maximum number of arguments used in creating the key for the cache.</p>
+<p>The maximum number of arguments used in creating the key for the cache. This is also available via the shortcut method of <a href="#moizemaxargs"><code>moize.maxArgs</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item1, item2, item3) => {
   return item1 + item2 + item3;
 };

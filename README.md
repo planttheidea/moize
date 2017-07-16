@@ -69,7 +69,7 @@ memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache
 ```
 
-All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional `React` components based on their `props` + `context` combination (See [Usage with shortcut methods](#usage-with-shortcut-methods))!
+All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional `React` components based on their `props` + `context` combination (see the [`isReact`](#isreact) option, or the [`moize.react`](#moizereact) shortcut method)!
 
 ## Advanced usage
 
@@ -159,7 +159,7 @@ const memoized = moize(fn, {
 
 *defaults to the length of arguments passed to the method*
 
-The maximum number of arguments used in creating the key for the cache.
+The maximum number of arguments used in creating the key for the cache. This is also available via the shortcut method of [`moize.maxArgs`](#moizemaxargs).
 
 ```javascript
 const fn = (item1, item2, item3) => {
