@@ -28,10 +28,11 @@ import {
 
 // types
 import type {
-  CacheKey,
   ListItem,
   Options
 } from './types';
+
+type StandardCacheKey = MultipleParameterCacheKey | StandardCacheKey;
 
 /**
  * @private
@@ -304,18 +305,22 @@ export const createCurriableOptionMethod = (fn: Function, option: string): Funct
  * get the cache key specific to react
  *
  * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new CacheKey
- * @returns {CacheKey} the matching cache key, or a new one
+ * @param {*} key the key to try to find a match of, or turn into a new ReactCacheKey
+ * @returns {ReactCacheKey} the matching cache key, or a new one
  */
-export const getReactCacheKey = (cache: Cache, key: Array<any>): CacheKey => {
+export const getReactCacheKey = (cache: Cache, key: Array<any>): ReactCacheKey => {
+  // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matches(key)) {
+    // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
 
   let index: number = 1;
 
   while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
     if (cache.list[index].key.matches(key)) {
+      // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
 
@@ -332,19 +337,23 @@ export const getReactCacheKey = (cache: Cache, key: Array<any>): CacheKey => {
  * get the cache key specific to serialized methods
  *
  * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new CacheKey
+ * @param {*} key the key to try to find a match of, or turn into a new SerializedCacheKey
  * @param {Options} options the options passed to the moized method
- * @returns {CacheKey} the matching cache key, or a new one
+ * @returns {SerializedCacheKey} the matching cache key, or a new one
  */
-export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Options): CacheKey => {
+export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Options): SerializedCacheKey => {
+  // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matches(key)) {
+    // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
 
   let index: number = 1;
 
   while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
     if (cache.list[index].key.matches(key)) {
+      // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
 
@@ -361,12 +370,13 @@ export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Op
  * get the cache key for standard parameters, either single or multiple
  *
  * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new CacheKey
- * @returns {CacheKey} the matching cache key, or a new one
+ * @param {*} key the key to try to find a match of, or turn into a new Multiple / SingleParameterCacheKey
+ * @returns {StandardCacheKey} the matching cache key, or a new one
  */
-export const getStandardCacheKey = (cache: Cache, key: Array<any>): CacheKey => {
+export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCacheKey => {
   const isMultiParamKey: boolean = key.length > 1;
 
+  // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matches(key, isMultiParamKey)) {
     return cache.lastItem.key;
   }
@@ -374,6 +384,7 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): CacheKey => 
   let index: number = 1;
 
   while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
     if (cache.list[index].key.matches(key, isMultiParamKey)) {
       return cache.list[index].key;
     }
@@ -394,24 +405,24 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): CacheKey => 
  *
  * @param {Cache} cache the cache to get the key from
  * @param {Options} options the options passed to the moized method
- * @returns {function(*): CacheKey} the method that will get the cache key
+ * @returns {function(*): (ReactCacheKey|SerializedCacheKey|StandardCacheKey)} the method that will get the cache key
  */
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   const hasMaxArgs: boolean = isFiniteAndPositive(options.maxArgs);
 
   if (options.isReact) {
-    return (key: any): CacheKey => {
+    return (key: any): ReactCacheKey => {
       return getReactCacheKey(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key);
     };
   }
 
   if (options.serialize) {
-    return (key: any): CacheKey => {
+    return (key: any): SerializedCacheKey => {
       return getSerializedCacheKey(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key, options);
     };
   }
 
-  return (key: any): CacheKey => {
+  return (key: any): StandardCacheKey => {
     return getStandardCacheKey(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key);
   };
 };
@@ -433,6 +444,7 @@ export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: 
   return (exception: Error) => {
     cache.remove(key);
 
+    // $FlowIgnore promiseLibrary can have property methods
     return promiseLibrary.reject(exception);
   };
 };
@@ -459,6 +471,7 @@ export const createPromiseResolver = (
   {maxAge, promiseLibrary}: Options
 ) => {
   return (resolvedValue: any) => {
+    // $FlowIgnore promiseLibrary can have property methods
     cache.update(key, promiseLibrary.resolve(resolvedValue));
 
     if (hasMaxAge) {
@@ -593,7 +606,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
   return (moizedFunction: Function): Function => {
     moizedFunction.cache = cache;
     moizedFunction.displayName = `Memoized(${getFunctionName(originalFunction)})`;
-    moizedFunction.isMemoized = true;
+    moizedFunction.isMoized = true;
     moizedFunction.options = options;
     moizedFunction.originalFunction = originalFunction;
 

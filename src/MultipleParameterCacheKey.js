@@ -1,10 +1,5 @@
 // @flow
 
-// types
-import type {
-  CacheKey
-} from './types';
-
 /**
  * @class MultipleParameterCacheKey
  *
@@ -12,7 +7,7 @@ import type {
  * cache key used when there are multiple standard parameters
  */
 class MultipleParameterCacheKey {
-  constructor(key: Array<any>): CacheKey {
+  constructor(key: Array<any>) {
     this.key = key;
     this.size = key.length;
 

@@ -5,11 +5,6 @@ import {
   stringify
 } from './serialize';
 
-// types
-import type {
-  CacheKey
-} from './types';
-
 /**
  * @class SerializedCacheKey
  *
@@ -17,7 +12,7 @@ import type {
  * cache key used when the parameters should be serialized
  */
 class SerializedCacheKey {
-  constructor(key: Array<any>, serializerFunction: Function): CacheKey {
+  constructor(key: Array<any>, serializerFunction: Function) {
     this.key = serializerFunction(key);
     this.serializer = serializerFunction;
 

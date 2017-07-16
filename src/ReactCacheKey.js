@@ -1,10 +1,5 @@
 // @flow
 
-// types
-import type {
-  CacheKey
-} from './types';
-
 /**
  * @class ReactCacheKey
  *
@@ -12,7 +7,7 @@ import type {
  * cache key used specifically for react components
  */
 class ReactCacheKey {
-  constructor(key: Array<Object>): CacheKey {
+  constructor(key: Array<Object>) {
     const context = key[1];
     const props = key[0];
 

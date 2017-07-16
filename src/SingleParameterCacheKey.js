@@ -1,10 +1,5 @@
 // @flow
 
-// types
-import type {
-  CacheKey
-} from './types';
-
 /**
  * @class SingleParameterCacheKey
  *
@@ -12,7 +7,7 @@ import type {
  * cache key used when there is a single standard parameter
  */
 class SingleParameterCacheKey {
-  constructor(key: Array<any>): CacheKey {
+  constructor(key: Array<any>) {
     this.key = key[0];
 
     return this;

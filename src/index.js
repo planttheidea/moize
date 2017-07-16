@@ -82,9 +82,13 @@ const moize: Function = (functionOrComposableOptions: (Function|Options), passed
     throw new TypeError(INVALID_FIRST_PARAMETER_ERROR);
   }
 
-  const isComposed: boolean = functionOrComposableOptions.isMemoized;
+  // $FlowIgnore if the function is already moized, it has an isMoized property on it
+  const isComposed: boolean = functionOrComposableOptions.isMoized;
+  // $FlowIgnore if the function is already moized, it has an originalFunction property on it
   const fn: Function = isComposed ? functionOrComposableOptions.originalFunction : functionOrComposableOptions;
+
   const options: Options = getDefaultedOptions(!isComposed ? passedOptions : {
+    // $FlowIgnore if the function is already moized, it has an options property on it
     ...functionOrComposableOptions.options,
     ...passedOptions
   });

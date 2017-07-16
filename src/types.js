@@ -1,17 +1,4 @@
-/**
- * @private
- *
- * @typedef {Object} CacheKey
- *
- * @property {boolean} isMultiParamKey is the key a multi-parameter key
- * @property {*} key the key that is stored
- * @property {function} serializer the method used to serialize the key
- * @property {number} size the size of the key
- */
-export type CacheKey = {
-  key: any,
-  size: number
-};
+// @flow
 
 /**
  * @private
