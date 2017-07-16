@@ -106,7 +106,7 @@
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple arguments out of the box (including default values), and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.</p>
+<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.</p>
 <h2 id="table-of-contents">Table of contents</h2>
 <ul>
 <li><a href="#upgrade-notification">Upgrade notification</a></li>
@@ -155,7 +155,7 @@
 <li><a href="#development">Development</a></li>
 </ul>
 <h2 id="upgrade-notification">Upgrade notification</h2>
-<p>Users of <code>moize</code> 1.x.x may have experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
+<p>Users of <code>moize</code> 2.x.x may have experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
 <h2 id="installation">Installation</h2>
 <pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h2 id="usage">Usage</h2>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
@@ -169,7 +169,12 @@ const memoized = moize(method);
 memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination (See <a href="#usage-with-shortcut-methods">Usage with shortcut methods</a>)!</p>
 <h2 id="advanced-usage">Advanced usage</h2>
-<p><code>moize</code> optionally accepts an object of options as the second parameter. The full shape of these options:</p>
+<p><code>moize</code> optionally accepts an object of options as either the second parameter or as the first step in a curried function:</p>
+<pre class="prettyprint source lang-javascript"><code>// inline
+moize(fn, options);
+
+// curried
+moize(options)(fn);</code></pre><p>The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
   isPromise: boolean, // is the result a promise
   isReact: boolean, // is the result a React component
@@ -203,7 +208,7 @@ const memoized = moize(fn, {
 
 export default moize(Foo, {
   isReact: true
-});</code></pre><p>The method will do a shallow comparison of both <code>props</code> and <code>context</code> of the component based on strict equality. If you want to mimic the <code>PureComponent</code> optimization, add the parameter <code>maxSize</code> set to <code>1</code>.</p>
+});</code></pre><p>The method will do a shallow comparison of both <code>props</code> and <code>context</code> of the component based on strict equality. If you want to mimic the <code>PureComponent</code> optimization and only cache the most recent version, add the parameter <code>maxSize</code> set to <code>1</code>.</p>
 <h4 id="maxage">maxAge</h4>
 <p><em>defaults to Infinity</em></p>
 <p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method. This is also available via the shortcut method of <a href="#moizemaxage"><code>moize.maxAge</code></a>.</p>
@@ -222,7 +227,10 @@ const memoized = moize(fn, {
 
 const memoized = moize(fn, {
   maxArgs: 2
-});</code></pre><h4 id="maxsize">maxSize</h4>
+});
+
+memoize('foo', 'bar', 'baz');
+memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the same</code></pre><h4 id="maxsize">maxSize</h4>
 <p><em>defaults to Infinity</em></p>
 <p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This is also available via the shortcut method of <a href="#moizemaxsize"><code>moize.maxSize</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
@@ -279,7 +287,7 @@ const memoized = moize(fn, {
   promiseLibrary: customPromise
 });</code></pre><h4 id="serialize">serialize</h4>
 <p><em>defaults to false</em></p>
-<p>In <code>moize</code> 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from 1.x.x. This is also available via the shortcut method of <a href="#moizeserialize"><code>moize.serialize</code></a>.</p>
+<p>Serializes the parameters passed into a string and uses this as the key for cache comparison. This is also available via the shortcut method of <a href="#moizeserialize"><code>moize.serialize</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (mutableObject) => {
   return mutableObject.foo;
 };
@@ -296,9 +304,10 @@ memoized(object); // 'foo'
 
 object.foo = 'bar';
 
-memoized(object); // 'bar'</code></pre><h4 id="serializefunctions">serializeFunctions</h4>
+memoized(object); // 'bar'</code></pre><p>Please note that this is slower than the default key storage (<a href="#benchmarks">see benchmarks</a>).</p>
+<h4 id="serializefunctions">serializeFunctions</h4>
 <p><em>defaults to false</em></p>
-<p>By setting this option to <code>true</code>, a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> will be used to ensure functions are included in the key serialization. This is especially beneficial when caching functional <code>React</code> components, as interactivity functions as part of props will now be included in the unique key structure (in fact, this is exactly how <code>moize.react</code> works). Please note that this will decrease performance of this specific function between 10-25% depending on environment.</p>
+<p>A <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> is used when serializing to ensure functions are included in the key serialization.</p>
 <pre class="prettyprint source lang-javascript"><code>const FunctionalComponent = ({onClickFoo}) => {
   return (
     &lt;button
@@ -313,10 +322,10 @@ memoized(object); // 'bar'</code></pre><h4 id="serializefunctions">serializeFunc
 const MemoizedFunctionalComponent = moize(FunctionalComponent, {
   serialize: true,
   serializeFunctions: true
-});</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
+});</code></pre><p>Please note that you must also set <code>serialize</code> to <code>true</code> for this setting to take effect.</p>
 <h4 id="serializer">serializer</h4>
 <p><em>defaults to serializeArguments in utils.js</em></p>
-<p>The default seralizer method is highly performant, and covers a number of edge cases (recursive objects, for example), however if you want to provide a custom one you may. The value returned from the function must be a valid value of keys for a <code>Map</code>.</p>
+<p>Overrides the internal serializer when serializing the parameters for cache key comparison. The value returned from the function must be a valid value of keys for a <code>Map</code>; it does not need to a string, but should be unique from a strict equality perspective.</p>
 <pre class="prettyprint source lang-javascript"><code>const serializer = (args) => {
   return JSON.stringify(args[0]);
 };
@@ -324,7 +333,7 @@ const MemoizedFunctionalComponent = moize(FunctionalComponent, {
 const memoized = moize(fn, {
   serialize: true,
   serializer
-});</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
+});</code></pre><p>Please note that you must also set <code>serialize</code> to <code>true</code> for this setting to take effect.</p>
 <h2 id="usage-with-shortcut-methods">Usage with shortcut methods</h2>
 <h4 id="moize-maxage">moize.maxAge</h4>
 <p>Pre-applies the <code>maxAge</code> option as a curriable method.</p>
@@ -358,7 +367,14 @@ const foo = async (bar, baz) => {
   return await someApiCall(bar, baz);
 };
 
-export default moize.promise(foo);</code></pre><h4 id="moize-react">moize.react</h4>
+export default moize.promise(foo);</code></pre><p>Please note that if you want to provide a custom <code>promiseLibrary</code>, you must do so with additional options:</p>
+<pre class="prettyprint source lang-javascript"><code>const additionalOptions = {
+  promiseLibrary: Bluebird
+};
+
+moize.promise(fn, additionalOptions);
+// or
+moize.promise(additionalOptions)(fn);</code></pre><h4 id="moize-react">moize.react</h4>
 <p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>. This uses a special cache key that will do a shallow equal comparison of changes to both props and context.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
@@ -370,9 +386,10 @@ const Foo = ({bar, baz}) => {
   );
 };
 
-export default moize.react(Foo);</code></pre><p>Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a <code>maxSize</code>, or you can use the new shortcut method <a href="#moizereactsimple"><code>moize.reactSimple</code></a>, which automatically sets the <code>maxSize</code> to <code>1</code> to mimic the <code>PureComponent</code> optimization.</p>
+export default moize.react(Foo);</code></pre><p>Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for excessive memory consumption, as the cache will retain the history of all elements. It is therefore recommended to apply a <code>maxSize</code>, or to use the shortcut method <a href="#moizereactsimple"><code>moize.reactSimple</code></a>, which automatically sets the <code>maxSize</code> to <code>1</code>.</p>
+<p>Please note <code>moize.reactSimple</code> will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
 <h4 id="moize-reactsimple">moize.reactSimple</h4>
-<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>, with the cache size limited to a single entry. This mimics the <code>PureComponnt</code> optimization, where the component will only be re-rendered on change to <code>props</code> or <code>context</code>, and the only element cached is the most recent.</p>
+<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>, with the cache size limited to a single entry. This mimics the <code>PureComponnt</code> optimization, where the cache will only contain the component with the most recent <code>props</code> and <code>context</code> combination.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const Foo = ({bar, baz}) => {
@@ -392,7 +409,14 @@ const foo = (bar, baz) => {
   return `${bar} ${baz}`;
 };
 
-export default moize.serialize(foo);</code></pre><h4 id="moize-simple">moize.simple</h4>
+export default moize.serialize(foo);</code></pre><p>Please note that if you want to <code>serializeFunctions</code> or provide a custom <code>serializer</code>, you must do so with additional options:</p>
+<pre class="prettyprint source lang-javascript"><code>const additionalOptions = {
+  serializeFunctions: true
+};
+
+moize.serialize(fn, additionalOptions);
+// or
+moize.serialize(additionalOptions)(fn);</code></pre><h4 id="moize-simple">moize.simple</h4>
 <p>Pre-applies the <code>maxSize</code> option with <code>1</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
@@ -413,8 +437,8 @@ const Foo = (props) => {
 // memoizing with react, as since 2.0.0
 const MemoizedFoo = moize.react(Foo);
 
-// creating a separately-memoized method that has maxSize of 1
-const SimpleMemoizedFoo = moize.simple(MemoizedFoo);</code></pre><p>You can also create an options-first curriable version of memoize if you just pass the options:</p>
+// creating a separately-memoized method that has maxSize of 5
+const LastFiveFoo = moize.maxSize(5)(MemoizedFoo);</code></pre><p>You can also create an options-first curriable version of <code>moize</code> if you only pass the options:</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 // creates a function that will memoize what is passed
@@ -431,9 +455,10 @@ const moizedFoo = limitedSerializedMoize(foo);</code></pre><p>You can also combi
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 // creates a moizer that will have the options of
-// {maxAge: 5000, maxSize: 1, serialize: true, serializeFunctions: true}
+// {isReact: true, maxAge: 5000, maxSize: 5}
 const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));</code></pre><h2 id="benchmarks">Benchmarks</h2>
-<p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
+<p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks.</p>
+<p>Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of <code>35</code>, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
 <h4 id="single-parameter">Single parameter</h4>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
 <table>
@@ -446,9 +471,9 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 </thead>
 <tbody>
 <tr>
-<td>moize</td>
-<td>40,053,118</td>
-<td>0.60%</td>
+<td><strong>moize</strong></td>
+<td><strong>40,053,118</strong></td>
+<td><strong>0.60%</strong></td>
 </tr>
 <tr>
 <td>fast-memoize</td>
@@ -497,32 +522,6 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 </tr>
 </tbody>
 </table>
-<table>
-<thead>
-<tr>
-<th>underscore</th>
-<th>lodash</th>
-<th>ramda</th>
-<th>memoizee</th>
-<th>fast-memoize</th>
-<th>addy-osmani</th>
-<th>memoizerific</th>
-<th>moize</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>9,393,399</td>
-<td>9,679,995</td>
-<td>1,102,656</td>
-<td>11,651,361</td>
-<td>31,085,245</td>
-<td>3,656,676</td>
-<td>2,184,221</td>
-<td>47,089,212</td>
-</tr>
-</tbody>
-</table>
 <h4 id="multiple-parameters-primitives-only-">Multiple parameters (primitives only)</h4>
 <p><img src="img/multiple-parameter-primitives.png" alt="Multiple primitive parameters image"></p>
 <table>
@@ -535,9 +534,9 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 </thead>
 <tbody>
 <tr>
-<td>moize</td>
-<td>23,194,668</td>
-<td>0.71%</td>
+<td><strong>moize</strong></td>
+<td><strong>23,194,668</strong></td>
+<td><strong>0.71%</strong></td>
 </tr>
 <tr>
 <td>moize (serialized)</td>
@@ -583,9 +582,9 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 </thead>
 <tbody>
 <tr>
-<td>moize</td>
-<td>23,285,445</td>
-<td>0.83%</td>
+<td><strong>moize</strong></td>
+<td><strong>23,285,445</strong></td>
+<td><strong>0.83%</strong></td>
 </tr>
 <tr>
 <td>memoizee</td>
@@ -620,7 +619,7 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 </tbody>
 </table>
 <h2 id="direct-cache-manipulation">Direct cache manipulation</h2>
-<p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
+<p>There are a few methods provided on the <code>moize</code>d function which allow for programmatic manipulation of the cache:</p>
 <h4 id="add-key-value-">add(key, value)</h4>
 <p>This will manually add the <em>value</em> at <em>key</em> in cache if <em>key</em> does not already exist. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
 <pre class="prettyprint source lang-javascript"><code>// single parameter is straightforward
@@ -632,13 +631,13 @@ memoized.add(['foo'], 'bar');
 
 // pulls from cache
 memoized('foo');</code></pre><h4 id="clear-">clear()</h4>
-<p>This will clear all values in the cache, resetting it to a default state.</p>
+<p>This will clear all values in the cache, resetting it to an empty state.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return item;
 });
 
 memoized.clear();</code></pre><h4 id="has-key-">has(key)</h4>
-<p>This will return <code>true</code> if a cache entry exists for the <code>args</code> passed, else will return <code>false</code>. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
+<p>This will return <code>true</code> if a cache entry exists for the <em>key</em> passed, else will return <code>false</code>. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((first, second) => {
   return [first, second];
 });
@@ -704,7 +703,6 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 <li>IE 9+</li>
 <li>Safari 6+</li>
 </ul>
-<p>Theoretically the support should go back even farther, these are just the environments that I have tested.</p>
 <h2 id="development">Development</h2>
 <p>Standard stuff, clone the repo and <code>npm install</code> dependencies. The npm scripts available:</p>
 <ul>
