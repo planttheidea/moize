@@ -29,8 +29,8 @@ memoized(foo, bar);
 memoized(foo, bar);
 
 console.log(memoized.cache);
-console.log('hasCacheFor true', memoized.hasCacheFor(foo, bar));
-console.log('hasCacheFor false', memoized.hasCacheFor(foo, 'baz'));
+console.log('has true', memoized.has([foo, bar]));
+console.log('has false', memoized.has([foo, 'baz']));
 
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
