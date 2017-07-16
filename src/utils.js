@@ -648,7 +648,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
 
   return (moizedFunction: Function): Function => {
     moizedFunction.cache = cache;
-    moizedFunction.displayName = `Memoized(${getFunctionName(originalFunction)})`;
+    moizedFunction.displayName = `moize(${getFunctionName(originalFunction)})`;
     moizedFunction.isMoized = true;
     moizedFunction.options = options;
     moizedFunction.originalFunction = originalFunction;
@@ -685,20 +685,6 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
     /**
      * @private
      *
-     * @function delete
-     *
-     * @description
-     * delete the cache for the key passed for this method
-     *
-     * @param {Array<*>} key combination of args to remove from cache
-     */
-    moizedFunction.delete = (key: Array<any>) => {
-      cache.remove(getCacheKey(key));
-    };
-
-    /**
-     * @private
-     *
      * @function has
      *
      * @description
@@ -722,6 +708,20 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
      * @returns {Array<*>}
      */
     moizedFunction.keys = createPluckFromInstanceList(cache, 'key');
+
+    /**
+     * @private
+     *
+     * @function remove
+     *
+     * @description
+     * remove the item from cache for the key passed for this method
+     *
+     * @param {Array<*>} key combination of args to remove from cache
+     */
+    moizedFunction.remove = (key: Array<any>) => {
+      cache.remove(getCacheKey(key));
+    };
 
     /**
      * @private

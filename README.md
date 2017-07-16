@@ -34,9 +34,9 @@
 * [Direct cache manipulation](#direct-cache-manipulation)
   * [add](#addkey-value)
   * [clear](#clear)
-  * [delete](#deletekey)
   * [has](#hasargs)
   * [keys](#keys)
+  * [remove](#removekey)
   * [values](#values)
 * [Browser support](#browser-support)
 * [Development](#development)
@@ -173,8 +173,6 @@ const memoized = moize(fn, {
   maxSize: 5
 });
 ```
-
-*Please note that this does not work with a custom cache implementation.*
 
 #### promiseLibrary
 
@@ -503,7 +501,7 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 ### Direct cache manipulation
 
-There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache (*please note that none of these methods will work with a custom `cache` implementation unless that cache implementation also has the method*):
+There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:
 
 #### add(key, value)
 
@@ -531,28 +529,6 @@ const memoized = moize((item) => {
 });
 
 memoized.clear();
-```
-
-#### delete(key)
-
-This will delete the provided *key* from cache. *key* is an `Array` of values, meant to reflect the arguments passed to the method.
-
-```javascript
-// if single parameter, delete with the object itself
-const memoized = moize((item) => {
-  return item;
-});
-
-const foo = {
-  bar: 'baz'
-};
-
-memoized(foo);
-
-memoized.delete([foo]);
-
-// will re-execute, as it is no longer in cache
-memoized(foo);
 ```
 
 #### has(key)
@@ -592,7 +568,26 @@ memoized(bar);
 const keys = memoized.keys(); // ['foo', {baz: 'baz'}]
 ```
 
-*Please note that this is a no-op when a custom `cache` implementation is used.*
+#### remove(key)
+
+This will remove the provided *key* from cache. *key* is an `Array` of values, meant to reflect the arguments passed to the method.
+
+```javascript
+const memoized = moize((item) => {
+  return item;
+});
+
+const foo = {
+  bar: 'baz'
+};
+
+memoized(foo);
+
+memoized.remove([foo]);
+
+// will re-execute, as it is no longer in cache
+memoized(foo);
+```
 
 #### values()
 
@@ -617,8 +612,6 @@ memoized(bar);
 
 const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 ```
-
-*Please note that this is a no-op when a custom `cache` implementation is used.*
 
 ### Browser support
 
