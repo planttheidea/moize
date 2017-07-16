@@ -5,11 +5,6 @@ import type {
   CacheKey
 } from './types';
 
-// utils
-import {
-  noop
-} from './utils';
-
 /**
  * @class SingleParameterCacheKey
  *
@@ -25,8 +20,6 @@ class SingleParameterCacheKey {
 
   isMultiParamKey: boolean = false;
   key: any = null;
-  serializer: Function = noop;
-  size: number = 1;
 
   /**
    * @function matches

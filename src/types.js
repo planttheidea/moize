@@ -9,9 +9,7 @@
  * @property {number} size the size of the key
  */
 export type CacheKey = {
-  isMultiParamKey: boolean,
   key: any,
-  serializer: Function,
   size: number
 };
 

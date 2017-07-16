@@ -5,11 +5,6 @@ import type {
   CacheKey
 } from './types';
 
-// utils
-import {
-  noop
-} from './utils';
-
 /**
  * @class MultipleParameterCacheKey
  *
@@ -26,7 +21,6 @@ class MultipleParameterCacheKey {
 
   isMultiParamKey: boolean = true;
   key: any = null;
-  serializer: Function = noop;
   size: number = 0;
 
   /**

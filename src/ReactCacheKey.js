@@ -5,11 +5,6 @@ import type {
   CacheKey
 } from './types';
 
-// utils
-import {
-  noop
-} from './utils';
-
 /**
  * @class ReactCacheKey
  *
@@ -31,10 +26,7 @@ class ReactCacheKey {
     return this;
   }
 
-  isMultiParamKey: boolean = true;
   key: any = null;
-  serializer: Function = noop;
-  size: number = 2;
 
   /**
    * @function _isPropShallowEqual

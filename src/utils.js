@@ -540,16 +540,6 @@ export const getDefaultedOptions = (options: Object): Options => {
 /**
  * @private
  *
- * @function noop
- *
- * @description
- * a no-op method
- */
-export const noop: Function = (): void => {};
-
-/**
- * @private
- *
  * @function splice
  *
  * @description

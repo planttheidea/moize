@@ -24,10 +24,8 @@ class SerializedCacheKey {
     return this;
   }
 
-  isMultiParamKey: boolean = false;
   key: any = null;
   serializer: Function = stringify;
-  size: number = 1;
 
   /**
    * @function matches
