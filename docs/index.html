@@ -40,7 +40,14 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu inline">
-					<li><a href="Cache.html">Cache</a></li>
+					<li><a href="Cache.html">Cache</a></li><li><a href="MultipleParameterCacheKey.html">MultipleParameterCacheKey</a></li><li><a href="ReactCacheKey.html">ReactCacheKey</a></li><li><a href="SerializedCacheKey.html">SerializedCacheKey</a></li><li><a href="SingleParameterCacheKey.html">SingleParameterCacheKey</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#_isPropShallowEqual">_isPropShallowEqual</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getReactCacheKey">getReactCacheKey</a></li><li><a href="global.html#getSerializedCacheKey">getSerializedCacheKey</a></li><li><a href="global.html#getStandardCacheKey">getStandardCacheKey</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#matches">matches</a></li><li><a href="global.html#PROMISE_OPTIONS">PROMISE_OPTIONS</a></li><li><a href="global.html#REACT_OPTIONS">REACT_OPTIONS</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#SERIALIZE_OPTIONS">SERIALIZE_OPTIONS</a></li>
 				</ul>
 			</li>
 			
@@ -77,7 +84,7 @@
 
 
 
-    <h3>moize 2.5.1</h3>
+    <h3>moize 3.0.0</h3>
 
 
 
@@ -106,8 +113,8 @@
 <li><a href="#installation">Installation</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#advanced-usage">Advanced usage</a><ul>
-<li><a href="#cache">cache</a></li>
 <li><a href="#ispromise">isPromise</a></li>
+<li><a href="#isreact">isReact</a></li>
 <li><a href="#maxage">maxAge</a></li>
 <li><a href="#maxargs">maxArgs</a></li>
 <li><a href="#maxsize">maxSize</a></li>
@@ -123,6 +130,7 @@
 <li><a href="#moizemaxsize">moize.maxSize</a></li>
 <li><a href="#moizepromise">moize.promise</a></li>
 <li><a href="#moizereact">moize.react</a></li>
+<li><a href="#moizereactsimple">moize.reactSimple</a></li>
 <li><a href="#moizeserialize">moize.serialize</a></li>
 <li><a href="#moizesimple">moize.simple</a></li>
 </ul>
@@ -132,9 +140,9 @@
 <li><a href="#direct-cache-manipulation">Direct cache manipulation</a><ul>
 <li><a href="#addkey-value">add</a></li>
 <li><a href="#clear">clear</a></li>
-<li><a href="#deletekey">delete</a></li>
-<li><a href="#hascacheforargs">hasCacheFor</a></li>
+<li><a href="#hasargs">has</a></li>
 <li><a href="#keys">keys</a></li>
+<li><a href="#removekey">remove</a></li>
 <li><a href="#values">values</a></li>
 </ul>
 </li>
@@ -142,7 +150,7 @@
 <li><a href="#development">Development</a></li>
 </ul>
 <h3 id="upgrade-notification">Upgrade notification</h3>
-<p>Users of <code>moize</code> 1.x.x will have some small but breaking changes, especially related to its use with functional components. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
+<p>Users of <code>moize</code> 1.x.x may have experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
 <h3 id="installation">Installation</h3>
 <pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h3 id="usage">Usage</h3>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
@@ -158,8 +166,8 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
 <h3 id="advanced-usage">Advanced usage</h3>
 <p><code>moize</code> optionally accepts an object of options as the second parameter. The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
-  cache: Map|Object, // custom cache implementation
   isPromise: boolean, // is the result a promise
+  isReact: boolean, // is the result a React component
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
@@ -167,95 +175,9 @@ memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are s
   serialize: boolean, // should the parameters be serialized instead of directly referenced
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
-}</code></pre><h4 id="cache">cache</h4>
-<p><em>defaults to new Map()</em></p>
-<p>The default cache implementation is build for speed in its purpose, however if you would like then you can pass in a custom cache implementation. <strong>This will be deprecated in the next major release.</strong></p>
-<p>The only requirements for the cache implementation is that it matches the relevant <code>Map</code> API methods and properties:</p>
-<ul>
-<li>clear</li>
-<li>delete</li>
-<li>get</li>
-<li>has</li>
-<li>set</li>
-<li>size</li>
-</ul>
-<p>Additional cache-specific methods that need to be implemented:</p>
-<p><em>getMultiParamKey(args: Array<any>): Array<any></em></p>
-<p>Accepts the <code>arguments</code> of the function itself as an <code>Array</code>, and returns either a key that matches one in cache already or the <code>args</code> passed.</p>
-<pre class="prettyprint source lang-javascript"><code>import isEqual from 'lodash/isEqual';
-
-// example using a native plain object implementation
-const cache = {
-  _keys: [],
-  _values: [],
-  size: 0,
-
-  clear() {
-    this._keys.length = 0;
-    this._values.length = 0;
-    this.size = 0;
-  },
-
-  delete(key) {
-    const index = this._keys.indexOf(key);
-
-    if (!~index) {
-      return;
-    }
-
-    this._keys.splice(index, 1);
-    this._values.splice(index, 1);
-
-    this.size--;
-  },
-
-  get(key) {
-    const index = this._keys.indexOf(key);
-
-    return ~index ? this._values[index] : undefined;
-  },
-
-  getMultiParamKey(args) {
-    let index = -1;
-
-    while (++index &lt; this._keys.length) {
-      // does deepEqual comparison with existing keys
-      if (isEqual(this._keys[index], args)) {
-        return this._keys[index];
-      }
-    }
-
-    return args;
-  },
-
-  has(key) {
-    return !!~this._keys.indexOf(key);
-  },
-
-  set(key, value) {
-    const existingIndex = this._keys.indexOf(key);
-
-    if (~existingIndex) {
-      this._values[existingIndex] = value;
-    } else {
-      this._keys.push(key);
-      this._values.push(key);
-      this.size++;
-    }
-
-    return this;
-  }
-};
-
-const fn = (item) => {
-  return item;
-};
-
-const memoized = moize(fn, {
-  cache
-});</code></pre><h4 id="ispromise">isPromise</h4>
+}</code></pre><h4 id="ispromise">isPromise</h4>
 <p><em>defaults to false</em></p>
-<p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>.</p>
+<p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>. This is also available via the shortcut method of <a href="#moizepromise"><code>moize.promise</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = async (item) => {
   return await item;
 };
@@ -263,9 +185,23 @@ const memoized = moize(fn, {
 const memoized = moize(fn, {
   isPromise: true
 });</code></pre><p>The resolved value of the <code>Promise</code> will be stored in cache as a <code>Promise</code> itself, so that cached returns will always be in the form of a <code>Promise</code>. For common usage reasons, if the <code>Promise</code> is rejected, the cache entry will be deleted. Also, if a <code>maxAge</code> is provided, the countdown of that TTL will begin upon the resolution of the promise rather than at the instantiation of it.</p>
+<h4 id="isreact">isReact</h4>
+<p><em>defaults to false</em></p>
+<p>Is the function passed a stateless functional <code>React</code> component. This is also available via the shortcut method of <a href="#moizereact"><code>moize.react</code></a>.</p>
+<pre class="prettyprint source lang-javascript"><code>const Foo = ({bar, baz}) => {
+  return (
+    &lt;div>
+      {bar}: {baz}
+    &lt;/div>
+  );
+};
+
+export default moize(Foo, {
+  isReact: true
+});</code></pre><p>The method will do a shallow comparison of both <code>props</code> and <code>context</code> of the component based on strict equality. If you want to mimic the <code>PureComponent</code> optimization, add the parameter <code>maxSize</code> set to <code>1</code>.</p>
 <h4 id="maxage">maxAge</h4>
 <p><em>defaults to Infinity</em></p>
-<p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.</p>
+<p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method. This is also available via the shortcut method of <a href="#moizemaxage"><code>moize.maxAge</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
   return item;
 };
@@ -283,15 +219,14 @@ const memoized = moize(fn, {
   maxArgs: 2
 });</code></pre><h4 id="maxsize">maxSize</h4>
 <p><em>defaults to Infinity</em></p>
-<p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
+<p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This is also available via the shortcut method of <a href="#moizemaxsize"><code>moize.maxSize</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
   return item;
 };
 
 const memoized = moize(fn, {
   maxSize: 5
-});</code></pre><p><em>Please note that this does not work with a custom cache implementation.</em></p>
-<h4 id="promiselibrary">promiseLibrary</h4>
+});</code></pre><h4 id="promiselibrary">promiseLibrary</h4>
 <p><em>defaults to native Promise</em></p>
 <p>The promise library to use for resolution / rejection of promises.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (foo) => {
@@ -339,7 +274,7 @@ const memoized = moize(fn, {
   promiseLibrary: customPromise
 });</code></pre><h4 id="serialize">serialize</h4>
 <p><em>defaults to false</em></p>
-<p>In <code>moize</code> 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from 1.x.x.</p>
+<p>In <code>moize</code> 1.x.x, parameter serialization was used, whereas in 2.x.x and beyond we use strict equality to compare parameters. While this is both faster and more accurate, there may be scenarios where you want to serialize the parameters instead (for value equality comparison in situations where you are using mutated objects, for example). Simply pass the <code>serialize</code> parameter as <code>true</code> and you will use the performant serializer from 1.x.x. This is also available via the shortcut method of <a href="#moizeserialize"><code>moize.serialize</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (mutableObject) => {
   return mutableObject.foo;
 };
@@ -387,7 +322,7 @@ const memoized = moize(fn, {
 });</code></pre><p>Please note that you must also set <code>serialize</code> to true for this setting to take effect.</p>
 <h3 id="usage-with-shortcut-methods">Usage with shortcut methods</h3>
 <h4 id="moize-maxage">moize.maxAge</h4>
-<p>Pre-applies the <code>maxAge</code> option as a curriable method:</p>
+<p>Pre-applies the <code>maxAge</code> option as a curriable method.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const foo = (bar, baz) => {
@@ -395,7 +330,7 @@ const foo = (bar, baz) => {
 };
 
 export default moize.maxAge(5000)(foo);</code></pre><h4 id="moize-maxargs">moize.maxArgs</h4>
-<p>Pre-applies the <code>maxArgs</code> option as a curriable method:</p>
+<p>Pre-applies the <code>maxArgs</code> option as a curriable method.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const foo = (bar, baz) => {
@@ -403,7 +338,7 @@ const foo = (bar, baz) => {
 };
 
 export default moize.maxArgs(1)(foo);</code></pre><h4 id="moize-maxsize">moize.maxSize</h4>
-<p>Pre-applies the <code>maxSize</code> option as a curriable method:</p>
+<p>Pre-applies the <code>maxSize</code> option as a curriable method.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const foo = (bar, baz) => {
@@ -411,7 +346,7 @@ const foo = (bar, baz) => {
 };
 
 export default moize.maxSize(5)(foo);</code></pre><h4 id="moize-promise">moize.promise</h4>
-<p>Pre-applies the <code>isPromise</code> option:</p>
+<p>Pre-applies the <code>isPromise</code> option.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const foo = async (bar, baz) => {
@@ -419,7 +354,7 @@ const foo = async (bar, baz) => {
 };
 
 export default moize.promise(foo);</code></pre><h4 id="moize-react">moize.react</h4>
-<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>: Pre-applies <code>serialize</code> and <code>serializeFunctions</code> both to <code>true</code>, and pre-applies <code>maxArgs</code> to <code>2</code>. This allows for a value equality comparison of <code>props</code> and <code>context</code>.</p>
+<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>. This uses a special cache key that will do a shallow equal comparison of changes to both props and context.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const Foo = ({bar, baz}) => {
@@ -430,10 +365,22 @@ const Foo = ({bar, baz}) => {
   );
 };
 
-export default moize.react(Foo);</code></pre><p>Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a <code>maxSize</code> (see <a href="#composition">Composition</a> for how to combine with <code>moize.maxSize</code> or <code>moize.simple</code>).</p>
-<p>Please note <code>moize.react</code> will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
+export default moize.react(Foo);</code></pre><p>Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for memory leaks (as the default is to retain the history of all elements). If you expect the parameters to change more than a few times, or if you are reusing the component in several places, it is recommended to apply a <code>maxSize</code>, or you can use the new shortcut method <a href="#moizereactsimple"><code>moize.reactSimple</code></a>, which automatically sets the <code>maxSize</code> to <code>1</code> to mimic the <code>PureComponent</code> optimization.</p>
+<h4 id="moize-reactsimple">moize.reactSimple</h4>
+<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>, with the cache size limited to a single entry. This mimics the <code>PureComponnt</code> optimization, where the component will only be re-rendered on change to <code>props</code> or <code>context</code>, and the only element cached is the most recent.</p>
+<pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
+
+const Foo = ({bar, baz}) => {
+  return (
+    &lt;div>
+      {bar} {baz}
+    &lt;/div>
+  );
+};
+
+export default moize.reactSimple(Foo);</code></pre><p>Please note <code>moize.reactSimple</code> will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
 <h4 id="moize-serialize">moize.serialize</h4>
-<p>Pre-applies the <code>serialize</code> option:</p>
+<p>Pre-applies the <code>serialize</code> option.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const foo = (bar, baz) => {
@@ -441,7 +388,7 @@ const foo = (bar, baz) => {
 };
 
 export default moize.serialize(foo);</code></pre><h4 id="moize-simple">moize.simple</h4>
-<p>Pre-applies the <code>maxSize</code> option with <code>1</code>:</p>
+<p>Pre-applies the <code>maxSize</code> option with <code>1</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const foo = (bar, baz) => {
@@ -480,7 +427,7 @@ const moizedFoo = limitedSerializedMoize(foo);</code></pre><p>You can also combi
 
 // creates a moizer that will have the options of
 // {maxAge: 5000, maxSize: 1, serialize: true, serializeFunctions: true}
-const superLimitedReactMoize = moize.compose(moize.react, moize.simple, moize.maxAge(5000));</code></pre><h3 id="benchmarks">Benchmarks</h3>
+const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));</code></pre><h3 id="benchmarks">Benchmarks</h3>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of 35, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
 <table>
@@ -552,62 +499,33 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.simple, moize.ma
 </tbody>
 </table>
 <h3 id="direct-cache-manipulation">Direct cache manipulation</h3>
-<p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache (<em>please note that none of these methods will work with a custom <code>cache</code> implementation unless that cache implementation also has the method</em>):</p>
+<p>There are a couple of methods provided on the memoized function which allow for programmatic manipulation of the cache:</p>
 <h4 id="add-key-value-">add(key, value)</h4>
-<p>This will manually add the <em>value</em> at <em>key</em> in cache if <em>key</em> does not already exist.</p>
+<p>This will manually add the <em>value</em> at <em>key</em> in cache if <em>key</em> does not already exist. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
 <pre class="prettyprint source lang-javascript"><code>// single parameter is straightforward
 const memoized = moize((item) => {
   return item;
 });
 
-memoized.add('foo', 'bar');
+memoized.add(['foo'], 'bar');
 
-// for multiple parameters, pass an array of arguments as the key
-const memoized = moize((item1, item2) => {
-  return item1 + item2;
-});
-
-memoized.add([1, 2], 3);</code></pre><h4 id="clear-">clear()</h4>
+// pulls from cache
+memoized('foo');</code></pre><h4 id="clear-">clear()</h4>
 <p>This will clear all values in the cache, resetting it to a default state.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return item;
 });
 
-memoized.clear();</code></pre><h4 id="delete-key-">delete(key)</h4>
-<p>This will delete the provided key from cache.</p>
-<pre class="prettyprint source lang-javascript"><code>// if single parameter, delete with the object itself
-const memoized = moize((item) => {
-  return item;
-});
-
-const foo = {
-  bar: 'baz'
-};
-
-memoized(foo);
-
-memoized.delete(foo);
-
-// if multi parameter, delete with the same arguments you passed
-const memoized = moize((item1, item2) => {
-  return item1 + item2;
-});
-
-const foo = 1;
-const bar = 2;
-
-memoized(foo, bar);
-
-memoized.delete(foo, bar);</code></pre><h4 id="hascachefor-args-">hasCacheFor(...args)</h4>
-<p>This will return <code>true</code> if a cache entry exists for the <code>args</code> passed, else will return <code>false</code>.</p>
+memoized.clear();</code></pre><h4 id="has-key-">has(key)</h4>
+<p>This will return <code>true</code> if a cache entry exists for the <code>args</code> passed, else will return <code>false</code>. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((first, second) => {
   return [first, second];
 });
 
 memoized('foo', 'bar');
 
-console.log(memoized.hasCacheFor('foo', 'bar')); // true
-console.log(memoized.hasCacheFor('bar', 'baz')); // false</code></pre><h4 id="keys-">keys()</h4>
+console.log(memoized.has(['foo', 'bar'])); // true
+console.log(memoized.has(['bar', 'baz'])); // false</code></pre><h4 id="keys-">keys()</h4>
 <p>This will return a list of the current keys in <code>cache</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return item;
@@ -623,8 +541,22 @@ const bar = {
 
 memoized(bar);
 
-const keys = memoized.keys(); // ['foo', {baz: 'baz'}]</code></pre><p><em>Please note that this is a no-op when a custom <code>cache</code> implementation is used.</em></p>
-<h4 id="values-">values()</h4>
+const keys = memoized.keys(); // ['foo', {baz: 'baz'}]</code></pre><h4 id="remove-key-">remove(key)</h4>
+<p>This will remove the provided <em>key</em> from cache. <em>key</em> is an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
+<pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
+  return item;
+});
+
+const foo = {
+  bar: 'baz'
+};
+
+memoized(foo);
+
+memoized.remove([foo]);
+
+// will re-execute, as it is no longer in cache
+memoized(foo);</code></pre><h4 id="values-">values()</h4>
 <p>This will return a list of the current values in <code>cache</code> when the native <code>Cache</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize((item) => {
   return {
@@ -642,8 +574,7 @@ const bar = {
 
 memoized(bar);
 
-const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><p><em>Please note that this is a no-op when a custom <code>cache</code> implementation is used.</em></p>
-<h3 id="browser-support">Browser support</h3>
+const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code></pre><h3 id="browser-support">Browser support</h3>
 <ul>
 <li>Chrome (all versions)</li>
 <li>Firefox (all versions)</li>
@@ -712,7 +643,7 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

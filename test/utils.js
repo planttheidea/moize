@@ -95,7 +95,9 @@ test('if the methods added via createAddPropertiesToFunction will perform as exp
   const cache = {
     add: sinon.stub(),
     clear: sinon.stub(),
-    has: sinon.stub(),
+    has: sinon.stub()
+      .onFirstCall().returns(false)
+      .onSecondCall().returns(true),
     remove: sinon.stub()
   };
   const originalFunction = () => {};
@@ -120,11 +122,18 @@ test('if the methods added via createAddPropertiesToFunction will perform as exp
   t.true(cache.add.calledOnce);
   t.true(cache.add.calledWith(cacheKey, value));
 
-  cache.has.reset();
+  result.add(key, value);
+
+  t.true(cache.has.calledTwice);
+  t.true(cache.add.calledOnce);
+
+  result.add(key, value);
 
   result.clear();
 
   t.true(cache.clear.calledOnce);
+
+  cache.has.reset();
 
   result.has(key);
 
@@ -391,9 +400,190 @@ test('if createPromiseResolver will create a function that will set the cache to
   result(resolvedValue);
 });
 
-test.todo('if createSetNewCachedValue will set the cache value correctly when isPromise option is true');
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is true', async (t) => {
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    remove: sinon.stub(),
+    update: sinon.stub()
+  };
+  const options = {
+    isPromise: true,
+    promiseLibrary: Promise
+  };
 
-test.todo('if createSetNewCachedValue will set the cache value correctly when isPromise option is false');
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+  const promise = Promise.resolve(value);
+
+  const result = setNewCacheValue(key, promise);
+
+  t.true(cache.add.calledOnce);
+
+  const addArgs = cache.add.args[0];
+
+  t.is(addArgs[0], key);
+
+  t.true(addArgs[1] instanceof Promise);
+
+  t.true(cache.remove.notCalled);
+
+  const resolvedValue = await result;
+
+  t.true(cache.update.calledOnce);
+
+  const updateArgs = cache.update.args[0];
+
+  t.is(updateArgs[0], key);
+  t.true(updateArgs[1] instanceof Promise);
+
+  const updateArgResolvedValue = await updateArgs[1];
+
+  t.is(updateArgResolvedValue, resolvedValue);
+});
+
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is true and the maxSize has been exceeded', async (t) => {
+  const existingKey = 'foo';
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    list: [
+      {key: existingKey}
+    ],
+    remove: sinon.stub(),
+    size: 2,
+    update: sinon.stub()
+  };
+  const options = {
+    maxSize: 1,
+    isPromise: true,
+    promiseLibrary: Promise
+  };
+
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+  const promise = Promise.resolve(value);
+
+  const result = setNewCacheValue(key, promise);
+
+  t.true(cache.add.calledOnce);
+
+  const addArgs = cache.add.args[0];
+
+  t.is(addArgs[0], key);
+
+  t.true(addArgs[1] instanceof Promise);
+
+  t.true(cache.remove.calledOnce);
+  t.true(cache.remove.calledWith(existingKey));
+
+  const resolvedValue = await result;
+
+  t.true(cache.update.calledOnce);
+
+  const updateArgs = cache.update.args[0];
+
+  t.is(updateArgs[0], key);
+  t.true(updateArgs[1] instanceof Promise);
+
+  const updateArgResolvedValue = await updateArgs[1];
+
+  t.is(updateArgResolvedValue, resolvedValue);
+});
+
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is false', (t) => {
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    remove: sinon.stub()
+  };
+  const options = {};
+
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  setNewCacheValue(key, value);
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(key, value));
+
+  t.true(cache.expireAfter.notCalled);
+
+  t.true(cache.remove.notCalled);
+});
+
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is false and there is a maxAge', (t) => {
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    remove: sinon.stub()
+  };
+  const options = {
+    maxAge: 100
+  };
+
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  setNewCacheValue(key, value);
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(key, value));
+
+  t.true(cache.expireAfter.calledOnce);
+  t.true(cache.expireAfter.calledWith(key, options.maxAge));
+
+  t.true(cache.remove.notCalled);
+});
+
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is false and the maxSize has been reached', (t) => {
+  const existingKey = 'foo';
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    list: [
+      {key: existingKey}
+    ],
+    remove: sinon.stub(),
+    size: 2
+  };
+  const options = {
+    maxSize: 1
+  };
+
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  setNewCacheValue(key, value);
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(key, value));
+
+  t.true(cache.expireAfter.notCalled);
+
+  t.true(cache.remove.calledOnce);
+  t.true(cache.remove.calledWith(existingKey));
+});
 
 test('if getDefaultedOptions will return the options passed merged with the default options, and serializer of null when serialize is not true', (t) => {
   const options = {
@@ -741,7 +931,7 @@ test('if getStandardCacheKey will create a new SingleParameterCacheKey if it doe
 test('if isComplexObject returns false if the object is falsy', (t) => {
   t.false(utils.isComplexObject(false));
   t.false(utils.isComplexObject(null));
-  t.false(utils.isComplexObject(undefined));
+  t.false(utils.isComplexObject(''));
   t.false(utils.isComplexObject(0));
 });
 
@@ -750,6 +940,7 @@ test('if isComplexObject returns false if the object is not the typeof object', 
   t.false(utils.isComplexObject('foo'));
   t.false(utils.isComplexObject(() => {}));
   t.false(utils.isComplexObject(true));
+  t.false(utils.isComplexObject(Symbol('foo')));
 });
 
 test('if isComplexObject returns true if the object is truthy and the typeof object', (t) => {

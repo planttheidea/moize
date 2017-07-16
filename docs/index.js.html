@@ -40,7 +40,14 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu inline">
-					<li><a href="Cache.html">Cache</a></li>
+					<li><a href="Cache.html">Cache</a></li><li><a href="MultipleParameterCacheKey.html">MultipleParameterCacheKey</a></li><li><a href="ReactCacheKey.html">ReactCacheKey</a></li><li><a href="SerializedCacheKey.html">SerializedCacheKey</a></li><li><a href="SingleParameterCacheKey.html">SingleParameterCacheKey</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#_isPropShallowEqual">_isPropShallowEqual</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getReactCacheKey">getReactCacheKey</a></li><li><a href="global.html#getSerializedCacheKey">getSerializedCacheKey</a></li><li><a href="global.html#getStandardCacheKey">getStandardCacheKey</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#matches">matches</a></li><li><a href="global.html#PROMISE_OPTIONS">PROMISE_OPTIONS</a></li><li><a href="global.html#REACT_OPTIONS">REACT_OPTIONS</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#SERIALIZE_OPTIONS">SERIALIZE_OPTIONS</a></li>
 				</ul>
 			</li>
 			
@@ -84,9 +91,10 @@ import Cache from './Cache';
 
 // constants
 import {
-  INFINITY,
   INVALID_FIRST_PARAMETER_ERROR,
-  NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE
+  PROMISE_OPTIONS,
+  REACT_OPTIONS,
+  SERIALIZE_OPTIONS
 } from './constants';
 
 // types
@@ -101,6 +109,7 @@ import {
   createCurriableOptionMethod,
   createGetCacheKey,
   createSetNewCachedValue,
+  getDefaultedOptions,
   isFunction,
   isPlainObject
 } from './utils';
@@ -108,29 +117,6 @@ import {
 /**
  * @module moize
  */
-
-/**
- * @constant {{isPromise: true}} PROMISE_OPTIONS
- */
-const PROMISE_OPTIONS = {
-  isPromise: true
-};
-
-/**
- * @constant {{maxArgs: number, serialize: boolean, serializeFunctions: boolean}} REACT_OPTIONS
- */
-const REACT_OPTIONS = {
-  maxArgs: 2,
-  serialize: true,
-  serializeFunctions: true
-};
-
-/**
- * @constant {{serialize: boolean}} SERIALIZE_OPTIONS
- */
-const SERIALIZE_OPTIONS = {
-  serialize: true
-};
 
 /**
  * @function moize
@@ -158,7 +144,6 @@ const SERIALIZE_OPTIONS = {
  *
  * @param {function} functionOrComposableOptions method to memoize
  * @param {Options} [passedOptions={}] options to customize how the caching is handled
- * @param {Cache} [passedOptions.cache=new Cache()] caching mechanism to use for method
  * @param {boolean} [passedOptions.isPromise=false] is the function return expected to be a promise to resolve
  * @param {number} [passedOptions.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [passedOptions.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
@@ -168,9 +153,9 @@ const SERIALIZE_OPTIONS = {
  * @param {function} [passedOptions.serializer] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
-const moize = function(functionOrComposableOptions: (Function|Object), passedOptions: Options = {}): any {
+const moize: Function = (functionOrComposableOptions: (Function|Options), passedOptions: Object = {}): Function => {
   if (isPlainObject(functionOrComposableOptions)) {
-    return function(fn: Function, otherOptions: Options = {}): Function {
+    return function(fn: Function, otherOptions: Object = {}): Function {
       return moize(fn, {
         // $FlowIgnore functionOrComposableOptions is object of options
         ...functionOrComposableOptions,
@@ -183,54 +168,30 @@ const moize = function(functionOrComposableOptions: (Function|Object), passedOpt
     throw new TypeError(INVALID_FIRST_PARAMETER_ERROR);
   }
 
-  const isComposed: boolean = functionOrComposableOptions.isMemoized;
-  // $FlowIgnore the value of the property is a function
+  // $FlowIgnore if the function is already moized, it has an isMoized property on it
+  const isComposed: boolean = functionOrComposableOptions.isMoized;
+  // $FlowIgnore if the function is already moized, it has an originalFunction property on it
   const fn: Function = isComposed ? functionOrComposableOptions.originalFunction : functionOrComposableOptions;
-  const options: Object = !isComposed ? passedOptions : {
+
+  const options: Options = getDefaultedOptions(!isComposed ? passedOptions : {
+    // $FlowIgnore if the function is already moized, it has an options property on it
     ...functionOrComposableOptions.options,
     ...passedOptions
-  };
+  });
 
-  const {
-    cache = new Cache(),
-    isPromise = false,
-    maxAge = INFINITY,
-    maxArgs = INFINITY,
-    maxSize = INFINITY,
-    promiseLibrary = Promise,
-    serialize = false,
-    serializeFunctions = false,
-    serializer
-  } = options;
-
-  if (isPromise &amp;&amp; !promiseLibrary) {
-    throw new ReferenceError(NO_PROMISE_LIBRARY_EXISTS_ERROR_MESSAGE);
-  }
+  const cache: Cache = new Cache();
 
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn, options);
-  const getCacheKey: Function = createGetCacheKey(cache, serialize, serializer, serializeFunctions, maxArgs);
-  const setNewCachedValue: Function = createSetNewCachedValue(cache, isPromise, maxAge, maxSize, promiseLibrary);
+  const getCacheKey: Function = createGetCacheKey(cache, options);
+  const setNewCachedValue: Function = createSetNewCachedValue(cache, options);
 
-  let key: any;
+  const moizedFunction: Function = function(...args: Array&lt;any>): any {
+    const key: any = getCacheKey(args);
 
-  /**
-   * @private
-   *
-   * @function memoizedFunction
-   *
-   * @description
-   * higher-order function which either returns from cache or stores newly-computed value and returns it
-   *
-   * @param {Array&lt;*>} args arguments passed to method
-   * @returns {any} value resulting from executing of fn passed to memoize
-   */
-  const memoizedFunction = function(...args: Array&lt;any>): any {
-    key = getCacheKey(args);
-
-    return cache.has(key) ? cache.get(key) : setNewCachedValue(key, fn.apply(this, args));
+    return cache.size &amp;&amp; cache.has(key) ? cache.get(key) : setNewCachedValue(key, fn.apply(this, args));
   };
 
-  return addPropertiesToFunction(memoizedFunction);
+  return addPropertiesToFunction(moizedFunction);
 };
 
 moize.compose = compose;
@@ -239,6 +200,7 @@ moize.maxArgs = createCurriableOptionMethod(moize, 'maxArgs');
 moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');
 moize.promise = moize(PROMISE_OPTIONS);
 moize.react = moize(REACT_OPTIONS);
+moize.reactSimple = compose(moize.react, moize.maxSize(1));
 moize.serialize = moize(SERIALIZE_OPTIONS);
 moize.simple = moize.maxSize(1);
 
@@ -282,7 +244,7 @@ export default moize;
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

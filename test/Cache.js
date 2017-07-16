@@ -1,12 +1,11 @@
+// test
 import test from 'ava';
+import {
+  sleep
+} from 'test/helpers/utils';
 
+// src
 import Cache from 'src/Cache';
-
-const sleep = (ms = 0) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
 
 test('if creating a new Cache creates an object with the correct instance values', (t) => {
   const result = new Cache();

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Modules</title>
+	<title>moize Source: constants.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,112 +74,143 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Modules</h1>
+		<h1 class="page-title">Source: constants.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// @flow
 
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
+/**
+ * @private
+ *
+ * @constant {RegExp} FINITE_POSITIVE_INTEGER
+ */
+export const FINITE_POSITIVE_INTEGER: RegExp = /^[1-9]\d*$/;
 
+/**
+ * @private
+ *
+ * @constant {RegExp} FUNCTION_NAME_REGEXP
+ */
+export const FUNCTION_NAME_REGEXP: RegExp = /^\s*function\s+([^\(\s]*)\s*/;
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ * @private
+ *
+ * @constant {string} FUNCTION_TYPEOF
+ * @default
+ */
+export const FUNCTION_TYPEOF: string = 'function';
 
-        
-<dl class="details">
-    
+/**
+ * @private
+ *
+ * @constant {Array&lt;Object>} GOTCHA_OBJECT_CLASSES
+ */
+export const GOTCHA_OBJECT_CLASSES: Array&lt;Object> = [
+  Boolean,
+  Date,
+  Number,
+  RegExp,
+  String
+];
 
-	
+/**
+ * @private
+ *
+ * @constant {number} INFINITY
+ * @default
+ */
+export const INFINITY: number = Number.POSITIVE_INFINITY;
 
-	
+/**
+ * @private
+ *
+ * @constant {string} INVALID_FIRST_PARAMETER_ERROR
+ * @default
+ */
+export const INVALID_FIRST_PARAMETER_ERROR: string = 'You must pass either a function or an object of options as the first parameter to moize.';
 
-	
+/**
+ * @private
+ *
+ * @constant {string} INVALID_PROMISE_LIBRARY_ERROR
+ * @default
+ */
+export const INVALID_PROMISE_LIBRARY_ERROR: string = 'The promiseLibrary passed must either be a function or an object with the resolve / reject methods.';
 
-    
+/**
+ * @private
+ *
+ * @constant {function|undefined} NATIVE_PROMISE
+ */
+export const NATIVE_PROMISE: ?Function = typeof Promise === FUNCTION_TYPEOF ? Promise : undefined;
 
-    
+/**
+ * @private
+ *
+ * @constant {Object} DEFAULT_OPTIONS
+ */
+export const DEFAULT_OPTIONS: Object = {
+  isPromise: false,
+  isReact: false,
+  maxAge: INFINITY,
+  maxArgs: INFINITY,
+  maxSize: INFINITY,
+  promiseLibrary: NATIVE_PROMISE,
+  serialize: false,
+  serializeFunctions: false
+};
 
-    
+/**
+ * @private
+ *
+ * @constant {string} OBJECT_TYPEOF
+ * @default
+ */
+export const OBJECT_TYPEOF: string = 'object';
 
-    
+/**
+ * @private
+ *
+ * @constant {Array&lt;string>} STATIC_PROPERTIES_TO_PASS
+ */
+export const STATIC_PROPERTIES_TO_PASS: Array&lt;string> = [
+  'contextTypes',
+  'defaultProps',
+  'propTypes'
+];
 
-	
+/**
+ * @constant {{isPromise: true}} PROMISE_OPTIONS
+ */
+export const PROMISE_OPTIONS = {
+  isPromise: true
+};
 
-	
+/**
+ * @constant {{maxArgs: number, serialize: boolean, serializeFunctions: boolean}} REACT_OPTIONS
+ */
+export const REACT_OPTIONS = {
+  isReact: true
+};
 
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Cache.html">Cache</a></dt>
-            <dd></dd>
-        
-            <dt><a href="MultipleParameterCacheKey.html">MultipleParameterCacheKey</a></dt>
-            <dd></dd>
-        
-            <dt><a href="ReactCacheKey.html">ReactCacheKey</a></dt>
-            <dd></dd>
-        
-            <dt><a href="SerializedCacheKey.html">SerializedCacheKey</a></dt>
-            <dd></dd>
-        
-            <dt><a href="SingleParameterCacheKey.html">SingleParameterCacheKey</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+/**
+ * @constant {{serialize: boolean}} SERIALIZE_OPTIONS
+ */
+export const SERIALIZE_OPTIONS = {
+  serialize: true
+};
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -189,10 +220,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

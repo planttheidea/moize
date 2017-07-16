@@ -40,7 +40,14 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu inline">
-					<li><a href="Cache.html">Cache</a></li>
+					<li><a href="Cache.html">Cache</a></li><li><a href="MultipleParameterCacheKey.html">MultipleParameterCacheKey</a></li><li><a href="ReactCacheKey.html">ReactCacheKey</a></li><li><a href="SerializedCacheKey.html">SerializedCacheKey</a></li><li><a href="SingleParameterCacheKey.html">SingleParameterCacheKey</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#_isPropShallowEqual">_isPropShallowEqual</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getReactCacheKey">getReactCacheKey</a></li><li><a href="global.html#getSerializedCacheKey">getSerializedCacheKey</a></li><li><a href="global.html#getStandardCacheKey">getStandardCacheKey</a></li><li><a href="global.html#has">has</a></li><li><a href="global.html#matches">matches</a></li><li><a href="global.html#PROMISE_OPTIONS">PROMISE_OPTIONS</a></li><li><a href="global.html#REACT_OPTIONS">REACT_OPTIONS</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#SERIALIZE_OPTIONS">SERIALIZE_OPTIONS</a></li>
 				</ul>
 			</li>
 			
@@ -149,241 +156,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Members</h3>
-
-        <dl>
-            
-<hr>
-<dt class="name" id="~PROMISE_OPTIONS">
-    <h4 id="~PROMISE_OPTIONS"><span class="type-signature">&lt;inner, constant> </span>PROMISE_OPTIONS<span class="type-signature"> :Object</span></h4>
-
-    
-</dt>
-<dd>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-33">line 33</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt class="name" id="~REACT_OPTIONS">
-    <h4 id="~REACT_OPTIONS"><span class="type-signature">&lt;inner, constant> </span>REACT_OPTIONS<span class="type-signature"> :Object</span></h4>
-
-    
-</dt>
-<dd>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-40">line 40</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt class="name" id="~SERIALIZE_OPTIONS">
-    <h4 id="~SERIALIZE_OPTIONS"><span class="type-signature">&lt;inner, constant> </span>SERIALIZE_OPTIONS<span class="type-signature"> :Object</span></h4>
-
-    
-</dt>
-<dd>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Object</span>
-
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-49">line 49</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
-        </dl>
     
 
     
@@ -535,46 +307,6 @@
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>cache</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Cache.html">Cache</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    new Cache()
-                
-                </td>
-            
-
-            <td class="description last"><p>caching mechanism to use for method</p></td>
-        </tr>
-
     
 
         <tr>
@@ -902,7 +634,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="index.js.html">index.js</a>,
-				 <a href="index.js.html#sunlight-1-line-56">line 56</a>
+				 <a href="index.js.html#sunlight-1-line-33">line 33</a>
 			</li>
 		</ul>
 	</dd>
@@ -1024,7 +756,7 @@ const memoizedFn = moize(fn, {
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.3</a>
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
