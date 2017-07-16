@@ -8,6 +8,7 @@ import sinon from 'sinon';
 // src
 import moize from 'src/index';
 import * as constants from 'src/constants';
+import * as serialize from 'src/serialize';
 import * as utils from 'src/utils';
 
 test('if moize returns a function', (t) => {
@@ -63,7 +64,7 @@ test('if moize will memoize the result of the function based on the same argumen
   t.true(fn.calledOnce);
 });
 
-test.skip('if moize will accept a custom serializer as argument', (t) => {
+test('if moize will accept a custom serializer as argument', (t) => {
   const key = 'baz';
 
   let serializer = sinon.stub().returns(key);
@@ -80,7 +81,11 @@ test.skip('if moize will accept a custom serializer as argument', (t) => {
   result('foo', 'bar');
 
   t.true(serializer.calledOnce);
-  t.true(result.cache.has(key));
+
+  const keys = result.keys();
+
+  t.is(keys.length, 1);
+  t.is(keys[0].key, 'baz');
 });
 
 test('if moize will throw an error when isPromise is true and promiseLibrary does not exist', (t) => {
@@ -169,7 +174,7 @@ test('if moize.promise will create a memoized method with isPromise set to true'
   });
 });
 
-test.skip('if moize.react will call moize with the correct arguments', (t) => {
+test('if moize.react will call moize with the correct arguments', (t) => {
   const jsdom = require('jsdom-global')();
 
   const Foo = () => {
@@ -177,15 +182,12 @@ test.skip('if moize.react will call moize with the correct arguments', (t) => {
       <div/>
     );
   };
-  const options = {
-    foo: 'bar'
-  };
 
   Foo.defaultProps = {
     foo: 'foo'
   };
 
-  const Result = moize.react(Foo, options);
+  const Result = moize.react(Foo);
 
   const props = {
     bar: 'bar',
@@ -201,26 +203,61 @@ test.skip('if moize.react will call moize with the correct arguments', (t) => {
   ReactDOM.render(foo, div);
 
   const keys = Result.keys();
-  const key = keys[0];
-  const expectedKey = '|{"bar":"bar","passedFn":"function passedFn() {}","foo":"foo"}|{}|';
 
-  t.is(key, expectedKey); // params serialized, including fn
+  t.is(keys.length, 1);
+
+  const key = keys[0].key;
+
+  const expectedProps = {
+    ...Foo.defaultProps,
+    ...props
+  };
+
+  t.deepEqual(key, {
+    props: expectedProps,
+    propsSize: Object.keys(expectedProps).length,
+    context: {},
+    contextSize: 0
+  });
 
   jsdom();
 });
 
-test.todo('if moize.reactSimple has the same options as moize.react, but also has a maxSize of 1');
+test('if moize.reactSimple has the same options as moize.react, but also has a maxSize of 1', (t) => {
+  const Foo = () => {
+    return (
+      <div/>
+    );
+  };
 
-test.skip('if moize.serialize will create a memoized method with serialize set to true', (t) => {
+  Foo.defaultProps = {
+    foo: 'foo'
+  };
+
+  const StandardResult = moize.react(Foo);
+  const SimpleResult = moize.reactSimple(Foo);
+
+  t.notDeepEqual(SimpleResult.options, StandardResult.options);
+  t.deepEqual(SimpleResult.options, {
+    ...StandardResult.options,
+    maxSize: 1
+  });
+});
+
+test('if moize.serialize will create a memoized method with serialize set to true', (t) => {
   const fn = () => {};
+  const serializer = () => {};
 
-  const result = moize.serialize(fn);
+  const result = moize.serialize(fn, {
+    serializer
+  });
 
   t.true(_.isFunction(result));
 
   t.deepEqual(result.options, {
     ...constants.DEFAULT_OPTIONS,
-    serialize: true
+    serialize: true,
+    serializer
   });
 });
 

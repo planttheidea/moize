@@ -3,11 +3,44 @@ import test from 'ava';
 
 // src
 import SerializedCacheKey from 'src/SerializedCacheKey';
+import * as serialize from 'src/serialize';
 
-test.todo('if the instance is constructed with the correct values');
+const serializerFunction = serialize.createArgumentSerializer({
+  maxArgs: Number.POSITIVE_INFINITY,
+  serializeFunctions: false
+});
 
-test.todo('if matches will return false if the key passed is not a multi-parameter');
+test('if the instance is constructed with the correct values', (t) => {
+  const key = [{foo: 'bar'}];
 
-test.todo('if matches will return false if the key passed is a multi-parameter key that is not shallowly equal');
+  const result = new SerializedCacheKey(key, serializerFunction);
 
-test.todo('if matches will return true if the key passed is a multi-parameter key that is shallowly equal');
+  t.deepEqual({...result}, {
+    key: serializerFunction(key),
+    serializer: serializerFunction
+  });
+});
+
+test('if matches will return false if the key passed is not equal to the serialized key', (t) => {
+  const existingKey = [{foo: 'bar'}];
+
+  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+
+  const newKey = [{bar: 'baz'}];
+
+  const result = cacheKey.matches(newKey);
+
+  t.false(result);
+});
+
+test('if matches will return true if the key passed is equal to the serialized key', (t) => {
+  const existingKey = [{foo: 'bar'}];
+
+  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+
+  const newKey = [{...existingKey[0]}];
+
+  const result = cacheKey.matches(newKey);
+
+  t.true(result);
+});

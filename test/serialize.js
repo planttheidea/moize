@@ -1,10 +1,60 @@
 // test
 import test from 'ava';
+import sinon from 'sinon';
 
 // src
 import * as serialize from 'src/serialize';
 
-test.todo('if createArgumentSerializer will create a method that serializes the args passed');
+test('if createArgumentSerializer will create a method that serializes the args passed', (t) => {
+  const options = {
+    maxArgs: Number.POSITIVE_INFINITY,
+    serializeFunctions: false
+  };
+
+  const argumentSerializer = serialize.createArgumentSerializer(options);
+
+  t.is(typeof argumentSerializer, 'function');
+
+  const args = ['foo', ['bar'], {baz: 'baz'}, () => {}];
+
+  const result = argumentSerializer(args);
+
+  t.is(result, '|foo|["bar"]|{"baz":"baz"}|');
+});
+
+test('if createArgumentSerializer will create a method that serializes the args passed using the custom serializer', (t) => {
+  const options = {
+    maxArgs: Number.POSITIVE_INFINITY,
+    serializeFunctions: true
+  };
+
+  const argumentSerializer = serialize.createArgumentSerializer(options);
+
+  t.is(typeof argumentSerializer, 'function');
+
+  const args = ['foo', ['bar'], {baz: 'baz'}, () => {}];
+
+  const result = argumentSerializer(args);
+
+  t.is(result, '|foo|["bar"]|{"baz":"baz"}|"function () {}"|');
+});
+
+test('if createArgumentSerializer will create a method that serializes the args limited to maxArgs', (t) => {
+  const options = {
+    maxArgs: 2,
+    serializeFunctions: false
+  };
+
+  const argumentSerializer = serialize.createArgumentSerializer(options);
+
+  t.is(typeof argumentSerializer, 'function');
+
+  const args = ['foo', ['bar'], {baz: 'baz'}, () => {}];
+
+  const result = argumentSerializer(args);
+
+  t.is(result, '|foo|["bar"]|');
+});
 
 test('if customReplacer will convert the value to string if it is a function', (t) => {
   const key = 'foo';
@@ -88,7 +138,7 @@ test('if getSerializerFunction returns a function that produces a stringified ve
   };
   const args = [string, number, boolean, fn, object];
 
-  const expectedResult = `|${string}|${number}|${boolean}|${fn}|{"bar":"baz"}|`;
+  const expectedResult = `|${string}|${number}|${boolean}|{"bar":"baz"}|`;
   const result = serializeArguments(args);
 
   t.is(result, expectedResult);
@@ -97,7 +147,7 @@ test('if getSerializerFunction returns a function that produces a stringified ve
 test('if getSerializerFunction uses the serializer passed when it is a function', (t) => {
   const options = {
     serializer(value) {
-      return value;
+      return `KEY: ${JSON.stringify(value)}`;
     }
   };
   const serializeArguments = serialize.getSerializerFunction(options);
@@ -114,16 +164,63 @@ test('if getSerializerFunction uses the serializer passed when it is a function'
 
   const result = serializeArguments(args);
 
-  t.is(result, args);
+  t.is(result, `KEY: ${JSON.stringify(args)}`);
 });
 
-test.todo('if getStringifiedArgument will stringify the object when it is a complex object');
+test('if getStringifiedArgument will stringify the object when it is a complex object', (t) => {
+  const arg = {};
+  const replacer = null;
 
-test.todo('if getStringifiedArgument will return the arg directly if it is not a complex object');
+  const result = serialize.getStringifiedArgument(arg, replacer);
 
-test.todo('if stringify will call JSON.stringify with the value passed');
+  t.is(result, '{}');
+});
 
-test.todo('if stringify will call JSON.stringify with the value and replacer passed');
+test('if getStringifiedArgument will stringify the object when it is a function', (t) => {
+  const arg = () => {};
+  const replacer = null;
+
+  const result = serialize.getStringifiedArgument(arg, replacer);
+
+  t.is(result, undefined);
+});
+
+test('if getStringifiedArgument will return the arg directly if it is not a complex object', (t) => {
+  const arg = 123;
+  const replacer = null;
+
+  const result = serialize.getStringifiedArgument(arg, replacer);
+
+  t.is(result, arg);
+});
+
+test('if stringify will call JSON.stringify with the value passed', (t) => {
+  const value = {foo: 'bar'};
+  const replacer = null;
+
+  const spy = sinon.spy(JSON, 'stringify');
+
+  serialize.stringify(value, replacer);
+
+  t.true(spy.calledOnce);
+  t.true(spy.calledWith(value, replacer));
+
+  spy.restore();
+});
+
+test('if stringify will call JSON.stringify with the value and replacer passed', (t) => {
+  const value = {foo: 'bar'};
+  const replacer = serialize.customReplacer;
+
+  const spy = sinon.spy(JSON, 'stringify');
+
+  serialize.stringify(value, replacer);
+
+  t.true(spy.calledOnce);
+  t.true(spy.calledWith(value, replacer));
+
+  spy.restore();
+});
 
 test('if stringify will call decycle on the object when it cannot be handled by JSON.stringify', (t) => {
   const standard = {

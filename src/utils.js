@@ -53,15 +53,15 @@ export const isComplexObject = (object: any): boolean => {
 /**
  * @private
  *
- * @function isFiniteAndPositive
+ * @function isFiniteAndPositiveInteger
  *
  * @description
- * is the number passed finite and positive
+ * is the number passed an integer that is finite and positive
  *
  * @param {number} number number to test for finiteness and positivity
  * @returns {boolean} is the number finite and positive
  */
-export const isFiniteAndPositive = (number: number): boolean => {
+export const isFiniteAndPositiveInteger = (number: number): boolean => {
   return FINITE_POSITIVE_INTEGER.test(`${number}`);
 };
 
@@ -509,7 +509,7 @@ export const getGetCacheKeyMethod = (options: Options): Function => {
  * @returns {function(*): CacheKey} the method that will get the cache key
  */
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
-  const hasMaxArgs: boolean = isFiniteAndPositive(options.maxArgs);
+  const hasMaxArgs: boolean = isFiniteAndPositiveInteger(options.maxArgs);
   const getCacheKeyMethod: Function = getGetCacheKeyMethod(options);
   const shouldIncludeOptions: boolean = options.serialize;
 
@@ -537,8 +537,8 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
  * @returns {function(function, *, *): *} value just stored in cache
  */
 export const createSetNewCachedValue = (cache: Cache, options: Options): Function => {
-  const hasMaxAge: boolean = isFiniteAndPositive(options.maxAge);
-  const hasMaxSize: boolean = isFiniteAndPositive(options.maxSize);
+  const hasMaxAge: boolean = isFiniteAndPositiveInteger(options.maxAge);
+  const hasMaxSize: boolean = isFiniteAndPositiveInteger(options.maxSize);
 
   const {
     maxAge,

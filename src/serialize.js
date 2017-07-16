@@ -11,7 +11,7 @@ import type {
 // utils
 import {
   isComplexObject,
-  isFiniteAndPositive,
+  isFiniteAndPositiveInteger,
   isFunction,
   isValueObjectOrArray
 } from './utils';
@@ -120,7 +120,7 @@ export const stringify = (value: any, replacer: ?Function) => {
  * @returns {string}
  */
 export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
-  return isComplexObject(arg) ? stringify(arg, replacer) : arg;
+  return isComplexObject(arg) || isFunction(arg) ? stringify(arg, replacer) : arg;
 };
 
 /**
@@ -137,16 +137,21 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
  */
 export const createArgumentSerializer = ({maxArgs, serializeFunctions}: Options): Function => {
   const replacer: ?Function = serializeFunctions ? customReplacer : null;
-  const hasMaxArgs: boolean = isFiniteAndPositive(maxArgs);
+  const hasMaxArgs: boolean = isFiniteAndPositiveInteger(maxArgs);
 
   return (args: Array<any>): string => {
     const length: number = hasMaxArgs ? maxArgs : args.length;
 
     let index: number = -1,
-        key: string = '|';
+        key: string = '|',
+        value: any;
 
     while (++index < length) {
-      key += `${getStringifiedArgument(args[index], replacer)}|`;
+      value = getStringifiedArgument(args[index], replacer);
+
+      if (value) {
+        key += `${value}|`;
+      }
     }
 
     return key;

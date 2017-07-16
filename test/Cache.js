@@ -2,6 +2,12 @@ import test from 'ava';
 
 import Cache from 'src/Cache';
 
+const sleep = (ms = 0) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+};
+
 test('if creating a new Cache creates an object with the correct instance values', (t) => {
   const result = new Cache();
 
@@ -28,9 +34,47 @@ test('if add will add the key and value passed to the cache', (t) => {
   t.is(cache.size, 1);
 });
 
-test.todo('cache.clear');
+test('if clear will return the cache to its original empty state', (t) => {
+  const cache = new Cache();
 
-test.todo('cache.expireAfter');
+  cache.add('foo', 'bar');
+  cache.add('bar', 'baz');
+
+  t.not(cache.size, 0);
+  t.notDeepEqual(cache.lastItem, {});
+  t.notDeepEqual(cache.list, []);
+
+  cache.clear();
+
+  t.is(cache.size, 0);
+  t.deepEqual(cache.lastItem, {});
+  t.deepEqual(cache.list, []);
+});
+
+test('if expireAfter will remove the item from cache after maxAge', async (t) => {
+  const key = 'foo';
+  const maxAge = 100;
+
+  const cache = new Cache();
+
+  cache.add(key, 'bar');
+
+  t.true(cache.has(key));
+
+  cache.expireAfter(key, maxAge);
+
+  await sleep(maxAge + 50);
+
+  t.false(cache.has(key));
+});
+
+test('if get will return undefined if there are no items in cache', (t) => {
+  const cache = new Cache();
+
+  const result = cache.get('foo');
+
+  t.is(result, undefined);
+});
 
 test('if get will return the value for the passed key in cache', (t) => {
   const cache = new Cache();

@@ -4,6 +4,7 @@ import sinon from 'sinon';
 
 // src
 import * as utils from 'src/utils';
+import * as constants from 'src/constants';
 import Cache from 'src/Cache';
 
 test('if addStaticPropertiesToFunction will add static properties to the originalFn', (t) => {
@@ -182,9 +183,34 @@ test.todo('if createSetNewCachedValue will set the cache value correctly when is
 
 test.todo('if createSetNewCachedValue will set the cache value correctly when isPromise option is false');
 
-test.todo('if getDefaultedOptions will return the options passed merged with the default options, and serializer of null when serializer is not true');
+test('if getDefaultedOptions will return the options passed merged with the default options, and serializer of null when serialize is not true', (t) => {
+  const options = {
+    isPromise: true,
+    promiseLibrary() {}
+  };
 
-test.todo('if getDefaultedOptions will return the options passed merged with the default options, and serializer populated when serializer is true');
+  const result = utils.getDefaultedOptions(options);
+
+  t.deepEqual(result, {
+    ...constants.DEFAULT_OPTIONS,
+    ...options,
+    serializer: null
+  });
+});
+
+test('if getDefaultedOptions will return the options passed merged with the default options, and serializer populated when serialize is true', (t) => {
+  const options = {
+    serialize: true,
+    serializer() {}
+  };
+
+  const result = utils.getDefaultedOptions(options);
+
+  t.deepEqual(result, {
+    ...constants.DEFAULT_OPTIONS,
+    ...options
+  });
+});
 
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
   function foo() {}
@@ -253,33 +279,121 @@ test.todo('if getStandardCacheKey will create a new MultipleParameterCacheKey if
 
 test.todo('if getStandardCacheKey will create a new SingleParameterCacheKey if it does not exist in cache and has only one argument');
 
-test.todo('if isComplexObject returns false if the object is falsy');
+test('if isComplexObject returns false if the object is falsy', (t) => {
+  t.false(utils.isComplexObject(false));
+  t.false(utils.isComplexObject(null));
+  t.false(utils.isComplexObject(undefined));
+  t.false(utils.isComplexObject(0));
+});
 
-test.todo('if isComplexObject returns false if the object is not the typeof object');
+test('if isComplexObject returns false if the object is not the typeof object', (t) => {
+  t.false(utils.isComplexObject(123));
+  t.false(utils.isComplexObject('foo'));
+  t.false(utils.isComplexObject(() => {}));
+  t.false(utils.isComplexObject(true));
+});
 
-test.todo('if isComplexObject returns true if the object is truthy and the typeof object');
+test('if isComplexObject returns true if the object is truthy and the typeof object', (t) => {
+  t.true(utils.isComplexObject({}));
+  t.true(utils.isComplexObject([]));
+  t.true(utils.isComplexObject(/foo/));
+});
 
-test.todo('if isFiniteAndPositive returns false when the number is not finite');
+test('if isFiniteAndPositiveInteger returns false when the number is not finite', (t) => {
+  t.false(utils.isFiniteAndPositiveInteger(Number.POSITIVE_INFINITY));
+  t.false(utils.isFiniteAndPositiveInteger(Number.NEGATIVE_INFINITY));
+});
 
-test.todo('if isFiniteAndPositive returns false when the number is not positive');
+test('if isFiniteAndPositiveInteger returns false when the number is not positive', (t) => {
+  t.false(utils.isFiniteAndPositiveInteger(-123));
+  t.false(utils.isFiniteAndPositiveInteger(0));
+});
 
-test.todo('if isFiniteAndPositive returns true when the number is both finite and positive');
+test('if isFiniteAndPositiveInteger returns false when the number is a decimal', (t) => {
+  t.false(utils.isFiniteAndPositiveInteger(123.45));
+});
 
-test.todo('if isFunction returns false if the object passed is not a function');
+test('if isFiniteAndPositiveInteger returns true when the number is an integer and both finite and positive', (t) => {
+  t.true(utils.isFiniteAndPositiveInteger(123));
+});
 
-test.todo('if isFunction returns true if the object passed is a function');
+test('if isFunction returns false if the object passed is not a function', (t) => {
+  t.false(utils.isFunction(false));
+  t.false(utils.isFunction(true));
+  t.false(utils.isFunction(''));
+  t.false(utils.isFunction('foo'));
+  t.false(utils.isFunction(-123));
+  t.false(utils.isFunction(0));
+  t.false(utils.isFunction(123));
+  t.false(utils.isFunction({}));
+  t.false(utils.isFunction([]));
+  t.false(utils.isFunction(/foo/));
+  t.false(utils.isFunction(null));
+  t.false(utils.isFunction(undefined));
+});
 
-test.todo('if isPlainObject returns false if the object is not a complex object');
+test('if isFunction returns true if the object passed is a function', (t) => {
+  t.true(utils.isFunction(function foo() {}));
+  t.true(utils.isFunction(() => {}));
+});
 
-test.todo('if isPlainObject returns false if the direct constructor of the object is not Object');
+test('if isPlainObject returns false if the object is not a complex object', (t) => {
+  t.false(utils.isPlainObject(false));
+  t.false(utils.isPlainObject(true));
+  t.false(utils.isPlainObject(''));
+  t.false(utils.isPlainObject('foo'));
+  t.false(utils.isPlainObject(-123));
+  t.false(utils.isPlainObject(0));
+  t.false(utils.isPlainObject(123));
+  t.false(utils.isPlainObject(function foo() {}));
+  t.false(utils.isPlainObject(() => {}));
+  t.false(utils.isPlainObject([]));
+  t.false(utils.isPlainObject(/foo/));
+  t.false(utils.isPlainObject(null));
+  t.false(utils.isPlainObject(undefined));
+});
 
-test.todo('if isPlainObject returns true if the object is a complex object and whose direct constructor is Object');
+test('if isPlainObject returns false if the direct constructor of the object is not Object', (t) => {
+  function Foo(value) {
+    this.value = value;
 
-test.todo('if isValueObjectOrArray returns false if the object is not a complex object');
+    return this;
+  }
 
-test.todo('if isValueObjectOrArray returns false if the object is an instance of a gotcha class');
+  const foo = new Foo('bar');
 
-test.todo('if isValueObjectOrArray returns true if the object is a complex object that is not an instance of a gotcha class');
+  t.false(utils.isPlainObject(foo));
+});
+
+test('if isPlainObject returns true if the object is a complex object and whose direct constructor is Object', (t) => {
+  t.true(utils.isPlainObject({}));
+  t.true(utils.isPlainObject(new Object())); // eslint-disable-line no-new-object
+});
+
+test('if isValueObjectOrArray returns false if the object is not a complex object', (t) => {
+  t.false(utils.isValueObjectOrArray(false));
+  t.false(utils.isValueObjectOrArray(null));
+  t.false(utils.isValueObjectOrArray(undefined));
+  t.false(utils.isValueObjectOrArray(0));
+  t.false(utils.isValueObjectOrArray(123));
+  t.false(utils.isValueObjectOrArray('foo'));
+  t.false(utils.isValueObjectOrArray(() => {}));
+  t.false(utils.isValueObjectOrArray(true));
+});
+
+test('if isValueObjectOrArray returns false if the object is an instance of a gotcha class', (t) => {
+  t.false(utils.isValueObjectOrArray(new Boolean('true')));
+  t.false(utils.isValueObjectOrArray(new Date()));
+  t.false(utils.isValueObjectOrArray(new Number('123')));
+  t.false(utils.isValueObjectOrArray(new RegExp('foo')));
+  t.false(utils.isValueObjectOrArray(/foo/));
+  t.false(utils.isValueObjectOrArray(new String('true')));
+});
+
+test('if isValueObjectOrArray returns true if the object is a complex object that is not an instance of a gotcha class', (t) => {
+  t.true(utils.isValueObjectOrArray({}));
+  t.true(utils.isValueObjectOrArray([]));
+});
 
 test('if splice performs the same operation as the native splice', (t) => {
   const indexToSpice = 1;
