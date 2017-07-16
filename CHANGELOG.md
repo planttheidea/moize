@@ -3,7 +3,10 @@
 ### 3.0.0
 * Improve performance of multiple parameter cache matching (~3x faster)
 * Improve performance of `react` functional component cache matching (~9.5x faster)
+* Improve performance of serialized parameter cache matching (~1.5x faster)
+* Fix react cache issue where different functions with identical names / body contents were seen as equal
 * Add `moize.reactSimple` to limit `react` cache size to `1`, which mimics the `PureComponent` optimization for functional components
+* Add `isReact` option for simpler `react` identification without shortcut methods
 
 **BREAKING CHANGES**
 
