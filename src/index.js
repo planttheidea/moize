@@ -67,10 +67,19 @@ import {
  * @param {function} [passedOptions.serializer] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
-const moize: Function = (functionOrComposableOptions: (Function|Options), passedOptions: Object = {}): Function => {
+const moize: Function = (functionOrComposableOptions: (Function|Object), passedOptions: Object = {}): Function => {
   if (isPlainObject(functionOrComposableOptions)) {
-    return function(fn: Function, otherOptions: Object = {}): Function {
-      return moize(fn, {
+    return function(fnOrOptions: (Function|Object), otherOptions: Object = {}): Function {
+      if (isPlainObject(fnOrOptions)) {
+        return moize({
+          // $FlowIgnore functionOrComposableOptions is object of options
+          ...functionOrComposableOptions,
+          // $FlowIgnore fnOrOptions is object of options
+          ...fnOrOptions
+        });
+      }
+
+      return moize(fnOrOptions, {
         // $FlowIgnore functionOrComposableOptions is object of options
         ...functionOrComposableOptions,
         ...otherOptions
@@ -82,13 +91,11 @@ const moize: Function = (functionOrComposableOptions: (Function|Options), passed
     throw new TypeError(INVALID_FIRST_PARAMETER_ERROR);
   }
 
-  // $FlowIgnore if the function is already moized, it has an isMoized property on it
   const isComposed: boolean = functionOrComposableOptions.isMoized;
   // $FlowIgnore if the function is already moized, it has an originalFunction property on it
   const fn: Function = isComposed ? functionOrComposableOptions.originalFunction : functionOrComposableOptions;
 
   const options: Options = getDefaultedOptions(!isComposed ? passedOptions : {
-    // $FlowIgnore if the function is already moized, it has an options property on it
     ...functionOrComposableOptions.options,
     ...passedOptions
   });
