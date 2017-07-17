@@ -127,6 +127,43 @@ export const isValueObjectOrArray = (object: any): boolean => {
 /**
  * @private
  *
+ * @function take
+ *
+ * @description
+ * take the first N number of items from the array (faster than slice)
+ *
+ * @param {Array<*>} array the array to take from
+ * @param {number} size the number of items to take
+ * @returns {Array<*>} the shortened array
+ */
+export const take = (array: Array<any>, size: number): Array<any> => {
+  if (size >= array.length) {
+    return array;
+  }
+
+  switch (size) {
+    case 1:
+      return [array[0]];
+
+    case 2:
+      return [array[0], array[1]];
+
+    case 3:
+      return [array[0], array[1], array[2]];
+
+    case 4:
+      return [array[0], array[1], array[2], array[3]];
+
+    case 5:
+      return [array[0], array[1], array[2], array[3], array[4]];
+  }
+
+  return array.slice(0, size);
+};
+
+/**
+ * @private
+ *
  * @function addStaticPropertiesToFunction
  *
  * @description
@@ -631,7 +668,7 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   if (shouldPassOptions) {
     if (hasMaxArgs) {
       return (key: any): CacheKey => {
-        return getCacheKeyMethod(cache, key.slice(0, options.maxArgs), options);
+        return getCacheKeyMethod(cache, take(key, options.maxArgs), options);
       };
     }
 
@@ -642,7 +679,7 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
 
   if (hasMaxArgs) {
     return (key: any): CacheKey => {
-      return getCacheKeyMethod(cache, key.slice(0, options.maxArgs));
+      return getCacheKeyMethod(cache, take(key, options.maxArgs));
     };
   }
 

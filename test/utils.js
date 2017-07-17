@@ -1388,6 +1388,47 @@ test('if splice returns immediately when an empty array is passed', (t) => {
   t.is(array.length, originalArrayLength);
 });
 
+test('if take will return the original array if the length is smaller than the size requested', (t) => {
+  const array = [1, 2, 3];
+  const size = 5;
+
+  const result = utils.take(array, size);
+
+  t.is(result, array);
+});
+
+test('if take will return a new array with the first N number of items from the original array', (t) => {
+  const array = [1, 2, 3, 4, 5, 6, 7];
+
+  t.deepEqual(utils.take(array, 1), array.slice(0, 1));
+  t.deepEqual(utils.take(array, 2), array.slice(0, 2));
+  t.deepEqual(utils.take(array, 3), array.slice(0, 3));
+  t.deepEqual(utils.take(array, 4), array.slice(0, 4));
+  t.deepEqual(utils.take(array, 5), array.slice(0, 5));
+});
+
+test('if take will return a new array with the first N number of items without calling slice if 5 or less, calling it if 6 or more', (t) => {
+  const array = [1, 2, 3, 4, 5, 6, 7];
+
+  const spy = sinon.spy(Object.getPrototypeOf(array), 'slice');
+
+  utils.take(array, 1);
+  utils.take(array, 2);
+  utils.take(array, 3);
+  utils.take(array, 4);
+  utils.take(array, 5);
+
+  t.true(spy.notCalled);
+
+  spy.reset();
+
+  utils.take(array, 6);
+
+  t.true(spy.calledOnce);
+
+  spy.restore();
+});
+
 test('if unshift performs the same operation as the native unshift', (t) => {
   const valueToUnshift = 'baz';
 
