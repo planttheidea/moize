@@ -255,7 +255,6 @@ export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: 
   return (exception: Error): Promise<any> => {
     cache.remove(key);
 
-    // $FlowIgnore promiseLibrary can have property methods
     return promiseLibrary.reject(exception);
   };
 };
@@ -282,7 +281,6 @@ export const createPromiseResolver = (
   {maxAge, promiseLibrary}: Options
 ) => {
   return (resolvedValue: any): Promise<any> => {
-    // $FlowIgnore promiseLibrary can have property methods
     cache.update(key, promiseLibrary.resolve(resolvedValue));
 
     if (hasMaxAge) {
@@ -338,7 +336,9 @@ export const getDefaultedOptions = (options: Object): Options => {
     ...options
   };
 
-  coalescedOptions.serializer = coalescedOptions.serialize ? getSerializerFunction(coalescedOptions) : null;
+  if (coalescedOptions.serialize) {
+    coalescedOptions.serializer = getSerializerFunction(coalescedOptions);
+  }
 
   return coalescedOptions;
 };
@@ -413,6 +413,41 @@ export const getReactCacheKey = (cache: Cache, key: Array<any>): ReactCacheKey =
 /**
  * @private
  *
+ * @function getReactCacheKey
+ *
+ * @description
+ * get the cache key specific to react
+ *
+ * @param {Cache} cache the cache to find a potential matching key in
+ * @param {*} key the key to try to find a match of, or turn into a new ReactCacheKey
+ * @param {Options} options the options passed to the moized method
+ * @returns {ReactCacheKey} the matching cache key, or a new one
+ */
+export const getReactCacheKeyCustomEquals = (cache: Cache, key: Array<any>, options: Options): ReactCacheKey => {
+  // $FlowIgnore if cache has size, the key exists
+  if (cache.size && cache.lastItem.key.matchesCustom(key, options.equals)) {
+    // $FlowIgnore if the key matches, the key exists
+    return cache.lastItem.key;
+  }
+
+  let index: number = 1;
+
+  while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
+    if (cache.list[index].key.matchesCustom(key, options.equals)) {
+      // $FlowIgnore if the key matches, the key exists
+      return cache.list[index].key;
+    }
+
+    index++;
+  }
+
+  return new ReactCacheKey(key);
+};
+
+/**
+ * @private
+ *
  * @function getSerializedCacheKey
  *
  * @description
@@ -435,6 +470,45 @@ export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Op
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
     if (cache.list[index].key.matches(key)) {
+      // $FlowIgnore if the key matches, the key exists
+      return cache.list[index].key;
+    }
+
+    index++;
+  }
+
+  return new SerializedCacheKey(key, options.serializer);
+};
+
+/**
+ * @private
+ *
+ * @function getSerializedCacheKeyCustomEquals
+ *
+ * @description
+ * get the cache key specific to serialized methods
+ *
+ * @param {Cache} cache the cache to find a potential matching key in
+ * @param {*} key the key to try to find a match of, or turn into a new SerializedCacheKey
+ * @param {Options} options the options passed to the moized method
+ * @returns {SerializedCacheKey} the matching cache key, or a new one
+ */
+export const getSerializedCacheKeyCustomEquals = (
+  cache: Cache,
+  key: Array<any>,
+  options: Options
+): SerializedCacheKey => {
+  // $FlowIgnore if cache has size, the key exists
+  if (cache.size && cache.lastItem.key.matches(key, options.equals)) {
+    // $FlowIgnore if the key matches, the key exists
+    return cache.lastItem.key;
+  }
+
+  let index: number = 1;
+
+  while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
+    if (cache.list[index].key.matches(key, options.equals)) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -482,6 +556,41 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
 /**
  * @private
  *
+ * @function getStandardCacheKeyCustomEquals
+ *
+ * @description
+ * get the cache key for standard parameters, either single or multiple
+ *
+ * @param {Cache} cache the cache to find a potential matching key in
+ * @param {*} key the key to try to find a match of, or turn into a new Multiple / SingleParameterCacheKey
+ * @param {Options} options the options passed to the moized method
+ * @returns {StandardCacheKey} the matching cache key, or a new one
+ */
+export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, options: Options): StandardCacheKey => {
+  const isMultiParamKey: boolean = key.length > 1;
+
+  // $FlowIgnore if cache has size, the key exists
+  if (cache.size && cache.lastItem.key.matchesCustom(key, isMultiParamKey, options.equals)) {
+    return cache.lastItem.key;
+  }
+
+  let index: number = 1;
+
+  while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
+    if (cache.list[index].key.matchesCustom(key, isMultiParamKey, options.equals)) {
+      return cache.list[index].key;
+    }
+
+    index++;
+  }
+
+  return isMultiParamKey ? new MultipleParameterCacheKey(key) : new SingleParameterCacheKey(key);
+};
+
+/**
+ * @private
+ *
  * @function getGetCacheKeyMethod
  *
  * @description
@@ -492,14 +601,14 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
  */
 export const getGetCacheKeyMethod = (options: Options): Function => {
   if (options.isReact) {
-    return getReactCacheKey;
+    return options.equals ? getReactCacheKeyCustomEquals : getReactCacheKey;
   }
 
   if (options.serialize) {
-    return getSerializedCacheKey;
+    return options.equals ? getSerializedCacheKeyCustomEquals : getSerializedCacheKey;
   }
 
-  return getStandardCacheKey;
+  return options.equals ? getStandardCacheKeyCustomEquals : getStandardCacheKey;
 };
 
 /**
@@ -517,9 +626,9 @@ export const getGetCacheKeyMethod = (options: Options): Function => {
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   const hasMaxArgs: boolean = isFiniteAndPositiveInteger(options.maxArgs);
   const getCacheKeyMethod: Function = getGetCacheKeyMethod(options);
-  const shouldIncludeOptions: boolean = options.serialize;
+  const shouldPassOptions: boolean = options.serialize || !!options.equals;
 
-  if (shouldIncludeOptions) {
+  if (shouldPassOptions) {
     if (hasMaxArgs) {
       return (key: any): CacheKey => {
         return getCacheKeyMethod(cache, key.slice(0, options.maxArgs), options);

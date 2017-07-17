@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import _ from 'lodash';
 
 // src
 import SerializedCacheKey from 'src/SerializedCacheKey';
@@ -41,6 +42,30 @@ test('if matches will return true if the key passed is equal to the serialized k
   const newKey = [{...existingKey[0]}];
 
   const result = cacheKey.matches(newKey);
+
+  t.true(result);
+});
+
+test('if matchesCustom wll return false if the key passed is not equal to the serialized key based on the custom method', (t) => {
+  const existingKey = [{foo: 'bar'}];
+
+  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+
+  const newKey = [{bar: 'baz'}];
+
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
+
+  t.false(result);
+});
+
+test('if matchesCustom wll return true if the key passed is equal to the serialized key based on the custom method', (t) => {
+  const existingKey = [{foo: 'bar'}];
+
+  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+
+  const newKey = [{...existingKey[0]}];
+
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.true(result);
 });

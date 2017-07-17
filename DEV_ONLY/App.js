@@ -1,5 +1,6 @@
 import 'babel-polyfill';
 
+import isEqual from 'lodash/isEqual';
 import Bluebird from 'bluebird';
 import PropTypes from 'prop-types';
 import React, {
@@ -32,6 +33,25 @@ console.log(memoized.cache);
 console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
 
+const deepEqualMethod = ({one, two}) => {
+  console.log('custom equal method fired', one, two);
+
+  return [one, two];
+};
+
+const deepEqualMemoized = moize(deepEqualMethod, {
+  equals: isEqual
+});
+
+deepEqualMemoized({one: 1, two: 2});
+deepEqualMemoized({one: 2, two: 1});
+deepEqualMemoized({one: 1, two: 2});
+deepEqualMemoized({one: 1, two: 2});
+
+console.log(deepEqualMemoized.cache);
+console.log('has deep true', deepEqualMemoized.has([{one: 1, two: 2}]));
+console.log('has deep false', deepEqualMemoized.has([{one: 1, two: 3}]));
+
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
 
@@ -53,9 +73,9 @@ const promiseMethodRejected = (number) => {
 const memoizedPromise = moize(promiseMethod, {
   isPromise: true
 });
-const memoizedPromiseRejected = moize.promise({
-  promiseLibrary: Bluebird
-})(promiseMethodRejected);
+const memoizedPromiseRejected = moize({isPromise: true})({promiseLibrary: Bluebird})(promiseMethodRejected);
+
+console.log('curried options', memoizedPromiseRejected.options);
 
 memoizedPromiseRejected(3)
   .then((foo) => {

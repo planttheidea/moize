@@ -49,6 +49,37 @@ class MultipleParameterCacheKey {
 
     return true;
   }
+
+  /**
+   * @function matchesCustom
+   * @memberof SingleParameterCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance based on the custom equality function passed
+   *
+   * @param {Array<*>} key the key to test
+   * @param {boolean} isMultiParamKey is the key a multi-parameter key
+   * @param {function} isEqual method to compare equality of the keys
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matchesCustom(key: Array<any>, isMultiParamKey: boolean, isEqual: Function): boolean {
+    if (!isMultiParamKey || key.length !== this.size) {
+      return false;
+    }
+
+    let index: number = 0;
+
+    while (index < this.size) {
+      if (!isEqual(key[index], this.key[index])) {
+        return false;
+      }
+
+      index++;
+    }
+
+    return true;
+  }
 }
 
 export default MultipleParameterCacheKey;

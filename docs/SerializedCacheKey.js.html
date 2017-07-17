@@ -108,7 +108,23 @@ class SerializedCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matches(key: Array&lt;any>): boolean {
-    return this.key === this.serializer(key);
+    return this.serializer(key) === this.key;
+  }
+
+  /**
+   * @function matchesCustom
+   * @memberof SerializedCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance based on the custom equality function passed
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @param {function} isEqual method to compare equality of the keys
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matchesCustom(key: Array&lt;any>, isEqual: Function): boolean {
+    return isEqual(this.serializer(key), this.key);
   }
 }
 

@@ -3,6 +3,7 @@
 const Benchmark = require('benchmark');
 const Table = require('cli-table2');
 const ora = require('ora');
+const React = require('react');
 
 const underscore = require('underscore').memoize;
 const lodash = require('lodash').memoize;
@@ -13,6 +14,8 @@ const addyOsmani = require('./addy-osmani');
 const memoizerific = require('memoizerific');
 const lruMemoize = require('lru-memoize').default;
 const moize = require('../lib');
+
+const deepEquals = require('lodash').isEqual;
 
 const showResults = (benchmarkResults) => {
   const table = new Table({
@@ -93,6 +96,11 @@ const fibonacciMultipleObject = (number, check) => {
   }) + fibonacciMultipleObject(secondValue, {
     isComplete: secondValue < 2
   });
+};
+
+const fibonacciMultipleDeepEqual = ({number}) => {
+  return number < 2 ? number :
+    fibonacciMultipleDeepEqual({number: number - 1}) + fibonacciMultipleDeepEqual({number: number - 2});
 };
 
 const runSingleParameterSuite = () => {
@@ -273,6 +281,83 @@ const runMultipleObjectSuite = () => {
   });
 };
 
-runSingleParameterSuite()
-  .then(runMultiplePrimitiveSuite)
-  .then(runMultipleObjectSuite);
+const runAlternativeOptionsSuite = () => {
+  const fibonacciSuite = new Benchmark.Suite('Multiple parameters (Object)');
+  const fibonacciNumber = {
+    number: 35
+  };
+  const props = {
+    foo: {
+      foo: {
+        foo: 'foo'
+      }
+    },
+    bar: {
+      bar: {
+        bar: 'bar'
+      }
+    }
+  };
+  const context = {};
+
+  const mMoizeDeep = moize(fibonacciMultipleDeepEqual, {
+    equals: deepEquals
+  });
+  const mMoizeSerialize = moize.serialize(fibonacciMultipleDeepEqual);
+
+  const Foo = (props) => {
+    return React.createElement('div', null, JSON.stringify(props));
+  };
+
+  const mMoizeReact = moize.react(Foo);
+  const mMoizeReactDeep = moize.react(Foo, {
+    equals: deepEquals
+  });
+  const mMoizeReactOld = moize(Foo, {
+    maxArgs: 2,
+    serialize: true,
+    serializeFunctions: true
+  });
+
+  return new Promise((resolve) => {
+    fibonacciSuite
+      .add('moize custom equals (lodash isEqual)', () => {
+        mMoizeDeep(fibonacciNumber);
+      })
+      .add('moize deep equals (serialized)', () => {
+        mMoizeSerialize(fibonacciNumber);
+      })
+      .add('moize react (v2)', () => {
+        mMoizeReactOld(props, context);
+      })
+      .add('moize react', () => {
+        mMoizeReact(props, context);
+      })
+      .add('moize react custom equals (lodash isEqual)', () => {
+        mMoizeReactDeep(props, context);
+      })
+      .on('start', () => {
+        console.log(''); // eslint-disable-line no-console
+        console.log('Starting cycles for alternative cache types...'); // eslint-disable-line no-console
+
+        results = [];
+
+        spinner.start();
+      })
+      .on('cycle', onCycle)
+      .on('complete', () => {
+        onComplete();
+        resolve();
+      })
+      .run({
+        async: true
+      });
+  });
+};
+
+runAlternativeOptionsSuite();
+
+// runSingleParameterSuite()
+//   .then(runMultiplePrimitiveSuite)
+//   .then(runMultipleObjectSuite)
+//   .then(runAlternativeOptionsSuite);

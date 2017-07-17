@@ -72,6 +72,7 @@ export const NATIVE_PROMISE: ?Function = typeof Promise === FUNCTION_TYPEOF ? Pr
  * @constant {Object} DEFAULT_OPTIONS
  */
 export const DEFAULT_OPTIONS: Object = {
+  equals: null,
   isPromise: false,
   isReact: false,
   maxAge: INFINITY,
@@ -79,7 +80,8 @@ export const DEFAULT_OPTIONS: Object = {
   maxSize: INFINITY,
   promiseLibrary: NATIVE_PROMISE,
   serialize: false,
-  serializeFunctions: false
+  serializeFunctions: false,
+  serializer: null
 };
 
 /**

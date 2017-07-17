@@ -8,7 +8,6 @@ import sinon from 'sinon';
 // src
 import moize from 'src/index';
 import * as constants from 'src/constants';
-import * as serialize from 'src/serialize';
 import * as utils from 'src/utils';
 
 test('if moize returns a function', (t) => {
@@ -44,6 +43,29 @@ test('if moize will return a new moized function with a mixture of the options i
     maxAge: 10,
     serializer: null
   });
+});
+
+test('if moize will curry as long as options objects are passed as the first parameter', (t) => {
+  const length = 1000;
+
+  let index = 0,
+      moizer;
+
+  while (index < length) {
+    moizer = moize({index});
+
+    if (typeof moizer !== 'function') {
+      t.fail();
+    }
+
+    index++;
+  }
+
+  const moized = moizer(() => {});
+
+  t.is(moized.options.index, length - 1);
+
+  t.pass();
 });
 
 test('if moize will memoize the result of the function based on the same arguments', (t) => {

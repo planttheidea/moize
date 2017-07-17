@@ -4,6 +4,7 @@
   ],
   "globals": {
     "__dirname": true,
+    "global": true,
     "module": true,
     "process": true,
     "require": true

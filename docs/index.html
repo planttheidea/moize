@@ -92,13 +92,14 @@
 <p><img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/></p>
-<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.</p>
+<p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3.3kb when minified and gzipped.</p>
 <h2 id="table-of-contents">Table of contents</h2>
 <ul>
 <li><a href="#upgrade-notification">Upgrade notification</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#advanced-usage">Advanced usage</a><ul>
+<li><a href="#equals">equals</a></li>
 <li><a href="#ispromise">isPromise</a></li>
 <li><a href="#isreact">isReact</a></li>
 <li><a href="#maxage">maxAge</a></li>
@@ -162,6 +163,7 @@ moize(fn, options);
 // curried
 moize(options)(fn);</code></pre><p>The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
+  equals: Function, // custom method to compare equality between two objects
   isPromise: boolean, // is the result a promise
   isReact: boolean, // is the result a React component
   maxAge: number, // amount of time in milliseconds before the cache will expire
@@ -171,7 +173,23 @@ moize(options)(fn);</code></pre><p>The full shape of these options:</p>
   serialize: boolean, // should the parameters be serialized instead of directly referenced
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
-}</code></pre><h4 id="ispromise">isPromise</h4>
+}</code></pre><h4 id="equals">equals</h4>
+<p><em>defaults to strict equality</em></p>
+<p>Custom method used to compare equality of keys for cache purposes.</p>
+<pre class="prettyprint source lang-javascript"><code>// using lodash's deep equal comparison method
+import isEqual from 'lodash/isEqual';
+
+const fn = ({foo, bar}) => {
+  return [foo, bar];
+};
+
+const memoized = moize(fn, {
+  equals: isEqual
+});
+
+memoized({foo: 'foo', bar: 'bar'});
+memoized({foo: 'foo', bar: 'bar'}); // pulls from cache</code></pre><p>The <code>equals</code> method receives two parameters (cache key values) and should return a <code>boolean</code>.</p>
+<h4 id="ispromise">isPromise</h4>
 <p><em>defaults to false</em></p>
 <p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>. This is also available via the shortcut method of <a href="#moizepromise"><code>moize.promise</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = async (item) => {
@@ -194,7 +212,7 @@ const memoized = moize(fn, {
 
 export default moize(Foo, {
   isReact: true
-});</code></pre><p>The method will do a shallow comparison of both <code>props</code> and <code>context</code> of the component based on strict equality. If you want to mimic the <code>PureComponent</code> optimization and only cache the most recent version, add the parameter <code>maxSize</code> set to <code>1</code>.</p>
+});</code></pre><p>The method will do a shallow comparison of both <code>props</code> and <code>context</code> of the component based on strict equality. If you have mutative props and instead want to do a deep equals comparison, provide a custom <a href="#equals"><code>equals</code></a> option.</p>
 <h4 id="maxage">maxAge</h4>
 <p><em>defaults to Infinity</em></p>
 <p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method. This is also available via the shortcut method of <a href="#moizemaxage"><code>moize.maxAge</code></a>.</p>
@@ -458,53 +476,53 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 <tbody>
 <tr>
 <td><strong>moize</strong></td>
-<td><strong>40,053,118</strong></td>
-<td><strong>0.60%</strong></td>
+<td><strong>44,547,124</strong></td>
+<td><strong>0.64%</strong></td>
 </tr>
 <tr>
 <td>fast-memoize</td>
-<td>30,697,717</td>
-<td>0.75%</td>
+<td>30,048,291</td>
+<td>0.97%</td>
 </tr>
 <tr>
 <td>moize (serialized)</td>
-<td>13,368,025</td>
-<td>0.84%</td>
+<td>14,877,726</td>
+<td>0.63%</td>
 </tr>
 <tr>
 <td>underscore</td>
-<td>13,288,319</td>
-<td>0.91%</td>
+<td>13,821,853</td>
+<td>0.61%</td>
 </tr>
 <tr>
 <td>memoizee</td>
-<td>11,607,458</td>
-<td>0.79%</td>
-</tr>
-<tr>
-<td>lru-memoize</td>
-<td>9,663,298</td>
-<td>1.14%</td>
+<td>11,494,292</td>
+<td>0.90%</td>
 </tr>
 <tr>
 <td>lodash</td>
-<td>9.428,550</td>
-<td>0.60%</td>
+<td>10,020,324</td>
+<td>0.52%</td>
+</tr>
+<tr>
+<td>lru-memoize</td>
+<td>10,017,832</td>
+<td>1.30%</td>
 </tr>
 <tr>
 <td>Addy Osmani</td>
-<td>4,365,704</td>
-<td>0.86%</td>
+<td>4,423,578</td>
+<td>0.76%</td>
 </tr>
 <tr>
 <td>memoizerific</td>
-<td>2,166,492</td>
-<td>1.02%</td>
+<td>2,174,503</td>
+<td>1.31%</td>
 </tr>
 <tr>
 <td>ramda</td>
-<td>1,147,866</td>
-<td>0.58%</td>
+<td>1,171,053</td>
+<td>0.71%</td>
 </tr>
 </tbody>
 </table>
@@ -521,38 +539,38 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 <tbody>
 <tr>
 <td><strong>moize</strong></td>
-<td><strong>23,194,668</strong></td>
-<td><strong>0.71%</strong></td>
+<td><strong>24,947,214</strong></td>
+<td><strong>0.77%</strong></td>
 </tr>
 <tr>
 <td>moize (serialized)</td>
-<td>11,466,193</td>
-<td>0.65%</td>
+<td>10,982,454</td>
+<td>0.84%</td>
 </tr>
 <tr>
 <td>memoizee</td>
-<td>8,475,388</td>
-<td>0.77%</td>
+<td>8,602,634</td>
+<td>0.59%</td>
 </tr>
 <tr>
 <td>lru-memoize</td>
-<td>7,565,765</td>
-<td>1.11%</td>
+<td>7,667,460</td>
+<td>1.58%</td>
 </tr>
 <tr>
 <td>Addy Osmani</td>
-<td>1,999,833</td>
-<td>0.69%</td>
+<td>2,039,761</td>
+<td>0.86%</td>
 </tr>
 <tr>
 <td>memoizerific</td>
-<td>1,411,535</td>
-<td>0.87%</td>
+<td>1,336,321</td>
+<td>0.81%</td>
 </tr>
 <tr>
 <td>fast-memoize</td>
-<td>875,786</td>
-<td>0.80%</td>
+<td>844,633</td>
+<td>0.76%</td>
 </tr>
 </tbody>
 </table>
@@ -569,38 +587,38 @@ const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moiz
 <tbody>
 <tr>
 <td><strong>moize</strong></td>
-<td><strong>23,285,445</strong></td>
-<td><strong>0.83%</strong></td>
+<td><strong>24,146,198</strong></td>
+<td><strong>1.16%</strong></td>
 </tr>
 <tr>
 <td>memoizee</td>
-<td>8,448,823</td>
-<td>0.74%</td>
+<td>8,324,025</td>
+<td>0.86%</td>
 </tr>
 <tr>
 <td>lru-memoize</td>
-<td>7,625,557</td>
-<td>0.93%</td>
+<td>7,986,555</td>
+<td>1.15%</td>
 </tr>
 <tr>
 <td>moize (serialized)</td>
-<td>1,883,552</td>
-<td>0.69%</td>
+<td>1,798,895</td>
+<td>0.95%</td>
 </tr>
 <tr>
 <td>memoizerific</td>
-<td>1,393,975</td>
-<td>0.82%</td>
+<td>1,416,617</td>
+<td>1.15%</td>
 </tr>
 <tr>
 <td>Addy Osmani</td>
-<td>1,065,637</td>
-<td>0.91%</td>
+<td>1,097,775</td>
+<td>0.78%</td>
 </tr>
 <tr>
 <td>fast-memoize</td>
-<td>760,402</td>
-<td>0.74%</td>
+<td>746,371</td>
+<td>1.03%</td>
 </tr>
 </tbody>
 </table>

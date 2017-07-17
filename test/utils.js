@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import _ from 'lodash';
 import React from 'react';
 import sinon from 'sinon';
 
@@ -655,7 +656,7 @@ test('if getFunctionNameViaRegexp will coalesce the value if match is not found'
   t.is(invalidResult, '');
 });
 
-test('if getGetCacheKeyMethod will return getReactCacheKey if the isReact option is true', (t) => {
+test('if getGetCacheKeyMethod will return getReactCacheKey if the isReact option is true and the equals option is falsy', (t) => {
   const options = {
     isReact: true
   };
@@ -665,7 +666,18 @@ test('if getGetCacheKeyMethod will return getReactCacheKey if the isReact option
   t.is(result, utils.getReactCacheKey);
 });
 
-test('if getGetCacheKeyMethod will return getSerializedCacheKey if the isReact option is false and the serialize option is true', (t) => {
+test('if getGetCacheKeyMethod will return getReactCacheKeyCustomEquals if the isReact option is true and the equals option is truthy', (t) => {
+  const options = {
+    isReact: true,
+    equals() {}
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getReactCacheKeyCustomEquals);
+});
+
+test('if getGetCacheKeyMethod will return getSerializedCacheKey if isReact and equals is falsy, and serialize is true', (t) => {
   const options = {
     serialize: true
   };
@@ -675,12 +687,33 @@ test('if getGetCacheKeyMethod will return getSerializedCacheKey if the isReact o
   t.is(result, utils.getSerializedCacheKey);
 });
 
-test('if getGetCacheKeyMethod will return getStandardCacheKey if the both the isReact and serialize options are false', (t) => {
+test('if getGetCacheKeyMethod will return getSerializedCacheKeyCustomEquals if isReact is falsy, equals is truthy, and serialize is true', (t) => {
+  const options = {
+    equals() {},
+    serialize: true
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getSerializedCacheKeyCustomEquals);
+});
+
+test('if getGetCacheKeyMethod will return getStandardCacheKey if the isReact, equals, and serialize are falsy', (t) => {
   const options = {};
 
   const result = utils.getGetCacheKeyMethod(options);
 
   t.is(result, utils.getStandardCacheKey);
+});
+
+test('if getGetCacheKeyMethod will return getStandardCacheKeyCustomEquals if the isReact  and serialize are falsy and equals is truthy', (t) => {
+  const options = {
+    equals() {}
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getStandardCacheKeyCustomEquals);
 });
 
 test('if getReactCacheKey will get the matching cache key if it is the most recent entry', (t) => {
@@ -764,6 +797,115 @@ test('if getReactCacheKey will create a new ReactCacheKey if it does not exist i
   t.true(result instanceof ReactCacheKey);
 });
 
+test('if getReactCacheKeyCustomEquals will get the matching cache key if it is the most recent entry', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    isReact: true
+  };
+
+  const key = [
+    {foo: {
+      foo: 'foo'
+    }},
+    {bar: {
+      bar: 'bar'
+    }}
+  ];
+  const cacheKey = new ReactCacheKey(key, serializerFunction);
+
+  cache.add(cacheKey, <div/>);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getReactCacheKeyCustomEquals(cache, newKey, options);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getReactCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    isReact: true
+  };
+
+  const key = [
+    {foo: {
+      foo: 'foo'
+    }},
+    {bar: {
+      bar: 'bar'
+    }}
+  ];
+  const cacheKey = new ReactCacheKey(key);
+
+  const otherKey = [
+    {bar: {
+      bar: 'bar'
+    }},
+    {baz: {
+      baz: 'baz'
+    }}
+  ];
+  const otherCacheKey = new ReactCacheKey(otherKey);
+
+  cache.add(cacheKey, <div/>);
+  cache.add(otherCacheKey, <span/>);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getReactCacheKeyCustomEquals(cache, newKey, options);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getReactCacheKeyCustomEquals will create a new ReactCacheKey if it does not exist in cache', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    isReact: true
+  };
+
+  const key = [
+    {foo: {
+      foo: 'foo'
+    }},
+    {bar: {
+      bar: 'bar'
+    }}
+  ];
+  const cacheKey = new ReactCacheKey(key);
+
+  const otherKey = [
+    {bar: {
+      bar: 'bar'
+    }},
+    {baz: {
+      baz: 'baz'
+    }}
+  ];
+  const otherCacheKey = new ReactCacheKey(otherKey);
+
+  cache.add(cacheKey, <div/>);
+  cache.add(otherCacheKey, <span/>);
+
+  const newKey = [
+    _.cloneDeep(key[0]),
+    _.cloneDeep(otherKey[1])
+  ];
+
+  const result = utils.getReactCacheKeyCustomEquals(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof ReactCacheKey);
+});
+
 test('if getSerializedCacheKey will get the matching cache key if it is the most recent entry', (t) => {
   const cache = new Cache();
 
@@ -830,6 +972,84 @@ test('if getSerializedCacheKey will create a new SerializedCacheKey if it does n
   };
 
   const result = utils.getSerializedCacheKey(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof SerializedCacheKey);
+});
+
+test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it is the most recent entry', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    serialize: true,
+    serializer: serializerFunction
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    serialize: true,
+    serializer: serializerFunction
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getSerializedCacheKeyCustomEquals will create a new SerializedCacheKey if it does not exist in cache', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    serialize: true,
+    serializer: serializerFunction
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [{foo: 'foo'}, {baz: 'baz'}];
+
+  const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
 
   const matchingKey = cache.list.find(({key}) => {
     return key === result;
@@ -919,6 +1139,107 @@ test('if getStandardCacheKey will create a new SingleParameterCacheKey if it doe
   const newKey = ['baz'];
 
   const result = utils.getStandardCacheKey(cache, newKey);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof SingleParameterCacheKey);
+});
+
+test('if getStandardCacheKeyCustomEquals will get the matching cache key if it is the most recent entry', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  cache.add(cacheKey, 'baz');
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getStandardCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new MultipleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getStandardCacheKeyCustomEquals will create a new MultipleParameterCacheKey if it does not exist in cache and has more than one argument', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new MultipleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [{foo: 'foo'}, {baz: 'baz'}];
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof MultipleParameterCacheKey);
+});
+
+test('if getStandardCacheKey will create a new SingleParameterCacheKey if it does not exist in cache and has only one argument', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
+
+  const key = [{foo: 'foo'}];
+  const cacheKey = new SingleParameterCacheKey(key);
+
+  const otherKey = [{bar: 'bar'}];
+  const otherCacheKey = new SingleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [{baz: 'baz'}];
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
 
   const matchingKey = cache.list.find(({key}) => {
     return key === result;

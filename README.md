@@ -4,13 +4,14 @@
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3kb when minified and gzipped.
+`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3.3kb when minified and gzipped.
 
 ## Table of contents
 * [Upgrade notification](#upgrade-notification)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Advanced usage](#advanced-usage)
+  * [equals](#equals)
   * [isPromise](#ispromise)
   * [isReact](#isreact)
   * [maxAge](#maxage)
@@ -87,6 +88,7 @@ The full shape of these options:
 
 ```javascript
 {
+  equals: Function, // custom method to compare equality between two objects
   isPromise: boolean, // is the result a promise
   isReact: boolean, // is the result a React component
   maxAge: number, // amount of time in milliseconds before the cache will expire
@@ -98,6 +100,30 @@ The full shape of these options:
   serializer: Function // method to serialize the arguments to build a unique cache key
 }
 ```
+
+#### equals
+
+*defaults to strict equality*
+
+Custom method used to compare equality of keys for cache purposes.
+
+```javascript
+// using lodash's deep equal comparison method
+import isEqual from 'lodash/isEqual';
+
+const fn = ({foo, bar}) => {
+  return [foo, bar];
+};
+
+const memoized = moize(fn, {
+  equals: isEqual
+});
+
+memoized({foo: 'foo', bar: 'bar'});
+memoized({foo: 'foo', bar: 'bar'}); // pulls from cache
+```
+
+The `equals` method receives two parameters (cache key values) and should return a `boolean`.
 
 #### isPromise
 
@@ -137,7 +163,7 @@ export default moize(Foo, {
 });
 ```
 
-The method will do a shallow comparison of both `props` and `context` of the component based on strict equality. If you want to mimic the `PureComponent` optimization and only cache the most recent version, add the parameter `maxSize` set to `1`.
+The method will do a shallow comparison of both `props` and `context` of the component based on strict equality. If you have mutative props and instead want to do a deep equals comparison, provide a custom [`equals`](#equals) option.
 
 #### maxAge
 
@@ -533,16 +559,16 @@ Each benchmark was performed using the default configuration of the library, wit
 
 |                    | Operations / second | Relative margin of error |
 |--------------------|---------------------|--------------------------|
-| **moize**          | **40,053,118**      | **0.60%**                |
-| fast-memoize       | 30,697,717          | 0.75%                    |
-| moize (serialized) | 13,368,025          | 0.84%                    |
-| underscore         | 13,288,319          | 0.91%                    |
-| memoizee           | 11,607,458          | 0.79%                    |
-| lru-memoize        |  9,663,298          | 1.14%                    |
-| lodash             |  9.428,550          | 0.60%                    |
-| Addy Osmani        |  4,365,704          | 0.86%                    |
-| memoizerific       |  2,166,492          | 1.02%                    |
-| ramda              |  1,147,866          | 0.58%                    |
+| **moize**          | **44,547,124**      | **0.64%**                |
+| fast-memoize       | 30,048,291          | 0.97%                    |
+| moize (serialized) | 14,877,726          | 0.63%                    |
+| underscore         | 13,821,853          | 0.61%                    |
+| memoizee           | 11,494,292          | 0.90%                    |
+| lodash             | 10,020,324          | 0.52%                    |
+| lru-memoize        | 10,017,832          | 1.30%                    |
+| Addy Osmani        |  4,423,578          | 0.76%                    |
+| memoizerific       |  2,174,503          | 1.31%                    |
+| ramda              |  1,171,053          | 0.71%                    |
 
 #### Multiple parameters (primitives only)
 
@@ -550,13 +576,13 @@ Each benchmark was performed using the default configuration of the library, wit
 
 |                    | Operations / second | Relative margin of error |
 |--------------------|---------------------|--------------------------|
-| **moize**          | **23,194,668**      | **0.71%**                |
-| moize (serialized) | 11,466,193          | 0.65%                    |
-| memoizee           |  8,475,388          | 0.77%                    |
-| lru-memoize        |  7,565,765          | 1.11%                    |
-| Addy Osmani        |  1,999,833          | 0.69%                    |
-| memoizerific       |  1,411,535          | 0.87%                    |
-| fast-memoize       |    875,786          | 0.80%                    |
+| **moize**          | **24,947,214**      | **0.77%**                |
+| moize (serialized) | 10,982,454          | 0.84%                    |
+| memoizee           |  8,602,634          | 0.59%                    |
+| lru-memoize        |  7,667,460          | 1.58%                    |
+| Addy Osmani        |  2,039,761          | 0.86%                    |
+| memoizerific       |  1,336,321          | 0.81%                    |
+| fast-memoize       |    844,633          | 0.76%                    |
 
 #### Multiple parameters (complex objects)
 
@@ -564,13 +590,13 @@ Each benchmark was performed using the default configuration of the library, wit
 
 |                    | Operations / second | Relative margin of error |
 |--------------------|---------------------|--------------------------|
-| **moize**          | **23,285,445**      | **0.83%**                |
-| memoizee           |  8,448,823          | 0.74%                    |
-| lru-memoize        |  7,625,557          | 0.93%                    |
-| moize (serialized) |  1,883,552          | 0.69%                    |
-| memoizerific       |  1,393,975          | 0.82%                    |
-| Addy Osmani        |  1,065,637          | 0.91%                    |
-| fast-memoize       |    760,402          | 0.74%                    |
+| **moize**          | **24,146,198**      | **1.16%**                |
+| memoizee           |  8,324,025          | 0.86%                    |
+| lru-memoize        |  7,986,555          | 1.15%                    |
+| moize (serialized) |  1,798,895          | 0.95%                    |
+| memoizerific       |  1,416,617          | 1.15%                    |
+| Addy Osmani        |  1,097,775          | 0.78%                    |
+| fast-memoize       |    746,371          | 1.03%                    |
 
 ## Direct cache manipulation
 

@@ -15,12 +15,13 @@
  * @property {function} [serializer] a custom serializer to use in place of the default
  */
 export type Options = {
+  equals: ?Function,
   isPromise: boolean,
   isReact: boolean,
   maxAge: number,
   maxArgs: number,
   maxSize: number,
-  promiseLibrary?: Function,
+  promiseLibrary: Function,
   serialize: boolean,
   serializeFunctions: boolean,
   serializer: Function

@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import _ from 'lodash';
 
 // src
 import ReactCacheKey from 'src/ReactCacheKey';
@@ -35,6 +36,62 @@ test('if the instance is constructed with the correct values when not all the ex
       propsSize: 0
     }
   });
+});
+
+test('if _isPropCustomEqual will return false if the key is not the same size as the prop on this.key', (t) => {
+  const existingKey = [
+    {foo: 'bar'},
+    {}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const prop = 'props';
+  const object = {foo: 'bar', bar: 'baz'};
+
+  const result = cacheKey._isPropCustomEqual(prop, object, _.isEqual);
+
+  t.false(result);
+});
+
+test('if _isPropCustomEqual will return false if the key is not equal to the prop on this.key based on the custom method', (t) => {
+  const existingKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const prop = 'props';
+  const object = {foo: {
+    bar: 'foo'
+  }};
+
+  const result = cacheKey._isPropCustomEqual(prop, object, _.isEqual);
+
+  t.false(result);
+});
+
+test('if _isPropCustomEqual will return true if the key is equal to the prop on this.key based on the custom method', (t) => {
+  const existingKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const prop = 'props';
+  const object = {foo: {
+    bar: 'baz'
+  }};
+
+  const result = cacheKey._isPropCustomEqual(prop, object, _.isEqual);
+
+  t.true(result);
 });
 
 test('if _isPropShallowEqual will return false if the key is not the same size as the prop on this.key', (t) => {
@@ -135,6 +192,76 @@ test('if matches will return true if the key passed is a multi-parameter key tha
   ];
 
   const result = cacheKey.matches(newKey);
+
+  t.true(result);
+});
+
+test('if matchesCustom will return false if the props passed are not equal to those in this.key based on the custom method', (t) => {
+  const existingKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const newKey = [
+    {bar: {
+      baz: 'foo'
+    }},
+    {}
+  ];
+
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
+
+  t.false(result);
+});
+
+test('if matchesCustom will return false if the context passed are not equal to those in this.key based on the custom method', (t) => {
+  const existingKey = [
+    {},
+    {foo: {
+      bar: 'baz'
+    }}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const newKey = [
+    {},
+    {bar: {
+      baz: 'foo'
+    }}
+  ];
+
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
+
+  t.false(result);
+});
+
+test('if matches will return true if the key passed is a multi-parameter key that is equal based on the custom method', (t) => {
+  const existingKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {bar: {
+      baz: 'foo'
+    }}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const newKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {bar: {
+      baz: 'foo'
+    }}
+  ];
+
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.true(result);
 });

@@ -4,15 +4,17 @@
 * Improve performance of multiple parameter cache matching (~3x faster)
 * Improve performance of `react` functional component cache matching (~9.5x faster)
 * Improve performance of serialized parameter cache matching (~1.5x faster)
-* Fix react cache issue where different functions with identical names / body contents were seen as equal
+* Add `equals` option for ability to provide custom equality comparison method
 * Add `moize.reactSimple` to limit `react` cache size to `1`, which mimics the `PureComponent` optimization for functional components
 * Add `isReact` option for simpler `react` identification without shortcut methods
+* Fix issue where `moize` was only able to curry `options` once
+* Fix react cache issue where different functions with identical names / body contents were seen as equal
 
 **BREAKING CHANGES**
 
 * Custom `cache` is no longer available in `options`
 * `moize.react` now performs a shallow equal comparison of `props` and `context` instead of deep value comparison
-  * Mutations to properties on these objects will no longer trigger a new cache entry, they must be new objects
+  * If you want to perform a deep value equality comparison (if you are mutation props), pass a deep equality comparison method via the `equals` option
 * The direct cache manipulation `delete` method has been renamed to `remove`
 * The direct cache manipulation `hasCacheFor` method has been renamed to `has`
 * The `key` passed to direct cache manipulation methods (`add`, `has`, `remove`) must now be an array
