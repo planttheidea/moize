@@ -520,13 +520,25 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   const shouldIncludeOptions: boolean = options.serialize;
 
   if (shouldIncludeOptions) {
+    if (hasMaxArgs) {
+      return (key: any): CacheKey => {
+        return getCacheKeyMethod(cache, key.slice(0, options.maxArgs), options);
+      };
+    }
+
     return (key: any): CacheKey => {
-      return getCacheKeyMethod(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key, options);
+      return getCacheKeyMethod(cache, key, options);
+    };
+  }
+
+  if (hasMaxArgs) {
+    return (key: any): CacheKey => {
+      return getCacheKeyMethod(cache, key.slice(0, options.maxArgs));
     };
   }
 
   return (key: any): CacheKey => {
-    return getCacheKeyMethod(cache, hasMaxArgs ? key.slice(0, options.maxArgs) : key);
+    return getCacheKeyMethod(cache, key);
   };
 };
 
