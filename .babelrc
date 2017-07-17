@@ -6,11 +6,7 @@
   ],
   "presets": [
     ["env", {
-      "loose": true,
-      "targets": [
-        "last 2 versions",
-        "ie 9"
-      ]
+      "loose": true
     }],
     "stage-2"
   ]

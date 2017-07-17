@@ -40,11 +40,7 @@ module.exports = {
           presets: [
             ['env', {
               loose: true,
-              modules: false,
-              targets: [
-                'last 2 versions',
-                'ie 9'
-              ]
+              modules: false
             }],
             'stage-2'
           ]

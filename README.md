@@ -716,10 +716,12 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 
 * Chrome (all versions)
 * Firefox (all versions)
-* Opera 15+
 * Edge (all versions)
+* Opera 15+
 * IE 9+
 * Safari 6+
+* iOS 8+
+* Android 4+
 
 ## Development
 
