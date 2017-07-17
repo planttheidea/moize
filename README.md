@@ -123,7 +123,7 @@ memoized({foo: 'foo', bar: 'bar'});
 memoized({foo: 'foo', bar: 'bar'}); // pulls from cache
 ```
 
-The `equals` method receives two parameters (cache key values) and should return a `boolean`.
+The `equals` method receives two parameters (cache key values) and should return a `boolean`. Please note that this will be slower than the default strict equality comparison, however how much slower is based on the efficiency of the method passed.
 
 #### isPromise
 

@@ -188,7 +188,7 @@ const memoized = moize(fn, {
 });
 
 memoized({foo: 'foo', bar: 'bar'});
-memoized({foo: 'foo', bar: 'bar'}); // pulls from cache</code></pre><p>The <code>equals</code> method receives two parameters (cache key values) and should return a <code>boolean</code>.</p>
+memoized({foo: 'foo', bar: 'bar'}); // pulls from cache</code></pre><p>The <code>equals</code> method receives two parameters (cache key values) and should return a <code>boolean</code>. Please note that this will be slower than the default strict equality comparison, however how much slower is based on the efficiency of the method passed.</p>
 <h4 id="ispromise">isPromise</h4>
 <p><em>defaults to false</em></p>
 <p>Is the computed value in the function a <code>Promise</code>, and should we cache the resolved value from that <code>Promise</code>. This is also available via the shortcut method of <a href="#moizepromise"><code>moize.promise</code></a>.</p>
