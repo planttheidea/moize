@@ -3,7 +3,7 @@
 ### 3.0.0
 * Improve performance of multiple parameter cache matching (~3x faster)
 * Improve performance of `react` functional component cache matching (~9.5x faster)
-* Improve performance of serialized parameter cache matching (~1.5x faster)taketake
+* Improve performance of serialized parameter cache matching (~1.5x faster)
 * Improve performance of use with `maxArgs`
 * Add `equals` option for ability to provide custom equality comparison method
 * Add `moize.reactSimple` shortcut method to limit `react` cache size to `1` (mimics the `PureComponent` optimization)
