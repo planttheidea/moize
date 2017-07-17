@@ -17,6 +17,7 @@
 * Custom `cache` is no longer available in `options`
 * `moize.react` now performs a shallow equal comparison of `props` and `context` instead of deep value comparison
   * If you want to perform a deep value equality comparison (if you are mutation props, for exaple), pass a deep equality comparison method via the `equals` option such as `lodash`'s `isEqual`
+  * If you want to continue using the v2 version of `moize.react`, you can manually apply the options: `moize.serialize(fn, {maxArgs: 2, serializeFunctions: true})`
 * The direct cache manipulation `delete` method has been renamed to `remove`
 * The direct cache manipulation `hasCacheFor` method has been renamed to `has`
 * The `key` passed to direct cache manipulation methods (`add`, `has`, `remove`) must now be an array
