@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+### 3.0.2
+* Improve performance of `take` by making it a higher-order function
+
+### 3.0.1
+* Update TypeScript typings to include new `equals` option
+
 ### 3.0.0
 * Improve performance of multiple parameter cache matching (~3x faster)
 * Improve performance of `react` functional component cache matching (~9.5x faster)
