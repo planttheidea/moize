@@ -1,5 +1,28 @@
 # moize CHANGELOG
 
+### 3.0.0
+* Improve performance of multiple parameter cache matching (~3x faster)
+* Improve performance of `react` functional component cache matching (~9.5x faster)
+* Improve performance of serialized parameter cache matching (~1.5x faster)
+* Improve performance of use with `maxArgs`
+* Add `equals` option for ability to provide custom equality comparison method
+* Add `moize.reactSimple` shortcut method to limit `react` cache size to `1` (mimics the `PureComponent` optimization)
+* Add `isReact` option for simpler `react` configuration via `options`
+* Fix issue where `moize` was only able to curry `options` once
+* Fix issue with `react` cache where different functions with identical names / body contents were seen as equal
+* Fix issue where `maxArgs` was not always respected for `serialize` caches
+
+**BREAKING CHANGES**
+
+* Custom `cache` is no longer available in `options`
+* `moize.react` now performs a shallow equal comparison of `props` and `context` instead of deep value comparison
+  * If you want to perform a deep value equality comparison (if you are mutation props, for example), pass a deep equality comparison method via the `equals` option such as `lodash`'s `isEqual`
+  * If you want to continue using the v2 version of `moize.react`, you can manually apply the options: `moize.serialize(fn, {maxArgs: 2, serializeFunctions: true})`
+* The direct cache manipulation `delete` method has been renamed to `remove`
+* The direct cache manipulation `hasCacheFor` method has been renamed to `has`
+* The `key` passed to direct cache manipulation methods (`add`, `has`, `remove`) must now be an array
+  * The array reflects the arguments passed to the method (`moized.hasCacheFor('foo', 'bar')` => `moized.has(['foo', 'bar'])`)
+
 ### 2.5.1
 * Surface types for TypeScript correctly
 
@@ -89,9 +112,11 @@
 
 ### 2.0.0
 * Refactor to use object equality instead of serialization (vast speed improvements over 1.x.x with multiple parameters)
-* Breaking changes:
-  * If you were relying on the serialization (using value equality instead of object equality), it will no longer memoize (you can set `serialize: true` if you want to continue using that option)
-  * If you were using `moize` to memoize React components, you should change your invocations from `moize` to `moize.react` ([see README](README.md#usage-with-functional-react-components))
+
+**BREAKING CHANGES**
+
+* If you were relying on the serialization (using value equality instead of object equality), it will no longer memoize (you can set `serialize: true` if you want to continue using that option)
+* If you were using `moize` to memoize React components, you should change your invocations from `moize` to `moize.react` ([see README](README.md#usage-with-functional-react-components))
 
 ### 1.5.0
 * Add `values` method on memoized function (gets list of computed values stored in cache)

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Modules</title>
+	<title>moize Source: ReactCacheKey.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -60,93 +60,145 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Modules</h1>
+		<h1 class="page-title">Source: ReactCacheKey.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// @flow
 
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
+/**
+ * @private
+ *
+ * @class ReactCacheKey
+ *
+ * @classdesc
+ * cache key used specifically for react components
+ */
+class ReactCacheKey {
+  constructor(key: Array&lt;Object>) {
+    const context = key[1];
+    const props = key[0];
 
+    this.key = {
+      context,
+      contextSize: context ? Object.keys(context).length : 0,
+      props,
+      propsSize: props ? Object.keys(props).length : 0
+    };
 
-<article>
-    <div class="container-overview">
-    
-        
+    return this;
+  }
 
-        
-<dl class="details">
-    
+  key: any = null;
 
-	
+  /**
+   * @function _isPropShallowEqual
+   * @memberof ReactCacheKey
+   * @instance
+   *
+   * @description
+   * check if the prop value passed is equal to the key's value
+   *
+   * @param {string} prop the key property to test
+   * @param {Object} object the value of the key to test against
+   * @returns {boolean} is the prop value shallow equal to the object
+   */
+  _isPropShallowEqual(prop: string, object: Object): boolean {
+    const keys: Array&lt;string> = Object.keys(object);
 
-	
+    if (keys.length !== this.key[`${prop}Size`]) {
+      return false;
+    }
 
-	
+    let index: number = 0;
 
-    
+    while (index &lt; keys.length) {
+      if (object[keys[index]] !== this.key[prop][keys[index]]) {
+        return false;
+      }
 
-    
+      index++;
+    }
 
-    
+    return true;
+  }
 
-    
+  /**
+   * @function _isPropCustomEqual
+   * @memberof ReactCacheKey
+   * @instance
+   *
+   * @description
+   * check if the prop value passed is equal to the key's value
+   *
+   * @param {string} prop the key property to test
+   * @param {Object} object the value of the key to test against
+   * @param {function} isEqual method to check equality of keys
+   * @returns {boolean} is the prop value shallow equal to the object
+   */
+  _isPropCustomEqual(prop: string, object: Object, isEqual: Function): boolean {
+    const keys: Array&lt;string> = Object.keys(object);
 
-	
+    if (keys.length !== this.key[`${prop}Size`]) {
+      return false;
+    }
 
-	
+    let index: number = 0;
 
-	
+    while (index &lt; keys.length) {
+      if (!isEqual(object[keys[index]], this.key[prop][keys[index]])) {
+        return false;
+      }
 
-	
+      index++;
+    }
 
-	
+    return true;
+  }
 
+  /**
+   * @function matches
+   * @memberof ReactCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matches(key: Array&lt;Object>): boolean {
+    return this._isPropShallowEqual('props', key[0]) &amp;&amp; this._isPropShallowEqual('context', key[1]);
+  }
 
+  /**
+   * @function matchesCustom
+   * @memberof ReactCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @param {function} isEqual method to check equality of keys
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matchesCustom(key: Array&lt;Object>, isEqual: Function): boolean {
+    return this._isPropCustomEqual('props', key[0], isEqual) &amp;&amp; this._isPropCustomEqual('context', key[1], isEqual);
+  }
+}
 
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+export default ReactCacheKey;
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -156,10 +208,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

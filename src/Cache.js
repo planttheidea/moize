@@ -1,61 +1,50 @@
 // @flow
 
-
-// constants
-import {
-  CACHE_IDENTIFIER,
-  ITERATOR_DONE_OBJECT
-} from './constants';
-
 // types
 import type {
-  Iteration,
-  IteratorDone,
-  KeyIterator,
   ListItem
 } from './types';
 
 // utils
 import {
-  getIndexOfKey,
+  findIndex,
+  findIndexAfterFirst,
   splice,
   unshift
 } from './utils';
 
 /**
+ * @private
+ *
  * @class Cache
- * @classdesc class that mimics parts of the Map infrastructure, but faster
+ *
+ * @classdesc
+ * class that is similar to the Map infrastructure, but faster and
+ * more targeted to moize use cases
  */
 class Cache {
-  // $FlowIgnore computed properties not yet supported on classes
-  [CACHE_IDENTIFIER]: boolean = true;
-
-  lastItem: ?ListItem = undefined;
+  lastItem: ListItem = {};
   list: Array<ListItem> = [];
   size: number = 0;
 
   /**
-   * @function _getKeyIterator
+   * @function add
    * @memberof Cache
    * @instance
    *
    * @description
-   * create a custom iterator for the keys in the list
+   * add a new item to cache
    *
-   * @returns {{next: (function(): Object)}} iterator instance
+   * @param {*} key the key to assign
+   * @param {*} value the value to assign at key
    */
-  _getKeyIterator(): KeyIterator {
-    let index: number = -1;
+  add(key: any, value: any): any {
+    this.lastItem = unshift(this.list, {
+      key,
+      value
+    });
 
-    return {
-      next: (): (Iteration|IteratorDone) => {
-        return ++index >= this.size ? ITERATOR_DONE_OBJECT : {
-          index,
-          isMultiParamKey: this.list[index].isMultiParamKey,
-          key: this.list[index].key
-        };
-      }
-    };
+    this.size++;
   }
 
   /**
@@ -64,32 +53,28 @@ class Cache {
    * @instance
    *
    * @description
-   * remove all keys from the map
+   * clear the cache of all items
    */
-  clear(): void {
-    this.lastItem = undefined;
+  clear() {
+    this.lastItem = {};
     this.list.length = this.size = 0;
   }
 
   /**
-   * @function delete
+   * @function expireAfter
    * @memberof Cache
    * @instance
    *
    * @description
-   * remove the key from the map
+   * remove from cache after maxAge time has passed
    *
-   * @param {*} key key to delete from the map
+   * @param {*} key the key to remove
+   * @param {number} maxAge the time in milliseconds to wait before removing key
    */
-  delete(key: any): void {
-    const index: number = getIndexOfKey(this, key, false);
-
-    if (~index) {
-      splice(this.list, index);
-
-      this.lastItem = this.list[0];
-      this.size = this.list.length;
-    }
+  expireAfter(key: any, maxAge: number) {
+    setTimeout(() => {
+      this.remove(key);
+    }, maxAge);
   }
 
   /**
@@ -98,69 +83,71 @@ class Cache {
    * @instance
    *
    * @description
-   * get the value for the given key
+   * get the value of an item from cache if it exists
    *
-   * @param {*} key key to get the value for
-   * @returns {*} value at the key location
+   * @param {*} key the key to get the value of
+   * @returns {*} the value at key
    */
   get(key: any): any {
-    if (!this.lastItem) {
-      return undefined;
+    if (!this.size) {
+      return;
     }
 
     if (key === this.lastItem.key) {
       return this.lastItem.value;
     }
 
-    const index: number = getIndexOfKey(this, key, true);
+    const index: number = findIndexAfterFirst(this.list, key);
 
     if (~index) {
       this.lastItem = this.list[index];
 
-      unshift(splice(this.list, index), this.lastItem);
-
-      // $FlowIgnore this.lastItem exists because there was a matching index
-      return this.lastItem.value;
+      return unshift(splice(this.list, index), this.lastItem).value;
     }
   }
 
   /**
+   * @private
+   *
    * @function has
-   * @memberof Cache
-   * @instance
    *
    * @description
-   * does the map have the key provided
+   * does the key exist in the cache
    *
-   * @param {*} key key to test for in the map
-   * @returns {boolean} does the map have the key
+   * @param {*} key the key to find in cache
+   * @returns {boolean} does the key exist in cache
    */
   has(key: any): boolean {
-    return this.size !== 0 && (
-      // $FlowIgnore: this.lastItem exists
-      key === this.lastItem.key || !!~getIndexOfKey(this, key, true)
-    );
+    return this.size !== 0 && (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key));
   }
 
-  /**
-   * @function set
+  /**=
+   * @function remove
    * @memberof Cache
    * @instance
    *
    * @description
-   * set the value at the key location, or add a new item with that key value
+   * remove the item at key from cach
    *
-   * @param {*} key key to assign value of
-   * @param {*} value value to store in the map at key
+   * @param {*} key the key to remove from cache
+   * @returns {void}
    */
-  set(key: any, value: any): void {
-    this.lastItem = unshift(this.list, {
-      key,
-      isMultiParamKey: !!(key && key._isMultiParamKey),
-      value
-    });
+  remove(key: any) {
+    const index: number = findIndex(this.list, key);
 
-    this.size = this.list.length;
+    if (~index) {
+      splice(this.list, index);
+
+      if (this.size === 1) {
+        return this.clear();
+      }
+
+      this.size--;
+
+      if (!index) {
+        this.lastItem = this.list[0];
+      }
+    }
   }
 
   /**
@@ -174,8 +161,8 @@ class Cache {
    * @param {*} key key to update value of
    * @param {*} value value to store in the map at key
    */
-  update(key: any, value: any): void {
-    const index: number = getIndexOfKey(this, key, false);
+  update(key: any, value: any) {
+    const index: number = findIndex(this.list, key);
 
     if (~index) {
       this.list[index].value = value;

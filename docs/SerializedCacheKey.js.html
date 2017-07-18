@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Modules</title>
+	<title>moize Source: SerializedCacheKey.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -60,93 +60,79 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Modules</h1>
+		<h1 class="page-title">Source: SerializedCacheKey.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// @flow
 
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
+// serialize
+import {
+  stringify
+} from './serialize';
 
+/**
+ * @private
+ *
+ * @class SerializedCacheKey
+ *
+ * @classdesc
+ * cache key used when the parameters should be serialized
+ */
+class SerializedCacheKey {
+  constructor(key: Array&lt;any>, serializerFunction: Function) {
+    this.key = serializerFunction(key);
+    this.serializer = serializerFunction;
 
-<article>
-    <div class="container-overview">
-    
-        
+    return this;
+  }
 
-        
-<dl class="details">
-    
+  key: any = null;
+  serializer: Function = stringify;
 
-	
+  /**
+   * @function matches
+   * @memberof SerializedCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance
+   *W
+   * @param {Array&lt;*>} key the key to test
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matches(key: Array&lt;any>): boolean {
+    return this.serializer(key) === this.key;
+  }
 
-	
+  /**
+   * @function matchesCustom
+   * @memberof SerializedCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance based on the custom equality function passed
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @param {function} isEqual method to compare equality of the keys
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matchesCustom(key: Array&lt;any>, isEqual: Function): boolean {
+    return isEqual(this.serializer(key), this.key);
+  }
+}
 
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+export default SerializedCacheKey;
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -156,10 +142,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

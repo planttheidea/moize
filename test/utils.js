@@ -1,19 +1,23 @@
 // test
 import test from 'ava';
 import _ from 'lodash';
+import React from 'react';
 import sinon from 'sinon';
 
-//src
-import * as utils from '../src/utils';
-import Cache from '../src/Cache';
+// src
+import * as utils from 'src/utils';
+import * as constants from 'src/constants';
+import * as serialize from 'src/serialize';
+import Cache from 'src/Cache';
+import MultipleParameterCacheKey from 'src/MultipleParameterCacheKey';
+import ReactCacheKey from 'src/ReactCacheKey';
+import SerializedCacheKey from 'src/SerializedCacheKey';
+import SingleParameterCacheKey from 'src/SingleParameterCacheKey';
 
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-};
+const serializerFunction = serialize.createArgumentSerializer({
+  maxArgs: Number.POSITIVE_INFINITY,
+  serializeFunctions: false
+});
 
 test('if addStaticPropertiesToFunction will add static properties to the originalFn', (t) => {
   const originalFn = () => {};
@@ -51,10 +55,121 @@ test('if addStaticPropertiesToFunction will only static properties that exist on
   t.is(memoizedFn.propTypes, undefined);
 });
 
+test('if createAddPropertiesToFunction will create a method that adds the appropriate properties to the function passed', (t) => {
+  const cache = new Cache();
+  const originalFunction = () => {};
+  const options = {};
+
+  originalFunction.contextTypes = {};
+  originalFunction.defaultProps = {};
+  originalFunction.propTypes = {};
+
+  const addPropertiesToFunction = utils.createAddPropertiesToFunction(cache, originalFunction, options);
+
+  t.is(typeof addPropertiesToFunction, 'function');
+
+  const moizedFunction = () => {};
+
+  const result = addPropertiesToFunction(moizedFunction);
+
+  t.is(result, moizedFunction);
+
+  t.is(result.cache, cache);
+  t.is(result.displayName, `moize(${originalFunction.name})`);
+  t.is(result.isMoized, true);
+  t.is(result.options, options);
+  t.is(result.originalFunction, originalFunction);
+
+  t.is(typeof result.add, 'function');
+  t.is(typeof result.clear, 'function');
+  t.is(typeof result.has, 'function');
+  t.is(typeof result.keys, 'function');
+  t.is(typeof result.remove, 'function');
+  t.is(typeof result.values, 'function');
+
+  t.is(result.contextTypes, originalFunction.contextTypes);
+  t.is(result.defaultProps, originalFunction.defaultProps);
+  t.is(result.propTypes, originalFunction.propTypes);
+});
+
+test('if the methods added via createAddPropertiesToFunction will perform as expected', (t) => {
+  const cache = {
+    add: sinon.stub(),
+    clear: sinon.stub(),
+    has: sinon.stub()
+      .onFirstCall().returns(false)
+      .onSecondCall().returns(true),
+    remove: sinon.stub()
+  };
+  const originalFunction = () => {};
+  const options = {};
+
+  const addPropertiesToFunction = utils.createAddPropertiesToFunction(cache, originalFunction, options);
+
+  const moizedFunction = () => {};
+
+  const result = addPropertiesToFunction(moizedFunction);
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  const cacheKey = utils.createGetCacheKey(cache, options)(key);
+
+  result.add(key, value);
+
+  t.true(cache.has.calledOnce);
+  t.true(cache.has.calledWith(cacheKey));
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(cacheKey, value));
+
+  result.add(key, value);
+
+  t.true(cache.has.calledTwice);
+  t.true(cache.add.calledOnce);
+
+  result.add(key, value);
+
+  result.clear();
+
+  t.true(cache.clear.calledOnce);
+
+  cache.has.reset();
+
+  result.has(key);
+
+  t.true(cache.has.calledOnce);
+  t.true(cache.has.calledWith(cacheKey));
+
+  result.remove(key);
+
+  t.true(cache.remove.calledOnce);
+  t.true(cache.remove.calledWith(cacheKey));
+});
+
+test('if createCurriableOptionMethod will create a method that accepts a value and passes the option with that value to the function passed', (t) => {
+  const option = 'foo';
+  const value = 'bar';
+
+  const fn = sinon.stub().callsFake((object) => {
+    t.deepEqual(object, {
+      [option]: value
+    });
+  });
+
+  const result = utils.createCurriableOptionMethod(fn, option);
+
+  t.is(typeof result, 'function');
+
+  result(value);
+
+  t.true(fn.calledOnce);
+});
+
 test('if compose will compose multiple functions to a single function', (t) => {
-  const firstStub = sinon.stub().callsFake(_.identity);
-  const secondStub = sinon.stub().callsFake(_.identity);
-  const thirdStub = sinon.stub().callsFake(_.identity);
+  const firstStub = sinon.stub().returnsArg(0);
+  const secondStub = sinon.stub().returnsArg(0);
+  const thirdStub = sinon.stub().returnsArg(0);
 
   const value = 'foo';
 
@@ -74,202 +189,164 @@ test('if compose will compose multiple functions to a single function', (t) => {
   t.is(result, value);
 });
 
-test('if createCurriableOptionMethod will create a method that accepts a value and passes the option with that value to the function passed', (t) => {
+test('if createCurriableOptionMethod will create a method that curries the options passed', (t) => {
+  const fn = sinon.stub();
   const option = 'foo';
+
+  const curriableOptionMethod = utils.createCurriableOptionMethod(fn, option);
+
+  t.is(typeof curriableOptionMethod, 'function');
+
   const value = 'bar';
 
-  const fn = sinon.stub().callsFake((object) => {
-    t.deepEqual(object, {
-      [option]: value
-    });
-  });
-
-  const result = utils.createCurriableOptionMethod(fn, option);
-
-  t.true(_.isFunction(result));
-
-  result(value);
+  curriableOptionMethod(value);
 
   t.true(fn.calledOnce);
+
+  t.deepEqual(fn.args[0], [
+    {
+      [option]: value
+    }
+  ]);
 });
 
-test('if every matches the output of the native function', (t) => {
-  const everyFoo = ['foo', 'foo'];
-  const someFoo = ['foo', 'bar'];
-  const noneFoo = ['bar', 'bar'];
-
-  const isFoo = (item) => {
-    return item === 'foo';
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with both the key and options if serialize is true', (t) => {
+  const cache = new Cache();
+  const options = {
+    serialize: true,
+    serializer: serializerFunction
   };
 
-  const everyResult = utils.every(everyFoo, isFoo);
-  const someResult = utils.every(someFoo, isFoo);
-  const noneResult = utils.every(noneFoo, isFoo);
+  const getCacheKey = utils.createGetCacheKey(cache, options);
 
-  t.true(everyResult);
-  t.false(someResult);
-  t.false(noneResult);
+  t.is(typeof getCacheKey, 'function');
 
-  t.is(everyResult, everyFoo.every(isFoo));
-  t.is(someResult, someFoo.every(isFoo));
-  t.is(noneResult, noneFoo.every(isFoo));
-});
+  const key = ['foo', 'bar'];
 
-test('if every returns true when the array is empty', (t) => {
-  t.true(utils.every([]));
-});
+  const result = getCacheKey(key);
 
-test('if decycle will return an object that has circular references removed', (t) => {
-  const object = {
-    foo: {
-      bar: 'baz'
-    }
-  };
-
-  object.foo.baz = object.foo;
-  object.foo.blah = [object.foo];
-
-  const result = utils.decycle(object);
-
-  t.deepEqual(result, {
-    foo: {
-      bar: 'baz',
-      baz: {
-        $ref: '$["foo"]'
-      },
-      blah: [
-        {
-          $ref: '$["foo"]'
-        }
-      ]
-    }
+  t.true(result instanceof SerializedCacheKey);
+  t.deepEqual({...result}, {
+    key: options.serializer(key),
+    serializer: options.serializer
   });
 });
 
-test('if deleteItemFromCache will remove an item from both cache', (t) => {
-  const key = 'foo';
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with both the key limited by maxArgs and options if serialize is true', (t) => {
   const cache = new Cache();
-
-  cache.set(key, 'bar');
-
-  utils.deleteItemFromCache(cache, key);
-
-  t.false(cache.has(key));
-});
-
-test('if deleteItemFromCache will only delete something when the key is actually found', (t) => {
-  const key = 'foo';
-  const cache = new Cache();
-
-  cache.set(key, 'bar');
-
-  utils.deleteItemFromCache(cache, 'bar');
-
-  t.true(cache.has(key));
-});
-
-test('if createGetCacheKey returns a function that returns the first item in the array if the only item', (t) => {
-  const getCacheKey = utils.createGetCacheKey();
-
-  const item = {
-    foo: 'bar'
+  const options = {
+    maxArgs: 1,
+    serialize: true,
+    serializer: serializerFunction
   };
-  const args = [item];
 
-  const result = getCacheKey(args);
+  const getCacheKey = utils.createGetCacheKey(cache, options);
 
-  t.is(result, item);
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SerializedCacheKey);
+  t.deepEqual({...result}, {
+    key: options.serializer(key.slice(0, options.maxArgs)),
+    serializer: options.serializer
+  });
 });
 
-test('if createGetCacheKey returns a function that returns a stringified value of the args passed if more than one item', (t) => {
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with only the key if standard', (t) => {
   const cache = new Cache();
-  const getCacheKey = utils.createGetCacheKey(cache);
+  const options = {};
 
-  const item = {
-    foo: 'bar'
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof MultipleParameterCacheKey);
+  t.deepEqual({...result}, {
+    isMultiParamKey: true,
+    key,
+    size: Object.keys(key).length
+  });
+});
+
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with only the key limited by maxArgs if standard', (t) => {
+  const cache = new Cache();
+  const options = {
+    maxArgs: 1
   };
-  const item2 = 'baz';
-  const args = [item, item2];
 
-  const result = getCacheKey(args);
+  const getCacheKey = utils.createGetCacheKey(cache, options);
 
-  t.is(result, args);
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SingleParameterCacheKey);
+  t.deepEqual({...result}, {
+    isMultiParamKey: false,
+    key: key[0]
+  });
 });
 
-test('if createGetCacheKey returns a function that returns a limited arguments key for the arguments passed', (t) => {
-  const cache = new Cache();
-  const maxArgs = 1;
-  const getCacheKey = utils.createGetCacheKey(cache, false, null, false, maxArgs);
+test('if createFindIndex will create a method that finds the index starting at the startingIndex passed', (t) => {
+  const startingIndex = 1;
 
-  const item = {
-    foo: 'bar'
-  };
-  const item2 = 'baz';
-  const args = [item, item2];
+  const findIndex = utils.createFindIndex(startingIndex);
 
-  const result = getCacheKey(args);
+  t.is(typeof findIndex, 'function');
 
-  t.is(result, item);
-});
+  const list = [
+    {key: 'foo'},
+    {key: 'bar'},
+    {key: 'baz'}
+  ];
+  const keyWithMatch = 'baz';
+  const keyWithoutMatch = 'foo';
 
-test('if createGetCacheKey will return undefined as a key when no arguments are passed', (t) => {
-  const cache = new Cache();
-  const getCacheKey = utils.createGetCacheKey(cache);
-
-  const args = [];
-
-  const result = getCacheKey(args);
-
-  t.is(result, undefined);
+  t.is(findIndex(list, keyWithMatch), 2);
+  t.is(findIndex(list, keyWithoutMatch), -1);
 });
 
 test('if createPluckFromInstanceList will create a method to pluck the key passed from the instance', (t) => {
   const cache = new Cache();
 
-  cache.set('foo', 'bar');
-  cache.set('bar', 'baz');
+  cache.add('foo', 'bar');
+  cache.add('bar', 'baz');
 
   const fn = utils.createPluckFromInstanceList(cache, 'value');
 
-  t.true(_.isFunction(fn));
+  t.is(typeof fn, 'function');
 
   t.deepEqual(fn().sort(), ['bar', 'baz']);
-});
-
-test('if createPluckFromInstanceList will return a noop if the cache is not an instance of cache', (t) => {
-  const cache = {
-    list: [
-      {
-        key: 'foo',
-        value: 'bar'
-      }
-    ]
-  };
-
-  const fn = utils.createPluckFromInstanceList(cache, 'value');
-
-  t.true(_.isFunction(fn));
-
-  t.is(fn(), undefined);
 });
 
 test('if createPromiseRejecter will create a function that will delete the item from cache and return a rejected promise', (t) => {
   const key = 'foo';
   const exception = new Error();
   const cache = {
-    delete(keyToDelete) {
+    remove(keyToDelete) {
       t.is(keyToDelete, key);
     }
   };
-  const promiseLibrary = {
-    reject(error) {
-      t.is(error, exception);
+  const options = {
+    promiseLibrary: {
+      reject(error) {
+        t.is(error, exception);
+      }
     }
   };
 
-  const result = utils.createPromiseRejecter(cache, key, promiseLibrary);
+  const result = utils.createPromiseRejecter(cache, key, options);
 
-  t.true(_.isFunction(result));
+  t.is(typeof result, 'function');
 
   result(exception);
 });
@@ -283,16 +360,17 @@ test('if createPromiseResolver will create a function that will update the item 
     }
   };
   const hasMaxAge = false;
-  const setExpirationOfCache = () => {};
-  const promiseLibrary = {
-    resolve(value) {
-      t.is(value, resolvedValue);
+  const options = {
+    promiseLibrary: {
+      resolve(value) {
+        t.is(value, resolvedValue);
+      }
     }
   };
 
-  const result = utils.createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
+  const result = utils.createPromiseResolver(cache, key, hasMaxAge, options);
 
-  t.true(_.isFunction(result));
+  t.is(typeof result, 'function');
 
   result(resolvedValue);
 });
@@ -300,78 +378,241 @@ test('if createPromiseResolver will create a function that will update the item 
 test('if createPromiseResolver will create a function that will set the cache to expire if hasMaxAge is true', (t) => {
   const key = 'foo';
   const resolvedValue = 'bar';
+  const maxAge = 10;
   const cache = {
+    expireAfter(keyToExpire, maxAgeOfExpiration) {
+      t.is(keyToExpire, key);
+      t.is(maxAgeOfExpiration, maxAge);
+    },
     update() {}
   };
   const hasMaxAge = true;
-  const setExpirationOfCache = (cacheToExpire, keyToExpire) => {
-    t.is(cacheToExpire, cache);
-    t.is(keyToExpire, key);
-  };
-  const promiseLibrary = {
-    resolve() {}
+  const options = {
+    maxAge,
+    promiseLibrary: {
+      resolve() {}
+    }
   };
 
-  const result = utils.createPromiseResolver(cache, key, hasMaxAge, setExpirationOfCache, promiseLibrary);
+  const result = utils.createPromiseResolver(cache, key, hasMaxAge, options);
 
-  t.true(_.isFunction(result));
+  t.is(typeof result, 'function');
 
   result(resolvedValue);
 });
 
-test('if isShallowEqual returns false when value is not a multi-parameter key', (t) => {
-  const value = {
-    isMultiParamKey: false
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is true', async (t) => {
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    remove: sinon.stub(),
+    update: sinon.stub()
   };
-  const args = ['foo', 'bar'];
-
-  const result = utils.isShallowEqual(value, args);
-
-  t.false(result);
-});
-
-test('if isShallowEqual returns false when value is an array whose length is different than that of args', (t) => {
-  const value = ['foo'];
-  const args = ['foo', 'bar'];
-
-  const result = utils.isShallowEqual(value, args);
-
-  t.false(result);
-});
-
-test('if isShallowEqual returns false when value is an array whose values are different than args', (t) => {
-  const object = {
-    bar: 'baz'
+  const options = {
+    isPromise: true,
+    promiseLibrary: Promise
   };
-  const value = ['foo', object];
-  const args = ['foo', {
-    ...object
-  }];
 
-  const result = utils.isShallowEqual(value, args);
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
 
-  t.false(result);
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+  const promise = Promise.resolve(value);
+
+  const result = setNewCacheValue(key, promise);
+
+  t.true(cache.add.calledOnce);
+
+  const addArgs = cache.add.args[0];
+
+  t.is(addArgs[0], key);
+
+  t.true(addArgs[1] instanceof Promise);
+
+  t.true(cache.remove.notCalled);
+
+  const resolvedValue = await result;
+
+  t.true(cache.update.calledOnce);
+
+  const updateArgs = cache.update.args[0];
+
+  t.is(updateArgs[0], key);
+  t.true(updateArgs[1] instanceof Promise);
+
+  const updateArgResolvedValue = await updateArgs[1];
+
+  t.is(updateArgResolvedValue, resolvedValue);
 });
 
-test('if isShallowEqual returns true when value is an array whose values are shallowly equal to args', (t) => {
-  const object = {
-    bar: 'baz'
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is true and the maxSize has been exceeded', async (t) => {
+  const existingKey = 'foo';
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    list: [
+      {key: existingKey}
+    ],
+    remove: sinon.stub(),
+    size: 2,
+    update: sinon.stub()
   };
-  const value = ['foo', object];
-  const args = ['foo', object];
+  const options = {
+    maxSize: 1,
+    isPromise: true,
+    promiseLibrary: Promise
+  };
 
-  const result = utils.isShallowEqual(value, args);
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
 
-  t.true(result);
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+  const promise = Promise.resolve(value);
+
+  const result = setNewCacheValue(key, promise);
+
+  t.true(cache.add.calledOnce);
+
+  const addArgs = cache.add.args[0];
+
+  t.is(addArgs[0], key);
+
+  t.true(addArgs[1] instanceof Promise);
+
+  t.true(cache.remove.calledOnce);
+  t.true(cache.remove.calledWith(existingKey));
+
+  const resolvedValue = await result;
+
+  t.true(cache.update.calledOnce);
+
+  const updateArgs = cache.update.args[0];
+
+  t.is(updateArgs[0], key);
+  t.true(updateArgs[1] instanceof Promise);
+
+  const updateArgResolvedValue = await updateArgs[1];
+
+  t.is(updateArgResolvedValue, resolvedValue);
 });
 
-test('if isShallowEqual returns true when value and args both are empty arrays', (t) => {
-  const value = [];
-  const args = [];
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is false', (t) => {
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    remove: sinon.stub()
+  };
+  const options = {};
 
-  const result = utils.isShallowEqual(value, args);
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
 
-  t.true(result);
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  setNewCacheValue(key, value);
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(key, value));
+
+  t.true(cache.expireAfter.notCalled);
+
+  t.true(cache.remove.notCalled);
+});
+
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is false and there is a maxAge', (t) => {
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    remove: sinon.stub()
+  };
+  const options = {
+    maxAge: 100
+  };
+
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  setNewCacheValue(key, value);
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(key, value));
+
+  t.true(cache.expireAfter.calledOnce);
+  t.true(cache.expireAfter.calledWith(key, options.maxAge));
+
+  t.true(cache.remove.notCalled);
+});
+
+test('if createSetNewCachedValue will set the cache value correctly when isPromise option is false and the maxSize has been reached', (t) => {
+  const existingKey = 'foo';
+  const cache = {
+    add: sinon.stub(),
+    expireAfter: sinon.stub(),
+    list: [
+      {key: existingKey}
+    ],
+    remove: sinon.stub(),
+    size: 2
+  };
+  const options = {
+    maxSize: 1
+  };
+
+  const setNewCacheValue = utils.createSetNewCachedValue(cache, options);
+
+  t.is(typeof setNewCacheValue, 'function');
+
+  const key = ['foo'];
+  const value = 'bar';
+
+  setNewCacheValue(key, value);
+
+  t.true(cache.add.calledOnce);
+  t.true(cache.add.calledWith(key, value));
+
+  t.true(cache.expireAfter.notCalled);
+
+  t.true(cache.remove.calledOnce);
+  t.true(cache.remove.calledWith(existingKey));
+});
+
+test('if getDefaultedOptions will return the options passed merged with the default options, and serializer of null when serialize is not true', (t) => {
+  const options = {
+    isPromise: true,
+    promiseLibrary() {}
+  };
+
+  const result = utils.getDefaultedOptions(options);
+
+  t.deepEqual(result, {
+    ...constants.DEFAULT_OPTIONS,
+    ...options,
+    serializer: null
+  });
+});
+
+test('if getDefaultedOptions will return the options passed merged with the default options, and serializer populated when serialize is true', (t) => {
+  const options = {
+    serialize: true,
+    serializer() {}
+  };
+
+  const result = utils.getDefaultedOptions(options);
+
+  t.deepEqual(result, {
+    ...constants.DEFAULT_OPTIONS,
+    ...options
+  });
 });
 
 test('if getFunctionName returns the name if it exists, else returns function', (t) => {
@@ -415,617 +656,714 @@ test('if getFunctionNameViaRegexp will coalesce the value if match is not found'
   t.is(invalidResult, '');
 });
 
-test('if getFunctionWithAdditionalProperties will add the cache passed to the function', (t) => {
-  let fn = () => {};
-  let cache = {
-    foo: 'bar'
+test('if getGetCacheKeyMethod will return getReactCacheKey if the isReact option is true and the equals option is falsy', (t) => {
+  const options = {
+    isReact: true
   };
 
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
+  const result = utils.getGetCacheKeyMethod(options);
 
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  t.is(result, fn);
-  t.is(result.cache, cache);
-  t.is(typeof result.add, 'function');
-  t.is(typeof result.clear, 'function');
-  t.is(typeof result.delete, 'function');
-  t.is(typeof result.hasCacheFor, 'function');
-  t.is(typeof result.keys, 'function');
-  t.is(typeof result.values, 'function');
+  t.is(result, utils.getReactCacheKey);
 });
 
-test('if getFunctionWithAdditionalProperties clear method will clear cache', (t) => {
-  const fn = () => {};
-  const key = 'foo';
+test('if getGetCacheKeyMethod will return getReactCacheKeyCustomEquals if the isReact option is true and the equals option is truthy', (t) => {
+  const options = {
+    isReact: true,
+    equals() {}
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getReactCacheKeyCustomEquals);
+});
+
+test('if getGetCacheKeyMethod will return getSerializedCacheKey if isReact and equals is falsy, and serialize is true', (t) => {
+  const options = {
+    serialize: true
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getSerializedCacheKey);
+});
+
+test('if getGetCacheKeyMethod will return getSerializedCacheKeyCustomEquals if isReact is falsy, equals is truthy, and serialize is true', (t) => {
+  const options = {
+    equals() {},
+    serialize: true
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getSerializedCacheKeyCustomEquals);
+});
+
+test('if getGetCacheKeyMethod will return getStandardCacheKey if the isReact, equals, and serialize are falsy', (t) => {
+  const options = {};
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getStandardCacheKey);
+});
+
+test('if getGetCacheKeyMethod will return getStandardCacheKeyCustomEquals if the isReact  and serialize are falsy and equals is truthy', (t) => {
+  const options = {
+    equals() {}
+  };
+
+  const result = utils.getGetCacheKeyMethod(options);
+
+  t.is(result, utils.getStandardCacheKeyCustomEquals);
+});
+
+test('if getReactCacheKey will get the matching cache key if it is the most recent entry', (t) => {
   const cache = new Cache();
 
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  result.cache.set(key, 'bar');
-
-  t.true(result.cache.has(key));
-
-  result.clear();
-
-  t.is(result.cache.size, 0);
-});
-
-test('if getFunctionWithAdditionalProperties will have a displayName reflecting the original', (t) => {
-  const originalFn = () => {};
-  const key = 'foo';
-  const cache = new Cache();
-
-  cache.set(key, key);
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, originalFn);
-
-  const fn = () => {};
-
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  t.is(result.displayName, `Memoized(${originalFn.name})`);
-});
-
-test('if getFunctionWithAdditionalProperties add method will add a key => value pair to cache if it doesnt exist', (t) => {
-  const fn = () => {};
-  const cache = new Cache();
-  const key = 'foo';
-  const value = 'bar';
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  result.add(key, value);
-
-  t.true(result.cache.has(key));
-  t.is(result.cache.get(key), value);
-});
-
-test('if getFunctionWithAdditionalProperties add method will not add a key => value pair to cache if it already exists', (t) => {
-  const fn = () => {};
-  const cache = new Cache();
-  const key = 'foo';
-  const value = 'bar';
-
-  cache.set(key, value);
-
-  const spy = sinon.spy(cache, 'set');
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  result.add(key, value);
-
-  t.true(result.cache.has(key));
-  t.is(result.cache.size, 1);
-  t.false(spy.calledOnce);
-
-  spy.restore();
-});
-
-test('if getFunctionWithAdditionalProperties delete method will remove the key passed from cache', (t) => {
-  const fn = () => {};
-  const cache = new Cache();
-  const key = utils.getKeyForCache(cache, ['foo']);
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  result.cache.set(key, 'bar');
-
-  t.true(result.cache.has(key));
-
-  result.delete(key);
-
-  t.false(result.cache.has(key));
-});
-
-test('if getFunctionWithAdditionalProperties hasCacheFor method will determine if the cache for the given keys exists', (t) => {
-  const fn = () => {};
-  const cache = new Cache();
-  const key = utils.getKeyForCache(cache, ['foo', 'bar']);
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const result = getFunctionWithAdditionalProperties(fn);
-
-  result.cache.set(key, 'baz');
-
-  t.true(result.cache.has(key));
-
-  t.true(result.hasCacheFor('foo', 'bar'));
-  t.false(result.hasCacheFor('foo'));
-});
-
-test('if getFunctionWithAdditionalProperties keys method will return the list of keys in cache', (t) => {
-  const fn = () => {};
-  const key = 'foo';
-  const cache = new Cache();
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const cachedFn = getFunctionWithAdditionalProperties(fn);
-
-  cachedFn.cache.set(key, 'bar');
-
-  t.true(cachedFn.cache.has(key));
-
-  const result = cachedFn.keys();
-
-  t.deepEqual(result, [key]);
-});
-
-test('if getFunctionWithAdditionalProperties values method will return the list of values in cache', (t) => {
-  const fn = () => {};
-  const key = 'foo';
-  const cache = new Cache();
-
-  const getFunctionWithAdditionalProperties = utils.createAddPropertiesToFunction(cache, fn);
-
-  const cachedFn = getFunctionWithAdditionalProperties(fn);
-
-  cachedFn.cache.set(key, 'bar');
-
-  t.true(cachedFn.cache.has(key));
-
-  const result = cachedFn.values();
-
-  t.deepEqual(result, [cachedFn.cache.get(key)]);
-});
-
-test('if getIndexOfKey returns the index of the item in the map, else -1', (t) => {
-  const cache = new Cache();
-
-  cache.set('foo', 'foo');
-  cache.set('bar', 'bar');
-  cache.set('baz', 'baz');
-
-  const foo = 'foo';
-  const notFoo = 'notFoo';
-
-  t.is(utils.getIndexOfKey(cache, foo), 2);
-  t.is(utils.getIndexOfKey(cache, notFoo), -1);
-});
-
-test('if getKeyForCache will return the only argument itself if the length is one', (t) => {
-  const cache = new Cache();
-  const key = 'foo';
-
-  const result = utils.getKeyForCache(cache, [key]);
-
-  t.is(result, key);
-});
-
-test('if getKeyForCache will return the multi-parameter key if the length more than one', (t) => {
-  const cache = new Cache();
-  const key = 'foo';
-  const key2 = 'bar';
-
-  const args = [key, key2];
-
-  const result = utils.getKeyForCache(cache, args);
-  const expectedResult = [...args];
-
-  expectedResult._isMultiParamKey = true;
-
-  t.deepEqual(result, expectedResult);
-  t.true(result._isMultiParamKey);
-});
-
-test('if getMultiParamKey augments the arguments passed when no match is found', (t) => {
-  const cache = new Cache();
-  const args = ['foo', 'bar'];
-
-  const result = utils.getMultiParamKey(cache, args);
-
-  t.is(result, args);
-  t.true(result._isMultiParamKey);
-});
-
-test('if getMultiParamKey returns an existing array of arguments when match is found', (t) => {
-  const existingArgList = [
-    {
-      key: ['foo', 'bar'],
-      value: 'baz'
-    }, {
-      key: ['bar', 'baz'],
-      value: 'foo'
-    }
+  const key = [
+    {foo: 'bar'},
+    {bar: 'baz'}
   ];
-  const cache = new Cache();
-  const args = ['foo', 'bar'];
+  const cacheKey = new ReactCacheKey(key, serializerFunction);
 
-  existingArgList.forEach((arg) => {
-    arg.key._isMultiParamKey = true;
+  cache.add(cacheKey, <div/>);
 
-    cache.set(arg.key, arg.value);
+  const newKey = key.map((object) => {
+    return {...object};
   });
 
-  const result = utils.getMultiParamKey(cache, args);
-  const expectedResult = [...args];
+  const result = utils.getReactCacheKey(cache, newKey);
 
-  expectedResult._isMultiParamKey = true;
-
-  t.not(result, args);
-  t.is(result, existingArgList[0].key);
-  t.deepEqual(result, expectedResult);
+  t.is(result, cache.lastItem.key);
 });
 
-test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
-  const string = 'foo';
-  const number = 123;
-  const boolean = true;
-  const object = {
-    foo: 'bar'
+test('if getReactCacheKey will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+
+  const key = [
+    {foo: 'bar'},
+    {bar: 'baz'}
+  ];
+  const cacheKey = new ReactCacheKey(key);
+
+  const otherKey = [
+    {bar: 'baz'},
+    {baz: 'foo'}
+  ];
+  const otherCacheKey = new ReactCacheKey(otherKey);
+
+  cache.add(cacheKey, <div/>);
+  cache.add(otherCacheKey, <span/>);
+
+  const newKey = key.map((object) => {
+    return {...object};
+  });
+
+  const result = utils.getReactCacheKey(cache, newKey);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getReactCacheKey will create a new ReactCacheKey if it does not exist in cache', (t) => {
+  const cache = new Cache();
+
+  const key = [
+    {foo: 'bar'},
+    {bar: 'baz'}
+  ];
+  const cacheKey = new ReactCacheKey(key);
+
+  const otherKey = [
+    {bar: 'baz'},
+    {baz: 'foo'}
+  ];
+  const otherCacheKey = new ReactCacheKey(otherKey);
+
+  cache.add(cacheKey, <div/>);
+  cache.add(otherCacheKey, <span/>);
+
+  const newKey = [
+    {foo: 'foo'},
+    {bar: 'bar'}
+  ];
+
+  const result = utils.getReactCacheKey(cache, newKey);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof ReactCacheKey);
+});
+
+test('if getReactCacheKeyCustomEquals will get the matching cache key if it is the most recent entry', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    isReact: true
   };
 
-  t.is(utils.getStringifiedArgument(string), string);
-  t.is(utils.getStringifiedArgument(number), number);
-  t.is(utils.getStringifiedArgument(boolean), boolean);
-  t.is(utils.getStringifiedArgument(object), JSON.stringify(object));
+  const key = [
+    {foo: {
+      foo: 'foo'
+    }},
+    {bar: {
+      bar: 'bar'
+    }}
+  ];
+  const cacheKey = new ReactCacheKey(key, serializerFunction);
+
+  cache.add(cacheKey, <div/>);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getReactCacheKeyCustomEquals(cache, newKey, options);
+
+  t.is(result, cache.lastItem.key);
 });
 
-test('if isCache correctly tests if object passed is an instance of Cache', (t) => {
-  const string = 'foo';
-  const number = 123;
-  const boolean = true;
-  const object = {
-    foo: 'bar'
+test('if getReactCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    isReact: true
   };
+
+  const key = [
+    {foo: {
+      foo: 'foo'
+    }},
+    {bar: {
+      bar: 'bar'
+    }}
+  ];
+  const cacheKey = new ReactCacheKey(key);
+
+  const otherKey = [
+    {bar: {
+      bar: 'bar'
+    }},
+    {baz: {
+      baz: 'baz'
+    }}
+  ];
+  const otherCacheKey = new ReactCacheKey(otherKey);
+
+  cache.add(cacheKey, <div/>);
+  cache.add(otherCacheKey, <span/>);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getReactCacheKeyCustomEquals(cache, newKey, options);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getReactCacheKeyCustomEquals will create a new ReactCacheKey if it does not exist in cache', (t) => {
   const cache = new Cache();
-
-  t.false(utils.isCache(string));
-  t.false(utils.isCache(number));
-  t.false(utils.isCache(boolean));
-  t.false(utils.isCache(object));
-
-  t.true(utils.isCache(cache));
-});
-
-test('if isComplexObject correctly identifies a complex object', (t) => {
-  const fail = ['foo', 123, true, undefined, null, () => {}];
-  const pass = [{foo: 'bar'}, ['foo']];
-
-  fail.forEach((item) => {
-    t.false(utils.isComplexObject(item));
-  });
-
-  pass.forEach((item) => {
-    t.true(utils.isComplexObject(item));
-  });
-});
-
-test('if isArrayFallback will return true if array, false otherwise', (t) => {
-  const bool = true;
-  const string = 'foo';
-  const number = 123;
-  const regexp = /foo/;
-  const undef = undefined;
-  const nil = null;
-  const object = {};
-  const array = [];
-  const fn = () => {};
-
-  t.false(utils.isArrayFallback(bool));
-  t.false(utils.isArrayFallback(string));
-  t.false(utils.isArrayFallback(number));
-  t.false(utils.isArrayFallback(regexp));
-  t.false(utils.isArrayFallback(undef));
-  t.false(utils.isArrayFallback(nil));
-  t.false(utils.isArrayFallback(object));
-  t.false(utils.isArrayFallback(fn));
-
-  t.true(utils.isArrayFallback(array));
-});
-
-test('if isFunction tests if the item is a function or not', (t) => {
-  const bool = true;
-  const string = 'foo';
-  const number = 123;
-  const regexp = /foo/;
-  const undef = undefined;
-  const nil = null;
-  const object = {};
-  const array = [];
-  const fn = () => {};
-
-  t.false(utils.isFunction(bool));
-  t.false(utils.isFunction(string));
-  t.false(utils.isFunction(number));
-  t.false(utils.isFunction(regexp));
-  t.false(utils.isFunction(undef));
-  t.false(utils.isFunction(nil));
-  t.false(utils.isFunction(object));
-  t.false(utils.isFunction(array));
-
-  t.true(utils.isFunction(fn));
-});
-
-test('if isFiniteAndPositive tests for finiteness and positivity', (t) => {
-  t.true(utils.isFiniteAndPositive(123));
-
-  t.false(utils.isFiniteAndPositive(Infinity));
-  t.false(utils.isFiniteAndPositive(0));
-  t.false(utils.isFiniteAndPositive(-0));
-  t.false(utils.isFiniteAndPositive(-123));
-  t.false(utils.isFiniteAndPositive(-Infinity));
-});
-
-test('if isPlainObject tests if the item is a function or not', (t) => {
-  const bool = true;
-  const string = 'foo';
-  const number = 123;
-  const regexp = /foo/;
-  const undef = undefined;
-  const nil = null;
-  const object = {};
-  const array = [];
-  const fn = () => {};
-
-  t.false(utils.isPlainObject(bool));
-  t.false(utils.isPlainObject(string));
-  t.false(utils.isPlainObject(number));
-  t.false(utils.isPlainObject(regexp));
-  t.false(utils.isPlainObject(undef));
-  t.false(utils.isPlainObject(nil));
-  t.false(utils.isPlainObject(fn));
-  t.false(utils.isPlainObject(array));
-
-  t.true(utils.isPlainObject(object));
-});
-test('if isValueObjectOrArray correctly determines if an item is an object / array or not', (t) => {
-  const bool = new Boolean(true);
-  const string = new String('foo');
-  const date = new Date();
-  const number = new Number(1);
-  const regexp = /foo/;
-  const object = {};
-  const array = [];
-
-  t.false(utils.isValueObjectOrArray(bool));
-  t.false(utils.isValueObjectOrArray(string));
-  t.false(utils.isValueObjectOrArray(date));
-  t.false(utils.isValueObjectOrArray(number));
-  t.false(utils.isValueObjectOrArray(regexp));
-  t.true(utils.isValueObjectOrArray(object));
-  t.true(utils.isValueObjectOrArray(array));
-});
-
-test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
-  const serializeArguments = utils.getSerializerFunction();
-
-  const string = 'foo';
-  const number = 123;
-  const boolean = true;
-  const fn = () => {};
-  const object = {
-    foo() {},
-    bar: 'baz'
+  const options = {
+    equals: _.isEqual,
+    isReact: true
   };
-  const args = [string, number, boolean, fn, object];
 
-  const expectedResult = `|${string}|${number}|${boolean}|${fn}|{"bar":"baz"}|`;
-  const result = serializeArguments(args);
+  const key = [
+    {foo: {
+      foo: 'foo'
+    }},
+    {bar: {
+      bar: 'bar'
+    }}
+  ];
+  const cacheKey = new ReactCacheKey(key);
 
-  t.is(expectedResult, result);
+  const otherKey = [
+    {bar: {
+      bar: 'bar'
+    }},
+    {baz: {
+      baz: 'baz'
+    }}
+  ];
+  const otherCacheKey = new ReactCacheKey(otherKey);
+
+  cache.add(cacheKey, <div/>);
+  cache.add(otherCacheKey, <span/>);
+
+  const newKey = [
+    _.cloneDeep(key[0]),
+    _.cloneDeep(otherKey[1])
+  ];
+
+  const result = utils.getReactCacheKeyCustomEquals(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof ReactCacheKey);
 });
 
-test('if serializeArguments limits the key creation when maxArgs is passed', (t) => {
-  const serializeArguments = utils.getSerializerFunction(null, false, 2);
+test('if getSerializedCacheKey will get the matching cache key if it is the most recent entry', (t) => {
+  const cache = new Cache();
 
-  const string = 'foo';
-  const number = 123;
-  const boolean = true;
-  const fn = () => {};
-  const object = {
-    foo() {},
-    bar: 'baz'
+  const key = ['foo', 'bar'];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+
+  const newKey = [...key];
+  const options = {
+    serialize: true,
+    serializer: serializerFunction
   };
-  const args = [string, number, boolean, fn, object];
 
-  const expectedResult = `|${string}|${number}|`;
-  const result = serializeArguments(args);
+  const result = utils.getSerializedCacheKey(cache, newKey, options);
 
-  t.is(expectedResult, result);
+  t.is(result, cache.lastItem.key);
 });
 
-test('if serializeArguments converts functions nested in objects to string when serializeFunctions is true', (t) => {
-  const serializeArguments = utils.getSerializerFunction(null, true);
+test('if getSerializedCacheKey will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
 
-  const string = 'foo';
-  const number = 123;
-  const boolean = true;
-  const fn = () => {};
-  const object = {
-    foo() {},
-    bar: 'baz'
+  const key = ['foo', 'bar'];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  const otherKey = ['bar', 'baz'];
+  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [...key];
+  const options = {
+    serialize: true,
+    serializer: serializerFunction
   };
-  const args = [string, number, boolean, fn, object];
 
-  const expectedResult = `|${string}|${number}|${boolean}|${fn}|{"foo":"${object.foo.toString()}","bar":"baz"}|`;
-  const result = serializeArguments(args);
+  const result = utils.getSerializedCacheKey(cache, newKey, options);
 
-  t.is(expectedResult, result);
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
 });
 
-test('if setNewCachedValue will run the set method if not a promise', async (t) => {
-  const keyToSet = 'foo';
-  const valueToSet = 'bar';
+test('if getSerializedCacheKey will create a new SerializedCacheKey if it does not exist in cache', (t) => {
+  const cache = new Cache();
 
-  const cache = {
-    set(key, value) {
-      t.is(key, keyToSet);
-      t.is(value, valueToSet);
-    }
+  const key = ['foo', 'bar'];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  const otherKey = ['bar', 'baz'];
+  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = ['foo', 'baz'];
+  const options = {
+    serialize: true,
+    serializer: serializerFunction
   };
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, false);
 
-  const result = await setNewCachedValue(keyToSet, valueToSet);
+  const result = utils.getSerializedCacheKey(cache, newKey, options);
 
-  t.is(result, valueToSet);
-});
-
-test('if setNewCachedValue will run the set method upon resolution of a promise', async (t) => {
-  const cache = new Cache();
-
-  const key = 'foo';
-  const value = 'bar';
-
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
-
-  const result = await setNewCachedValue(key, Promise.resolve(value));
-
-  t.is(result, value);
-});
-
-test('if setNewCachedValue will maintain its promise nature for future cached calls', async (t) => {
-  const cache = new Cache();
-  const key = 'foo';
-  const value = 'bar';
-
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
-
-  await setNewCachedValue(key, Promise.resolve(value));
-
-  await cache.get(key).then((resolvedValue) => {
-    t.is(resolvedValue, value);
-  });
-  await cache.get(key).then((resolvedValue) => {
-    t.is(resolvedValue, value);
-  });
-  await cache.get(key).then((resolvedValue) => {
-    t.is(resolvedValue, value);
-  });
-});
-
-test('if setNewCachedValue will delete itself from cache if a rejected promise is returned', async (t) => {
-  const cache = new Cache();
-
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
-
-  const key = 'foo';
-  const value = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject();
-    }, 100);
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
   });
 
-  const result = setNewCachedValue(key, value).catch(() => {});
-
-  t.true(cache.has(key));
-
-  await result;
-
-  t.false(cache.has(key));
+  t.is(matchingKey, undefined);
+  t.true(result instanceof SerializedCacheKey);
 });
 
-test('if setNewCachedValue will retrigger the promise rejection to ensure that the application can catch it', async (t) => {
+test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it is the most recent entry', (t) => {
   const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    serialize: true,
+    serializer: serializerFunction
+  };
 
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, Infinity, Promise);
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
 
-  const key = 'foo';
-  const error = new Error('foo');
-  const value = new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject(error);
-    }, 100);
+  cache.add(cacheKey, 'baz');
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    serialize: true,
+    serializer: serializerFunction
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getSerializedCacheKeyCustomEquals will create a new SerializedCacheKey if it does not exist in cache', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual,
+    serialize: true,
+    serializer: serializerFunction
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [{foo: 'foo'}, {baz: 'baz'}];
+
+  const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
   });
 
-  await setNewCachedValue(key, value).catch((exception) => {
-    t.is(exception, error);
+  t.is(matchingKey, undefined);
+  t.true(result instanceof SerializedCacheKey);
+});
+
+test('if getStandardCacheKey will get the matching cache key if it is the most recent entry', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  cache.add(cacheKey, 'baz');
+
+  const newKey = [...key];
+
+  const result = utils.getStandardCacheKey(cache, newKey);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getStandardCacheKey will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  const otherKey = ['bar', 'baz'];
+  const otherCacheKey = new MultipleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [...key];
+
+  const result = utils.getStandardCacheKey(cache, newKey);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getStandardCacheKey will create a new MultipleParameterCacheKey if it does not exist in cache and has more than one argument', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  const otherKey = ['bar', 'baz'];
+  const otherCacheKey = new MultipleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = ['foo', 'baz'];
+
+  const result = utils.getStandardCacheKey(cache, newKey);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
   });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof MultipleParameterCacheKey);
 });
 
-test('if setNewCachedValue will wait to trigger the expiration timeout until the resolution of the promise', async (t) => {
+test('if getStandardCacheKey will create a new SingleParameterCacheKey if it does not exist in cache and has only one argument', (t) => {
   const cache = new Cache();
 
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, 100, Infinity, Promise);
+  const key = ['foo'];
+  const cacheKey = new SingleParameterCacheKey(key);
 
-  const key = 'foo';
-  const value = new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('bar');
-    }, 100);
+  const otherKey = ['bar'];
+  const otherCacheKey = new SingleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = ['baz'];
+
+  const result = utils.getStandardCacheKey(cache, newKey);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
   });
 
-  const result = setNewCachedValue(key, value);
-
-  t.true(cache.has(key));
-
-  await result;
-  await sleep(99);
-
-  t.true(cache.has(key));
-
-  await sleep(2);
-
-  t.false(cache.has(key));
+  t.is(matchingKey, undefined);
+  t.true(result instanceof SingleParameterCacheKey);
 });
 
-test('if setNewCachedValue will immediately remove the oldest item from cache if the max is reached', async (t) => {
+test('if getStandardCacheKeyCustomEquals will get the matching cache key if it is the most recent entry', (t) => {
   const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
 
-  const keyToDelete = 'bar';
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new MultipleParameterCacheKey(key);
 
-  cache.set(keyToDelete, 'baz');
+  cache.add(cacheKey, 'baz');
 
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, true, Infinity, 1, Promise);
+  const newKey = _.cloneDeep(key);
 
-  const key = 'foo';
-  const value = new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('bar');
-    }, 100);
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getStandardCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new MultipleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = _.cloneDeep(key);
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getStandardCacheKeyCustomEquals will create a new MultipleParameterCacheKey if it does not exist in cache and has more than one argument', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals: _.isEqual
+  };
+
+  const key = [{foo: 'foo'}, {bar: 'bar'}];
+  const cacheKey = new MultipleParameterCacheKey(key);
+
+  const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
+  const otherCacheKey = new MultipleParameterCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  t.not(cache.lastItem.key, cacheKey);
+
+  const newKey = [{foo: 'foo'}, {baz: 'baz'}];
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
   });
 
-  setNewCachedValue(key, value);
-
-  t.true(cache.has(key));
-  t.false(cache.has(keyToDelete));
+  t.is(matchingKey, undefined);
+  t.true(result instanceof MultipleParameterCacheKey);
 });
 
-test('if setNewCachedValue will set the cache to expire if maxAge is finite', async (t) => {
+test('if getStandardCacheKey will create a new SingleParameterCacheKey if it does not exist in cache and has only one argument', (t) => {
   const cache = new Cache();
-  const keyToSet = 'foo';
-  const valueToSet = 'bar';
-  const maxAge = 100;
+  const options = {
+    equals: _.isEqual
+  };
 
-  const setNewCachedValue = utils.createSetNewCachedValue(cache, false, maxAge);
+  const key = [{foo: 'foo'}];
+  const cacheKey = new SingleParameterCacheKey(key);
 
-  await setNewCachedValue(keyToSet, valueToSet);
+  const otherKey = [{bar: 'bar'}];
+  const otherCacheKey = new SingleParameterCacheKey(otherKey);
 
-  t.is(cache.get(keyToSet), valueToSet);
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
 
-  await sleep(maxAge);
+  t.not(cache.lastItem.key, cacheKey);
 
-  t.is(cache.get(keyToSet), undefined);
+  const newKey = [{baz: 'baz'}];
+
+  const result = utils.getStandardCacheKeyCustomEquals(cache, newKey, options);
+
+  const matchingKey = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(matchingKey, undefined);
+  t.true(result instanceof SingleParameterCacheKey);
 });
 
-test('if setNewCacheValue will delete the item if the maxSize is set', (t) => {
-  const cache = new Cache();
-  const keyToSet = 'foo';
-  const valueToSet = 'bar';
+test('if isComplexObject returns false if the object is falsy', (t) => {
+  t.false(utils.isComplexObject(false));
+  t.false(utils.isComplexObject(null));
+  t.false(utils.isComplexObject(''));
+  t.false(utils.isComplexObject(0));
+});
 
-  cache.set('bar', 'baz');
+test('if isComplexObject returns false if the object is not the typeof object', (t) => {
+  t.false(utils.isComplexObject(123));
+  t.false(utils.isComplexObject('foo'));
+  t.false(utils.isComplexObject(() => {}));
+  t.false(utils.isComplexObject(true));
+  t.false(utils.isComplexObject(Symbol('foo')));
+});
 
-  const setNewCacheValue = utils.createSetNewCachedValue(cache, false, Infinity, 1);
+test('if isComplexObject returns true if the object is truthy and the typeof object', (t) => {
+  t.true(utils.isComplexObject({}));
+  t.true(utils.isComplexObject([]));
+  t.true(utils.isComplexObject(/foo/));
+});
 
-  setNewCacheValue(keyToSet, valueToSet);
+test('if isFiniteAndPositiveInteger returns false when the number is not finite', (t) => {
+  t.false(utils.isFiniteAndPositiveInteger(Number.POSITIVE_INFINITY));
+  t.false(utils.isFiniteAndPositiveInteger(Number.NEGATIVE_INFINITY));
+});
 
-  t.deepEqual(cache.list, [
-    {
-      key: keyToSet,
-      isMultiParamKey: false,
-      value: valueToSet
-    }
-  ]);
+test('if isFiniteAndPositiveInteger returns false when the number is not positive', (t) => {
+  t.false(utils.isFiniteAndPositiveInteger(-123));
+  t.false(utils.isFiniteAndPositiveInteger(0));
+});
+
+test('if isFiniteAndPositiveInteger returns false when the number is a decimal', (t) => {
+  t.false(utils.isFiniteAndPositiveInteger(123.45));
+});
+
+test('if isFiniteAndPositiveInteger returns true when the number is an integer and both finite and positive', (t) => {
+  t.true(utils.isFiniteAndPositiveInteger(123));
+});
+
+test('if isFunction returns false if the object passed is not a function', (t) => {
+  t.false(utils.isFunction(false));
+  t.false(utils.isFunction(true));
+  t.false(utils.isFunction(''));
+  t.false(utils.isFunction('foo'));
+  t.false(utils.isFunction(-123));
+  t.false(utils.isFunction(0));
+  t.false(utils.isFunction(123));
+  t.false(utils.isFunction({}));
+  t.false(utils.isFunction([]));
+  t.false(utils.isFunction(/foo/));
+  t.false(utils.isFunction(null));
+  t.false(utils.isFunction(undefined));
+});
+
+test('if isFunction returns true if the object passed is a function', (t) => {
+  t.true(utils.isFunction(function foo() {}));
+  t.true(utils.isFunction(() => {}));
+});
+
+test('if isPlainObject returns false if the object is not a complex object', (t) => {
+  t.false(utils.isPlainObject(false));
+  t.false(utils.isPlainObject(true));
+  t.false(utils.isPlainObject(''));
+  t.false(utils.isPlainObject('foo'));
+  t.false(utils.isPlainObject(-123));
+  t.false(utils.isPlainObject(0));
+  t.false(utils.isPlainObject(123));
+  t.false(utils.isPlainObject(function foo() {}));
+  t.false(utils.isPlainObject(() => {}));
+  t.false(utils.isPlainObject([]));
+  t.false(utils.isPlainObject(/foo/));
+  t.false(utils.isPlainObject(null));
+  t.false(utils.isPlainObject(undefined));
+});
+
+test('if isPlainObject returns false if the direct constructor of the object is not Object', (t) => {
+  function Foo(value) {
+    this.value = value;
+
+    return this;
+  }
+
+  const foo = new Foo('bar');
+
+  t.false(utils.isPlainObject(foo));
+});
+
+test('if isPlainObject returns true if the object is a complex object and whose direct constructor is Object', (t) => {
+  t.true(utils.isPlainObject({}));
+  t.true(utils.isPlainObject(new Object())); // eslint-disable-line no-new-object
+});
+
+test('if isValueObjectOrArray returns false if the object is not a complex object', (t) => {
+  t.false(utils.isValueObjectOrArray(false));
+  t.false(utils.isValueObjectOrArray(null));
+  t.false(utils.isValueObjectOrArray(undefined));
+  t.false(utils.isValueObjectOrArray(0));
+  t.false(utils.isValueObjectOrArray(123));
+  t.false(utils.isValueObjectOrArray('foo'));
+  t.false(utils.isValueObjectOrArray(() => {}));
+  t.false(utils.isValueObjectOrArray(true));
+});
+
+test('if isValueObjectOrArray returns false if the object is an instance of a gotcha class', (t) => {
+  t.false(utils.isValueObjectOrArray(new Boolean('true')));
+  t.false(utils.isValueObjectOrArray(new Date()));
+  t.false(utils.isValueObjectOrArray(new Number('123')));
+  t.false(utils.isValueObjectOrArray(new RegExp('foo')));
+  t.false(utils.isValueObjectOrArray(/foo/));
+  t.false(utils.isValueObjectOrArray(new String('true')));
+});
+
+test('if isValueObjectOrArray returns true if the object is a complex object that is not an instance of a gotcha class', (t) => {
+  t.true(utils.isValueObjectOrArray({}));
+  t.true(utils.isValueObjectOrArray([]));
 });
 
 test('if splice performs the same operation as the native splice', (t) => {
@@ -1050,6 +1388,47 @@ test('if splice returns immediately when an empty array is passed', (t) => {
   t.is(array.length, originalArrayLength);
 });
 
+test('if take will return the original array if the length is smaller than the size requested', (t) => {
+  const array = [1, 2, 3];
+  const size = 5;
+
+  const result = utils.take(array, size);
+
+  t.is(result, array);
+});
+
+test('if take will return a new array with the first N number of items from the original array', (t) => {
+  const array = [1, 2, 3, 4, 5, 6, 7];
+
+  t.deepEqual(utils.take(array, 1), array.slice(0, 1));
+  t.deepEqual(utils.take(array, 2), array.slice(0, 2));
+  t.deepEqual(utils.take(array, 3), array.slice(0, 3));
+  t.deepEqual(utils.take(array, 4), array.slice(0, 4));
+  t.deepEqual(utils.take(array, 5), array.slice(0, 5));
+});
+
+test('if take will return a new array with the first N number of items without calling slice if 5 or less, calling it if 6 or more', (t) => {
+  const array = [1, 2, 3, 4, 5, 6, 7];
+
+  const spy = sinon.spy(Object.getPrototypeOf(array), 'slice');
+
+  utils.take(array, 1);
+  utils.take(array, 2);
+  utils.take(array, 3);
+  utils.take(array, 4);
+  utils.take(array, 5);
+
+  t.true(spy.notCalled);
+
+  spy.reset();
+
+  utils.take(array, 6);
+
+  t.true(spy.calledOnce);
+
+  spy.restore();
+});
+
 test('if unshift performs the same operation as the native unshift', (t) => {
   const valueToUnshift = 'baz';
 
@@ -1060,57 +1439,4 @@ test('if unshift performs the same operation as the native unshift', (t) => {
   utils.unshift(customArray, valueToUnshift);
 
   t.deepEqual(nativeArray, customArray);
-});
-
-test('if setExpirationOfCache will expire the cache after the age passed', async (t) => {
-  const setExpirationOfCache = utils.createSetExpirationOfCache(100);
-  const cache = new Cache();
-
-  cache.set('foo', 'bar');
-
-  setExpirationOfCache(cache, 'foo');
-
-  const expectedCache = new Cache();
-
-  expectedCache.set('foo', 'bar');
-
-  t.deepEqual(cache, expectedCache);
-
-  await sleep(100);
-
-  t.deepEqual(cache, new Cache());
-});
-
-test('if setExpirationOfCache will expire the cache immediately if less than 0', async (t) => {
-  const setExpirationOfCache = utils.createSetExpirationOfCache(-1);
-  const cache = new Cache();
-
-  cache.set('foo', 'bar');
-
-  setExpirationOfCache(cache, 'foo');
-
-  await sleep(0);
-
-  t.deepEqual(cache, new Cache());
-});
-
-test('if cycle.decycle is called only when object is cannot be handled by JSON.stringify', (t) => {
-  const standard = {
-    foo: 'bar'
-  };
-  const circular = {
-    foo: {
-      bar: 'baz'
-    }
-  };
-
-  circular.foo.baz = circular.foo;
-
-  const standardResult = utils.stringify(standard);
-
-  t.is(standardResult, '{"foo":"bar"}');
-
-  const circularResult = utils.stringify(circular);
-
-  t.is(circularResult, '{"foo":{"bar":"baz","baz":{"$ref":"$[\\\"foo\\\"]"}}}');
 });

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Modules</title>
+	<title>moize Source: SingleParameterCacheKey.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -60,93 +60,75 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Modules</h1>
+		<h1 class="page-title">Source: SingleParameterCacheKey.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// @flow
 
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
+/**
+ * @private
+ *
+ * @class SingleParameterCacheKey
+ *
+ * @classdesc
+ * cache key used when there is a single standard parameter
+ */
+class SingleParameterCacheKey {
+  constructor(key: Array&lt;any>) {
+    this.key = key[0];
 
+    return this;
+  }
 
-<article>
-    <div class="container-overview">
-    
-        
+  isMultiParamKey: boolean = false;
+  key: any = null;
 
-        
-<dl class="details">
-    
+  /**
+   * @function matches
+   * @memberof SingleParameterCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @param {boolean} isMultiParamKey is the key a multi-parameter key
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matches(key: Array&lt;any>, isMultiParamKey: boolean): boolean {
+    return !isMultiParamKey &amp;&amp; key[0] === this.key;
+  }
 
-	
+  /**
+   * @function matchesCustom
+   * @memberof SingleParameterCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance based on the custom equality function passed
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @param {boolean} isMultiParamKey is the key a multi-parameter key
+   * @param {function} isEqual method to compare equality of the keys
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matchesCustom(key: Array&lt;any>, isMultiParamKey: boolean, isEqual: Function): boolean {
+    return !isMultiParamKey &amp;&amp; isEqual(key[0], this.key);
+  }
+}
 
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+export default SingleParameterCacheKey;
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -156,10 +138,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>
