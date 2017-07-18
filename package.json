@@ -100,7 +100,7 @@
     "url": "git+https://github.com/planttheidea/moize.git"
   },
   "scripts": {
-    "benchmark": "npm run transpile && node benchmark/index.js",
+    "benchmark": "npm run transpile -- --no-comments && node benchmark/index.js",
     "build": "NODE_ENV=development webpack --progress --colors",
     "build:minified": "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js",
     "clean": "npm run clean:lib && npm run clean:dist && npm run clean:docs",
@@ -117,7 +117,7 @@
     "prepublish": "in-publish && npm run prepublish:compile || echo ''",
     "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile && npm run dist && npm run docs",
     "start": "npm run dev:dashboard",
-    "test": "NODE_PATH=. NODE_ENV=test ava --no-cache",
+    "test": "NODE_PATH=. NODE_ENV=test ava",
     "test:coverage": "nyc npm test",
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile": "npm run clean:lib && NODE_ENV=production babel src --out-dir lib"
