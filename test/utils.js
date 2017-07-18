@@ -1392,7 +1392,7 @@ test('if take will return the original array if the length is smaller than the s
   const array = [1, 2, 3];
   const size = 5;
 
-  const result = utils.take(array, size);
+  const result = utils.take(size)(array);
 
   t.is(result, array);
 });
@@ -1400,11 +1400,11 @@ test('if take will return the original array if the length is smaller than the s
 test('if take will return a new array with the first N number of items from the original array', (t) => {
   const array = [1, 2, 3, 4, 5, 6, 7];
 
-  t.deepEqual(utils.take(array, 1), array.slice(0, 1));
-  t.deepEqual(utils.take(array, 2), array.slice(0, 2));
-  t.deepEqual(utils.take(array, 3), array.slice(0, 3));
-  t.deepEqual(utils.take(array, 4), array.slice(0, 4));
-  t.deepEqual(utils.take(array, 5), array.slice(0, 5));
+  t.deepEqual(utils.take(1)(array), array.slice(0, 1));
+  t.deepEqual(utils.take(2)(array), array.slice(0, 2));
+  t.deepEqual(utils.take(3)(array), array.slice(0, 3));
+  t.deepEqual(utils.take(4)(array), array.slice(0, 4));
+  t.deepEqual(utils.take(5)(array), array.slice(0, 5));
 });
 
 test('if take will return a new array with the first N number of items without calling slice if 5 or less, calling it if 6 or more', (t) => {
@@ -1412,17 +1412,17 @@ test('if take will return a new array with the first N number of items without c
 
   const spy = sinon.spy(Object.getPrototypeOf(array), 'slice');
 
-  utils.take(array, 1);
-  utils.take(array, 2);
-  utils.take(array, 3);
-  utils.take(array, 4);
-  utils.take(array, 5);
+  utils.take(1)(array);
+  utils.take(2)(array);
+  utils.take(3)(array);
+  utils.take(4)(array);
+  utils.take(5)(array);
 
   t.true(spy.notCalled);
 
   spy.reset();
 
-  utils.take(array, 6);
+  utils.take(6)(array);
 
   t.true(spy.calledOnce);
 

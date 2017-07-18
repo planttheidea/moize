@@ -132,33 +132,34 @@ export const isValueObjectOrArray = (object: any): boolean => {
  * @description
  * take the first N number of items from the array (faster than slice)
  *
- * @param {Array<*>} array the array to take from
  * @param {number} size the number of items to take
- * @returns {Array<*>} the shortened array
+ * @returns {function(Array<*>): Array<*>} the shortened array
  */
-export const take = (array: Array<any>, size: number): Array<any> => {
-  if (size >= array.length) {
-    return array;
-  }
+export const take = (size: number) => {
+  return (array: Array<any>): Array<any> => {
+    if (size >= array.length) {
+      return array;
+    }
 
-  switch (size) {
-    case 1:
-      return [array[0]];
+    switch (size) {
+      case 1:
+        return [array[0]];
 
-    case 2:
-      return [array[0], array[1]];
+      case 2:
+        return [array[0], array[1]];
 
-    case 3:
-      return [array[0], array[1], array[2]];
+      case 3:
+        return [array[0], array[1], array[2]];
 
-    case 4:
-      return [array[0], array[1], array[2], array[3]];
+      case 4:
+        return [array[0], array[1], array[2], array[3]];
 
-    case 5:
-      return [array[0], array[1], array[2], array[3], array[4]];
-  }
+      case 5:
+        return [array[0], array[1], array[2], array[3], array[4]];
+    }
 
-  return array.slice(0, size);
+    return array.slice(0, size);
+  };
 };
 
 /**
@@ -671,8 +672,10 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
 
   if (shouldPassOptions) {
     if (hasMaxArgs) {
+      const takeMaxArgs = take(options.maxArgs);
+
       return (key: any): CacheKey => {
-        return getCacheKeyMethod(cache, take(key, options.maxArgs), options);
+        return getCacheKeyMethod(cache, takeMaxArgs(key), options);
       };
     }
 
@@ -682,8 +685,10 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   }
 
   if (hasMaxArgs) {
+    const takeMaxArgs = take(options.maxArgs);
+
     return (key: any): CacheKey => {
-      return getCacheKeyMethod(cache, take(key, options.maxArgs));
+      return getCacheKeyMethod(cache, takeMaxArgs(key));
     };
   }
 
