@@ -10,13 +10,13 @@
 * Add `isReact` option for simpler `react` configuration via `options`
 * Fix issue where `moize` was only able to curry `options` once
 * Fix issue with `react` cache where different functions with identical names / body contents were seen as equal
-* Fix issue where `maxArgs` was not always respected for `serialize` cachesCustom
+* Fix issue where `maxArgs` was not always respected for `serialize` caches
 
 **BREAKING CHANGES**
 
 * Custom `cache` is no longer available in `options`
 * `moize.react` now performs a shallow equal comparison of `props` and `context` instead of deep value comparison
-  * If you want to perform a deep value equality comparison (if you are mutation props, for exaple), pass a deep equality comparison method via the `equals` option such as `lodash`'s `isEqual`
+  * If you want to perform a deep value equality comparison (if you are mutation props, for example), pass a deep equality comparison method via the `equals` option such as `lodash`'s `isEqual`
   * If you want to continue using the v2 version of `moize.react`, you can manually apply the options: `moize.serialize(fn, {maxArgs: 2, serializeFunctions: true})`
 * The direct cache manipulation `delete` method has been renamed to `remove`
 * The direct cache manipulation `hasCacheFor` method has been renamed to `has`
