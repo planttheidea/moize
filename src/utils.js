@@ -32,7 +32,7 @@ import type {
   Options
 } from './types';
 
-type StandardCacheKey = MultipleParameterCacheKey | StandardCacheKey;
+type StandardCacheKey = MultipleParameterCacheKey | SingleParameterCacheKey;
 type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
 
 /**
@@ -573,6 +573,7 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
 
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matches(key, isMultiParamKey)) {
+    // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
 
@@ -581,6 +582,7 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
     if (cache.list[index].key.matches(key, isMultiParamKey)) {
+      // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
 
@@ -608,6 +610,7 @@ export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, o
 
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matchesCustom(key, isMultiParamKey, options.equals)) {
+    // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
 
@@ -616,6 +619,7 @@ export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, o
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
     if (cache.list[index].key.matchesCustom(key, isMultiParamKey, options.equals)) {
+      // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
 
