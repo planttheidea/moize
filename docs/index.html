@@ -142,7 +142,7 @@
 <li><a href="#development">Development</a></li>
 </ul>
 <h2 id="upgrade-notification">Upgrade notification</h2>
-<p>Users of <code>moize</code> 2.x.x may have experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
+<p>Users of <code>moize</code> 2.x.x may experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
 <h2 id="installation">Installation</h2>
 <pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h2 id="usage">Usage</h2>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
@@ -236,7 +236,7 @@ const memoized = moize(fn, {
 memoize('foo', 'bar', 'baz');
 memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the same</code></pre><h4 id="maxsize">maxSize</h4>
 <p><em>defaults to Infinity</em></p>
-<p>The maximum size of the cache you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This is also available via the shortcut method of <a href="#moizemaxsize"><code>moize.maxSize</code></a>.</p>
+<p>The maximum number of values you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This is also available via the shortcut method of <a href="#moizemaxsize"><code>moize.maxSize</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
   return item;
 };
@@ -391,9 +391,9 @@ const Foo = ({bar, baz}) => {
 };
 
 export default moize.react(Foo);</code></pre><p>Also, it should be noted that in usages that involve a lot of variety in the parameter changes, this has the potential for excessive memory consumption, as the cache will retain the history of all elements. It is therefore recommended to apply a <code>maxSize</code>, or to use the shortcut method <a href="#moizereactsimple"><code>moize.reactSimple</code></a>, which automatically sets the <code>maxSize</code> to <code>1</code>.</p>
-<p>Please note <code>moize.reactSimple</code> will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
+<p>Please note <code>moize.react</code> will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
 <h4 id="moize-reactsimple">moize.reactSimple</h4>
-<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>, with the cache size limited to a single entry. This mimics the <code>PureComponnt</code> optimization, where the cache will only contain the component with the most recent <code>props</code> and <code>context</code> combination.</p>
+<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>, with the cache size limited to a single entry. This mimics the <code>PureComponent</code> optimization, where the cache will only contain the component with the most recent <code>props</code> and <code>context</code> combination.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';
 
 const Foo = ({bar, baz}) => {
