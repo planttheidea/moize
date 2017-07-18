@@ -21,7 +21,7 @@
 * The direct cache manipulation `delete` method has been renamed to `remove`
 * The direct cache manipulation `hasCacheFor` method has been renamed to `has`
 * The `key` passed to direct cache manipulation methods (`add`, `has`, `remove`) must now be an array
-  * The array reflects the arguments passed to the method
+  * The array reflects the arguments passed to the method (`moized.hasCacheFor('foo', 'bar')` => `moized.has(['foo', 'bar'])`)
 
 ### 2.5.1
 * Surface types for TypeScript correctly
