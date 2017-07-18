@@ -1,4 +1,5 @@
 interface Config {
+    equals?: (firstValue: any, secondValue: any) => boolean; // custom equality comparator
     isPromise?: boolean; // is the result a promise
     isReact?: boolean; // is the method a functional React component
     maxAge?: number; // amount of time in milliseconds before the cache will expire
