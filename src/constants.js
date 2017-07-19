@@ -49,7 +49,8 @@ export const INFINITY: number = Number.POSITIVE_INFINITY;
  * @constant {string} INVALID_FIRST_PARAMETER_ERROR
  * @default
  */
-export const INVALID_FIRST_PARAMETER_ERROR: string = 'You must pass either a function or an object of options as the first parameter to moize.';
+export const INVALID_FIRST_PARAMETER_ERROR: string =
+  'You must pass either a function or an object of options as the first parameter to moize.';
 
 /**
  * @private
@@ -57,14 +58,16 @@ export const INVALID_FIRST_PARAMETER_ERROR: string = 'You must pass either a fun
  * @constant {string} INVALID_PROMISE_LIBRARY_ERROR
  * @default
  */
-export const INVALID_PROMISE_LIBRARY_ERROR: string = 'The promiseLibrary passed must either be a function or an object with the resolve / reject methods.';
+export const INVALID_PROMISE_LIBRARY_ERROR: string =
+  'The promiseLibrary passed must either be a function or an object with the resolve / reject methods.';
 
 /**
  * @private
  *
  * @constant {function|undefined} NATIVE_PROMISE
  */
-export const NATIVE_PROMISE: ?Function = typeof Promise === FUNCTION_TYPEOF ? Promise : undefined;
+export const NATIVE_PROMISE: ?Function =
+  typeof Promise === FUNCTION_TYPEOF ? Promise : undefined;
 
 /**
  * @private

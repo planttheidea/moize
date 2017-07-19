@@ -4,9 +4,7 @@
 import Cache from './Cache';
 
 // types
-import type {
-  Options
-} from './types';
+import type {Options} from './types';
 
 // utils
 import {
@@ -78,7 +76,10 @@ export const decycle = (object: any): string => {
     }
 
     return Object.keys(value).reduce((object, name) => {
-      object[name] = coalesceCircularReferences(value[name], `${path}[${JSON.stringify(name)}]`);
+      object[name] = coalesceCircularReferences(
+        value[name],
+        `${path}[${JSON.stringify(name)}]`
+      );
 
       return object;
     }, {});
@@ -120,7 +121,9 @@ export const stringify = (value: any, replacer: ?Function) => {
  * @returns {string}
  */
 export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
-  return isComplexObject(arg) || isFunction(arg) ? stringify(arg, replacer) : arg;
+  return isComplexObject(arg) || isFunction(arg)
+    ? stringify(arg, replacer)
+    : arg;
 };
 
 /**
@@ -135,7 +138,10 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
  * @param {number} maxArgs the cap on the number of arguments used in serialization
  * @returns {function(...Array<*>): string} argument serialization method
  */
-export const createArgumentSerializer = ({maxArgs, serializeFunctions}: Options): Function => {
+export const createArgumentSerializer = ({
+  maxArgs,
+  serializeFunctions
+}: Options): Function => {
   const replacer: ?Function = serializeFunctions ? customReplacer : null;
   const hasMaxArgs: boolean = isFiniteAndPositiveInteger(maxArgs);
 
@@ -143,8 +149,8 @@ export const createArgumentSerializer = ({maxArgs, serializeFunctions}: Options)
     const length: number = hasMaxArgs ? maxArgs : args.length;
 
     let index: number = -1,
-        key: string = '|',
-        value: any;
+      key: string = '|',
+      value: any;
 
     while (++index < length) {
       value = getStringifiedArgument(args[index], replacer);
@@ -170,5 +176,7 @@ export const createArgumentSerializer = ({maxArgs, serializeFunctions}: Options)
  * @returns {function} the function to use in serializing the arguments
  */
 export const getSerializerFunction = (options: Options): Function => {
-  return isFunction(options.serializer) ? options.serializer : createArgumentSerializer(options);
+  return isFunction(options.serializer)
+    ? options.serializer
+    : createArgumentSerializer(options);
 };

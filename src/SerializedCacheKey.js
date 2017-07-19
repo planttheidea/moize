@@ -1,10 +1,5 @@
 // @flow
 
-// serialize
-import {
-  stringify
-} from './serialize';
-
 /**
  * @private
  *
@@ -14,15 +9,13 @@ import {
  * cache key used when the parameters should be serialized
  */
 class SerializedCacheKey {
-  constructor(key: Array<any>, serializerFunction: Function) {
-    this.key = serializerFunction(key);
-    this.serializer = serializerFunction;
+  constructor(key: Array<any>) {
+    this.key = key;
 
     return this;
   }
 
   key: any = null;
-  serializer: Function = stringify;
 
   /**
    * @function matches
@@ -36,7 +29,7 @@ class SerializedCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matches(key: Array<any>): boolean {
-    return this.serializer(key) === this.key;
+    return key === this.key;
   }
 
   /**
@@ -52,7 +45,7 @@ class SerializedCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matchesCustom(key: Array<any>, isEqual: Function): boolean {
-    return isEqual(this.serializer(key), this.key);
+    return isEqual(key, this.key);
   }
 }
 

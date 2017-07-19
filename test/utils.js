@@ -7,6 +7,7 @@ import sinon from 'sinon';
 // src
 import * as utils from 'src/utils';
 import * as constants from 'src/constants';
+import moize from 'src/index';
 import * as serialize from 'src/serialize';
 import Cache from 'src/Cache';
 import MultipleParameterCacheKey from 'src/MultipleParameterCacheKey';
@@ -227,8 +228,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   t.true(result instanceof SerializedCacheKey);
   t.deepEqual({...result}, {
-    key: options.serializer(key),
-    serializer: options.serializer
+    key: options.serializer(key)
   });
 });
 
@@ -250,8 +250,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   t.true(result instanceof SerializedCacheKey);
   t.deepEqual({...result}, {
-    key: options.serializer(key.slice(0, options.maxArgs)),
-    serializer: options.serializer
+    key: options.serializer(key.slice(0, options.maxArgs))
   });
 });
 
@@ -910,7 +909,8 @@ test('if getSerializedCacheKey will get the matching cache key if it is the most
   const cache = new Cache();
 
   const key = ['foo', 'bar'];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey);
 
   cache.add(cacheKey, 'baz');
 
@@ -929,10 +929,12 @@ test('if getSerializedCacheKey will get the matching cache key if it exists in t
   const cache = new Cache();
 
   const key = ['foo', 'bar'];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey);
 
   const otherKey = ['bar', 'baz'];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -955,10 +957,12 @@ test('if getSerializedCacheKey will create a new SerializedCacheKey if it does n
   const cache = new Cache();
 
   const key = ['foo', 'bar'];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey);
 
   const otherKey = ['bar', 'baz'];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -990,7 +994,8 @@ test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it
   };
 
   const key = [{foo: 'foo'}, {bar: 'bar'}];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
 
@@ -1010,10 +1015,12 @@ test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it
   };
 
   const key = [{foo: 'foo'}, {bar: 'bar'}];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey, serializerFunction);
 
   const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -1037,10 +1044,12 @@ test('if getSerializedCacheKeyCustomEquals will create a new SerializedCacheKey 
   };
 
   const key = [{foo: 'foo'}, {bar: 'bar'}];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey, serializerFunction);
 
   const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -1306,6 +1315,30 @@ test('if isFunction returns false if the object passed is not a function', (t) =
 test('if isFunction returns true if the object passed is a function', (t) => {
   t.true(utils.isFunction(function foo() {}));
   t.true(utils.isFunction(() => {}));
+});
+
+test('if isMoized will return false if the fn passed is not a function', (t) => {
+  const fn = null;
+
+  const result = utils.isMoized(fn);
+
+  t.false(result);
+});
+
+test('if isMoized will return false if the fn passed is a function that does not have an isMoized property', (t) => {
+  const fn = () => {};
+
+  const result = utils.isMoized(fn);
+
+  t.false(result);
+});
+
+test('if isMoized will return true if the fn passed is a function that has been moized', (t) => {
+  const fn = moize(() => {});
+
+  const result = utils.isMoized(fn);
+
+  t.true(result);
 });
 
 test('if isPlainObject returns false if the object is not a complex object', (t) => {

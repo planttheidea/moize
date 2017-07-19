@@ -1,6 +1,7 @@
 {
   "extends": [
-    "rapid7/browser"
+    "rapid7/browser",
+    "prettier"
   ],
   "globals": {
     "__dirname": true,

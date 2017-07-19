@@ -31,6 +31,8 @@
   * [moize.serialize](#moizeserialize)
   * [moize.simple](#moizesimple)
 * [Composition](#composition)
+* [Introspection](#introspection)
+  * [isMoized](#ismoized)
 * [Benchmarks](#benchmarks)
   * [Single parameter](#single-parameter)
   * [Multiple parameters (primitives only)](#multiple-parameters-primitives-only)
@@ -545,6 +547,22 @@ import moize from 'moize';
 // creates a moizer that will have the options of
 // {isReact: true, maxAge: 5000, maxSize: 5}
 const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));
+```
+
+## Introspection
+
+There currently is only one method to introspect objects specific to moize, but if you want more just ask!
+
+#### isMoized
+
+Is the function passed a moized function.
+
+```javascript
+const fn = () => {};
+const moizedFn = moize(fn);
+
+moize.isMoized(fn); // false
+moize.isMoized(moizedFn); // true
 ```
 
 ## Benchmarks

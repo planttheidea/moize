@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+### 3.1.0
+* New: add `isMoized` introspection method
+* New; add FlowType declarations based on TypeScript typings
+* New: add `prettier` to project, with pre-commit hooks to format the code
+* Fix: only serialize key once when attempting to match in cache (was serializing on every iteration)
+
 ### 3.0.2
 * Improve performance of `take` by making it a higher-order function
 

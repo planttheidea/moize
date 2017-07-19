@@ -37,6 +37,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#isMoized">isMoized</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -174,7 +181,10 @@ class ReactCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matches(key: Array&lt;Object>): boolean {
-    return this._isPropShallowEqual('props', key[0]) &amp;&amp; this._isPropShallowEqual('context', key[1]);
+    return (
+      this._isPropShallowEqual('props', key[0]) &amp;&amp;
+      this._isPropShallowEqual('context', key[1])
+    );
   }
 
   /**
@@ -190,7 +200,10 @@ class ReactCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matchesCustom(key: Array&lt;Object>, isEqual: Function): boolean {
-    return this._isPropCustomEqual('props', key[0], isEqual) &amp;&amp; this._isPropCustomEqual('context', key[1], isEqual);
+    return (
+      this._isPropCustomEqual('props', key[0], isEqual) &amp;&amp;
+      this._isPropCustomEqual('context', key[1], isEqual)
+    );
   }
 }
 

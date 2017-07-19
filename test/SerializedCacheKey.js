@@ -14,18 +14,18 @@ const serializerFunction = serialize.createArgumentSerializer({
 test('if the instance is constructed with the correct values', (t) => {
   const key = [{foo: 'bar'}];
 
-  const result = new SerializedCacheKey(key, serializerFunction);
+  const result = new SerializedCacheKey(serializerFunction(key));
 
   t.deepEqual({...result}, {
-    key: serializerFunction(key),
-    serializer: serializerFunction
+    key: serializerFunction(key)
   });
 });
 
 test('if matches will return false if the key passed is not equal to the serialized key', (t) => {
-  const existingKey = [{foo: 'bar'}];
+  const key = [{foo: 'bar'}];
+  const existingKey = serializerFunction(key);
 
-  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+  const cacheKey = new SerializedCacheKey(existingKey);
 
   const newKey = [{bar: 'baz'}];
 
@@ -35,11 +35,12 @@ test('if matches will return false if the key passed is not equal to the seriali
 });
 
 test('if matches will return true if the key passed is equal to the serialized key', (t) => {
-  const existingKey = [{foo: 'bar'}];
+  const key = [{foo: 'bar'}];
+  const existingKey = serializerFunction(key);
 
-  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+  const cacheKey = new SerializedCacheKey(existingKey);
 
-  const newKey = [{...existingKey[0]}];
+  const newKey = serializerFunction([{...key[0]}]);
 
   const result = cacheKey.matches(newKey);
 
@@ -47,11 +48,12 @@ test('if matches will return true if the key passed is equal to the serialized k
 });
 
 test('if matchesCustom wll return false if the key passed is not equal to the serialized key based on the custom method', (t) => {
-  const existingKey = [{foo: 'bar'}];
+  const key = [{foo: 'bar'}];
+  const existingKey = serializerFunction(key);
 
-  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+  const cacheKey = new SerializedCacheKey(existingKey);
 
-  const newKey = [{bar: 'baz'}];
+  const newKey = serializerFunction([{bar: 'baz'}]);
 
   const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
@@ -59,11 +61,12 @@ test('if matchesCustom wll return false if the key passed is not equal to the se
 });
 
 test('if matchesCustom wll return true if the key passed is equal to the serialized key based on the custom method', (t) => {
-  const existingKey = [{foo: 'bar'}];
+  const key = [{foo: 'bar'}];
+  const existingKey = serializerFunction(key);
 
-  const cacheKey = new SerializedCacheKey(existingKey, serializerFunction);
+  const cacheKey = new SerializedCacheKey(existingKey);
 
-  const newKey = [{...existingKey[0]}];
+  const newKey = serializerFunction([{...key[0]}]);
 
   const result = cacheKey.matchesCustom(newKey, _.isEqual);
 

@@ -37,6 +37,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#isMoized">isMoized</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -73,17 +80,10 @@
             class="sunlight-highlight-javascript linenums">// @flow
 
 // types
-import type {
-  ListItem
-} from './types';
+import type {ListItem} from './types';
 
 // utils
-import {
-  findIndex,
-  findIndexAfterFirst,
-  splice,
-  unshift
-} from './utils';
+import {findIndex, findIndexAfterFirst, splice, unshift} from './utils';
 
 /**
  * @private
@@ -190,7 +190,10 @@ class Cache {
    * @returns {boolean} does the key exist in cache
    */
   has(key: any): boolean {
-    return this.size !== 0 &amp;&amp; (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key));
+    return (
+      this.size !== 0 &amp;&amp;
+      (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key))
+    );
   }
 
   /**=
