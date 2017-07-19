@@ -227,8 +227,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   t.true(result instanceof SerializedCacheKey);
   t.deepEqual({...result}, {
-    key: options.serializer(key),
-    serializer: options.serializer
+    key: options.serializer(key)
   });
 });
 
@@ -250,8 +249,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   t.true(result instanceof SerializedCacheKey);
   t.deepEqual({...result}, {
-    key: options.serializer(key.slice(0, options.maxArgs)),
-    serializer: options.serializer
+    key: options.serializer(key.slice(0, options.maxArgs))
   });
 });
 
@@ -910,7 +908,8 @@ test('if getSerializedCacheKey will get the matching cache key if it is the most
   const cache = new Cache();
 
   const key = ['foo', 'bar'];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey);
 
   cache.add(cacheKey, 'baz');
 
@@ -929,10 +928,12 @@ test('if getSerializedCacheKey will get the matching cache key if it exists in t
   const cache = new Cache();
 
   const key = ['foo', 'bar'];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey);
 
   const otherKey = ['bar', 'baz'];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -955,10 +956,12 @@ test('if getSerializedCacheKey will create a new SerializedCacheKey if it does n
   const cache = new Cache();
 
   const key = ['foo', 'bar'];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey);
 
   const otherKey = ['bar', 'baz'];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -990,7 +993,8 @@ test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it
   };
 
   const key = [{foo: 'foo'}, {bar: 'bar'}];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
 
@@ -1010,10 +1014,12 @@ test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it
   };
 
   const key = [{foo: 'foo'}, {bar: 'bar'}];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey, serializerFunction);
 
   const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');
@@ -1037,10 +1043,12 @@ test('if getSerializedCacheKeyCustomEquals will create a new SerializedCacheKey 
   };
 
   const key = [{foo: 'foo'}, {bar: 'bar'}];
-  const cacheKey = new SerializedCacheKey(key, serializerFunction);
+  const serializedKey = serializerFunction(key);
+  const cacheKey = new SerializedCacheKey(serializedKey, serializerFunction);
 
   const otherKey = [{bar: 'bar'}, {baz: 'baz'}];
-  const otherCacheKey = new SerializedCacheKey(otherKey, serializerFunction);
+  const otherSerializedKey = serializerFunction(otherKey);
+  const otherCacheKey = new SerializedCacheKey(otherSerializedKey, serializerFunction);
 
   cache.add(cacheKey, 'baz');
   cache.add(otherCacheKey, 'foo');

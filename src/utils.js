@@ -22,15 +22,10 @@ import {
 } from './constants';
 
 // serialize
-import {
-  getSerializerFunction
-} from './serialize';
+import {getSerializerFunction} from './serialize';
 
 // types
-import type {
-  ListItem,
-  Options
-} from './types';
+import type {ListItem, Options} from './types';
 
 type StandardCacheKey = MultipleParameterCacheKey | SingleParameterCacheKey;
 type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
@@ -174,9 +169,12 @@ export const take = (size: number) => {
  * @param {function} memoizedFn the higher-order memoized function
  * @returns {function} memoizedFn with static properties added
  */
-export const addStaticPropertiesToFunction = (originalFunction: Function, memoizedFn: Function): Function => {
+export const addStaticPropertiesToFunction = (
+  originalFunction: Function,
+  memoizedFn: Function
+): Function => {
   let index: number = STATIC_PROPERTIES_TO_PASS.length,
-      property: string;
+    property: string;
 
   while (index--) {
     property = STATIC_PROPERTIES_TO_PASS[index];
@@ -221,7 +219,10 @@ export const compose = (...functions: Array<Function>): Function => {
  * @param {*} value the value to assign to option
  * @returns {function} the moizer with the option pre-applied
  */
-export const createCurriableOptionMethod = (fn: Function, option: string): Function => {
+export const createCurriableOptionMethod = (
+  fn: Function,
+  option: string
+): Function => {
   return function(value: any): Function {
     return fn({
       [option]: value
@@ -240,7 +241,8 @@ export const createCurriableOptionMethod = (fn: Function, option: string): Funct
  * @param {number} startingIndex the index to start in the find method returned
  * @returns {function(Array<ListItem>, *): number} the findIndex method
  */
-export const createFindIndex = (startingIndex: number): Function => { // eslint-disable-line no-use-before-define
+export const createFindIndex = (startingIndex: number): Function => {
+  // eslint-disable-line no-use-before-define
   return (list: Array<ListItem>, key: any): number => {
     let index: number = startingIndex;
 
@@ -268,7 +270,10 @@ export const createFindIndex = (startingIndex: number): Function => { // eslint-
  * @param {string} key key to pluck from list
  * @returns {Array<*>} array of values plucked at key
  */
-export const createPluckFromInstanceList = (cache: Cache, key: string): Function => {
+export const createPluckFromInstanceList = (
+  cache: Cache,
+  key: string
+): Function => {
   return (): Array<any> => {
     return cache.list.map((item: ListItem) => {
       return item[key];
@@ -289,7 +294,11 @@ export const createPluckFromInstanceList = (cache: Cache, key: string): Function
  * @param {function} promiseLibrary the promise library used
  * @returns {function} the rejecter function for the promise
  */
-export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: Options): Function => {
+export const createPromiseRejecter = (
+  cache: Cache,
+  key: any,
+  {promiseLibrary}: Options
+): Function => {
   return (exception: Error): Promise<any> => {
     cache.remove(key);
 
@@ -411,7 +420,9 @@ export const getFunctionNameViaRegexp = (fn: Function): string => {
  * @returns {string} function name
  */
 export const getFunctionName = (fn: Function): string => {
-  return fn.displayName || fn.name || getFunctionNameViaRegexp(fn) || FUNCTION_TYPEOF;
+  return (
+    fn.displayName || fn.name || getFunctionNameViaRegexp(fn) || FUNCTION_TYPEOF
+  );
 };
 
 /**
@@ -426,7 +437,10 @@ export const getFunctionName = (fn: Function): string => {
  * @param {*} key the key to try to find a match of, or turn into a new ReactCacheKey
  * @returns {ReactCacheKey} the matching cache key, or a new one
  */
-export const getReactCacheKey = (cache: Cache, key: Array<any>): ReactCacheKey => {
+export const getReactCacheKey = (
+  cache: Cache,
+  key: Array<any>
+): ReactCacheKey => {
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matches(key)) {
     // $FlowIgnore if the key matches, the key exists
@@ -461,7 +475,11 @@ export const getReactCacheKey = (cache: Cache, key: Array<any>): ReactCacheKey =
  * @param {Options} options the options passed to the moized method
  * @returns {ReactCacheKey} the matching cache key, or a new one
  */
-export const getReactCacheKeyCustomEquals = (cache: Cache, key: Array<any>, options: Options): ReactCacheKey => {
+export const getReactCacheKeyCustomEquals = (
+  cache: Cache,
+  key: Array<any>,
+  options: Options
+): ReactCacheKey => {
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matchesCustom(key, options.equals)) {
     // $FlowIgnore if the key matches, the key exists
@@ -496,9 +514,15 @@ export const getReactCacheKeyCustomEquals = (cache: Cache, key: Array<any>, opti
  * @param {Options} options the options passed to the moized method
  * @returns {SerializedCacheKey} the matching cache key, or a new one
  */
-export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Options): SerializedCacheKey => {
+export const getSerializedCacheKey = (
+  cache: Cache,
+  key: Array<any>,
+  options: Options
+): SerializedCacheKey => {
+  const serializedKey = options.serializer(key);
+
   // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(key)) {
+  if (cache.size && cache.lastItem.key.matches(serializedKey)) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
@@ -507,7 +531,7 @@ export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Op
 
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(key)) {
+    if (cache.list[index].key.matches(serializedKey)) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -515,7 +539,7 @@ export const getSerializedCacheKey = (cache: Cache, key: Array<any>, options: Op
     index++;
   }
 
-  return new SerializedCacheKey(key, options.serializer);
+  return new SerializedCacheKey(serializedKey);
 };
 
 /**
@@ -536,8 +560,10 @@ export const getSerializedCacheKeyCustomEquals = (
   key: Array<any>,
   options: Options
 ): SerializedCacheKey => {
+  const serializedKey = options.serializer(key);
+
   // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(key, options.equals)) {
+  if (cache.size && cache.lastItem.key.matches(serializedKey, options.equals)) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
@@ -546,7 +572,7 @@ export const getSerializedCacheKeyCustomEquals = (
 
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(key, options.equals)) {
+    if (cache.list[index].key.matches(serializedKey, options.equals)) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -554,7 +580,7 @@ export const getSerializedCacheKeyCustomEquals = (
     index++;
   }
 
-  return new SerializedCacheKey(key, options.serializer);
+  return new SerializedCacheKey(serializedKey);
 };
 
 /**
@@ -569,7 +595,10 @@ export const getSerializedCacheKeyCustomEquals = (
  * @param {*} key the key to try to find a match of, or turn into a new Multiple / SingleParameterCacheKey
  * @returns {StandardCacheKey} the matching cache key, or a new one
  */
-export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCacheKey => {
+export const getStandardCacheKey = (
+  cache: Cache,
+  key: Array<any>
+): StandardCacheKey => {
   const isMultiParamKey: boolean = key.length > 1;
 
   // $FlowIgnore if cache has size, the key exists
@@ -590,7 +619,9 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
     index++;
   }
 
-  return isMultiParamKey ? new MultipleParameterCacheKey(key) : new SingleParameterCacheKey(key);
+  return isMultiParamKey
+    ? new MultipleParameterCacheKey(key)
+    : new SingleParameterCacheKey(key);
 };
 
 /**
@@ -606,11 +637,18 @@ export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCach
  * @param {Options} options the options passed to the moized method
  * @returns {StandardCacheKey} the matching cache key, or a new one
  */
-export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, options: Options): StandardCacheKey => {
+export const getStandardCacheKeyCustomEquals = (
+  cache: Cache,
+  key: Array<any>,
+  options: Options
+): StandardCacheKey => {
   const isMultiParamKey: boolean = key.length > 1;
 
-  // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matchesCustom(key, isMultiParamKey, options.equals)) {
+  if (
+    cache.size &&
+    // $FlowIgnore if cache has size, the key exists
+    cache.lastItem.key.matchesCustom(key, isMultiParamKey, options.equals)
+  ) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
@@ -618,8 +656,10 @@ export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, o
   let index: number = 1;
 
   while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matchesCustom(key, isMultiParamKey, options.equals)) {
+    if (
+      // $FlowIgnore if cache has size, the key exists
+      cache.list[index].key.matchesCustom(key, isMultiParamKey, options.equals)
+    ) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -627,7 +667,9 @@ export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, o
     index++;
   }
 
-  return isMultiParamKey ? new MultipleParameterCacheKey(key) : new SingleParameterCacheKey(key);
+  return isMultiParamKey
+    ? new MultipleParameterCacheKey(key)
+    : new SingleParameterCacheKey(key);
 };
 
 /**
@@ -647,7 +689,9 @@ export const getGetCacheKeyMethod = (options: Options): Function => {
   }
 
   if (options.serialize) {
-    return options.equals ? getSerializedCacheKeyCustomEquals : getSerializedCacheKey;
+    return options.equals
+      ? getSerializedCacheKeyCustomEquals
+      : getSerializedCacheKey;
   }
 
   return options.equals ? getStandardCacheKeyCustomEquals : getStandardCacheKey;
@@ -709,22 +753,30 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
  * @param {Options} options the options passed to the moize method
  * @returns {function(function, *, *): *} value just stored in cache
  */
-export const createSetNewCachedValue = (cache: Cache, options: Options): Function => {
+export const createSetNewCachedValue = (
+  cache: Cache,
+  options: Options
+): Function => {
   const hasMaxAge: boolean = isFiniteAndPositiveInteger(options.maxAge);
   const hasMaxSize: boolean = isFiniteAndPositiveInteger(options.maxSize);
 
-  const {
-    maxAge,
-    maxSize
-  } = options;
+  const {maxAge, maxSize} = options;
 
   if (options.isPromise) {
-    if (!isFunction(options.promiseLibrary) && !isPlainObject(options.promiseLibrary)) {
+    if (
+      !isFunction(options.promiseLibrary) &&
+      !isPlainObject(options.promiseLibrary)
+    ) {
       throw new TypeError(INVALID_PROMISE_LIBRARY_ERROR);
     }
 
     return (key: any, value: any): Promise<any> => {
-      const promiseResolver = createPromiseResolver(cache, key, hasMaxAge, options);
+      const promiseResolver = createPromiseResolver(
+        cache,
+        key,
+        hasMaxAge,
+        options
+      );
       const promiseRejecter = createPromiseRejecter(cache, key, options);
       const handler = value.then(promiseResolver, promiseRejecter);
 
@@ -765,7 +817,10 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
  * @param {number} startingIndex index to splice at
  * @returns {Array<*>} array minus the item removed
  */
-export const splice = (array: Array<any>, startingIndex: number): Array<any> => {
+export const splice = (
+  array: Array<any>,
+  startingIndex: number
+): Array<any> => {
   if (!array.length) {
     return array;
   }
@@ -800,7 +855,7 @@ export const unshift = (array: Array<any>, item: any): any => {
     array[index + 1] = array[index];
   }
 
-  return array[0] = item;
+  return (array[0] = item);
 };
 
 /**
@@ -816,7 +871,11 @@ export const unshift = (array: Array<any>, item: any): any => {
  * @param {Options} options the options passed to the moize method
  * @returns {function(function): function} the method which will add the static properties
  */
-export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Function, options: Options) => {
+export const createAddPropertiesToFunction = (
+  cache: Cache,
+  originalFunction: Function,
+  options: Options
+) => {
   const getCacheKey = createGetCacheKey(cache, options);
 
   return (moizedFunction: Function): Function => {

@@ -1,17 +1,10 @@
 // @flow
 
 // types
-import type {
-  ListItem
-} from './types';
+import type {ListItem} from './types';
 
 // utils
-import {
-  findIndex,
-  findIndexAfterFirst,
-  splice,
-  unshift
-} from './utils';
+import {findIndex, findIndexAfterFirst, splice, unshift} from './utils';
 
 /**
  * @private
@@ -118,7 +111,10 @@ class Cache {
    * @returns {boolean} does the key exist in cache
    */
   has(key: any): boolean {
-    return this.size !== 0 && (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key));
+    return (
+      this.size !== 0 &&
+      (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key))
+    );
   }
 
   /**=

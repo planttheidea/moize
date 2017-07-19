@@ -102,7 +102,10 @@ class ReactCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matches(key: Array<Object>): boolean {
-    return this._isPropShallowEqual('props', key[0]) && this._isPropShallowEqual('context', key[1]);
+    return (
+      this._isPropShallowEqual('props', key[0]) &&
+      this._isPropShallowEqual('context', key[1])
+    );
   }
 
   /**
@@ -118,7 +121,10 @@ class ReactCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matchesCustom(key: Array<Object>, isEqual: Function): boolean {
-    return this._isPropCustomEqual('props', key[0], isEqual) && this._isPropCustomEqual('context', key[1], isEqual);
+    return (
+      this._isPropCustomEqual('props', key[0], isEqual) &&
+      this._isPropCustomEqual('context', key[1], isEqual)
+    );
   }
 }
 

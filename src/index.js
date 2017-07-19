@@ -12,9 +12,7 @@ import {
 } from './constants';
 
 // types
-import type {
-  Options
-} from './types';
+import type {Options} from './types';
 
 // utils
 import {
@@ -67,9 +65,15 @@ import {
  * @param {function} [passedOptions.serializer] method to serialize arguments with for cache storage
  * @returns {Function} higher-order function which either returns from cache or newly-computed value
  */
-const moize: Function = (functionOrComposableOptions: (Function|Object), passedOptions: Object = {}): Function => {
+const moize: Function = (
+  functionOrComposableOptions: Function | Object,
+  passedOptions: Object = {}
+): Function => {
   if (isPlainObject(functionOrComposableOptions)) {
-    return function(fnOrOptions: (Function|Object), otherOptions: Object = {}): Function {
+    return function(
+      fnOrOptions: Function | Object,
+      otherOptions: Object = {}
+    ): Function {
       if (isPlainObject(fnOrOptions)) {
         return moize({
           // $FlowIgnore functionOrComposableOptions is object of options
@@ -93,23 +97,35 @@ const moize: Function = (functionOrComposableOptions: (Function|Object), passedO
 
   const isComposed: boolean = functionOrComposableOptions.isMoized;
   // $FlowIgnore if the function is already moized, it has an originalFunction property on it
-  const fn: Function = isComposed ? functionOrComposableOptions.originalFunction : functionOrComposableOptions;
+  const fn: Function = isComposed
+    ? functionOrComposableOptions.originalFunction
+    : functionOrComposableOptions;
 
-  const options: Options = getDefaultedOptions(!isComposed ? passedOptions : {
-    ...functionOrComposableOptions.options,
-    ...passedOptions
-  });
+  const options: Options = getDefaultedOptions(
+    !isComposed
+      ? passedOptions
+      : {
+          ...functionOrComposableOptions.options,
+          ...passedOptions
+        }
+  );
 
   const cache: Cache = new Cache();
 
-  const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn, options);
+  const addPropertiesToFunction: Function = createAddPropertiesToFunction(
+    cache,
+    fn,
+    options
+  );
   const getCacheKey: Function = createGetCacheKey(cache, options);
   const setNewCachedValue: Function = createSetNewCachedValue(cache, options);
 
   const moizedFunction: Function = function(...args: Array<any>): any {
     const key: any = getCacheKey(args);
 
-    return cache.size && cache.has(key) ? cache.get(key) : setNewCachedValue(key, fn.apply(this, args));
+    return cache.size && cache.has(key)
+      ? cache.get(key)
+      : setNewCachedValue(key, fn.apply(this, args));
   };
 
   return addPropertiesToFunction(moizedFunction);
