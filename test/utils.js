@@ -7,6 +7,7 @@ import sinon from 'sinon';
 // src
 import * as utils from 'src/utils';
 import * as constants from 'src/constants';
+import moize from 'src/index';
 import * as serialize from 'src/serialize';
 import Cache from 'src/Cache';
 import MultipleParameterCacheKey from 'src/MultipleParameterCacheKey';
@@ -1314,6 +1315,30 @@ test('if isFunction returns false if the object passed is not a function', (t) =
 test('if isFunction returns true if the object passed is a function', (t) => {
   t.true(utils.isFunction(function foo() {}));
   t.true(utils.isFunction(() => {}));
+});
+
+test('if isMoized will return false if the fn passed is not a function', (t) => {
+  const fn = null;
+
+  const result = utils.isMoized(fn);
+
+  t.false(result);
+});
+
+test('if isMoized will return false if the fn passed is a function that does not have an isMoized property', (t) => {
+  const fn = () => {};
+
+  const result = utils.isMoized(fn);
+
+  t.false(result);
+});
+
+test('if isMoized will return true if the fn passed is a function that has been moized', (t) => {
+  const fn = moize(() => {});
+
+  const result = utils.isMoized(fn);
+
+  t.true(result);
 });
 
 test('if isPlainObject returns false if the object is not a complex object', (t) => {

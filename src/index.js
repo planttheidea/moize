@@ -23,6 +23,7 @@ import {
   createSetNewCachedValue,
   getDefaultedOptions,
   isFunction,
+  isMoized,
   isPlainObject
 } from './utils';
 
@@ -132,6 +133,7 @@ const moize: Function = (
 };
 
 moize.compose = compose;
+moize.isMoized = isMoized;
 moize.maxAge = createCurriableOptionMethod(moize, 'maxAge');
 moize.maxArgs = createCurriableOptionMethod(moize, 'maxArgs');
 moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');

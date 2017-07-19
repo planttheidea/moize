@@ -95,6 +95,12 @@
     "memoizer"
   ],
   "license": "MIT",
+  "lint-staged": {
+    "src/*.js": [
+      "npm run prettify",
+      "git add"
+    ]
+  },
   "main": "lib/index.js",
   "name": "moize",
   "repository": {
@@ -116,6 +122,7 @@
     "flow": "flow check src",
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "NODE_ENV=test eslint src --fix",
+    "precommit": "lint-staged",
     "prepublish": "in-publish && npm run prepublish:compile || echo ''",
     "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile && npm run dist && npm run docs",
     "prettify": "prettier --single-quote --no-bracket-spacing --write 'src/*.js'",
