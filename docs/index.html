@@ -77,7 +77,7 @@
 
 
 
-    <h3>moize 3.0.2</h3>
+    <h3>moize 3.1.0</h3>
 
 
 
@@ -130,6 +130,10 @@
 </ul>
 </li>
 <li><a href="#composition">Composition</a></li>
+<li><a href="#introspection">Introspection</a><ul>
+<li><a href="#ismoized">isMoized</a></li>
+</ul>
+</li>
 <li><a href="#benchmarks">Benchmarks</a><ul>
 <li><a href="#single-parameter">Single parameter</a></li>
 <li><a href="#multiple-parameters-primitives-only">Multiple parameters (primitives only)</a></li>
@@ -467,7 +471,15 @@ const moizedFoo = limitedSerializedMoize(foo);</code></pre><p>You can also combi
 
 // creates a moizer that will have the options of
 // {isReact: true, maxAge: 5000, maxSize: 5}
-const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));</code></pre><h2 id="benchmarks">Benchmarks</h2>
+const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));</code></pre><h2 id="introspection">introspection</h2>
+<p>There currently is only one method to introspect objects specific to moize, but if you want more just ask!</p>
+<h4 id="ismoized">isMoized</h4>
+<p>Is the function passed a moized function.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = () => {};
+const moizedFn = moize(fn);
+
+moize.isMoized(fn); // false
+moize.isMoized(moizedFn); // true</code></pre><h2 id="benchmarks">Benchmarks</h2>
 <p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization, so they are not included in those benchmarks.</p>
 <p>Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of <code>35</code>, and in the case of multiple parameters a second parameter (<code>boolean</code> for primitives, <code>object</code> for complex objects) was used.</p>
 <h4 id="single-parameter">Single parameter</h4>
