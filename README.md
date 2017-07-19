@@ -549,7 +549,7 @@ import moize from 'moize';
 const superLimitedReactMoize = moize.compose(moize.react, moize.maxSize(5), moize.maxAge(5000));
 ```
 
-## introspection
+## Introspection
 
 There currently is only one method to introspect objects specific to moize, but if you want more just ask!
 
