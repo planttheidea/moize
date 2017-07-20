@@ -531,13 +531,10 @@ export const getReactCacheKeyCustomEquals = (
  */
 export const getSerializedCacheKey = (
   cache: Cache,
-  key: Array<any>,
-  options: Options
+  key: Array<any>
 ): SerializedCacheKey => {
-  const serializedKey = options.serializer(key);
-
   // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(serializedKey)) {
+  if (cache.size && cache.lastItem.key.matches(key)) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
@@ -546,7 +543,7 @@ export const getSerializedCacheKey = (
 
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(serializedKey)) {
+    if (cache.list[index].key.matches(key)) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -554,7 +551,7 @@ export const getSerializedCacheKey = (
     index++;
   }
 
-  return new SerializedCacheKey(serializedKey);
+  return new SerializedCacheKey(key);
 };
 
 /**
@@ -575,12 +572,10 @@ export const getSerializedCacheKeyCustomEquals = (
   key: Array<any>,
   options: Options
 ): SerializedCacheKey => {
-  const serializedKey = options.serializer(key);
-
   if (
     cache.size &&
     // $FlowIgnore if cache has size, the key exists
-    cache.lastItem.key.matchesCustom(serializedKey, options.equals)
+    cache.lastItem.key.matchesCustom(key, options.equals)
   ) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
@@ -590,7 +585,7 @@ export const getSerializedCacheKeyCustomEquals = (
 
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matchesCustom(serializedKey, options.equals)) {
+    if (cache.list[index].key.matchesCustom(key, options.equals)) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -598,7 +593,7 @@ export const getSerializedCacheKeyCustomEquals = (
     index++;
   }
 
-  return new SerializedCacheKey(serializedKey);
+  return new SerializedCacheKey(key);
 };
 
 /**
@@ -730,14 +725,26 @@ export const getGetCacheKeyMethod = (options: Options): Function => {
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   const hasMaxArgs: boolean = isFiniteAndPositiveInteger(options.maxArgs);
   const getCacheKeyMethod: Function = getGetCacheKeyMethod(options);
-  const shouldPassOptions: boolean = options.serialize || !!options.equals;
 
-  if (shouldPassOptions) {
-    if (hasMaxArgs) {
-      const takeMaxArgs = take(options.maxArgs);
+  let transform = options.transformArgs;
 
+  if (hasMaxArgs) { 
+    transform = transform
+      ? compose(transform, take(options.maxArgs))
+      : take(options.maxArgs);
+  }
+
+  if (options.serialize) {
+    transform = transform
+      ? compose(options.serializer, transform)
+      : options.serializer;
+  }
+
+  if (options.equals) {
+    if (transform) {
       return (key: any): CacheKey => {
-        return getCacheKeyMethod(cache, takeMaxArgs(key), options);
+        // $FlowIgnore transform is a function
+        return getCacheKeyMethod(cache, transform(key), options);
       };
     }
 
@@ -746,11 +753,10 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
     };
   }
 
-  if (hasMaxArgs) {
-    const takeMaxArgs = take(options.maxArgs);
-
+  if (transform) {
     return (key: any): CacheKey => {
-      return getCacheKeyMethod(cache, takeMaxArgs(key));
+      // $FlowIgnore transform is a function
+      return getCacheKeyMethod(cache, transform(key));
     };
   }
 

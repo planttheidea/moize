@@ -8,7 +8,8 @@ interface Config {
     promiseLibrary?: PromiseLibrary<any>; // provide a promise library to be used and override default
     serialize?: boolean; // should the parameters be serialized instead of directly referenced
     serializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
-    serializer?: (...args: any[]) => any; // provide a serializer and override default
+    serializer?: (...args: any[]) => any; // provide a serializer and override default,
+    transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
 }
 
 interface PromiseLibrary<T> {

@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 3.2.0
+* Add `transformArgs` option, which allows trasformation of the arguments prior to being used as a key
+
 ### 3.1.2
 * Fix `clear` referencing incorrect object
 * Fix `equals` not using `matchesCustom` when used in conjunction with `serialize`
