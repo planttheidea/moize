@@ -21,7 +21,7 @@
   * [serialize](#serialize)
   * [serializeFunctions](#serializefunctions)
   * [serializer](#serializer)
-  * [transformArgs](#transformArgs)
+  * [transformArgs](#transformargs)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
   * [moize.maxAge](#moizemaxage)
   * [moize.maxArgs](#moizemaxargs)
