@@ -578,7 +578,10 @@ export const getSerializedCacheKeyCustomEquals = (
   const serializedKey = options.serializer(key);
 
   // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matchesCustom(serializedKey, options.equals)) {
+  if (
+    cache.size &&
+    cache.lastItem.key.matchesCustom(serializedKey, options.equals)
+  ) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
