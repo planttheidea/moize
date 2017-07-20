@@ -68,21 +68,7 @@ class MultipleParameterCacheKey {
     isMultiParamKey: boolean,
     isEqual: Function
   ): boolean {
-    if (!isMultiParamKey || key.length !== this.size) {
-      return false;
-    }
-
-    let index: number = 0;
-
-    while (index < this.size) {
-      if (!isEqual(key[index], this.key[index])) {
-        return false;
-      }
-
-      index++;
-    }
-
-    return true;
+    return isMultiParamKey && isEqual(key, this.key);
   }
 }
 
