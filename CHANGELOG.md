@@ -1,5 +1,12 @@
 # moize CHANGELOG
 
+### 3.1.2
+* Fix `clear` referencing incorrect object
+* Fix `equals` not using `matchesCustom` when used in conjunction with `serialize`
+
+### 3.1.1
+* BAD PUBLISH - do not use!
+
 ### 3.1.0
 * New: add `isMoized` introspection method
 * New; add FlowType declarations based on TypeScript typings
