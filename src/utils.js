@@ -728,7 +728,7 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
 
   let transform = options.transformArgs;
 
-  if (hasMaxArgs) { 
+  if (hasMaxArgs) {
     transform = transform
       ? compose(transform, take(options.maxArgs))
       : take(options.maxArgs);
