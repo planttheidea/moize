@@ -84,7 +84,8 @@ export const DEFAULT_OPTIONS: Object = {
   promiseLibrary: NATIVE_PROMISE,
   serialize: false,
   serializeFunctions: false,
-  serializer: null
+  serializer: null,
+  transformArgs: null
 };
 
 /**

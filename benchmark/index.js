@@ -319,6 +319,45 @@ const runAlternativeOptionsSuite = () => {
     serializeFunctions: true
   });
 
+  const chooseSpecificArgs = (foo, bar, baz) => {
+    return [foo, baz];
+  };
+
+  const isShallowEqualExceptFirst = (newArgs, existingArgs) => {
+    if (newArgs.length !== existingArgs.length) {
+      return false;
+    }
+
+    // skip the first argument
+    let index = 1;
+
+    while (index < newArgs.length) {
+      if (newArgs[index] !== existingArgs[index]) {
+        return false;
+      }
+
+      index++;
+    }
+
+    return true;
+  };
+
+  const mMoizeSpecificArgs = moize(chooseSpecificArgs, {
+    transformArgs(args) {
+      let index = args.length,
+          newKey = [];
+
+      while (--index) {
+        newKey[index - 1] = args[index];
+      }
+
+      return newKey;
+    }
+  });
+
+  const object1 = {foo: 'bar'};
+  const object2 = ['foo'];
+
   return new Promise((resolve) => {
     fibonacciSuite
       .add('moize custom equals (lodash isEqual)', () => {
@@ -335,6 +374,9 @@ const runAlternativeOptionsSuite = () => {
       })
       .add('moize react custom equals (lodash isEqual)', () => {
         mMoizeReactDeep(props, context);
+      })
+      .add('moize specific args', () => {
+        mMoizeSpecificArgs('foo', object1, object2);
       })
       .on('start', () => {
         console.log(''); // eslint-disable-line no-console

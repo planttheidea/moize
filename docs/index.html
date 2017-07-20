@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 3.1.2</h3>
+    <h3>moize 3.2.0</h3>
 
 
 
@@ -109,6 +109,7 @@
 <li><a href="#serialize">serialize</a></li>
 <li><a href="#serializefunctions">serializeFunctions</a></li>
 <li><a href="#serializer">serializer</a></li>
+<li><a href="#transformargs">transformArgs</a></li>
 </ul>
 </li>
 <li><a href="#usage-with-shortcut-methods">Usage with shortcut methods</a><ul>
@@ -238,7 +239,13 @@ const memoized = moize(fn, {
 });
 
 memoize('foo', 'bar', 'baz');
-memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the same</code></pre><h4 id="maxsize">maxSize</h4>
+memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the same</code></pre><p>Please note that if <code>maxArgs</code> is combined with either <code>serialize</code> or <code>transformArgs</code>, the following order is used:</p>
+<ol>
+<li>limit by <code>maxArgs</code></li>
+<li>transform by <code>transformArgs</code> (if applicable)</li>
+<li>serialize by <code>serializer</code> (if applicable)</li>
+</ol>
+<h4 id="maxsize">maxSize</h4>
 <p><em>defaults to Infinity</em></p>
 <p>The maximum number of values you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This is also available via the shortcut method of <a href="#moizemaxsize"><code>moize.maxSize</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
@@ -312,7 +319,12 @@ memoized(object); // 'foo'
 
 object.foo = 'bar';
 
-memoized(object); // 'bar'</code></pre><p>Please note that this is slower than the default key storage (<a href="#benchmarks">see benchmarks</a>).</p>
+memoized(object); // 'bar'</code></pre><p>Please note that this is slower than the default key storage (<a href="#benchmarks">see benchmarks</a>). Also note that if <code>serialize</code> is combined with either <code>maxArgs</code> or <code>transformArgs</code>, the following order is used:</p>
+<ol>
+<li>limit by <code>maxArgs</code> (if applicable)</li>
+<li>transform by <code>transformArgs</code> (if applicable)</li>
+<li>serialize by <code>serializer</code></li>
+</ol>
 <h4 id="serializefunctions">serializeFunctions</h4>
 <p><em>defaults to false</em></p>
 <p>A <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> is used when serializing to ensure functions are included in the key serialization.</p>
@@ -342,6 +354,27 @@ const memoized = moize(fn, {
   serialize: true,
   serializer
 });</code></pre><p>Please note that you must also set <code>serialize</code> to <code>true</code> for this setting to take effect.</p>
+<h4 id="transformargs">transformArgs</h4>
+<p>Transform the arguments passed before it is used as a key. The function accepts a single argument, the <code>Array</code> of <code>args</code>, and must also return an <code>Array</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (one, two, three) => {
+  return [two, three];
+};
+
+const ignoreFirstArg = (args) => {
+  return args.slice(1);
+};
+
+const moized = moize(fn, {
+  transformArgs: ignoreFirstArg
+});
+
+moize('foo', 'bar', 'baz');
+moize(null, 'bar', 'baz'); // pulled from cache</code></pre><p>Please note that if <code>transformArgs</code> is combined with either <code>maxArgs</code> or <code>serialize</code>, the following order is used:</p>
+<ol>
+<li>limit by <code>maxArgs</code> (if applicable)</li>
+<li>transform by <code>transformArgs</code></li>
+<li>serialize by <code>serializer</code> (if applicable)</li>
+</ol>
 <h2 id="usage-with-shortcut-methods">Usage with shortcut methods</h2>
 <h4 id="moize-maxage">moize.maxAge</h4>
 <p>Pre-applies the <code>maxAge</code> option as a curriable method.</p>

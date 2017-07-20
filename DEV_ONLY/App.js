@@ -131,6 +131,30 @@ console.log(memoizeedWithDefault('bar'));
 console.log(memoizeedWithDefault('bar', 'baz'));
 console.log(memoizeedWithDefault('bar'));
 
+const onlyLastTwo = (one, two, three) => {
+  console.log('only last two called', [one, two, three]);
+
+  return [two, three];
+};
+
+const moizedLastTwo = moize(onlyLastTwo, {
+  transformArgs(args) {
+    let index = args.length,
+        newKey = [];
+
+    while (--index) {
+      newKey[index - 1] = args[index];
+    }
+
+    return newKey;
+  }
+});
+
+console.log(moizedLastTwo('foo', 'bar', 'baz'));
+console.log(moizedLastTwo(null, 'bar', 'baz'));
+
+console.log(moizedLastTwo.cache);
+
 const Foo = ({bar, fn, object, value}) => {
   console.log('Foo React element fired', bar, value);
   console.log('fn', fn);

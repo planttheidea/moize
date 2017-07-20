@@ -21,6 +21,7 @@
   * [serialize](#serialize)
   * [serializeFunctions](#serializefunctions)
   * [serializer](#serializer)
+  * [transformArgs](#transformargs)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
   * [moize.maxAge](#moizemaxage)
   * [moize.maxArgs](#moizemaxargs)
@@ -202,6 +203,11 @@ memoize('foo', 'bar', 'baz');
 memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the same
 ```
 
+Please note that if `maxArgs` is combined with either `serialize` or `transformArgs`, the following order is used:
+1. limit by `maxArgs`
+1. transform by `transformArgs` (if applicable)
+1. serialize by `serializer` (if applicable)
+
 #### maxSize
 
 *defaults to Infinity*
@@ -302,7 +308,10 @@ object.foo = 'bar';
 memoized(object); // 'bar'
 ```
 
-Please note that this is slower than the default key storage ([see benchmarks](#benchmarks)).
+Please note that this is slower than the default key storage ([see benchmarks](#benchmarks)). Also note that if `serialize` is combined with either `maxArgs` or `transformArgs`, the following order is used:
+1. limit by `maxArgs` (if applicable)
+1. transform by `transformArgs` (if applicable)
+1. serialize by `serializer`
 
 #### serializeFunctions
 
@@ -348,6 +357,32 @@ const memoized = moize(fn, {
 ```
 
 Please note that you must also set `serialize` to `true` for this setting to take effect.
+
+#### transformArgs
+
+Transform the arguments passed before it is used as a key. The function accepts a single argument, the `Array` of `args`, and must also return an `Array`.
+
+```javascript
+const fn = (one, two, three) => {
+  return [two, three];
+};
+
+const ignoreFirstArg = (args) => {
+  return args.slice(1);
+};
+
+const moized = moize(fn, {
+  transformArgs: ignoreFirstArg
+});
+
+moize('foo', 'bar', 'baz');
+moize(null, 'bar', 'baz'); // pulled from cache
+```
+
+Please note that if `transformArgs` is combined with either `maxArgs` or `serialize`, the following order is used:
+1. limit by `maxArgs` (if applicable)
+1. transform by `transformArgs`
+1. serialize by `serializer` (if applicable)
 
 ## Usage with shortcut methods
 

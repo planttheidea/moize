@@ -5,14 +5,15 @@
  *
  * @typedef {Object} Options
  *
- * @property {Object} [cache] a custom cache to use in place of the Cache class
- * @property {boolean} [isPromise] is the return value a promise or not
- * @property {number} [maxAge] the TTL for the return value to live in cache
- * @property {number} [maxArgs] the maximum number of arguments to use as the cache key
- * @property {number} [maxSize] the maximum size of values to store in cache
- * @property {boolean} [serialize] should the parameters be serialized for the cache key
- * @property {boolean} [serializeFunctions] should a custom replacer that includes functions be used in serialization
- * @property {function} [serializer] a custom serializer to use in place of the default
+ * @property {function} [equals] a custom equality comparator used for key matching
+ * @property {boolean} isPromise is the return value a promise or not
+ * @property {number} maxAge the TTL for the return value to live in cache
+ * @property {number} maxArgs the maximum number of arguments to use as the cache key
+ * @property {number} maxSize the maximum size of values to store in cache
+ * @property {boolean} serialize should the parameters be serialized for the cache key
+ * @property {boolean} serializeFunctions should a custom replacer that includes functions be used in serialization
+ * @property {function} serializer a custom serializer to use in place of the default
+ * @property {function} [transformArgs]
  */
 export type Options = {
   equals: ?Function,
@@ -24,7 +25,8 @@ export type Options = {
   promiseLibrary: Function,
   serialize: boolean,
   serializeFunctions: boolean,
-  serializer: Function
+  serializer: Function,
+  transformArgs: ?Function
 };
 
 /**

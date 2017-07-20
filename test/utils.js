@@ -295,6 +295,156 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
   });
 });
 
+test('if createGetCacheKey will get the corret getCacheKeyMethod and fire it with the key using custom equals', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals(newKey, currentKey) {
+      return newKey.every((item) => {
+        return ~currentKey.indexOf(item);
+      });
+    }
+  };
+
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof MultipleParameterCacheKey);
+  t.deepEqual({...result}, {
+    isMultiParamKey: true,
+    key,
+    size: key.length
+  });
+});
+
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with only the key transformed by transformArgs', (t) => {
+  const cache = new Cache();
+  const options = {
+    transformArgs(key) {
+      return key.slice(1);
+    }
+  };
+
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SingleParameterCacheKey);
+  t.deepEqual({...result}, {
+    isMultiParamKey: false,
+    key: key[1]
+  });
+});
+
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with the key transformed by transformArgs and custom equals', (t) => {
+  const cache = new Cache();
+  const options = {
+    equals(newKey, currentKey) {
+      return newKey.every((item) => {
+        return ~currentKey.indexOf(item);
+      });
+    },
+    transformArgs(key) {
+      return key.slice(1);
+    }
+  };
+
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SingleParameterCacheKey);
+  t.deepEqual({...result}, {
+    isMultiParamKey: false,
+    key: key[1]
+  });
+});
+
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with maxArgs and the key transformed by transformArgs', (t) => {
+  const cache = new Cache();
+  const options = {
+    maxArgs: 2,
+    transformArgs(key) {
+      return key.slice(1);
+    }
+  };
+
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar', 'baz'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SingleParameterCacheKey);
+  t.deepEqual({...result}, {
+    isMultiParamKey: false,
+    key: key[1]
+  });
+});
+
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with serialize and the key transformed by transformArgs', (t) => {
+  const cache = new Cache();
+  const options = {
+    serialize: true,
+    serializer: serializerFunction,
+    transformArgs(key) {
+      return key.slice(1);
+    }
+  };
+
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar', 'baz'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SerializedCacheKey);
+  t.deepEqual({...result}, {
+    key: serializerFunction(key.slice(1))
+  });
+});
+
+test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with serialize, maxArgs, and the key transformed by transformArgs', (t) => {
+  const cache = new Cache();
+  const options = {
+    maxArgs: 2,
+    serialize: true,
+    serializer: serializerFunction,
+    transformArgs(key) {
+      return key.slice(1);
+    }
+  };
+
+  const getCacheKey = utils.createGetCacheKey(cache, options);
+
+  t.is(typeof getCacheKey, 'function');
+
+  const key = ['foo', 'bar', 'baz'];
+
+  const result = getCacheKey(key);
+
+  t.true(result instanceof SerializedCacheKey);
+  t.deepEqual({...result}, {
+    key: serializerFunction(key.slice(1, 2))
+  });
+});
+
 test('if createFindIndex will create a method that finds the index starting at the startingIndex passed', (t) => {
   const startingIndex = 1;
 
@@ -914,7 +1064,7 @@ test('if getSerializedCacheKey will get the matching cache key if it is the most
 
   cache.add(cacheKey, 'baz');
 
-  const newKey = [...key];
+  const newKey = serializerFunction([...key]);
   const options = {
     serialize: true,
     serializer: serializerFunction
@@ -941,7 +1091,7 @@ test('if getSerializedCacheKey will get the matching cache key if it exists in t
 
   t.not(cache.lastItem.key, cacheKey);
 
-  const newKey = [...key];
+  const newKey = serializerFunction([...key]);
   const options = {
     serialize: true,
     serializer: serializerFunction
@@ -969,7 +1119,7 @@ test('if getSerializedCacheKey will create a new SerializedCacheKey if it does n
 
   t.not(cache.lastItem.key, cacheKey);
 
-  const newKey = ['foo', 'baz'];
+  const newKey = serializerFunction(['foo', 'baz']);
   const options = {
     serialize: true,
     serializer: serializerFunction
@@ -999,7 +1149,7 @@ test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it
 
   cache.add(cacheKey, 'baz');
 
-  const newKey = _.cloneDeep(key);
+  const newKey = serializerFunction(_.cloneDeep(key));
 
   const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
 
@@ -1027,7 +1177,7 @@ test('if getSerializedCacheKeyCustomEquals will get the matching cache key if it
 
   t.not(cache.lastItem.key, cacheKey);
 
-  const newKey = _.cloneDeep(key);
+  const newKey = serializerFunction(_.cloneDeep(key));
 
   const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
 
@@ -1056,7 +1206,7 @@ test('if getSerializedCacheKeyCustomEquals will create a new SerializedCacheKey 
 
   t.not(cache.lastItem.key, cacheKey);
 
-  const newKey = [{foo: 'foo'}, {baz: 'baz'}];
+  const newKey = serializerFunction([{foo: 'foo'}, {baz: 'baz'}]);
 
   const result = utils.getSerializedCacheKeyCustomEquals(cache, newKey, options);
 

@@ -16,7 +16,8 @@ declare interface Config {
         promiseLibrary?: PromiseLibrary<any>,
         serialize?: boolean,
         serializeFunctions?: boolean,
-        serializer?: (...args: any[]) => any
+        serializer?: (...args: any[]) => any,
+        transformArgs?: (args: any[]) => any[]
 }
 declare interface PromiseLibrary<T>{
     (callback: (resolve: (r?: T | PromiseLike<T>) => void, reject: (e?: any) => void) => void): PromiseLike<T>,
