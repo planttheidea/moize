@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 3.2.2
+* Refactor `ReactCacheKey` to double the speed (yes, double)
+
 ### 3.2.1
 * Fix issue where `MultipleParameterCacheKey` and `ReactCacheKey` were not applying `equals` correctly
 

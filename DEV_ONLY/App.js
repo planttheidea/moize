@@ -13,8 +13,11 @@ import memoizee from 'memoizee';
 
 import moize from '../src';
 
+console.group('standard');
+
 const foo = 'foo';
 const bar = 'bar';
+const baz = 'baz';
 
 const method = function(one, two) {
   console.log('standard method fired', one, two);
@@ -32,6 +35,10 @@ memoized(foo, bar);
 console.log(memoized.cache);
 console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
+
+console.groupEnd('standard');
+
+console.group('custom - deep equals');
 
 const deepEqualMethod = ({one, two}) => {
   console.log('custom equal method fired', one, two);
@@ -52,6 +59,10 @@ console.log(deepEqualMemoized.cache);
 console.log('has deep true', deepEqualMemoized.has([{one: 1, two: 2}]));
 console.log('has deep false', deepEqualMemoized.has([{one: 1, two: 3}]));
 
+console.groupEnd('custom - deep equals');
+
+console.group('promise');
+
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
 
@@ -65,7 +76,7 @@ const promiseMethodRejected = (number) => {
 
   return new Bluebird((resolve, reject) => {
     setTimeout(() => {
-      reject(new Error('foo'));
+      reject(new Error(foo));
     }, 100);
   });
 };
@@ -115,6 +126,10 @@ memoizedPromise(2, 2)
 
 console.log(memoizedPromise.keys());
 
+console.groupEnd('promise');
+
+console.group('with default parameters');
+
 const withDefault = (foo, bar = 'default') => {
   console.log('withDefault fired');
 
@@ -123,13 +138,17 @@ const withDefault = (foo, bar = 'default') => {
 const moizedWithDefault = moize(withDefault);
 const memoizeedWithDefault = memoizee(withDefault);
 
-console.log(moizedWithDefault('foo'));
-console.log(moizedWithDefault('foo', 'bar'));
-console.log(moizedWithDefault('foo'));
+console.log(moizedWithDefault(foo));
+console.log(moizedWithDefault(foo, bar));
+console.log(moizedWithDefault(foo));
 
-console.log(memoizeedWithDefault('bar'));
-console.log(memoizeedWithDefault('bar', 'baz'));
-console.log(memoizeedWithDefault('bar'));
+console.log(memoizeedWithDefault(bar));
+console.log(memoizeedWithDefault(bar, baz));
+console.log(memoizeedWithDefault(bar));
+
+console.groupEnd('with default parameters');
+
+console.group('transform args');
 
 const onlyLastTwo = (one, two, three) => {
   console.log('only last two called', [one, two, three]);
@@ -150,15 +169,18 @@ const moizedLastTwo = moize(onlyLastTwo, {
   }
 });
 
-console.log(moizedLastTwo('foo', 'bar', 'baz'));
-console.log(moizedLastTwo(null, 'bar', 'baz'));
+console.log(moizedLastTwo(foo, bar, baz));
+console.log(moizedLastTwo(null, bar, baz));
 
 console.log(moizedLastTwo.cache);
 
+console.groupEnd('transform args');
+
+console.group('react');
+
 const Foo = ({bar, fn, object, value}) => {
-  console.log('Foo React element fired', bar, value);
-  console.log('fn', fn);
-  console.log('object', object);
+  console.count('react');
+  console.log('Foo React element fired', bar, value, fn, object);
 
   return (
     <div>
@@ -187,10 +209,12 @@ console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
 console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
 const array = [
-  {fn() {}, object: {}, value: 'foo'},
-  {fn() {}, object: {}, value: 'bar'},
-  {fn() {}, object: {}, value: 'baz'}
+  {fn() {}, object: {}, value: foo},
+  {fn() {}, object: {}, value: bar},
+  {fn() {}, object: {}, value: baz}
 ];
+
+console.groupEnd('react');
 
 const HEADER_STYLE = {
   margin: 0

@@ -1,5 +1,8 @@
 // @flow
 
+// utils
+import {getKeyCount} from './utils';
+
 /**
  * @private
  *
@@ -10,20 +13,36 @@
  */
 class ReactCacheKey {
   constructor(key: Array<Object>) {
-    const context = key[1];
-    const props = key[0];
-
     this.key = {
-      context,
-      contextSize: context ? Object.keys(context).length : 0,
-      props,
-      propsSize: props ? Object.keys(props).length : 0
+      context: this._getKeyPart(key[1]),
+      props: this._getKeyPart(key[0])
     };
 
     return this;
   }
 
   key: any = null;
+
+  /**
+   * @function _getKeyPart
+   * @memberof ReactCacheKey
+   * @instance
+   *
+   * @description
+   * get the object of metadata for the key part
+   *
+   * @param {Object} keyPart the key part to get the metadata of
+   * @returns {Object} the metadata for the key part
+   */
+  _getKeyPart(keyPart: ?Object): Object {
+    const keys = keyPart ? Object.keys(keyPart) : [];
+
+    return {
+      keys,
+      size: keys.length,
+      value: keyPart
+    };
+  }
 
   /**
    * @function _isPropShallowEqual
@@ -33,21 +52,25 @@ class ReactCacheKey {
    * @description
    * check if the prop value passed is equal to the key's value
    *
-   * @param {string} prop the key property to test
-   * @param {Object} object the value of the key to test against
+   * @param {Object} object the new key to test against the instance
+   * @param {Object} existing the key object stored in the instance
+   * @param {Array<string>} existing.keys the keys of the existing object
+   * @param {number} existing.size the length of the keys array
+   * @param {Object} value the value of the key part
    * @returns {boolean} is the prop value shallow equal to the object
    */
-  _isPropShallowEqual(prop: string, object: Object): boolean {
-    const keys: Array<string> = Object.keys(object);
-
-    if (keys.length !== this.key[`${prop}Size`]) {
+  _isPropShallowEqual(object: Object, existing: Object): boolean {
+    if (getKeyCount(object) !== existing.size) {
       return false;
     }
 
-    let index: number = 0;
+    let index: number = 0,
+      key: string;
 
-    while (index < keys.length) {
-      if (object[keys[index]] !== this.key[prop][keys[index]]) {
+    while (index < existing.size) {
+      key = existing.keys[index];
+
+      if (object[key] !== existing.value[key]) {
         return false;
       }
 
@@ -65,13 +88,17 @@ class ReactCacheKey {
    * @description
    * check if the prop value passed is equal to the key's value
    *
-   * @param {string} prop the key property to test
-   * @param {Object} object the value of the key to test against
-   * @param {function} isEqual method to check equality of keys
-   * @returns {boolean} is the prop value shallow equal to the object
+   * @param {Object} object the new key to test against the instance
+   * @param {Object} existingObject the key stored in the instance
+   * @param {function} isEqual custom equality comparator
+   * @returns {boolean} are the objects equal based on the isEqual method passed
    */
-  _isPropCustomEqual(prop: string, object: Object, isEqual: Function): boolean {
-    return isEqual(object, this.key[prop]);
+  _isPropCustomEqual(
+    object: Object,
+    existingObject: Object,
+    isEqual: Function
+  ): boolean {
+    return isEqual(object, existingObject);
   }
 
   /**
@@ -87,8 +114,8 @@ class ReactCacheKey {
    */
   matches(key: Array<Object>): boolean {
     return (
-      this._isPropShallowEqual('props', key[0]) &&
-      this._isPropShallowEqual('context', key[1])
+      this._isPropShallowEqual(key[0], this.key.props) &&
+      this._isPropShallowEqual(key[1], this.key.context)
     );
   }
 
@@ -106,8 +133,8 @@ class ReactCacheKey {
    */
   matchesCustom(key: Array<Object>, isEqual: Function): boolean {
     return (
-      this._isPropCustomEqual('props', key[0], isEqual) &&
-      this._isPropCustomEqual('context', key[1], isEqual)
+      this._isPropCustomEqual(key[0], this.key.props.value, isEqual) &&
+      this._isPropCustomEqual(key[1], this.key.context.value, isEqual)
     );
   }
 }
