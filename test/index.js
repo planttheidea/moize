@@ -10,19 +10,19 @@ import moize from 'src/index';
 import * as constants from 'src/constants';
 import * as utils from 'src/utils';
 
-test('if moize returns a function', (t) => {
+test('if moize returns a function', t => {
   const result = moize(() => {});
 
   t.true(_.isFunction(result));
 });
 
-test('if moize throws a TypeError when something other than a function is passed.', (t) => {
+test('if moize throws a TypeError when something other than a function is passed.', t => {
   t.throws(() => {
     moize('foo');
   }, TypeError);
 });
 
-test('if moize will return a new moized function with a mixture of the options if it is already memoized', (t) => {
+test('if moize will return a new moized function with a mixture of the options if it is already memoized', t => {
   const fn = () => {};
   const moized = moize(fn, {
     maxArgs: 1
@@ -45,11 +45,11 @@ test('if moize will return a new moized function with a mixture of the options i
   });
 });
 
-test('if moize will curry as long as options objects are passed as the first parameter', (t) => {
+test('if moize will curry as long as options objects are passed as the first parameter', t => {
   const length = 1000;
 
   let index = 0,
-      moizer;
+    moizer;
 
   while (index < length) {
     moizer = moize({index});
@@ -68,7 +68,7 @@ test('if moize will curry as long as options objects are passed as the first par
   t.pass();
 });
 
-test('if moize will memoize the result of the function based on the same arguments', (t) => {
+test('if moize will memoize the result of the function based on the same arguments', t => {
   const fn = sinon.spy((foo, bar) => {
     return `${foo} ${bar}`;
   });
@@ -86,7 +86,7 @@ test('if moize will memoize the result of the function based on the same argumen
   t.true(fn.calledOnce);
 });
 
-test('if moize will accept a custom serializer as argument', (t) => {
+test('if moize will accept a custom serializer as argument', t => {
   const key = 'baz';
 
   let serializer = sinon.stub().returns(key);
@@ -110,7 +110,7 @@ test('if moize will accept a custom serializer as argument', (t) => {
   t.is(keys[0].key, 'baz');
 });
 
-test('if moize will throw an error when isPromise is true and promiseLibrary does not exist', (t) => {
+test('if moize will throw an error when isPromise is true and promiseLibrary does not exist', t => {
   const fn = () => {};
 
   t.throws(() => {
@@ -121,11 +121,11 @@ test('if moize will throw an error when isPromise is true and promiseLibrary doe
   }, TypeError);
 });
 
-test('if moize.compose is the same as the compose util', (t) => {
+test('if moize.compose is the same as the compose util', t => {
   t.is(moize.compose, utils.compose);
 });
 
-test('if moize.maxAge will create a curryable method that accepts the age and then the method to memoize', (t) => {
+test('if moize.maxAge will create a curryable method that accepts the age and then the method to memoize', t => {
   const maxAge = 5000;
 
   const moizer = moize.maxAge(maxAge);
@@ -144,7 +144,7 @@ test('if moize.maxAge will create a curryable method that accepts the age and th
   });
 });
 
-test('if moize.maxArgs will create a curryable method that accepts the age and then the method to memoize', (t) => {
+test('if moize.maxArgs will create a curryable method that accepts the age and then the method to memoize', t => {
   const maxArgs = 3;
 
   const moizer = moize.maxArgs(maxArgs);
@@ -163,7 +163,7 @@ test('if moize.maxArgs will create a curryable method that accepts the age and t
   });
 });
 
-test('if moize.maxSize will create a curryable method that accepts the size and then the method to memoize', (t) => {
+test('if moize.maxSize will create a curryable method that accepts the size and then the method to memoize', t => {
   const maxSize = 5;
 
   const moizer = moize.maxSize(maxSize);
@@ -182,7 +182,7 @@ test('if moize.maxSize will create a curryable method that accepts the size and 
   });
 });
 
-test('if moize.promise will create a memoized method with isPromise set to true', (t) => {
+test('if moize.promise will create a memoized method with isPromise set to true', t => {
   const fn = async () => {};
 
   const result = moize.promise(fn);
@@ -196,13 +196,11 @@ test('if moize.promise will create a memoized method with isPromise set to true'
   });
 });
 
-test('if moize.react will call moize with the correct arguments', (t) => {
+test('if moize.react will call moize with the correct arguments', t => {
   const jsdom = require('jsdom-global')();
 
   const Foo = () => {
-    return (
-      <div/>
-    );
+    return <div />;
   };
 
   Foo.defaultProps = {
@@ -216,9 +214,7 @@ test('if moize.react will call moize with the correct arguments', (t) => {
     passedFn: () => {}
   };
 
-  const foo = (
-    <Result {...props}/>
-  );
+  const foo = <Result {...props} />;
 
   const div = document.createElement('div');
 
@@ -230,26 +226,36 @@ test('if moize.react will call moize with the correct arguments', (t) => {
 
   const key = keys[0].key;
 
-  const expectedProps = {
-    ...Foo.defaultProps,
-    ...props
-  };
+  const expectedProps = Object.keys(Foo.defaultProps).reduce(
+    (cleanProps, key) => {
+      if (cleanProps[key] === void 0) {
+        cleanProps[key] = Foo.defaultProps[key];
+      }
+
+      return cleanProps;
+    },
+    {...props}
+  );
 
   t.deepEqual(key, {
-    props: expectedProps,
-    propsSize: Object.keys(expectedProps).length,
-    context: {},
-    contextSize: 0
+    context: {
+      keys: [],
+      size: 0,
+      value: {}
+    },
+    props: {
+      keys: Object.keys(expectedProps),
+      size: Object.keys(expectedProps).length,
+      value: expectedProps
+    }
   });
 
   jsdom();
 });
 
-test('if moize.reactSimple has the same options as moize.react, but also has a maxSize of 1', (t) => {
+test('if moize.reactSimple has the same options as moize.react, but also has a maxSize of 1', t => {
   const Foo = () => {
-    return (
-      <div/>
-    );
+    return <div />;
   };
 
   Foo.defaultProps = {
@@ -266,7 +272,7 @@ test('if moize.reactSimple has the same options as moize.react, but also has a m
   });
 });
 
-test('if moize.serialize will create a memoized method with serialize set to true', (t) => {
+test('if moize.serialize will create a memoized method with serialize set to true', t => {
   const fn = () => {};
   const serializer = () => {};
 
@@ -283,7 +289,7 @@ test('if moize.serialize will create a memoized method with serialize set to tru
   });
 });
 
-test('if moize.simple will create a memoized method with maxAge set to 1', (t) => {
+test('if moize.simple will create a memoized method with maxAge set to 1', t => {
   const fn = () => {};
 
   const result = moize.simple(fn);

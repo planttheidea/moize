@@ -443,6 +443,27 @@ export const getFunctionName = (fn: Function): string => {
 /**
  * @private
  *
+ * @function getKeyCount
+ *
+ * @description
+ * get the count of keys in the object (faster than Object.keys().length)
+ * 
+ * @param {Object} object the object to get the key count of
+ * @returns {number} the count of keys
+ */
+export const getKeyCount = (object: Object): number => {
+  let counter = 0;
+
+  for (let ignored in object) {
+    counter++;
+  }
+
+  return counter;
+};
+
+/**
+ * @private
+ *
  * @function getReactCacheKey
  *
  * @description
