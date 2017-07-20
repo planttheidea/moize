@@ -1,6 +1,7 @@
 // test
 import test from 'ava';
 import _ from 'lodash';
+import sinon from 'sinon';
 
 // src
 import ReactCacheKey from 'src/ReactCacheKey';
@@ -240,7 +241,7 @@ test('if matchesCustom will return false if the context passed are not equal to 
   t.false(result);
 });
 
-test('if matches will return true if the key passed is a multi-parameter key that is equal based on the custom method', (t) => {
+test('if matchesCustom will return true if the key passed is a multi-parameter key that is equal based on the custom method', (t) => {
   const existingKey = [
     {foo: {
       bar: 'baz'
@@ -264,4 +265,56 @@ test('if matches will return true if the key passed is a multi-parameter key tha
   const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.true(result);
+});
+
+test('if matchesCustom passes the key to match and the instance key as the parameters to isEqual', (t) => {
+  const existingKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {bar: {
+      baz: 'foo'
+    }}
+  ];
+
+  const cacheKey = new ReactCacheKey(existingKey);
+
+  const newKey = [
+    {foo: {
+      bar: 'baz'
+    }},
+    {bar: {
+      baz: 'foo'
+    }}
+  ];
+
+  const isEqual = sinon.stub().returns(true);
+
+  cacheKey.matchesCustom(newKey, isEqual);
+
+  t.true(isEqual.calledTwice);
+
+  const propsArgs = isEqual.args[0];
+
+  t.is(propsArgs.length, 2);
+
+  const [
+    propsToTest,
+    instanceProps
+  ] = propsArgs;
+
+  t.is(propsToTest, newKey[0]);
+  t.is(instanceProps, existingKey[0]);
+
+  const contextArgs = isEqual.args[1];
+
+  t.is(contextArgs.length, 2);
+
+  const [
+    contextToTest,
+    instanceContext
+  ] = contextArgs;
+
+  t.is(contextToTest, newKey[1]);
+  t.is(instanceContext, existingKey[1]);
 });

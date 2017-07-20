@@ -1,6 +1,7 @@
 // test
 import test from 'ava';
 import _ from 'lodash';
+import sinon from 'sinon';
 
 // src
 import SerializedCacheKey from 'src/SerializedCacheKey';
@@ -60,7 +61,7 @@ test('if matchesCustom wll return false if the key passed is not equal to the se
   t.false(result);
 });
 
-test('if matchesCustom wll return true if the key passed is equal to the serialized key based on the custom method', (t) => {
+test('if matchesCustom will return true if the key passed is equal to the serialized key based on the custom method', (t) => {
   const key = [{foo: 'bar'}];
   const existingKey = serializerFunction(key);
 
@@ -71,4 +72,31 @@ test('if matchesCustom wll return true if the key passed is equal to the seriali
   const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.true(result);
+});
+
+test('if matchesCustom passes the key to match and the instance key as the parameters to isEqual', (t) => {
+  const key = [{foo: 'bar'}];
+  const existingKey = serializerFunction(key);
+
+  const cacheKey = new SerializedCacheKey(existingKey);
+
+  const newKey = serializerFunction([{...key[0]}]);
+
+  const isEqual = sinon.spy();
+
+  cacheKey.matchesCustom(newKey, isEqual);
+
+  t.true(isEqual.calledOnce);
+
+  const args = isEqual.args[0];
+
+  t.is(args.length, 2);
+
+  const [
+    keyToTest,
+    instanceKey
+  ] = args;
+
+  t.is(keyToTest, newKey);
+  t.is(instanceKey, existingKey);
 });

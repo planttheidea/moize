@@ -1,6 +1,7 @@
 // test
 import test from 'ava';
 import _ from 'lodash';
+import sinon from 'sinon';
 
 // src
 import SingleParameterCacheKey from 'src/SingleParameterCacheKey';
@@ -92,4 +93,31 @@ test('if matchesCustom will return true if the key passed is not a multi-paramet
   const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
 
   t.true(result);
+});
+
+test('if matchesCustom pases the key to match and the instance key as the parameters to isEqual', (t) => {
+  const existingKey = [{foo: 'foo'}];
+
+  const cacheKey = new SingleParameterCacheKey(existingKey);
+
+  const newKey = [{foo: 'foo'}];
+  const isMultiParamKey = false;
+
+  const isEqual = sinon.spy();
+
+  cacheKey.matchesCustom(newKey, isMultiParamKey, isEqual);
+
+  t.true(isEqual.calledOnce);
+
+  const args = isEqual.args[0];
+
+  t.is(args.length, 2);
+
+  const [
+    keyToTest,
+    instanceKey
+  ] = args;
+
+  t.is(keyToTest, newKey[0]);
+  t.is(instanceKey, existingKey[0]);
 });
