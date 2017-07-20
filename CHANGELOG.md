@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 3.2.1
+* Fix issue where `MultipleParameterCacheKey` and `ReactCacheKey` were not applying `equals` correctly
+
 ### 3.2.0
 * Add `transformArgs` option, which allows trasformation of the arguments prior to being used as a key
 

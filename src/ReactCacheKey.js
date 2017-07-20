@@ -71,23 +71,7 @@ class ReactCacheKey {
    * @returns {boolean} is the prop value shallow equal to the object
    */
   _isPropCustomEqual(prop: string, object: Object, isEqual: Function): boolean {
-    const keys: Array<string> = Object.keys(object);
-
-    if (keys.length !== this.key[`${prop}Size`]) {
-      return false;
-    }
-
-    let index: number = 0;
-
-    while (index < keys.length) {
-      if (!isEqual(object[keys[index]], this.key[prop][keys[index]])) {
-        return false;
-      }
-
-      index++;
-    }
-
-    return true;
+    return isEqual(object, this.key[prop]);
   }
 
   /**
