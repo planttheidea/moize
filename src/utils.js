@@ -76,6 +76,8 @@ export const isFunction = (object: any): boolean => {
 };
 
 /**
+ * @private
+ *
  * @function isMoized
  *
  * @description
@@ -576,7 +578,7 @@ export const getSerializedCacheKeyCustomEquals = (
   const serializedKey = options.serializer(key);
 
   // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(serializedKey, options.equals)) {
+  if (cache.size && cache.lastItem.key.matchesCustom(serializedKey, options.equals)) {
     // $FlowIgnore if the key matches, the key exists
     return cache.lastItem.key;
   }
@@ -585,7 +587,7 @@ export const getSerializedCacheKeyCustomEquals = (
 
   while (index < cache.size) {
     // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(serializedKey, options.equals)) {
+    if (cache.list[index].key.matchesCustom(serializedKey, options.equals)) {
       // $FlowIgnore if the key matches, the key exists
       return cache.list[index].key;
     }
@@ -925,7 +927,9 @@ export const createAddPropertiesToFunction = (
      * @description
      * clear the current cache for this method
      */
-    moizedFunction.clear = cache.clear;
+    moizedFunction.clear = () => {
+      cache.clear();
+    };
 
     /**
      * @private
