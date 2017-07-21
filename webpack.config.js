@@ -21,9 +21,11 @@ module.exports = {
         ],
         loader: 'eslint-loader',
         options: {
+          cache: true,
           configFile: '.eslintrc',
           failOnError: true,
           failOnWarning: false,
+          fix: true,
           formatter: require('eslint-friendly-formatter')
         },
         test: /\.js$/
