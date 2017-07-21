@@ -6,8 +6,19 @@
   ],
   "presets": [
     ["env", {
-      "loose": true
+      "loose": true,
+      "modules": false
     }],
     "stage-2"
-  ]
+  ],
+  "env": {
+    "production": {
+      "presets": [
+        ["env", {
+          "loose": true
+        }],
+        "stage-2"
+      ]
+    }
+  }
 }

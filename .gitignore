@@ -4,3 +4,4 @@ coverage
 dist
 node_modules
 lib
+es
