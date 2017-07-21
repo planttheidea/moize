@@ -136,8 +136,8 @@
     "test": "NODE_PATH=. NODE_ENV=test ava",
     "test:coverage": "nyc npm test",
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
-    "transpile:lib": "npm run clean:lib && NODE_ENV=production babel src --out-dir lib",
-    "transpile:es": "npm run clean:es && BABEL_ENV=es NODE_ENV=production babel src --out-dir es"
+    "transpile:lib": "npm run clean:lib && babel src --out-dir lib",
+    "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
   },
   "types": "./index.d.ts",
   "version": "3.2.2"
