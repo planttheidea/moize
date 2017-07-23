@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+### 3.3.0
+* Add `es` transpilation in addition to standard `lib`, preserving ES2015 modules for [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module)
+
 ### 3.2.2
 * Refactor `ReactCacheKey` to double the speed (yes, double)
 
