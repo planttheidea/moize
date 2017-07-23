@@ -786,8 +786,9 @@ Standard stuff, clone the repo and `npm install` dependencies. The npm scripts a
 * `docs` => builds the docs via `jsdoc`
 * `lint` => run ESLint against all files in the `src` folder
 * `prepublish` => runs `compile-for-publish`
-* `prepublish:compile` => run `lint`, `test`, `transpile`, `dist`
+* `prepublish:compile` => run `lint`, `test`, `transpile:es`, `transpile:lib`, `dist`
 * `test` => run AVA test functions with `NODE_ENV=test`
 * `test:coverage` => run `test` but with `nyc` for coverage checker
 * `test:watch` => run `test`, but with persistent watcher
-* `transpile` => run babel against all files in `src` to create files in `lib`
+* `transpile:lib` => run babel against all files in `src` to create files in `lib`
+* `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module))

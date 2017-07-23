@@ -764,11 +764,12 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 <li><code>docs</code> =&gt; builds the docs via <code>jsdoc</code></li>
 <li><code>lint</code> =&gt; run ESLint against all files in the <code>src</code> folder</li>
 <li><code>prepublish</code> =&gt; runs <code>compile-for-publish</code></li>
-<li><code>prepublish:compile</code> =&gt; run <code>lint</code>, <code>test</code>, <code>transpile</code>, <code>dist</code></li>
+<li><code>prepublish:compile</code> =&gt; run <code>lint</code>, <code>test</code>, <code>transpile:es</code>, <code>transpile:lib</code>, <code>dist</code></li>
 <li><code>test</code> =&gt; run AVA test functions with <code>NODE_ENV=test</code></li>
 <li><code>test:coverage</code> =&gt; run <code>test</code> but with <code>nyc</code> for coverage checker</li>
 <li><code>test:watch</code> =&gt; run <code>test</code>, but with persistent watcher</li>
-<li><code>transpile</code> =&gt; run babel against all files in <code>src</code> to create files in <code>lib</code></li>
+<li><code>transpile:lib</code> =&gt; run babel against all files in <code>src</code> to create files in <code>lib</code></li>
+<li><code>transpile:es</code> =&gt; run babel against all files in <code>src</code> to create files in <code>es</code>, preserving ES2015 modules (for <a href="https://github.com/rollup/rollup/wiki/pkg.module"><code>pkg.module</code></a>)</li>
 </ul></article>
     </section>
 

@@ -1,13 +1,40 @@
 {
-  "plugins": [
-    "syntax-flow",
-    "transform-flow-strip-types",
-    "add-module-exports"
-  ],
-  "presets": [
-    ["env", {
-      "loose": true
-    }],
-    "stage-2"
-  ]
+  "env": {
+    "development": {
+      "plugins": ["add-module-exports"],
+      "presets": [
+        [ "env", {
+          "loose": true
+        }],
+        "stage-2"
+      ]
+    },
+    "es": {
+      "presets": [
+        [ "env", {
+          "loose": true,
+          "modules": false
+        }],
+        "stage-2"
+      ]
+    },
+    "production": {
+      "plugins": ["add-module-exports"],
+      "presets": [
+        [ "env", {
+          "loose": true
+        }],
+        "stage-2"
+      ]
+    },
+    "test": {
+      "presets": [
+        [ "env", {
+          "loose": true
+        }],
+        "stage-2"
+      ]
+    }
+  },
+  "plugins": ["syntax-flow", "transform-flow-strip-types"]
 }
