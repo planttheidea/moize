@@ -189,7 +189,7 @@ export const addStaticPropertiesToFunction = (
   memoizedFn: Function
 ): Function => {
   let index: number = STATIC_PROPERTIES_TO_PASS.length,
-    property: string;
+      property: string;
 
   while (index--) {
     property = STATIC_PROPERTIES_TO_PASS[index];

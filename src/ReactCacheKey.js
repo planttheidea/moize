@@ -65,7 +65,7 @@ class ReactCacheKey {
     }
 
     let index: number = 0,
-      key: string;
+        key: string;
 
     while (index < existing.size) {
       key = existing.keys[index];

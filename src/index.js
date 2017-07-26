@@ -106,9 +106,9 @@ const moize: Function = (
     !isComposed
       ? passedOptions
       : {
-          ...functionOrComposableOptions.options,
-          ...passedOptions
-        }
+        ...functionOrComposableOptions.options,
+        ...passedOptions
+      }
   );
 
   const cache: Cache = new Cache();

@@ -21,7 +21,6 @@ module.exports = {
         ],
         loader: 'eslint-loader',
         options: {
-          cache: true,
           configFile: '.eslintrc',
           failOnError: true,
           failOnWarning: false,
