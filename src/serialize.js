@@ -141,7 +141,7 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
 export const createArgumentSerializer = ({
   maxArgs,
   serializeFunctions
-}: Options): Function => {
+  }: Options): Function => {
   const replacer: ?Function = serializeFunctions ? customReplacer : null;
   const hasMaxArgs: boolean = isFiniteAndPositiveInteger(maxArgs);
 
@@ -149,8 +149,8 @@ export const createArgumentSerializer = ({
     const length: number = hasMaxArgs ? maxArgs : args.length;
 
     let index: number = -1,
-      key: string = '|',
-      value: any;
+        key: string = '|',
+        value: any;
 
     while (++index < length) {
       value = getStringifiedArgument(args[index], replacer);
