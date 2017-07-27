@@ -63,11 +63,7 @@ class MultipleParameterCacheKey {
    * @param {function} isEqual method to compare equality of the keys
    * @returns {boolean} does the key passed match that in the instance
    */
-  matchesCustom(
-    key: Array<any>,
-    isMultiParamKey: boolean,
-    isEqual: Function
-  ): boolean {
+  matchesCustom(key: Array<any>, isMultiParamKey: boolean, isEqual: Function): boolean {
     return isMultiParamKey && isEqual(key, this.key);
   }
 }

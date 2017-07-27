@@ -111,10 +111,7 @@ class Cache {
    * @returns {boolean} does the key exist in cache
    */
   has(key: any): boolean {
-    return (
-      this.size !== 0 &&
-      (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key))
-    );
+    return this.size !== 0 && (key === this.lastItem.key || !!~findIndexAfterFirst(this.list, key));
   }
 
   /**=

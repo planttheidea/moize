@@ -27,13 +27,7 @@ export const FUNCTION_TYPEOF: string = 'function';
  *
  * @constant {Array<Object>} GOTCHA_OBJECT_CLASSES
  */
-export const GOTCHA_OBJECT_CLASSES: Array<Object> = [
-  Boolean,
-  Date,
-  Number,
-  RegExp,
-  String
-];
+export const GOTCHA_OBJECT_CLASSES: Array<Object> = [Boolean, Date, Number, RegExp, String];
 
 /**
  * @private
@@ -66,8 +60,7 @@ export const INVALID_PROMISE_LIBRARY_ERROR: string =
  *
  * @constant {function|undefined} NATIVE_PROMISE
  */
-export const NATIVE_PROMISE: ?Function =
-  typeof Promise === FUNCTION_TYPEOF ? Promise : undefined;
+export const NATIVE_PROMISE: ?Function = typeof Promise === FUNCTION_TYPEOF ? Promise : undefined;
 
 /**
  * @private
@@ -101,11 +94,7 @@ export const OBJECT_TYPEOF: string = 'object';
  *
  * @constant {Array<string>} STATIC_PROPERTIES_TO_PASS
  */
-export const STATIC_PROPERTIES_TO_PASS: Array<string> = [
-  'contextTypes',
-  'defaultProps',
-  'propTypes'
-];
+export const STATIC_PROPERTIES_TO_PASS: Array<string> = ['contextTypes', 'defaultProps', 'propTypes'];
 
 /**
  * @private

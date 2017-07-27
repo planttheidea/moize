@@ -165,11 +165,7 @@ class ReactCacheKey {
    * @param {function} isEqual custom equality comparator
    * @returns {boolean} are the objects equal based on the isEqual method passed
    */
-  _isPropCustomEqual(
-    object: Object,
-    existingObject: Object,
-    isEqual: Function
-  ): boolean {
+  _isPropCustomEqual(object: Object, existingObject: Object, isEqual: Function): boolean {
     return isEqual(object, existingObject);
   }
 
@@ -185,10 +181,7 @@ class ReactCacheKey {
    * @returns {boolean} does the key passed match that in the instance
    */
   matches(key: Array&lt;Object>): boolean {
-    return (
-      this._isPropShallowEqual(key[0], this.key.props) &amp;&amp;
-      this._isPropShallowEqual(key[1], this.key.context)
-    );
+    return this._isPropShallowEqual(key[0], this.key.props) &amp;&amp; this._isPropShallowEqual(key[1], this.key.context);
   }
 
   /**
