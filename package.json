@@ -103,7 +103,7 @@
     "prepublish": "in-publish && npm run prepublish:compile || echo ''",
     "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist && npm run flow:generate && npm run docs",
     "start": "npm run dev:dashboard",
-    "test": "NODE_PATH=. NODE_ENV=production BABEL_ENVtest ava",
+    "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
     "test:coverage": "nyc npm test",
     "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
     "transpile:lib": "npm run clean:lib && babel src --out-dir lib",
