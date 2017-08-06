@@ -62,11 +62,15 @@ class Cache {
    * remove from cache after maxAge time has passed
    *
    * @param {*} key the key to remove
-   * @param {number} maxAge the time in milliseconds to wait before removing key
+   * @param {number} maxAge the time in milliseconds to wait before removing the key
+   * @param {Function} onExpire a callback that is called after removing the key
    */
-  expireAfter(key: any, maxAge: number) {
+  expireAfter(key: any, maxAge: number, onExpire: ?Function) {
     setTimeout(() => {
       this.remove(key);
+      if (typeof onExpire === 'function') {
+        onExpire(key.key);
+      }
     }, maxAge);
   }
 

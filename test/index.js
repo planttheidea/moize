@@ -4,6 +4,7 @@ import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import sinon from 'sinon';
+import {sleep} from 'test/helpers/utils';
 
 // src
 import moize from 'src/index';
@@ -43,6 +44,54 @@ test('if moize will return a new moized function with a mixture of the options i
     maxAge: 10,
     serializer: null
   });
+});
+
+test('if moize will call onExpire callback with args when a cache item expires', async t => {
+  const fn = () => {};
+  const maxAge = 100;
+  const args = ['foo'];
+  const onExpire = sinon.spy();
+
+  const moized = moize(fn, {maxAge, onExpire});
+
+  moized(...args);
+
+  t.true(moized.has(args));
+
+  await sleep(maxAge + 50);
+
+  t.false(moized.has(args));
+  t.true(onExpire.calledOnce);
+});
+
+test('if onExpire callback will be called with a correct key', async t => {
+  const fn = () => {};
+  const maxAge = 50;
+
+  moize(fn, {
+    maxAge,
+    onExpire(key) {
+      t.is(key, undefined);
+    },
+  })();
+
+  const arg = 'foo';
+  moize(fn, {
+    maxAge,
+    onExpire(key) {
+      t.is(key, arg);
+    },
+  })(arg);
+
+  const args = ['foo', 'bar'];
+  moize(fn, {
+    maxAge,
+    onExpire(key) {
+      t.deepEqual(key, args);
+    },
+  })(...args);
+
+  await sleep(maxAge + 200);
 });
 
 test('if moize will curry as long as options objects are passed as the first parameter', t => {

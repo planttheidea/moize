@@ -22,6 +22,7 @@
   * [serializeFunctions](#serializefunctions)
   * [serializer](#serializer)
   * [transformArgs](#transformargs)
+  * [onExpire](#onexpire)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
   * [moize.maxAge](#moizemaxage)
   * [moize.maxArgs](#moizemaxargs)
@@ -383,6 +384,23 @@ Please note that if `transformArgs` is combined with either `maxArgs` or `serial
 1. limit by `maxArgs` (if applicable)
 1. transform by `transformArgs`
 1. serialize by `serializer` (if applicable)
+
+#### onExpire
+
+A callback that is called when one of cache item expires. Note that [maxAge](#maxage) must also be set because by default keys never expire.
+
+```javascript
+const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxAge: 10000,
+  onExpire(key) {
+    console.log(key)
+  },
+});
+```
 
 ## Usage with shortcut methods
 
