@@ -22,10 +22,10 @@ type Fn = (...args: any[]) => any;
 
 type Moizer<T extends Fn> = (t: T) => T;
 
-function moize<T extends Fn>(c: Config): ((t: T) => T);
-function moize<T extends Fn>(t: T, c?: Config): T;
+declare function moize<T extends Fn>(c: Config): ((t: T) => T);
+declare function moize<T extends Fn>(t: T, c?: Config): T;
 
-namespace moize {
+declare namespace moize {
     function maxAge<T extends Fn>(a: number): (t: T) => T;
     function maxArgs<T extends Fn>(a: number): (t: T) => T;
     function maxSize<T extends Fn>(a: number): (t: T) => T;
