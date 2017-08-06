@@ -4,7 +4,7 @@
 import type {ListItem} from './types';
 
 // utils
-import {findIndex, findIndexAfterFirst, splice, unshift} from './utils';
+import {findIndex, findIndexAfterFirst, isFunction, splice, unshift} from './utils';
 
 /**
  * @private
@@ -68,7 +68,9 @@ class Cache {
   expireAfter(key: any, maxAge: number, onExpire: ?Function) {
     setTimeout(() => {
       this.remove(key);
-      if (typeof onExpire === 'function') {
+
+      if (isFunction(onExpire)) {
+        // $FlowIgnore onExpire is a function
         onExpire(key.key);
       }
     }, maxAge);

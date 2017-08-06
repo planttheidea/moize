@@ -13,6 +13,7 @@ declare interface Config {
         maxAge?: number,
         maxArgs?: number,
         maxSize?: number,
+        onExpire?: (key: any) => void,
         promiseLibrary?: PromiseLibrary<any>,
         serialize?: boolean,
         serializeFunctions?: boolean,

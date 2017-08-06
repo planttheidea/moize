@@ -320,15 +320,15 @@ export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: 
  * @param {*} key key to update in cache
  * @param {boolean} hasMaxAge should the cache expire after some time
  * @param {number} maxAge the age after which the cache will be expired
- * @param {function} promiseLibrary the promise library used
  * @param {function} onExpire a callback that is called after removing the key
+ * @param {function} promiseLibrary the promise library used
  * @returns {function} the resolver function for the promise
  */
 export const createPromiseResolver = (
   cache: Cache,
   key: any,
   hasMaxAge: boolean,
-  {maxAge, promiseLibrary, onExpire}: Options
+  {maxAge, onExpire, promiseLibrary}: Options
 ) => {
   return (resolvedValue: any): Promise<any> => {
     cache.update(key, promiseLibrary.resolve(resolvedValue));

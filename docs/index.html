@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 3.3.0</h3>
+    <h3>moize 3.3.1</h3>
 
 
 
@@ -105,6 +105,7 @@
 <li><a href="#maxage">maxAge</a></li>
 <li><a href="#maxargs">maxArgs</a></li>
 <li><a href="#maxsize">maxSize</a></li>
+<li><a href="#onexpire">onExpire</a></li>
 <li><a href="#promiselibrary">promiseLibrary</a></li>
 <li><a href="#serialize">serialize</a></li>
 <li><a href="#serializefunctions">serializeFunctions</a></li>
@@ -254,6 +255,17 @@ memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the
 
 const memoized = moize(fn, {
   maxSize: 5
+});</code></pre><h4 id="onexpire">onExpire</h4>
+<p>A callback that is called when one of cache item expires. Note that <a href="#maxage">maxAge</a> must also be set because by default keys never expire.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxAge: 10000,
+  onExpire(key) {
+    console.log(key);
+  },
 });</code></pre><h4 id="promiselibrary">promiseLibrary</h4>
 <p><em>defaults to native Promise</em></p>
 <p>The promise library to use for resolution / rejection of promises.</p>

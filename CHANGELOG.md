@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+## 3.4.0
+* Add `onExpire` callback that fires when a cache item expires
+
 ## 3.3.1
 * Fix TypeScript definitions with correct declarations (thanks @iHaiduk)
 
