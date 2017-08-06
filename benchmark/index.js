@@ -340,7 +340,7 @@ const runAlternativeOptionsSuite = () => {
 
   return new Promise((resolve) => {
     fibonacciSuite
-      .add('moize custom equals (lodash isEqual)', () => {
+      .add('moize deep equals (lodash isEqual)', () => {
         mMoizeDeep(fibonacciNumber);
       })
       .add('moize deep equals (serialized)', () => {
@@ -349,13 +349,13 @@ const runAlternativeOptionsSuite = () => {
       .add('moize react (v2)', () => {
         mMoizeReactOld(props, context);
       })
-      .add('moize react', () => {
+      .add('moize react (v3)', () => {
         mMoizeReact(props, context);
       })
-      .add('moize react custom equals (lodash isEqual)', () => {
+      .add('moize react deep equals (lodash isEqual)', () => {
         mMoizeReactDeep(props, context);
       })
-      .add('moize specific args', () => {
+      .add('moize (transform args)', () => {
         mMoizeSpecificArgs('foo', object1, object2);
       })
       .on('start', () => {
