@@ -17,12 +17,12 @@ const moize = require('../lib');
 
 const deepEquals = require('lodash').isEqual;
 
-const showResults = benchmarkResults => {
+const showResults = (benchmarkResults) => {
   const table = new Table({
     head: ['Name', 'Ops / sec', 'Relative margin of error', 'Sample size']
   });
 
-  benchmarkResults.forEach(result => {
+  benchmarkResults.forEach((result) => {
     const name = result.target.name;
     const opsPerSecond = result.target.hz.toLocaleString('en-US', {
       maximumFractionDigits: 0
@@ -36,7 +36,7 @@ const showResults = benchmarkResults => {
   console.log(table.toString()); // eslint-disable-line no-console
 };
 
-const sortDescResults = benchmarkResults => {
+const sortDescResults = (benchmarkResults) => {
   return benchmarkResults.sort((a, b) => {
     return a.target.hz < b.target.hz ? 1 : -1;
   });
@@ -46,7 +46,7 @@ const spinner = ora('Running benchmark');
 
 let results = [];
 
-const onCycle = event => {
+const onCycle = (event) => {
   results.push(event);
   ora(event.target.name).succeed();
 };
@@ -59,7 +59,7 @@ const onComplete = () => {
   showResults(orderedBenchmarkResults);
 };
 
-const fibonacci = number => {
+const fibonacci = (number) => {
   return number < 2 ? number : fibonacci(number - 1) + fibonacci(number - 2);
 };
 
@@ -72,8 +72,7 @@ const fibonacciMultiplePrimitive = (number, isComplete) => {
   const secondValue = number - 2;
 
   return (
-    fibonacciMultiplePrimitive(firstValue, firstValue < 2) +
-    fibonacciMultiplePrimitive(secondValue, secondValue < 2)
+    fibonacciMultiplePrimitive(firstValue, firstValue < 2) + fibonacciMultiplePrimitive(secondValue, secondValue < 2)
   );
 };
 
@@ -98,8 +97,7 @@ const fibonacciMultipleObject = (number, check) => {
 const fibonacciMultipleDeepEqual = ({number}) => {
   return number < 2
     ? number
-    : fibonacciMultipleDeepEqual({number: number - 1}) +
-      fibonacciMultipleDeepEqual({number: number - 2});
+    : fibonacciMultipleDeepEqual({number: number - 1}) + fibonacciMultipleDeepEqual({number: number - 2});
 };
 
 const runSingleParameterSuite = () => {
@@ -117,7 +115,7 @@ const runSingleParameterSuite = () => {
   const mMoize = moize(fibonacci);
   const mMoizeSerialize = moize.serialize(fibonacci);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     fibonacciSuite
       .add('underscore', () => {
         mUnderscore(fibonacciNumber);
@@ -181,7 +179,7 @@ const runMultiplePrimitiveSuite = () => {
   const mMoize = moize(fibonacciMultiplePrimitive);
   const mMoizeSerialize = moize.serialize(fibonacciMultiplePrimitive);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     fibonacciSuite
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber, isComplete);
@@ -206,9 +204,7 @@ const runMultiplePrimitiveSuite = () => {
       })
       .on('start', () => {
         console.log(''); // eslint-disable-line no-console
-        console.log(
-          'Starting cycles for functions with multiple parameters that contain only primitives...'
-        ); // eslint-disable-line no-console
+        console.log('Starting cycles for functions with multiple parameters that contain only primitives...'); // eslint-disable-line no-console
 
         results = [];
 
@@ -240,7 +236,7 @@ const runMultipleObjectSuite = () => {
   const mMoize = moize(fibonacciMultipleObject);
   const mMoizeSerialize = moize.serialize(fibonacciMultipleObject);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     fibonacciSuite
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber, isComplete);
@@ -265,9 +261,7 @@ const runMultipleObjectSuite = () => {
       })
       .on('start', () => {
         console.log(''); // eslint-disable-line no-console
-        console.log(
-          'Starting cycles for functions with multiple parameters that contain objects...'
-        ); // eslint-disable-line no-console
+        console.log('Starting cycles for functions with multiple parameters that contain objects...'); // eslint-disable-line no-console
 
         results = [];
 
@@ -308,13 +302,15 @@ const runAlternativeOptionsSuite = () => {
   });
   const mMoizeSerialize = moize.serialize(fibonacciMultipleDeepEqual);
 
-  const Foo = props => {
+  const Foo = (props) => {
     return React.createElement('div', null, JSON.stringify(props));
   };
 
   const mMoizeReact = moize.react(Foo);
   const mMoizeReactDeep = moize.react(Foo, {
-    equals: deepEquals
+    equals(newKey, existingKey) {
+      return deepEquals(newKey[0], existingKey[0]) && deepEquals(newKey[1], existingKey[1]);
+    }
   });
   const mMoizeReactOld = moize(Foo, {
     maxArgs: 2,
@@ -329,7 +325,7 @@ const runAlternativeOptionsSuite = () => {
   const mMoizeSpecificArgs = moize(chooseSpecificArgs, {
     transformArgs(args) {
       let index = args.length,
-        newKey = [];
+          newKey = [];
 
       while (--index) {
         newKey[index - 1] = args[index];
@@ -342,7 +338,7 @@ const runAlternativeOptionsSuite = () => {
   const object1 = {foo: 'bar'};
   const object2 = ['foo'];
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     fibonacciSuite
       .add('moize custom equals (lodash isEqual)', () => {
         mMoizeDeep(fibonacciNumber);
@@ -383,7 +379,4 @@ const runAlternativeOptionsSuite = () => {
 
 // runAlternativeOptionsSuite();
 
-runSingleParameterSuite()
-  .then(runMultiplePrimitiveSuite)
-  .then(runMultipleObjectSuite)
-  .then(runAlternativeOptionsSuite);
+runSingleParameterSuite().then(runMultiplePrimitiveSuite).then(runMultipleObjectSuite).then(runAlternativeOptionsSuite);
