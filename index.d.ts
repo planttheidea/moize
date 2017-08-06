@@ -10,6 +10,7 @@ interface Config {
     serializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
     serializer?: (...args: any[]) => any; // provide a serializer and override default,
     transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
+    onExpire?: (key: any) => void; // a callback when a cache item expires
 }
 
 interface PromiseLibrary<T> {

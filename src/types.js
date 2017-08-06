@@ -26,7 +26,8 @@ export type Options = {
   serialize: boolean,
   serializeFunctions: boolean,
   serializer: Function,
-  transformArgs: ?Function
+  transformArgs: ?Function,
+  onExpire: ?Function
 };
 
 /**

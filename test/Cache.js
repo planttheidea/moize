@@ -1,8 +1,7 @@
 // test
 import test from 'ava';
-import {
-  sleep
-} from 'test/helpers/utils';
+import sinon from 'sinon';
+import {sleep} from 'test/helpers/utils';
 
 // src
 import Cache from 'src/Cache';
@@ -65,6 +64,23 @@ test('if expireAfter will remove the item from cache after maxAge', async (t) =>
   await sleep(maxAge + 50);
 
   t.false(cache.has(key));
+});
+
+test('if expireAfter will call an onExpire callback', async (t) => {
+  const key = {key: 'foo'};
+  const maxAge = 100;
+  const onExpire = sinon.spy((k) => {
+    t.is(k, 'foo');
+  });
+
+  const cache = new Cache();
+
+  cache.add(key, 'bar');
+  cache.expireAfter(key, maxAge, onExpire);
+
+  await sleep(maxAge + 50);
+
+  t.true(onExpire.calledOnce);
 });
 
 test('if get will return undefined if there are no items in cache', (t) => {

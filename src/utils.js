@@ -321,19 +321,20 @@ export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: 
  * @param {boolean} hasMaxAge should the cache expire after some time
  * @param {number} maxAge the age after which the cache will be expired
  * @param {function} promiseLibrary the promise library used
+ * @param {function} onExpire a callback that is called after removing the key
  * @returns {function} the resolver function for the promise
  */
 export const createPromiseResolver = (
   cache: Cache,
   key: any,
   hasMaxAge: boolean,
-  {maxAge, promiseLibrary}: Options
+  {maxAge, promiseLibrary, onExpire}: Options
 ) => {
   return (resolvedValue: any): Promise<any> => {
     cache.update(key, promiseLibrary.resolve(resolvedValue));
 
     if (hasMaxAge) {
-      cache.expireAfter(key, maxAge);
+      cache.expireAfter(key, maxAge, onExpire);
     }
 
     return resolvedValue;
@@ -786,7 +787,7 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
     cache.add(key, value);
 
     if (hasMaxAge) {
-      cache.expireAfter(key, maxAge);
+      cache.expireAfter(key, maxAge, options.onExpire);
     }
 
     if (hasMaxSize && cache.size > maxSize) {
