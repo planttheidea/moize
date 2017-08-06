@@ -3,16 +3,33 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": ["react"]
+      "presets": [
+        "react"
+      ]
     },
     "concurrency": 5,
     "failFast": true,
-    "files": ["test/*.js", "!test-utils/*.js"],
-    "require": ["babel-register", "babel-polyfill"],
-    "source": ["src/*.js"],
+    "files": [
+      "test/*.js",
+      "!test-utils/*.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ],
+    "source": [
+      "src/*.js"
+    ],
     "verbose": true
   },
-  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
+  "browserslist": [
+    "defaults",
+    "Explorer >= 9",
+    "Safari >= 6",
+    "Opera >= 15",
+    "iOS >= 8",
+    "Android >= 4"
+  ],
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
@@ -72,7 +89,13 @@
     "webpack-dev-server": "2.6.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
-  "keywords": ["memoize", "memoization", "cache", "memo", "memoizer"],
+  "keywords": [
+    "memoize",
+    "memoization",
+    "cache",
+    "memo",
+    "memoizer"
+  ],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -110,5 +133,5 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
   },
   "types": "./index.d.ts",
-  "version": "3.3.1"
+  "version": "3.4.0"
 }
