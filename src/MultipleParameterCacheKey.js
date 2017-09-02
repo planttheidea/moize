@@ -16,7 +16,6 @@ class MultipleParameterCacheKey {
     return this;
   }
 
-  isMultiParamKey: boolean = true;
   key: any = null;
   size: number = 0;
 
@@ -29,11 +28,10 @@ class MultipleParameterCacheKey {
    * does the passed key match the key in the instance
    *
    * @param {Array<*>} key the key to test
-   * @param {boolean} isMultiParamKey is the key a multi-parameter key
    * @returns {boolean} does the key passed match that in the instance
    */
-  matches(key: Array<any>, isMultiParamKey: boolean): boolean {
-    if (!isMultiParamKey || key.length !== this.size) {
+  matches(key: Array<any>): boolean {
+    if (key.length !== this.size) {
       return false;
     }
 
@@ -59,12 +57,11 @@ class MultipleParameterCacheKey {
    * does the passed key match the key in the instance based on the custom equality function passed
    *
    * @param {Array<*>} key the key to test
-   * @param {boolean} isMultiParamKey is the key a multi-parameter key
    * @param {function} isEqual method to compare equality of the keys
    * @returns {boolean} does the key passed match that in the instance
    */
-  matchesCustom(key: Array<any>, isMultiParamKey: boolean, isEqual: Function): boolean {
-    return isMultiParamKey && isEqual(key, this.key);
+  matchesCustom(key: Array<any>, isEqual: Function): boolean {
+    return key.length > 1 && isEqual(key, this.key);
   }
 }
 

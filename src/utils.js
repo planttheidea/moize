@@ -14,10 +14,8 @@ import {
   DEFAULT_OPTIONS,
   FINITE_POSITIVE_INTEGER,
   FUNCTION_NAME_REGEXP,
-  FUNCTION_TYPEOF,
   GOTCHA_OBJECT_CLASSES,
   INVALID_PROMISE_LIBRARY_ERROR,
-  OBJECT_TYPEOF,
   STATIC_PROPERTIES_TO_PASS
 } from './constants';
 
@@ -42,7 +40,7 @@ type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
  * @returns {boolean} is it a complex object
  */
 export const isComplexObject = (object: any): boolean => {
-  return !!object && typeof object === OBJECT_TYPEOF;
+  return !!object && typeof object === 'object';
 };
 
 /**
@@ -72,7 +70,7 @@ export const isFiniteAndPositiveInteger = (number: number): boolean => {
  * @returns {boolean} is it a function
  */
 export const isFunction = (object: any): boolean => {
-  return typeof object === FUNCTION_TYPEOF;
+  return typeof object === 'function';
 };
 
 /**
@@ -423,7 +421,7 @@ export const getFunctionNameViaRegexp = (fn: Function): string => {
  * @returns {string} function name
  */
 export const getFunctionName = (fn: Function): string => {
-  return fn.displayName || fn.name || getFunctionNameViaRegexp(fn) || FUNCTION_TYPEOF;
+  return fn.displayName || fn.name || getFunctionNameViaRegexp(fn) || 'Component';
 };
 
 /**
@@ -448,250 +446,122 @@ export const getKeyCount = (object: Object): number => {
 };
 
 /**
- * @private
- *
- * @function getReactCacheKey
+ * @function getAlternativeCacheKeyConstructor
  *
  * @description
- * get the cache key specific to react
+ * get the cache key constructor if it is a non-standard key type
  *
- * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new ReactCacheKey
- * @returns {ReactCacheKey} the matching cache key, or a new one
+ * @param {Options} options the options to test the cache type with
+ * @returns {AlternativeCacheKey|undefined} the constructor if an alternative cache key
  */
-export const getReactCacheKey = (cache: Cache, key: Array<any>): ReactCacheKey => {
-  // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(key)) {
-    // $FlowIgnore if the key matches, the key exists
-    return cache.lastItem.key;
-  }
-
-  let index: number = 1;
-
-  while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(key)) {
-      // $FlowIgnore if the key matches, the key exists
-      return cache.list[index].key;
-    }
-
-    index++;
-  }
-
-  return new ReactCacheKey(key);
-};
-
-/**
- * @private
- *
- * @function getReactCacheKey
- *
- * @description
- * get the cache key specific to react
- *
- * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new ReactCacheKey
- * @param {Options} options the options passed to the moized method
- * @returns {ReactCacheKey} the matching cache key, or a new one
- */
-export const getReactCacheKeyCustomEquals = (cache: Cache, key: Array<any>, options: Options): ReactCacheKey => {
-  // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matchesCustom(key, options.equals)) {
-    // $FlowIgnore if the key matches, the key exists
-    return cache.lastItem.key;
-  }
-
-  let index: number = 1;
-
-  while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matchesCustom(key, options.equals)) {
-      // $FlowIgnore if the key matches, the key exists
-      return cache.list[index].key;
-    }
-
-    index++;
-  }
-
-  return new ReactCacheKey(key);
-};
-
-/**
- * @private
- *
- * @function getSerializedCacheKey
- *
- * @description
- * get the cache key specific to serialized methods
- *
- * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new SerializedCacheKey
- * @param {Options} options the options passed to the moized method
- * @returns {SerializedCacheKey} the matching cache key, or a new one
- */
-export const getSerializedCacheKey = (cache: Cache, key: Array<any>): SerializedCacheKey => {
-  // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(key)) {
-    // $FlowIgnore if the key matches, the key exists
-    return cache.lastItem.key;
-  }
-
-  let index: number = 1;
-
-  while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(key)) {
-      // $FlowIgnore if the key matches, the key exists
-      return cache.list[index].key;
-    }
-
-    index++;
-  }
-
-  return new SerializedCacheKey(key);
-};
-
-/**
- * @private
- *
- * @function getSerializedCacheKeyCustomEquals
- *
- * @description
- * get the cache key specific to serialized methods
- *
- * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new SerializedCacheKey
- * @param {Options} options the options passed to the moized method
- * @returns {SerializedCacheKey} the matching cache key, or a new one
- */
-export const getSerializedCacheKeyCustomEquals = (
-  cache: Cache,
-  key: Array<any>,
-  options: Options
-): SerializedCacheKey => {
-  if (
-    cache.size &&
-    // $FlowIgnore if cache has size, the key exists
-    cache.lastItem.key.matchesCustom(key, options.equals)
-  ) {
-    // $FlowIgnore if the key matches, the key exists
-    return cache.lastItem.key;
-  }
-
-  let index: number = 1;
-
-  while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matchesCustom(key, options.equals)) {
-      // $FlowIgnore if the key matches, the key exists
-      return cache.list[index].key;
-    }
-
-    index++;
-  }
-
-  return new SerializedCacheKey(key);
-};
-
-/**
- * @private
- *
- * @function getStandardCacheKey
- *
- * @description
- * get the cache key for standard parameters, either single or multiple
- *
- * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new Multiple / SingleParameterCacheKey
- * @returns {StandardCacheKey} the matching cache key, or a new one
- */
-export const getStandardCacheKey = (cache: Cache, key: Array<any>): StandardCacheKey => {
-  const isMultiParamKey: boolean = key.length > 1;
-
-  // $FlowIgnore if cache has size, the key exists
-  if (cache.size && cache.lastItem.key.matches(key, isMultiParamKey)) {
-    // $FlowIgnore if the key matches, the key exists
-    return cache.lastItem.key;
-  }
-
-  let index: number = 1;
-
-  while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
-    if (cache.list[index].key.matches(key, isMultiParamKey)) {
-      // $FlowIgnore if the key matches, the key exists
-      return cache.list[index].key;
-    }
-
-    index++;
-  }
-
-  return isMultiParamKey ? new MultipleParameterCacheKey(key) : new SingleParameterCacheKey(key);
-};
-
-/**
- * @private
- *
- * @function getStandardCacheKeyCustomEquals
- *
- * @description
- * get the cache key for standard parameters, either single or multiple
- *
- * @param {Cache} cache the cache to find a potential matching key in
- * @param {*} key the key to try to find a match of, or turn into a new Multiple / SingleParameterCacheKey
- * @param {Options} options the options passed to the moized method
- * @returns {StandardCacheKey} the matching cache key, or a new one
- */
-export const getStandardCacheKeyCustomEquals = (cache: Cache, key: Array<any>, options: Options): StandardCacheKey => {
-  const isMultiParamKey: boolean = key.length > 1;
-
-  if (
-    cache.size &&
-    // $FlowIgnore if cache has size, the key exists
-    cache.lastItem.key.matchesCustom(key, isMultiParamKey, options.equals)
-  ) {
-    // $FlowIgnore if the key matches, the key exists
-    return cache.lastItem.key;
-  }
-
-  let index: number = 1;
-
-  while (index < cache.size) {
-    if (
-      // $FlowIgnore if cache has size, the key exists
-      cache.list[index].key.matchesCustom(key, isMultiParamKey, options.equals)
-    ) {
-      // $FlowIgnore if the key matches, the key exists
-      return cache.list[index].key;
-    }
-
-    index++;
-  }
-
-  return isMultiParamKey ? new MultipleParameterCacheKey(key) : new SingleParameterCacheKey(key);
-};
-
-/**
- * @private
- *
- * @function getGetCacheKeyMethod
- *
- * @description
- * based on the options, get the getCacheKey method
- *
- * @param {Options} options the options passed to the moized method
- * @returns {function(Cache, Array<*>): CacheKey} the cache key
- */
-export const getGetCacheKeyMethod = (options: Options): Function => {
+export const getAlternativeCacheKeyConstructor = (options: Options): ?Function => {
   if (options.isReact) {
-    return options.equals ? getReactCacheKeyCustomEquals : getReactCacheKey;
+    return ReactCacheKey;
   }
 
   if (options.serialize) {
-    return options.equals ? getSerializedCacheKeyCustomEquals : getSerializedCacheKey;
+    return SerializedCacheKey;
+  }
+};
+
+/**
+ * @function getCacheKey
+ *
+ * @description
+ * get the cache key if it exists in cache, else a newly-constructed one
+ *
+ * @param {Cache} cache the cache to test against
+ * @param {Array<*>} key the key to test if exists in the cache
+ * @param {Function} Constructor the constructor function
+ * @returns {CacheKey} the new or existing cache key
+ */
+export const getCacheKey = (cache: Cache, key: Array<any>, Constructor: Function): CacheKey => {
+  // $FlowIgnore if cache has size, the key exists
+  if (cache.size && cache.lastItem.key.matches(key)) {
+    return cache.lastItem.key;
   }
 
-  return options.equals ? getStandardCacheKeyCustomEquals : getStandardCacheKey;
+  let index: number = 1;
+
+  while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
+    if (cache.list[index].key.matches(key)) {
+      return cache.list[index].key;
+    }
+
+    index++;
+  }
+
+  return new Constructor(key);
+};
+
+/**
+ * @function getCacheKeyCustom
+ *
+ * @description
+ * get the cache key if it exists in cache, else a newly-constructed one
+ *
+ * @param {Cache} cache the cache to test against
+ * @param {Array<*>} key the key to test if exists in the cache
+ * @param {Function} Constructor the constructor function
+ * @param {function} isEqual the custom equality mnthod
+ * @returns {CacheKey} the new or existing cache key
+ */
+export const getCacheKeyCustom = (
+  cache: Cache,
+  key: Array<any>,
+  Constructor: Function,
+  isEqual: Function
+): CacheKey => {
+  // $FlowIgnore if cache has size, the key exists
+  if (cache.size && cache.lastItem.key.matchesCustom(key, isEqual)) {
+    return cache.lastItem.key;
+  }
+
+  let index: number = 1;
+
+  while (index < cache.size) {
+    // $FlowIgnore if cache has size, the key exists
+    if (cache.list[index].key.matchesCustom(key, isEqual)) {
+      return cache.list[index].key;
+    }
+
+    index++;
+  }
+
+  return new Constructor(key);
+};
+
+/**
+ * @function getTransform
+ *
+ * @description
+ * get the transform method based on the options passed
+ *
+ * @param {Options} options the options to build the transform function from
+ * @returns {function|undefined} the transform function
+ */
+export const getTransform = (options: Options): ?Function => {
+  let transform = options.transformArgs;
+
+  if (isFiniteAndPositiveInteger(options.maxArgs)) {
+    transform = transform ? compose(transform, take(options.maxArgs)) : take(options.maxArgs);
+  }
+
+  return !options.serialize ? transform : transform ? compose(options.serializer, transform) : options.serializer;
+};
+
+/**
+ * @function getStandardCacheKeyClass
+ *
+ * @description
+ * get the StandardCacheKey constructor based on key length
+ *
+ * @param {Array<*>} key the key to test
+ * @returns {MultipleParameterCacheKey|SingleParameterCacheKey} the cache key constructor
+ */
+export const getStandardCacheKeyClass = (key: Array<any>): Function => {
+  return key.length > 1 ? MultipleParameterCacheKey : SingleParameterCacheKey;
 };
 
 /**
@@ -707,41 +577,53 @@ export const getGetCacheKeyMethod = (options: Options): Function => {
  * @returns {function(*): CacheKey} the method that will get the cache key
  */
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
-  const hasMaxArgs: boolean = isFiniteAndPositiveInteger(options.maxArgs);
-  const getCacheKeyMethod: Function = getGetCacheKeyMethod(options);
+  const Constructor: ?Function = getAlternativeCacheKeyConstructor(options);
+  const transform: ?Function = getTransform(options);
 
-  let transform = options.transformArgs;
+  if (Constructor) {
+    if (options.equals) {
+      if (transform) {
+        return (key: any): CacheKey => {
+          return getCacheKeyCustom(cache, transform(key), Constructor, options.equals);
+        };
+      }
 
-  if (hasMaxArgs) {
-    transform = transform ? compose(transform, take(options.maxArgs)) : take(options.maxArgs);
-  }
+      return (key: any): CacheKey => {
+        return getCacheKeyCustom(cache, key, Constructor, options.equals);
+      };
+    }
 
-  if (options.serialize) {
-    transform = transform ? compose(options.serializer, transform) : options.serializer;
+    if (transform) {
+      return (key: any): CacheKey => {
+        return getCacheKey(cache, transform(key), Constructor);
+      };
+    }
+
+    return (key: any): CacheKey => {
+      return getCacheKey(cache, key, Constructor);
+    };
   }
 
   if (options.equals) {
     if (transform) {
       return (key: any): CacheKey => {
-        // $FlowIgnore transform is a function
-        return getCacheKeyMethod(cache, transform(key), options);
+        return getCacheKeyCustom(cache, transform(key), getStandardCacheKeyClass(key), options.equals);
       };
     }
 
     return (key: any): CacheKey => {
-      return getCacheKeyMethod(cache, key, options);
+      return getCacheKeyCustom(cache, key, getStandardCacheKeyClass(key), options.equals);
     };
   }
 
   if (transform) {
     return (key: any): CacheKey => {
-      // $FlowIgnore transform is a function
-      return getCacheKeyMethod(cache, transform(key));
+      return getCacheKey(cache, transform(key), getStandardCacheKeyClass(key));
     };
   }
 
   return (key: any): CacheKey => {
-    return getCacheKeyMethod(cache, key);
+    return getCacheKey(cache, key, getStandardCacheKeyClass(key));
   };
 };
 

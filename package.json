@@ -3,33 +3,16 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": [
-        "react"
-      ]
+      "presets": ["react"]
     },
     "concurrency": 5,
     "failFast": true,
-    "files": [
-      "test/*.js",
-      "!test-utils/*.js"
-    ],
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "source": [
-      "src/*.js"
-    ],
+    "files": ["test/*.js", "!test-utils/*.js"],
+    "require": ["babel-register", "babel-polyfill"],
+    "source": ["src/*.js"],
     "verbose": true
   },
-  "browserslist": [
-    "defaults",
-    "Explorer >= 9",
-    "Safari >= 6",
-    "Opera >= 15",
-    "iOS >= 8",
-    "Android >= 4"
-  ],
+  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
@@ -89,13 +72,7 @@
     "webpack-dev-server": "2.6.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
-  "keywords": [
-    "memoize",
-    "memoization",
-    "cache",
-    "memo",
-    "memoizer"
-  ],
+  "keywords": ["memoize", "memoization", "cache", "memo", "memoizer"],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -108,6 +85,7 @@
     "benchmark": "npm run transpile:lib -- --no-comments && node benchmark/index.js",
     "build": "NODE_ENV=development webpack --progress --colors",
     "build:minified": "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js",
+    "build:stats": "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js --json > stats.json",
     "clean": "npm run clean:lib && npm run clean:dist && npm run clean:docs",
     "clean:docs": "rimraf docs",
     "clean:dist": "rimraf dist",
