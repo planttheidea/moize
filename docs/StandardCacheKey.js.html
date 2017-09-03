@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Source: MultipleParameterCacheKey.js</title>
+	<title>moize Source: StandardCacheKey.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -37,6 +37,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#getConstructor">getConstructor</a></li><li><a href="global.html#getNewOrExistingCacheKey">getNewOrExistingCacheKey</a></li><li><a href="global.html#getNewOrExistingCacheKeyCustomEquals">getNewOrExistingCacheKeyCustomEquals</a></li><li><a href="global.html#getTransform">getTransform</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -65,7 +72,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: MultipleParameterCacheKey.js</h1>
+		<h1 class="page-title">Source: StandardCacheKey.js</h1>
     
 <section>
     <article>
@@ -75,37 +82,50 @@
 /**
  * @private
  *
- * @class MultipleParameterCacheKey
+ * @class StandardCacheKey
  *
  * @classdesc
- * cache key used when there are multiple standard parameters
+ * cache key used when there is a single standard parameter
  */
-class MultipleParameterCacheKey {
+class StandardCacheKey {
   constructor(key: Array&lt;any>) {
-    this.key = key;
+    this.key = this._isMultiParamKey(key) ? key : key[0];
     this.size = key.length;
 
     return this;
   }
 
-  isMultiParamKey: boolean = true;
   key: any = null;
   size: number = 0;
 
   /**
-   * @function matches
-   * @memberof MultipleParameterCacheKey
+   * @function _isMultiParamKey
+   * @memberof StandardCacheKey
+   * @instance
+   *
+   * @description
+   * is the key passed a multiple-parameter key
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @returns {boolean} is the key a multiple-parameter key
+   */
+  _isMultiParamKey(key: Array&lt;any>): boolean {
+    return key.length > 1;
+  }
+
+  /**
+   * @function _matchesMultiple
+   * @memberof StandardCacheKey
    * @instance
    *
    * @description
    * does the passed key match the key in the instance
    *
    * @param {Array&lt;*>} key the key to test
-   * @param {boolean} isMultiParamKey is the key a multi-parameter key
    * @returns {boolean} does the key passed match that in the instance
    */
-  matches(key: Array&lt;any>, isMultiParamKey: boolean): boolean {
-    if (!isMultiParamKey || key.length !== this.size) {
+  _matchesMultiple(key: Array&lt;any>): boolean {
+    if (key.length !== this.size) {
       return false;
     }
 
@@ -123,24 +143,53 @@ class MultipleParameterCacheKey {
   }
 
   /**
+   * @function _matchesSingle
+   * @memberof StandardCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  _matchesSingle(key: Array&lt;any>): boolean {
+    return key[0] === this.key;
+  }
+
+  /**
+   * @function matches
+   * @memberof StandardCacheKey
+   * @instance
+   *
+   * @description
+   * does the passed key match the key in the instance
+   *
+   * @param {Array&lt;*>} key the key to test
+   * @returns {boolean} does the key passed match that in the instance
+   */
+  matches(key: Array&lt;any>): boolean {
+    return this._isMultiParamKey(key) ? this._matchesMultiple(key) : this._matchesSingle(key);
+  }
+
+  /**
    * @function matchesCustom
-   * @memberof SingleParameterCacheKey
+   * @memberof StandardCacheKey
    * @instance
    *
    * @description
    * does the passed key match the key in the instance based on the custom equality function passed
    *
    * @param {Array&lt;*>} key the key to test
-   * @param {boolean} isMultiParamKey is the key a multi-parameter key
    * @param {function} isEqual method to compare equality of the keys
    * @returns {boolean} does the key passed match that in the instance
    */
-  matchesCustom(key: Array&lt;any>, isMultiParamKey: boolean, isEqual: Function): boolean {
-    return isMultiParamKey &amp;&amp; isEqual(key, this.key);
+  matchesCustom(key: Array&lt;any>, isEqual: Function): boolean {
+    return isEqual(this._isMultiParamKey(key) ? key : key[0], this.key);
   }
 }
 
-export default MultipleParameterCacheKey;
+export default StandardCacheKey;
 </pre>
     </article>
 </section>

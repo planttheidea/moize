@@ -859,6 +859,133 @@ test('if getConstructor will return StandardCacheKey when both isReact and seria
   t.is(utils.getConstructor(options), StandardCacheKey);
 });
 
+test('if getNewOrExistingCacheKey will get the lastItem key if it matches the key passed', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new StandardCacheKey(key);
+
+  cache.add(cacheKey, 'baz');
+
+  const newKey = [...key];
+
+  const result = utils.getNewOrExistingCacheKey(cache, newKey, StandardCacheKey);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getNewOrExistingCacheKey will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new StandardCacheKey(key);
+
+  const otherKey = ['bar', 'baz'];
+  const otherCacheKey = new StandardCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  const newKey = [...key];
+
+  const result = utils.getNewOrExistingCacheKey(cache, newKey, StandardCacheKey);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getNewOrExistingCacheKey will create a new key if it does not exist in the list', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new StandardCacheKey(key);
+
+  const otherKey = ['bar', 'baz'];
+  const otherCacheKey = new StandardCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  const newKey = ['foo', 'baz'];
+
+  const result = utils.getNewOrExistingCacheKey(cache, newKey, StandardCacheKey);
+
+  const match = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(match, undefined);
+  t.true(result instanceof StandardCacheKey);
+});
+
+test('if getNewOrExistingCacheKeyCustomEquals will get the lastItem key if it matches the key passed', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new StandardCacheKey(key);
+
+  cache.add(cacheKey, 'baz');
+
+  const newKey = [...key];
+  const isEqual = (value, otherValue) => {
+    return value.length === otherValue.length;
+  };
+
+  const result = utils.getNewOrExistingCacheKeyCustomEquals(cache, newKey, StandardCacheKey, isEqual);
+
+  t.is(result, cache.lastItem.key);
+});
+
+test('if getNewOrExistingCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new StandardCacheKey(key);
+
+  const otherKey = ['foo', 'bar', 'baz'];
+  const otherCacheKey = new StandardCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  const newKey = [...key];
+  const isEqual = (value, otherValue) => {
+    return value.length === otherValue.length;
+  };
+
+  const result = utils.getNewOrExistingCacheKeyCustomEquals(cache, newKey, StandardCacheKey, isEqual);
+
+  t.not(result, cache.lastItem.key);
+  t.is(result, cache.list[1].key);
+});
+
+test('if getNewOrExistingCacheKeyCustomEquals will create a new key if it does not exist in the list', (t) => {
+  const cache = new Cache();
+
+  const key = ['foo', 'bar'];
+  const cacheKey = new StandardCacheKey(key);
+
+  const otherKey = ['foo', 'bar', 'baz'];
+  const otherCacheKey = new StandardCacheKey(otherKey);
+
+  cache.add(cacheKey, 'baz');
+  cache.add(otherCacheKey, 'foo');
+
+  const newKey = ['foo', 'bar', 'baz', 'quiz'];
+  const isEqual = (value, otherValue) => {
+    return value.length === otherValue.length;
+  };
+
+  const result = utils.getNewOrExistingCacheKeyCustomEquals(cache, newKey, StandardCacheKey, isEqual);
+
+  const match = cache.list.find(({key}) => {
+    return key === result;
+  });
+
+  t.is(match, undefined);
+  t.true(result instanceof StandardCacheKey);
+});
+
 test('if getTransform will return undefined when there are no options', (t) => {
   t.is(utils.getTransform({}), undefined);
 });
@@ -1061,6 +1188,7 @@ test('if take will return the original array if the length is smaller than the s
 test('if take will return a new array with the first N number of items from the original array', (t) => {
   const array = [1, 2, 3, 4, 5, 6, 7];
 
+  t.deepEqual(utils.take(0)(array), []);
   t.deepEqual(utils.take(1)(array), array.slice(0, 1));
   t.deepEqual(utils.take(2)(array), array.slice(0, 2));
   t.deepEqual(utils.take(3)(array), array.slice(0, 3));

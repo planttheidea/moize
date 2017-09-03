@@ -334,6 +334,9 @@ const runAlternativeOptionsSuite = () => {
       return newKey;
     }
   });
+  const mMoizeMaxArgs = moize.maxArgs(2)((one, two, three) => {
+    return [one, two, three];
+  });
 
   const object1 = {foo: 'bar'};
   const object2 = ['foo'];
@@ -358,6 +361,9 @@ const runAlternativeOptionsSuite = () => {
       .add('moize (transform args)', () => {
         mMoizeSpecificArgs('foo', object1, object2);
       })
+      .add('moize (maximum args)', () => {
+        mMoizeMaxArgs('foo', object1, object2);
+      })
       .on('start', () => {
         console.log(''); // eslint-disable-line no-console
         console.log('Starting cycles for alternative cache types...'); // eslint-disable-line no-console
@@ -377,6 +383,9 @@ const runAlternativeOptionsSuite = () => {
   });
 };
 
-// runAlternativeOptionsSuite();
+runAlternativeOptionsSuite();
 
-runSingleParameterSuite().then(runMultiplePrimitiveSuite).then(runMultipleObjectSuite).then(runAlternativeOptionsSuite);
+// runSingleParameterSuite()
+//   .then(runMultiplePrimitiveSuite)
+//   .then(runMultipleObjectSuite)
+//   .then(runAlternativeOptionsSuite);
