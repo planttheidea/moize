@@ -3,12 +3,22 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": ["react"]
+      "presets": [
+        "react"
+      ]
     },
     "failFast": true,
-    "files": ["test/*.js", "!test-utils/*.js"],
-    "require": ["babel-register", "babel-polyfill"],
-    "source": ["src/*.js"],
+    "files": [
+      "test/*.js",
+      "!test-utils/*.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ],
+    "source": [
+      "src/*.js"
+    ],
     "verbose": true
   },
   "browserslist": [
@@ -102,30 +112,24 @@
     "url": "git+https://github.com/planttheidea/moize.git"
   },
   "scripts": {
-    "benchmark":
-      "npm run transpile:lib -- --no-comments && node benchmark/index.js",
+    "benchmark": "npm run transpile:lib -- --no-comments && node benchmark/index.js",
     "build": "NODE_ENV=development webpack --progress --colors",
-    "build:minified":
-      "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js",
-    "build:stats":
-      "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js --json > stats.json",
+    "build:minified": "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js",
+    "build:stats": "NODE_ENV=production webpack --progress --colors --config=webpack.config.minified.js --json > stats.json",
     "clean": "npm run clean:lib && npm run clean:dist && npm run clean:docs",
     "clean:docs": "rimraf docs",
     "clean:dist": "rimraf dist",
     "clean:lib": "rimraf lib",
     "clean:es": "rimraf es",
-    "dev":
-      "NODE_ENV=development webpack-dev-server --colors --progress --config=webpack.config.dev.js",
+    "dev": "NODE_ENV=development webpack-dev-server --colors --progress --config=webpack.config.dev.js",
     "dist": "npm run clean:dist && npm run build && npm run build:minified",
-    "docs":
-      "npm run clean:docs && jsdoc -c ./jsdoc.config.json && cp img/*.png docs/img && git add --all",
+    "docs": "npm run clean:docs && jsdoc -c ./jsdoc.config.json && cp img/*.png docs/img && git add --all",
     "flow": "flow check src",
     "flow:generate": "flowgen ./index.d.ts --output-file flow-typed/moize.js",
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "NODE_ENV=test eslint src --fix",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile":
-      "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist && npm run docs",
+    "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist && npm run docs",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
     "test:coverage": "nyc npm test",
@@ -134,5 +138,5 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
   },
   "types": "./index.d.ts",
-  "version": "3.4.1"
+  "version": "3.4.2"
 }
