@@ -79,30 +79,3 @@ export const DEFAULT_OPTIONS: Object = {
  * @constant {Array<string>} STATIC_PROPERTIES_TO_PASS
  */
 export const STATIC_PROPERTIES_TO_PASS: Array<string> = ['contextTypes', 'defaultProps', 'propTypes'];
-
-/**
- * @private
- *
- * @constant {{isPromise: true}} PROMISE_OPTIONS
- */
-export const PROMISE_OPTIONS = {
-  isPromise: true
-};
-
-/**
- * @private
- *
- * @constant {{maxArgs: number, serialize: boolean, serializeFunctions: boolean}} REACT_OPTIONS
- */
-export const REACT_OPTIONS = {
-  isReact: true
-};
-
-/**
- * @private
- *
- * @constant {{serialize: boolean}} SERIALIZE_OPTIONS
- */
-export const SERIALIZE_OPTIONS = {
-  serialize: true
-};
