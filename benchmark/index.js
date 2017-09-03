@@ -383,9 +383,9 @@ const runAlternativeOptionsSuite = () => {
   });
 };
 
-runAlternativeOptionsSuite();
+// runAlternativeOptionsSuite();
 
-// runSingleParameterSuite()
-//   .then(runMultiplePrimitiveSuite)
-//   .then(runMultipleObjectSuite)
-//   .then(runAlternativeOptionsSuite);
+runSingleParameterSuite()
+  .then(runMultiplePrimitiveSuite)
+  .then(runMultipleObjectSuite)
+  .then(runAlternativeOptionsSuite);
