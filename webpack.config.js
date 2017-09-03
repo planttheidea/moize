@@ -8,17 +8,13 @@ module.exports = {
 
   devtool: '#source-map',
 
-  entry: [
-    path.resolve(__dirname, 'src', 'index.js')
-  ],
+  entry: [path.resolve(__dirname, 'src', 'index.js')],
 
   module: {
     rules: [
       {
         enforce: 'pre',
-        include: [
-          path.resolve(__dirname, 'src')
-        ],
+        include: [path.resolve(__dirname, 'src')],
         loader: 'eslint-loader',
         options: {
           configFile: '.eslintrc',
@@ -28,21 +24,20 @@ module.exports = {
           formatter: require('eslint-friendly-formatter')
         },
         test: /\.js$/
-      }, {
-        include: [
-          path.resolve(__dirname, 'src')
-        ],
+      },
+      {
+        include: [path.resolve(__dirname, 'src')],
         options: {
           babelrc: false,
-          plugins: [
-            'syntax-flow',
-            'transform-flow-strip-types'
-          ],
+          plugins: ['syntax-flow', 'transform-flow-strip-types'],
           presets: [
-            ['env', {
-              loose: true,
-              modules: false
-            }],
+            [
+              'env',
+              {
+                loose: true,
+                modules: false
+              }
+            ],
             'stage-2'
           ]
         },
@@ -60,16 +55,9 @@ module.exports = {
     umdNamedDefine: true
   },
 
-  plugins: [
-    new webpack.EnvironmentPlugin([
-      'NODE_ENV'
-    ])
-  ],
+  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV'])],
 
   resolve: {
-    modules: [
-      path.join(__dirname, 'src'),
-      'node_modules'
-    ]
+    modules: [path.join(__dirname, 'src'), 'node_modules']
   }
 };

@@ -240,5 +240,5 @@ test('if stringify will call decycle on the object when it cannot be handled by 
 
   const circularResult = serialize.stringify(circular);
 
-  t.is(circularResult, '{"foo":{"bar":"baz","baz":{"$ref":"$[\\\"foo\\\"]"}}}');
+  t.is(circularResult, '{"foo":{"bar":"baz","baz":{"$ref":"$[\\"foo\\"]"}}}');
 });

@@ -1,3 +1,10 @@
+interface PromiseLike<R> = {
+	then<U>(
+		onFulfill?: (value: R) => Promise<U> | U,
+		onReject?: (error: any) => Promise<U> | U
+	): Promise<U>;
+}
+
 interface Config {
     equals?: (firstValue: any, secondValue: any) => boolean; // custom equality comparator
     isPromise?: boolean; // is the result a promise

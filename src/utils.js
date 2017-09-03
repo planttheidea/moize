@@ -76,21 +76,6 @@ export const isFunction = (object: any): boolean => {
 /**
  * @private
  *
- * @function isMoized
- *
- * @description
- * is the function passed a moized function or not
- *
- * @param {*} fn the function to get if moize
- * @returns {boolean} is the function moized or not
- */
-export const isMoized = (fn: any): boolean => {
-  return isFunction(fn) && !!fn.isMoized;
-};
-
-/**
- * @private
- *
  * @function isPlainObject
  *
  * @description
@@ -327,7 +312,7 @@ export const createPromiseResolver = (
   key: any,
   hasMaxAge: boolean,
   {maxAge, onExpire, promiseLibrary}: Options
-) => {
+): Function => {
   return (resolvedValue: any): Promise<any> => {
     cache.update(key, promiseLibrary.resolve(resolvedValue));
 
@@ -379,16 +364,17 @@ export const findIndexAfterFirst: Function = createFindIndex(1);
  * @returns {Options} the coalesced options object
  */
 export const getDefaultedOptions = (options: Object): Options => {
-  let coalescedOptions: Object = {
+  const coalescedOptions: Object = {
     ...DEFAULT_OPTIONS,
     ...options
   };
 
-  if (coalescedOptions.serialize) {
-    coalescedOptions.serializer = getSerializerFunction(coalescedOptions);
-  }
-
-  return coalescedOptions;
+  return !coalescedOptions.serialize
+    ? coalescedOptions
+    : {
+      ...coalescedOptions,
+      serializer: getSerializerFunction(coalescedOptions)
+    };
 };
 
 /**
@@ -446,25 +432,6 @@ export const getKeyCount = (object: Object): number => {
 };
 
 /**
- * @function getAlternativeCacheKeyConstructor
- *
- * @description
- * get the cache key constructor if it is a non-standard key type
- *
- * @param {Options} options the options to test the cache type with
- * @returns {AlternativeCacheKey|undefined} the constructor if an alternative cache key
- */
-export const getAlternativeCacheKeyConstructor = (options: Options): ?Function => {
-  if (options.isReact) {
-    return ReactCacheKey;
-  }
-
-  if (options.serialize) {
-    return SerializedCacheKey;
-  }
-};
-
-/**
  * @function getCacheKey
  *
  * @description
@@ -496,7 +463,7 @@ export const getCacheKey = (cache: Cache, key: Array<any>, Constructor: Function
 };
 
 /**
- * @function getCacheKeyCustom
+ * @function getCacheKeyCustomEquals
  *
  * @description
  * get the cache key if it exists in cache, else a newly-constructed one
@@ -507,11 +474,11 @@ export const getCacheKey = (cache: Cache, key: Array<any>, Constructor: Function
  * @param {function} isEqual the custom equality mnthod
  * @returns {CacheKey} the new or existing cache key
  */
-export const getCacheKeyCustom = (
+export const getCacheKeyCustomEquals = (
   cache: Cache,
   key: Array<any>,
   Constructor: Function,
-  isEqual: Function
+  isEqual: ?Function
 ): CacheKey => {
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matchesCustom(key, isEqual)) {
@@ -530,6 +497,19 @@ export const getCacheKeyCustom = (
   }
 
   return new Constructor(key);
+};
+
+/**
+ * @function getStandardCacheKeyClass
+ *
+ * @description
+ * get the StandardCacheKey constructor based on key length
+ *
+ * @param {Array<*>} key the key to test
+ * @returns {MultipleParameterCacheKey|SingleParameterCacheKey} the cache key constructor
+ */
+export const getStandardCacheKeyClass = (key: Array<any>): Function => {
+  return key.length > 1 ? MultipleParameterCacheKey : SingleParameterCacheKey;
 };
 
 /**
@@ -552,19 +532,6 @@ export const getTransform = (options: Options): ?Function => {
 };
 
 /**
- * @function getStandardCacheKeyClass
- *
- * @description
- * get the StandardCacheKey constructor based on key length
- *
- * @param {Array<*>} key the key to test
- * @returns {MultipleParameterCacheKey|SingleParameterCacheKey} the cache key constructor
- */
-export const getStandardCacheKeyClass = (key: Array<any>): Function => {
-  return key.length > 1 ? MultipleParameterCacheKey : SingleParameterCacheKey;
-};
-
-/**
  * @private
  *
  * @function createGetCacheKey
@@ -577,19 +544,19 @@ export const getStandardCacheKeyClass = (key: Array<any>): Function => {
  * @returns {function(*): CacheKey} the method that will get the cache key
  */
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
-  const Constructor: ?Function = getAlternativeCacheKeyConstructor(options);
+  const Constructor: ?Function = options.isReact ? ReactCacheKey : options.serialize ? SerializedCacheKey : null;
   const transform: ?Function = getTransform(options);
 
   if (Constructor) {
     if (options.equals) {
       if (transform) {
         return (key: any): CacheKey => {
-          return getCacheKeyCustom(cache, transform(key), Constructor, options.equals);
+          return getCacheKeyCustomEquals(cache, transform(key), Constructor, options.equals);
         };
       }
 
       return (key: any): CacheKey => {
-        return getCacheKeyCustom(cache, key, Constructor, options.equals);
+        return getCacheKeyCustomEquals(cache, key, Constructor, options.equals);
       };
     }
 
@@ -607,18 +574,22 @@ export const createGetCacheKey = (cache: Cache, options: Options): Function => {
   if (options.equals) {
     if (transform) {
       return (key: any): CacheKey => {
-        return getCacheKeyCustom(cache, transform(key), getStandardCacheKeyClass(key), options.equals);
+        const transformedKey = transform(key);
+
+        return getCacheKeyCustomEquals(cache, transformedKey, getStandardCacheKeyClass(transformedKey), options.equals);
       };
     }
 
     return (key: any): CacheKey => {
-      return getCacheKeyCustom(cache, key, getStandardCacheKeyClass(key), options.equals);
+      return getCacheKeyCustomEquals(cache, key, getStandardCacheKeyClass(key), options.equals);
     };
   }
 
   if (transform) {
     return (key: any): CacheKey => {
-      return getCacheKey(cache, transform(key), getStandardCacheKeyClass(key));
+      const transformedKey = transform(key);
+
+      return getCacheKey(cache, transformedKey, getStandardCacheKeyClass(transformedKey));
     };
   }
 
@@ -643,21 +614,20 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
   const hasMaxAge: boolean = isFiniteAndPositiveInteger(options.maxAge);
   const hasMaxSize: boolean = isFiniteAndPositiveInteger(options.maxSize);
 
-  const {maxAge, maxSize} = options;
-
   if (options.isPromise) {
     if (!isFunction(options.promiseLibrary) && !isPlainObject(options.promiseLibrary)) {
       throw new TypeError(INVALID_PROMISE_LIBRARY_ERROR);
     }
 
     return (key: any, value: any): Promise<any> => {
-      const promiseResolver = createPromiseResolver(cache, key, hasMaxAge, options);
-      const promiseRejecter = createPromiseRejecter(cache, key, options);
-      const handler = value.then(promiseResolver, promiseRejecter);
+      const handler = value.then(
+        createPromiseResolver(cache, key, hasMaxAge, options),
+        createPromiseRejecter(cache, key, options)
+      );
 
       cache.add(key, handler);
 
-      if (hasMaxSize && cache.size > maxSize) {
+      if (hasMaxSize && cache.size > options.maxSize) {
         cache.remove(cache.list[cache.list.length - 1].key);
       }
 
@@ -669,10 +639,10 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
     cache.add(key, value);
 
     if (hasMaxAge) {
-      cache.expireAfter(key, maxAge, options.onExpire);
+      cache.expireAfter(key, options.maxAge, options.onExpire);
     }
 
-    if (hasMaxSize && cache.size > maxSize) {
+    if (hasMaxSize && cache.size > options.maxSize) {
       cache.remove(cache.list[cache.list.length - 1].key);
     }
 
@@ -744,9 +714,9 @@ export const unshift = (array: Array<any>, item: any): any => {
  * @returns {function(function): function} the method which will add the static properties
  */
 export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Function, options: Options) => {
-  const getCacheKey = createGetCacheKey(cache, options);
-
   return (moizedFunction: Function): Function => {
+    const getCacheKey = createGetCacheKey(cache, options);
+
     moizedFunction.cache = cache;
     moizedFunction.displayName = `moize(${getFunctionName(originalFunction)})`;
     moizedFunction.isMoized = true;

@@ -11,11 +11,13 @@ test('if the instance is constructed with the correct values', (t) => {
 
   const result = new MultipleParameterCacheKey(key);
 
-  t.deepEqual({...result}, {
-    isMultiParamKey: true,
-    key,
-    size: key.length
-  });
+  t.deepEqual(
+    {...result},
+    {
+      key,
+      size: key.length
+    }
+  );
 });
 
 test('if matches will return false if the key passed is not a multi-parameter key', (t) => {
@@ -24,9 +26,8 @@ test('if matches will return false if the key passed is not a multi-parameter ke
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = ['foo'];
-  const isMultiParamKey = false;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.false(result);
 });
@@ -37,9 +38,8 @@ test('if matches will return false if the key passed is a multi-parameter key th
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = ['foo', 'bar', 'baz'];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.false(result);
 });
@@ -50,9 +50,8 @@ test('if matches will return false if the key passed is a multi-parameter key th
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = ['foo', 'baz'];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.false(result);
 });
@@ -63,9 +62,8 @@ test('if matches will return true if the key passed is a multi-parameter key tha
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = [...existingKey];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.true(result);
 });
@@ -76,9 +74,8 @@ test('if matchesCustom will return false if the key passed is not a multi-parame
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}];
-  const isMultiParamKey = false;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.false(result);
 });
@@ -89,9 +86,8 @@ test('if matchesCustom will return false if the key passed is a multi-parameter 
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.false(result);
 });
@@ -102,9 +98,8 @@ test('if matchesCustom will return false if the key passed is a multi-parameter 
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}, {bar: 'baz'}];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.false(result);
 });
@@ -115,24 +110,22 @@ test('if matchesCustom will return false if the key passed is a multi-parameter 
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}, {bar: 'bar'}];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.true(result);
 });
 
-test('if matchesCustom passes the key to match and the instance key as the parameters to isEqual', (t) =>{
+test('if matchesCustom passes the key to match and the instance key as the parameters to isEqual', (t) => {
   const existingKey = [{foo: 'foo'}, {bar: 'bar'}];
 
   const cacheKey = new MultipleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}, {bar: 'bar'}];
-  const isMultiParamKey = true;
 
   const isEqual = sinon.spy();
 
-  cacheKey.matchesCustom(newKey, isMultiParamKey, isEqual);
+  cacheKey.matchesCustom(newKey, isEqual);
 
   t.true(isEqual.calledOnce);
 
@@ -140,10 +133,7 @@ test('if matchesCustom passes the key to match and the instance key as the param
 
   t.is(args.length, 2);
 
-  const [
-    keyToTest,
-    instanceKey
-  ] = args;
+  const [keyToTest, instanceKey] = args;
 
   t.is(keyToTest, newKey);
   t.is(instanceKey, existingKey);

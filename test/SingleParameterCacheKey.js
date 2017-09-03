@@ -11,10 +11,12 @@ test('if the instance is constructed with the correct values', (t) => {
 
   const result = new SingleParameterCacheKey(key);
 
-  t.deepEqual({...result}, {
-    isMultiParamKey: false,
-    key: key[0]
-  });
+  t.deepEqual(
+    {...result},
+    {
+      key: key[0]
+    }
+  );
 });
 
 test('if matches will return false if the key passed is a multi-parameter key', (t) => {
@@ -23,9 +25,8 @@ test('if matches will return false if the key passed is a multi-parameter key', 
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = ['foo', 'bar'];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.false(result);
 });
@@ -36,9 +37,8 @@ test('if matches will return false if the key passed is not a multi-parameter ke
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = ['bar'];
-  const isMultiParamKey = false;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.false(result);
 });
@@ -49,9 +49,8 @@ test('if matches will return true if the key passed is not a multi-parameter key
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = [...existingKey];
-  const isMultiParamKey = false;
 
-  const result = cacheKey.matches(newKey, isMultiParamKey);
+  const result = cacheKey.matches(newKey);
 
   t.true(result);
 });
@@ -62,9 +61,8 @@ test('if matchesCustom will return false if the key passed is a multi-parameter 
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}, {bar: 'bar'}];
-  const isMultiParamKey = true;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.false(result);
 });
@@ -75,9 +73,8 @@ test('if matchesCustom will return false if the key passed is not a multi-parame
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'bar'}];
-  const isMultiParamKey = false;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.false(result);
 });
@@ -88,9 +85,8 @@ test('if matchesCustom will return true if the key passed is not a multi-paramet
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}];
-  const isMultiParamKey = false;
 
-  const result = cacheKey.matchesCustom(newKey, isMultiParamKey, _.isEqual);
+  const result = cacheKey.matchesCustom(newKey, _.isEqual);
 
   t.true(result);
 });
@@ -101,11 +97,10 @@ test('if matchesCustom pases the key to match and the instance key as the parame
   const cacheKey = new SingleParameterCacheKey(existingKey);
 
   const newKey = [{foo: 'foo'}];
-  const isMultiParamKey = false;
 
   const isEqual = sinon.spy();
 
-  cacheKey.matchesCustom(newKey, isMultiParamKey, isEqual);
+  cacheKey.matchesCustom(newKey, isEqual);
 
   t.true(isEqual.calledOnce);
 
@@ -113,10 +108,7 @@ test('if matchesCustom pases the key to match and the instance key as the parame
 
   t.is(args.length, 2);
 
-  const [
-    keyToTest,
-    instanceKey
-  ] = args;
+  const [keyToTest, instanceKey] = args;
 
   t.is(keyToTest, newKey[0]);
   t.is(instanceKey, existingKey[0]);
