@@ -5,7 +5,6 @@
       "babelrc": true,
       "presets": ["react"]
     },
-    "concurrency": 5,
     "failFast": true,
     "files": ["test/*.js", "!test-utils/*.js"],
     "require": ["babel-register", "babel-polyfill"],

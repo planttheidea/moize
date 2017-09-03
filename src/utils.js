@@ -6,8 +6,7 @@ import Cache from './Cache';
 // cache key
 import ReactCacheKey from './ReactCacheKey';
 import SerializedCacheKey from './SerializedCacheKey';
-import SingleParameterCacheKey from './SingleParameterCacheKey';
-import MultipleParameterCacheKey from './MultipleParameterCacheKey';
+import StandardCacheKey from './StandardCacheKey';
 
 // constants
 import {
@@ -25,7 +24,6 @@ import {getSerializerFunction} from './serialize';
 // types
 import type {ListItem, Options} from './types';
 
-type StandardCacheKey = MultipleParameterCacheKey | SingleParameterCacheKey;
 type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
 
 /**
@@ -500,16 +498,24 @@ export const getCacheKeyCustomEquals = (
 };
 
 /**
- * @function getStandardCacheKeyClass
+ * @function getConstructor
  *
  * @description
- * get the StandardCacheKey constructor based on key length
+ * get the constructor type based on the options passed
  *
- * @param {Array<*>} key the key to test
- * @returns {MultipleParameterCacheKey|SingleParameterCacheKey} the cache key constructor
+ * @param {Options} options the options passed to the moizer
+ * @returns {Function} the constructor method
  */
-export const getStandardCacheKeyClass = (key: Array<any>): Function => {
-  return key.length > 1 ? MultipleParameterCacheKey : SingleParameterCacheKey;
+export const getConstructor = (options: Options): Function => {
+  if (options.isReact) {
+    return ReactCacheKey;
+  }
+
+  if (options.serialize) {
+    return SerializedCacheKey;
+  }
+
+  return StandardCacheKey;
 };
 
 /**
@@ -544,57 +550,29 @@ export const getTransform = (options: Options): ?Function => {
  * @returns {function(*): CacheKey} the method that will get the cache key
  */
 export const createGetCacheKey = (cache: Cache, options: Options): Function => {
-  const Constructor: ?Function = options.isReact ? ReactCacheKey : options.serialize ? SerializedCacheKey : null;
+  const Constructor: Function = getConstructor(options);
   const transform: ?Function = getTransform(options);
-
-  if (Constructor) {
-    if (options.equals) {
-      if (transform) {
-        return (key: any): CacheKey => {
-          return getCacheKeyCustomEquals(cache, transform(key), Constructor, options.equals);
-        };
-      }
-
-      return (key: any): CacheKey => {
-        return getCacheKeyCustomEquals(cache, key, Constructor, options.equals);
-      };
-    }
-
-    if (transform) {
-      return (key: any): CacheKey => {
-        return getCacheKey(cache, transform(key), Constructor);
-      };
-    }
-
-    return (key: any): CacheKey => {
-      return getCacheKey(cache, key, Constructor);
-    };
-  }
 
   if (options.equals) {
     if (transform) {
       return (key: any): CacheKey => {
-        const transformedKey = transform(key);
-
-        return getCacheKeyCustomEquals(cache, transformedKey, getStandardCacheKeyClass(transformedKey), options.equals);
+        return getCacheKeyCustomEquals(cache, transform(key), Constructor, options.equals);
       };
     }
 
     return (key: any): CacheKey => {
-      return getCacheKeyCustomEquals(cache, key, getStandardCacheKeyClass(key), options.equals);
+      return getCacheKeyCustomEquals(cache, key, Constructor, options.equals);
     };
   }
 
   if (transform) {
     return (key: any): CacheKey => {
-      const transformedKey = transform(key);
-
-      return getCacheKey(cache, transformedKey, getStandardCacheKeyClass(transformedKey));
+      return getCacheKey(cache, transform(key), Constructor);
     };
   }
 
   return (key: any): CacheKey => {
-    return getCacheKey(cache, key, getStandardCacheKeyClass(key));
+    return getCacheKey(cache, key, Constructor);
   };
 };
 

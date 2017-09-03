@@ -8,10 +8,9 @@ import * as utils from 'src/utils';
 import * as constants from 'src/constants';
 import * as serialize from 'src/serialize';
 import Cache from 'src/Cache';
-import MultipleParameterCacheKey from 'src/MultipleParameterCacheKey';
 import ReactCacheKey from 'src/ReactCacheKey';
 import SerializedCacheKey from 'src/SerializedCacheKey';
-import SingleParameterCacheKey from 'src/SingleParameterCacheKey';
+import StandardCacheKey from 'src/StandardCacheKey';
 
 const serializerFunction = serialize.createArgumentSerializer({
   maxArgs: Number.POSITIVE_INFINITY,
@@ -273,7 +272,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   const result = getCacheKey(key);
 
-  t.true(result instanceof MultipleParameterCacheKey);
+  t.true(result instanceof StandardCacheKey);
   t.deepEqual(
     {...result},
     {
@@ -297,11 +296,12 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   const result = getCacheKey(key);
 
-  t.true(result instanceof SingleParameterCacheKey);
+  t.true(result instanceof StandardCacheKey);
   t.deepEqual(
     {...result},
     {
-      key: key[0]
+      key: key[0],
+      size: 1
     }
   );
 });
@@ -324,7 +324,7 @@ test('if createGetCacheKey will get the corret getCacheKeyMethod and fire it wit
 
   const result = getCacheKey(key);
 
-  t.true(result instanceof MultipleParameterCacheKey);
+  t.true(result instanceof StandardCacheKey);
   t.deepEqual(
     {...result},
     {
@@ -350,11 +350,12 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   const result = getCacheKey(key);
 
-  t.true(result instanceof SingleParameterCacheKey);
+  t.true(result instanceof StandardCacheKey);
   t.deepEqual(
     {...result},
     {
-      key: key[1]
+      key: key[1],
+      size: 1
     }
   );
 });
@@ -380,11 +381,12 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   const result = getCacheKey(key);
 
-  t.true(result instanceof SingleParameterCacheKey);
+  t.true(result instanceof StandardCacheKey);
   t.deepEqual(
     {...result},
     {
-      key: key[1]
+      key: key[1],
+      size: 1
     }
   );
 });
@@ -406,11 +408,12 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 
   const result = getCacheKey(key);
 
-  t.true(result instanceof SingleParameterCacheKey);
+  t.true(result instanceof StandardCacheKey);
   t.deepEqual(
     {...result},
     {
-      key: key[1]
+      key: key[1],
+      size: 1
     }
   );
 });
@@ -834,16 +837,26 @@ test('if getKeyCount will get the count of keys passed to the object', (t) => {
   t.is(result, Object.keys(object).length);
 });
 
-test('if getStandardCacheKeyClass will return SingleParameterCacheKey when the key is empty', (t) => {
-  t.is(utils.getStandardCacheKeyClass([]), SingleParameterCacheKey);
+test('if getConstructor will return ReactCacheKey when options.isReact is true', (t) => {
+  const options = {
+    isReact: true
+  };
+
+  t.is(utils.getConstructor(options), ReactCacheKey);
 });
 
-test('if getStandardCacheKeyClass will return SingleParameterCacheKey when the key has a single value', (t) => {
-  t.is(utils.getStandardCacheKeyClass(['foo']), SingleParameterCacheKey);
+test('if getConstructor will return SerializedCacheKey when options.serialize is true', (t) => {
+  const options = {
+    serialize: true
+  };
+
+  t.is(utils.getConstructor(options), SerializedCacheKey);
 });
 
-test('if getStandardCacheKeyClass will return MultipleParameterCacheKey when the key has more than one value', (t) => {
-  t.is(utils.getStandardCacheKeyClass(['foo', 'bar']), MultipleParameterCacheKey);
+test('if getConstructor will return StandardCacheKey when both isReact and serialize are falsy', (t) => {
+  const options = {};
+
+  t.is(utils.getConstructor(options), StandardCacheKey);
 });
 
 test('if getTransform will return undefined when there are no options', (t) => {
