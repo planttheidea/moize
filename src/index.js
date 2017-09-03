@@ -4,7 +4,7 @@
 import Cache from './Cache';
 
 // constants
-import {INVALID_FIRST_PARAMETER_ERROR, PROMISE_OPTIONS, REACT_OPTIONS, SERIALIZE_OPTIONS} from './constants';
+import {INVALID_FIRST_PARAMETER_ERROR} from './constants';
 
 // types
 import type {Options} from './types';
@@ -176,7 +176,9 @@ moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');
  * @param {...Array<*>} functions the functions to compose
  * @returns {*} the moized function
  */
-moize.promise = moize(PROMISE_OPTIONS);
+moize.promise = moize({
+  isPromise: true
+});
 
 /**
  * @function react
@@ -187,7 +189,9 @@ moize.promise = moize(PROMISE_OPTIONS);
  * @param {...Array<*>} functions the functions to compose
  * @returns {*} the moized function
  */
-moize.react = moize(REACT_OPTIONS);
+moize.react = moize({
+  isReact: true
+});
 
 /**
  * @function reactSimple
@@ -209,7 +213,9 @@ moize.reactSimple = compose(moize.react, moize.maxSize(1));
  * @param {...Array<*>} functions the functions to compose
  * @returns {*} the moized function
  */
-moize.serialize = moize(SERIALIZE_OPTIONS);
+moize.serialize = moize({
+  serialize: true
+});
 
 /**
  * @function simple
