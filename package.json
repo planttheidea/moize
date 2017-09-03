@@ -84,7 +84,6 @@
     "sinon": "^3.2.1",
     "underscore": "1.8.3",
     "webpack": "^3.5.5",
-    "webpack-dashboard": "0.4.0",
     "webpack-dev-server": "^2.7.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
