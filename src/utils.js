@@ -387,7 +387,8 @@ export const getDefaultedOptions = (options: Object): Options => {
  * @returns {string} function name
  */
 export const getFunctionNameViaRegexp = (fn: Function): string => {
-  const match: ?Array<string> = fn.toString().match(FUNCTION_NAME_REGEXP);
+  // $FlowIgnore allow type conversion to string
+  const match: ?Array<string> = `${fn}`.match(FUNCTION_NAME_REGEXP);
 
   return match ? match[1] : '';
 };
