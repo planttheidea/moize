@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 3.4.1
+* Remove code duplication and unnecessary cache key segregation (reduced library size by ~10.6%)
+* Improve Flow typings (no longer driven off of TypeScript typings)
+
 ## 3.4.0
 * Add `onExpire` callback that fires when a cache item expires
 

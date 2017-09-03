@@ -144,22 +144,12 @@ test('if get will keep the order of retrieval correct', (t) => {
     value: 4
   };
 
-  t.deepEqual(cache.list, [
-    fourth,
-    third,
-    second,
-    first
-  ]);
+  t.deepEqual(cache.list, [fourth, third, second, first]);
 
   cache.get('third');
   cache.get('second');
 
-  t.deepEqual(cache.list, [
-    second,
-    third,
-    fourth,
-    first
-  ]);
+  t.deepEqual(cache.list, [second, third, fourth, first]);
 
   cache.add('fifth', 5);
 
@@ -168,22 +158,11 @@ test('if get will keep the order of retrieval correct', (t) => {
     value: 5
   };
 
-  t.deepEqual(cache.list, [
-    fifth,
-    second,
-    third,
-    fourth,
-    first
-  ]);
+  t.deepEqual(cache.list, [fifth, second, third, fourth, first]);
 
   cache.remove('fifth');
 
-  t.deepEqual(cache.list, [
-    second,
-    third,
-    fourth,
-    first
-  ]);
+  t.deepEqual(cache.list, [second, third, fourth, first]);
 });
 
 test('if get will return undefined when no match for the key is found', (t) => {

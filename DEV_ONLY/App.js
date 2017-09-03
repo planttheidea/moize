@@ -3,12 +3,8 @@ import 'babel-polyfill';
 import isEqual from 'lodash/isEqual';
 import Bluebird from 'bluebird';
 import PropTypes from 'prop-types';
-import React, {
-  Component
-} from 'react';
-import {
-  render
-} from 'react-dom';
+import React, {Component} from 'react';
+import {render} from 'react-dom';
 import memoizee from 'memoizee';
 
 import moize from '../src';
@@ -37,6 +33,15 @@ console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
 
 console.groupEnd('standard');
+
+console.group('maxArgs');
+
+const memoizedMax = moize.maxArgs(1)(method);
+
+memoizedMax(foo, bar);
+memoizedMax(foo, 'baz');
+
+console.groupEnd('maxArgs');
 
 console.group('custom - deep equals');
 
@@ -113,16 +118,14 @@ memoizedPromiseRejected(3)
   });
 
 // get result
-memoizedPromise(2, 2)
-  .then((value) => {
-    console.log(`computed value: ${value}`);
-  });
+memoizedPromise(2, 2).then((value) => {
+  console.log(`computed value: ${value}`);
+});
 
 // pull from cache
-memoizedPromise(2, 2)
-  .then((value) => {
-    console.log(`cached value: ${value}`);
-  });
+memoizedPromise(2, 2).then((value) => {
+  console.log(`cached value: ${value}`);
+});
 
 console.log(memoizedPromise.keys());
 
@@ -208,11 +211,7 @@ console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
 
 console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
-const array = [
-  {fn() {}, object: {}, value: foo},
-  {fn() {}, object: {}, value: bar},
-  {fn() {}, object: {}, value: baz}
-];
+const array = [{fn() {}, object: {}, value: foo}, {fn() {}, object: {}, value: bar}, {fn() {}, object: {}, value: baz}];
 
 console.groupEnd('react');
 
@@ -224,35 +223,25 @@ class App extends Component {
   render() {
     return (
       <div>
-        <h1 style={HEADER_STYLE}>
-          App
-        </h1>
+        <h1 style={HEADER_STYLE}>App</h1>
 
         <div>
-          <h3>
-            Uncached values (first time running)
-          </h3>
+          <h3>Uncached values (first time running)</h3>
 
           {array.map((values) => {
-            return (
-              <MemoizedFoo
-                key={`called-${values.value}`}
-                {...values}
-              />
-            );
+            return (<MemoizedFoo
+              key={`called-${values.value}`}
+              {...values}
+            />);
           })}
 
-          <h3>
-            Cached values
-          </h3>
+          <h3>Cached values</h3>
 
           {array.map((values) => {
-            return (
-              <MemoizedFoo
-                key={`memoized-${values.value}`}
-                {...values}
-              />
-            );
+            return (<MemoizedFoo
+              key={`memoized-${values.value}`}
+              {...values}
+            />);
           })}
         </div>
       </div>
@@ -273,8 +262,6 @@ div.style.width = '100vw';
 document.body.style.margin = 0;
 document.body.style.padding = 0;
 
-render((
-  <App/>
-), div);
+render(<App />, div);
 
 document.body.appendChild(div);

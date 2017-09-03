@@ -17,14 +17,6 @@ export const FUNCTION_NAME_REGEXP: RegExp = /^\s*function\s+([^\(\s]*)\s*/;
 /**
  * @private
  *
- * @constant {string} FUNCTION_TYPEOF
- * @default
- */
-export const FUNCTION_TYPEOF: string = 'function';
-
-/**
- * @private
- *
  * @constant {Array<Object>} GOTCHA_OBJECT_CLASSES
  */
 export const GOTCHA_OBJECT_CLASSES: Array<Object> = [Boolean, Date, Number, RegExp, String];
@@ -35,7 +27,7 @@ export const GOTCHA_OBJECT_CLASSES: Array<Object> = [Boolean, Date, Number, RegE
  * @constant {number} INFINITY
  * @default
  */
-export const INFINITY: number = Number.POSITIVE_INFINITY;
+export const INFINITY: number = 1 / 0;
 
 /**
  * @private
@@ -60,7 +52,7 @@ export const INVALID_PROMISE_LIBRARY_ERROR: string =
  *
  * @constant {function|undefined} NATIVE_PROMISE
  */
-export const NATIVE_PROMISE: ?Function = typeof Promise === FUNCTION_TYPEOF ? Promise : undefined;
+export const NATIVE_PROMISE: ?Function = typeof Promise === 'function' ? Promise : undefined;
 
 /**
  * @private
@@ -80,14 +72,6 @@ export const DEFAULT_OPTIONS: Object = {
   serializer: null,
   transformArgs: null
 };
-
-/**
- * @private
- *
- * @constant {string} OBJECT_TYPEOF
- * @default
- */
-export const OBJECT_TYPEOF: string = 'object';
 
 /**
  * @private

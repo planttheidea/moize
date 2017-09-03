@@ -36,7 +36,6 @@ export type Options = {
  * @typedef {Object} ListItem
  *
  * @property {*} key the key stored in cache
- * @property {boolean} isMultiParamKey is the key a multi-parameter key
  * @property {*} value the value assigned in cache to key
  */
 export type ListItem = {

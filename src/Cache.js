@@ -88,20 +88,18 @@ class Cache {
    * @returns {*} the value at key
    */
   get(key: any): any {
-    if (!this.size) {
-      return;
-    }
+    if (this.size) {
+      if (key === this.lastItem.key) {
+        return this.lastItem.value;
+      }
 
-    if (key === this.lastItem.key) {
-      return this.lastItem.value;
-    }
+      const index: number = findIndexAfterFirst(this.list, key);
 
-    const index: number = findIndexAfterFirst(this.list, key);
+      if (~index) {
+        this.lastItem = this.list[index];
 
-    if (~index) {
-      this.lastItem = this.list[index];
-
-      return unshift(splice(this.list, index), this.lastItem).value;
+        return unshift(splice(this.list, index), this.lastItem).value;
+      }
     }
   }
 

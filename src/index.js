@@ -18,7 +18,6 @@ import {
   createSetNewCachedValue,
   getDefaultedOptions,
   isFunction,
-  isMoized,
   isPlainObject
 } from './utils';
 
@@ -104,24 +103,123 @@ const moize: Function = (functionOrComposableOptions: Function | Object, passedO
   const getCacheKey: Function = createGetCacheKey(cache, options);
   const setNewCachedValue: Function = createSetNewCachedValue(cache, options);
 
-  const moizedFunction: Function = function(...args: Array<any>): any {
+  return addPropertiesToFunction(function(...args: Array<any>): any {
     const key: any = getCacheKey(args);
 
     return cache.size && cache.has(key) ? cache.get(key) : setNewCachedValue(key, fn.apply(this, args));
-  };
-
-  return addPropertiesToFunction(moizedFunction);
+  });
 };
 
+/**
+ * @function isMoized
+ *
+ * @description
+ * is the fn passed a moized function
+ *
+ * @param {*} fn the object to test
+ * @returns {boolean} is fn a moized function
+ */
+moize.isMoized = (fn: any): boolean => {
+  return isFunction(fn) && !!fn.isMoized;
+};
+
+/**
+ * @function compose
+ *
+ * @description
+ * method to compose moized methods and return a single moized function
+ *
+ * @param {...Array<(function)>} functions the functions to compose
+ * @returns {function(...Array<*>): *} the composed function
+ */
 moize.compose = compose;
-moize.isMoized = isMoized;
+
+/**
+ * @function maxAge
+ *
+ * @description
+ * a moized method where the age of the cache is limited to the number of milliseconds passed
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.maxAge = createCurriableOptionMethod(moize, 'maxAge');
+
+/**
+ * @function maxArgs
+ *
+ * @description
+ * a moized method where the number of arguments used for determining cache is limited to the value passed
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.maxArgs = createCurriableOptionMethod(moize, 'maxArgs');
+
+/**
+ * @function maxSize
+ *
+ * @description
+ * a moized method where the total size of the cache is limited to the value passed
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');
+
+/**
+ * @function promise
+ *
+ * @description
+ * a moized method specific to caching resolved promise / async values
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.promise = moize(PROMISE_OPTIONS);
+
+/**
+ * @function react
+ *
+ * @description
+ * a moized method specific to caching React components
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.react = moize(REACT_OPTIONS);
+
+/**
+ * @function reactSimple
+ *
+ * @description
+ * a moized method specific to caching React components, only keeping the most recently-cached version
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.reactSimple = compose(moize.react, moize.maxSize(1));
+
+/**
+ * @function serialize
+ *
+ * @description
+ * a moized method where the arguments passed are cached based on their serialized values
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.serialize = moize(SERIALIZE_OPTIONS);
+
+/**
+ * @function simple
+ *
+ * @description
+ * a moized method where only the most recent key => value combination is cached
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
 moize.simple = moize.maxSize(1);
 
 export default moize;

@@ -37,6 +37,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#getConstructor">getConstructor</a></li><li><a href="global.html#getNewOrExistingCacheKey">getNewOrExistingCacheKey</a></li><li><a href="global.html#getNewOrExistingCacheKeyCustomEquals">getNewOrExistingCacheKeyCustomEquals</a></li><li><a href="global.html#getTransform">getTransform</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -160,20 +167,18 @@ class Cache {
    * @returns {*} the value at key
    */
   get(key: any): any {
-    if (!this.size) {
-      return;
-    }
+    if (this.size) {
+      if (key === this.lastItem.key) {
+        return this.lastItem.value;
+      }
 
-    if (key === this.lastItem.key) {
-      return this.lastItem.value;
-    }
+      const index: number = findIndexAfterFirst(this.list, key);
 
-    const index: number = findIndexAfterFirst(this.list, key);
+      if (~index) {
+        this.lastItem = this.list[index];
 
-    if (~index) {
-      this.lastItem = this.list[index];
-
-      return unshift(splice(this.list, index), this.lastItem).value;
+        return unshift(splice(this.list, index), this.lastItem).value;
+      }
     }
   }
 

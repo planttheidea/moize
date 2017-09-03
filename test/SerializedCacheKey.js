@@ -17,9 +17,12 @@ test('if the instance is constructed with the correct values', (t) => {
 
   const result = new SerializedCacheKey(serializerFunction(key));
 
-  t.deepEqual({...result}, {
-    key: serializerFunction(key)
-  });
+  t.deepEqual(
+    {...result},
+    {
+      key: serializerFunction(key)
+    }
+  );
 });
 
 test('if matches will return false if the key passed is not equal to the serialized key', (t) => {
@@ -92,10 +95,7 @@ test('if matchesCustom passes the key to match and the instance key as the param
 
   t.is(args.length, 2);
 
-  const [
-    keyToTest,
-    instanceKey
-  ] = args;
+  const [keyToTest, instanceKey] = args;
 
   t.is(keyToTest, newKey);
   t.is(instanceKey, existingKey);

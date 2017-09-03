@@ -6,7 +6,7 @@ import sinon from 'sinon';
 // src
 import ReactCacheKey from 'src/ReactCacheKey';
 
-test('if the instance is constructed with the correct values', t => {
+test('if the instance is constructed with the correct values', (t) => {
   const key = [{foo: 'bar'}, {bar: 'baz'}];
 
   const result = new ReactCacheKey(key);
@@ -30,7 +30,7 @@ test('if the instance is constructed with the correct values', t => {
   );
 });
 
-test('if the instance is constructed with the correct values when not all the expected args are passed', t => {
+test('if the instance is constructed with the correct values when not all the expected args are passed', (t) => {
   const key = [];
 
   const result = new ReactCacheKey(key);
@@ -54,7 +54,7 @@ test('if the instance is constructed with the correct values when not all the ex
   );
 });
 
-test('if _getKeyPart will return the key part when it is exists', t => {
+test('if _getKeyPart will return the key part when it is exists', (t) => {
   const object = {
     foo: 'bar',
     bar: 'baz'
@@ -69,7 +69,7 @@ test('if _getKeyPart will return the key part when it is exists', t => {
   });
 });
 
-test('if _getKeyPart will return an empty key part when the object is falsy', t => {
+test('if _getKeyPart will return an empty key part when the object is falsy', (t) => {
   const object = undefined;
 
   const keyPart = ReactCacheKey.prototype._getKeyPart.call(null, object);
@@ -81,22 +81,18 @@ test('if _getKeyPart will return an empty key part when the object is falsy', t 
   });
 });
 
-test('if _isPropCustomEqual will return false if the key is not the same size as the prop on this.key', t => {
+test('if _isPropCustomEqual will return false if the key is not the same size as the prop on this.key', (t) => {
   const existingKey = [{foo: 'bar'}, {}];
 
   const cacheKey = new ReactCacheKey(existingKey);
   const object = {foo: 'bar', bar: 'baz'};
 
-  const result = cacheKey._isPropCustomEqual(
-    object,
-    cacheKey.key.props.value,
-    _.isEqual
-  );
+  const result = cacheKey._isPropCustomEqual(object, cacheKey.key.props.value, _.isEqual);
 
   t.false(result);
 });
 
-test('if _isPropCustomEqual will return false if the key is not equal to the prop on this.key based on the custom method', t => {
+test('if _isPropCustomEqual will return false if the key is not equal to the prop on this.key based on the custom method', (t) => {
   const existingKey = [
     {
       foo: {
@@ -113,16 +109,12 @@ test('if _isPropCustomEqual will return false if the key is not equal to the pro
     }
   };
 
-  const result = cacheKey._isPropCustomEqual(
-    object,
-    cacheKey.key.props.value,
-    _.isEqual
-  );
+  const result = cacheKey._isPropCustomEqual(object, cacheKey.key.props.value, _.isEqual);
 
   t.false(result);
 });
 
-test('if _isPropCustomEqual will return true if the key is equal to the prop on this.key based on the custom method', t => {
+test('if _isPropCustomEqual will return true if the key is equal to the prop on this.key based on the custom method', (t) => {
   const existingKey = [
     {
       foo: {
@@ -140,16 +132,12 @@ test('if _isPropCustomEqual will return true if the key is equal to the prop on 
     }
   };
 
-  const result = cacheKey._isPropCustomEqual(
-    object,
-    cacheKey.key.props.value,
-    _.isEqual
-  );
+  const result = cacheKey._isPropCustomEqual(object, cacheKey.key.props.value, _.isEqual);
 
   t.true(result);
 });
 
-test('if _isPropShallowEqual will return false if the key is not the same size as the prop on this.key', t => {
+test('if _isPropShallowEqual will return false if the key is not the same size as the prop on this.key', (t) => {
   const existingKey = [{foo: 'bar'}, {}];
 
   const cacheKey = new ReactCacheKey(existingKey);
@@ -161,7 +149,7 @@ test('if _isPropShallowEqual will return false if the key is not the same size a
   t.false(result);
 });
 
-test('if _isPropShallowEqual will return false if the key is not shallowly equal to the prop on this.key', t => {
+test('if _isPropShallowEqual will return false if the key is not shallowly equal to the prop on this.key', (t) => {
   const existingKey = [{foo: 'bar'}, {}];
 
   const cacheKey = new ReactCacheKey(existingKey);
@@ -173,7 +161,7 @@ test('if _isPropShallowEqual will return false if the key is not shallowly equal
   t.false(result);
 });
 
-test('if _isPropShallowEqual will return true if the key is shallowly equal to the prop on this.key', t => {
+test('if _isPropShallowEqual will return true if the key is shallowly equal to the prop on this.key', (t) => {
   const existingKey = [{foo: 'bar'}, {}];
 
   const cacheKey = new ReactCacheKey(existingKey);
@@ -185,7 +173,7 @@ test('if _isPropShallowEqual will return true if the key is shallowly equal to t
   t.true(result);
 });
 
-test('if matches will return false if the props passed are not shallowly equal to those in this.key', t => {
+test('if matches will return false if the props passed are not shallowly equal to those in this.key', (t) => {
   const existingKey = [{foo: 'bar'}, {}];
 
   const cacheKey = new ReactCacheKey(existingKey);
@@ -197,7 +185,7 @@ test('if matches will return false if the props passed are not shallowly equal t
   t.false(result);
 });
 
-test('if matches will return false if the context passed is not shallowly equal to that in this.key', t => {
+test('if matches will return false if the context passed is not shallowly equal to that in this.key', (t) => {
   const existingKey = [{}, {foo: 'bar'}];
 
   const cacheKey = new ReactCacheKey(existingKey);
@@ -209,7 +197,7 @@ test('if matches will return false if the context passed is not shallowly equal 
   t.false(result);
 });
 
-test('if matches will return true if the key passed is a multi-parameter key that is shallowly equal', t => {
+test('if matches will return true if the key passed is a multi-parameter key that is shallowly equal', (t) => {
   const existingKey = [{foo: 'bar'}, {bar: 'baz'}];
 
   const cacheKey = new ReactCacheKey(existingKey);
@@ -221,7 +209,7 @@ test('if matches will return true if the key passed is a multi-parameter key tha
   t.true(result);
 });
 
-test('if matchesCustom will return false if the props passed are not equal to those in this.key based on the custom method', t => {
+test('if matchesCustom will return false if the props passed are not equal to those in this.key based on the custom method', (t) => {
   const existingKey = [
     {
       foo: {
@@ -247,7 +235,7 @@ test('if matchesCustom will return false if the props passed are not equal to th
   t.false(result);
 });
 
-test('if matchesCustom will return false if the context passed are not equal to those in this.key based on the custom method', t => {
+test('if matchesCustom will return false if the context passed are not equal to those in this.key based on the custom method', (t) => {
   const existingKey = [
     {},
     {
@@ -273,7 +261,7 @@ test('if matchesCustom will return false if the context passed are not equal to 
   t.false(result);
 });
 
-test('if matchesCustom will return true if the key passed is a multi-parameter key that is equal based on the custom method', t => {
+test('if matchesCustom will return true if the key passed is a multi-parameter key that is equal based on the custom method', (t) => {
   const existingKey = [
     {
       foo: {
@@ -307,7 +295,7 @@ test('if matchesCustom will return true if the key passed is a multi-parameter k
   t.true(result);
 });
 
-test('if matchesCustom passes the key to match and the instance key as the parameters to isEqual', t => {
+test('if matchesCustom passes the key to match and the instance key as the parameters to isEqual', (t) => {
   const existingKey = [
     {
       foo: {
