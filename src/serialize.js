@@ -124,16 +124,17 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
  * @description
  * create the internal argument serializer based on the options passed
  *
- * @param {boolean} serializeFunctions should functions be included in the serialization
- * @param {number} maxArgs the cap on the number of arguments used in serialization
+ * @param {Object} options the options passed
+ * @param {boolean} options.serializeFunctions should functions be included in the serialization
+ * @param {number} options.maxArgs the cap on the number of arguments used in serialization
  * @returns {function(...Array<*>): string} argument serialization method
  */
-export const createArgumentSerializer = ({maxArgs, serializeFunctions}: Options): Function => {
-  const replacer: ?Function = serializeFunctions ? customReplacer : null;
-  const hasMaxArgs: boolean = isFiniteAndPositiveInteger(maxArgs);
+export const createArgumentSerializer = (options: Options): Function => {
+  const replacer: ?Function = options.serializeFunctions ? customReplacer : null;
+  const hasMaxArgs: boolean = isFiniteAndPositiveInteger(options.maxArgs);
 
   return (args: Array<any>): string => {
-    const length: number = hasMaxArgs ? maxArgs : args.length;
+    const length: number = hasMaxArgs ? options.maxArgs : args.length;
 
     let index: number = -1,
         key: string = '|',

@@ -281,14 +281,15 @@ export const createPluckFromInstanceList = (cache: Cache, key: string): Function
  *
  * @param {Cache} cache cache to update
  * @param {*} key key to delete from cache
- * @param {function} promiseLibrary the promise library used
+ * @param {Options} options the options passed
+ * @param {function} options.promiseLibrary the promise library used
  * @returns {function} the rejecter function for the promise
  */
-export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: Options): Function => {
+export const createPromiseRejecter = (cache: Cache, key: any, options: Options): Function => {
   return (exception: Error): Promise<any> => {
     cache.remove(key);
 
-    return promiseLibrary.reject(exception);
+    return options.promiseLibrary.reject(exception);
   };
 };
 
@@ -303,22 +304,18 @@ export const createPromiseRejecter = (cache: Cache, key: any, {promiseLibrary}: 
  * @param {Cache} cache cache to update
  * @param {*} key key to update in cache
  * @param {boolean} hasMaxAge should the cache expire after some time
- * @param {number} maxAge the age after which the cache will be expired
- * @param {function} onExpire a callback that is called after removing the key
- * @param {function} promiseLibrary the promise library used
+ * @param {Options} options the options passed
+ * @param {number} options.maxAge the age after which the cache will be expired
+ * @param {function} options.onExpire a callback that is called after removing the key
+ * @param {function} options.promiseLibrary the promise library used
  * @returns {function} the resolver function for the promise
  */
-export const createPromiseResolver = (
-  cache: Cache,
-  key: any,
-  hasMaxAge: boolean,
-  {maxAge, onExpire, promiseLibrary}: Options
-): Function => {
+export const createPromiseResolver = (cache: Cache, key: any, hasMaxAge: boolean, options: Options): Function => {
   return (resolvedValue: any): Promise<any> => {
-    cache.update(key, promiseLibrary.resolve(resolvedValue));
+    cache.update(key, options.promiseLibrary.resolve(resolvedValue));
 
     if (hasMaxAge) {
-      cache.expireAfter(key, maxAge, onExpire);
+      cache.expireAfter(key, options.maxAge, options.onExpire);
     }
 
     return resolvedValue;
