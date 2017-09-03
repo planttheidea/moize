@@ -433,6 +433,8 @@ export const getKeyCount = (object: Object): number => {
 };
 
 /**
+ * @private
+ *
  * @function getNewOrExistingCacheKey
  *
  * @description
@@ -464,6 +466,8 @@ export const getNewOrExistingCacheKey = (cache: Cache, key: Array<any>, Construc
 };
 
 /**
+ * @private
+ *
  * @function getNewOrExistingCacheKeyCustomEquals
  *
  * @description
@@ -501,6 +505,8 @@ export const getNewOrExistingCacheKeyCustomEquals = (
 };
 
 /**
+ * @private
+ *
  * @function getConstructor
  *
  * @description
@@ -522,6 +528,8 @@ export const getConstructor = (options: Options): Function => {
 };
 
 /**
+ * @private
+ *
  * @function getTransform
  *
  * @description
