@@ -55,6 +55,7 @@ import {
  * @param {number} [passedOptions.maxAge=Infinity] the maximum age the value should persist in cache
  * @param {number} [passedOptions.maxArgs=Infinity] the maximum number of arguments to be used in serializing the keys
  * @param {number} [passedOptions.maxSize=Infinity] the maximum size of the cache to retain
+ * @param {boolean} [passedOptions.updateExpire=false] is maxAge expected to reset when a cached value is accessed
  * @param {function} [passedOptions.promiseLibrary=Promise] promise library to use for resolution / rejection
  * @param {function} [passedOptions.serializeFunctions=false] should function parameters be serialized as well
  * @param {function} [passedOptions.serializer] method to serialize arguments with for cache storage
@@ -97,7 +98,7 @@ const moize: Function = (functionOrComposableOptions: Function | Object, passedO
       }
   );
 
-  const cache: Cache = new Cache();
+  const cache: Cache = new Cache(options);
 
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn, options);
   const getCacheKey: Function = createGetCacheKey(cache, options);
@@ -166,6 +167,17 @@ moize.maxArgs = createCurriableOptionMethod(moize, 'maxArgs');
  * @returns {*} the moized function
  */
 moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');
+
+/**
+ * @function updateExpire
+ *
+ * @description
+ * a moized method specifying wether or not to reset expireAfter when cached value is accessed
+ *
+ * @param {...Array<*>} functions the functions to compose
+ * @returns {*} the moized function
+ */
+moize.updateExpire = createCurriableOptionMethod(moize, 'updateExpire');
 
 /**
  * @function promise

@@ -22,6 +22,7 @@ export type Options = {
   maxAge: number,
   maxArgs: number,
   maxSize: number,
+  updateExpire: boolean,
   onExpire: ?Function,
   promiseLibrary: Function,
   serialize: boolean,
