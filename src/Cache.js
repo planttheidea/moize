@@ -63,16 +63,19 @@ class Cache {
    *
    * @param {*} key the key to remove
    * @param {number} maxAge the time in milliseconds to wait before removing the key
-   * @param {Function} onExpire a callback that is called after removing the key
+   * @param {Function} onExpire a callback that is called before removing the key, can return false to cancel removal and reset expiration timer
    */
   expireAfter(key: any, maxAge: number, onExpire: ?Function) {
     setTimeout(() => {
-      this.remove(key);
-
       if (isFunction(onExpire)) {
         // $FlowIgnore onExpire is a function
-        onExpire(key.key);
+        if (onExpire(key.key) !== false) {
+            return this.remove(key);
+        } else {
+            return this.expireAfter(key, maxAge, onExpire);
+        }
       }
+      return this.remove(key);
     }, maxAge);
   }
 

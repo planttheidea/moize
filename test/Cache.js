@@ -83,6 +83,33 @@ test('if expireAfter will call an onExpire callback', async (t) => {
   t.true(onExpire.calledOnce);
 });
 
+test('if onExpire callback can cancel expireAfter', async (t) => {
+  const key = {key: 'foo'};
+  const maxAge = 100;
+  let stillGood = 1;
+  const onExpire = sinon.spy((k) => {
+    t.is(k, 'foo');
+    return stillGood-- ? false : true;
+  });
+
+  const cache = new Cache();
+
+  cache.add(key, 'bar');
+  cache.expireAfter(key, maxAge, onExpire);
+
+  await sleep(maxAge + 50);
+
+  t.true(onExpire.calledOnce);
+
+  await sleep(maxAge);
+
+  t.true(onExpire.calledTwice);
+
+  await sleep(maxAge);
+
+  t.false(onExpire.calledThrice);
+});
+
 test('if get will return undefined if there are no items in cache', (t) => {
   const cache = new Cache();
 
