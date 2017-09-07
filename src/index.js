@@ -172,7 +172,7 @@ moize.maxSize = createCurriableOptionMethod(moize, 'maxSize');
  * @function updateExpire
  *
  * @description
- * a moized method specifying wether or not to reset expireAfter when cached value is accessed
+ * a moized method to reset expiration time to maxAge on cache hit
  *
  * @param {...Array<*>} functions the functions to compose
  * @returns {*} the moized function
