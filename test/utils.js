@@ -54,7 +54,7 @@ test('if addStaticPropertiesToFunction will only static properties that exist on
 });
 
 test('if createAddPropertiesToFunction will create a method that adds the appropriate properties to the function passed', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const originalFunction = () => {};
   const options = {};
 
@@ -212,7 +212,7 @@ test('if createCurriableOptionMethod will create a method that curries the optio
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with both the key and options if serialize is true', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     serialize: true,
     serializer: serializerFunction
@@ -236,7 +236,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with both the key limited by maxArgs and options if serialize is true', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     maxArgs: 1,
     serialize: true,
@@ -261,7 +261,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with only the key if standard', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {};
 
   const getCacheKey = utils.createGetCacheKey(cache, options);
@@ -283,7 +283,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with only the key limited by maxArgs if standard', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     maxArgs: 1
   };
@@ -307,7 +307,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the corret getCacheKeyMethod and fire it with the key using custom equals', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     equals(newKey, currentKey) {
       return newKey.every((item) => {
@@ -335,7 +335,7 @@ test('if createGetCacheKey will get the corret getCacheKeyMethod and fire it wit
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with only the key transformed by transformArgs', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     transformArgs(key) {
       return key.slice(1);
@@ -361,7 +361,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with the key transformed by transformArgs and custom equals', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     equals(newKey, currentKey) {
       return newKey.every((item) => {
@@ -392,7 +392,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with maxArgs and the key transformed by transformArgs', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     maxArgs: 2,
     transformArgs(key) {
@@ -419,7 +419,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with serialize and the key transformed by transformArgs', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     serialize: true,
     serializer: serializerFunction,
@@ -446,7 +446,7 @@ test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it wi
 });
 
 test('if createGetCacheKey will get the correct getCacheKeyMethod and fire it with serialize, maxArgs, and the key transformed by transformArgs', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
   const options = {
     maxArgs: 2,
     serialize: true,
@@ -489,7 +489,7 @@ test('if createFindIndex will create a method that finds the index starting at t
 });
 
 test('if createPluckFromInstanceList will create a method to pluck the key passed from the instance', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   cache.add('foo', 'bar');
   cache.add('bar', 'baz');
@@ -527,21 +527,23 @@ test('if createPromiseRejecter will create a function that will delete the item 
 test('if createPromiseResolver will create a function that will update the item in cache and return the resolvedValue', (t) => {
   const key = 'foo';
   const resolvedValue = 'bar';
-  const cache = {
-    update(keyToUpdate) {
-      t.is(keyToUpdate, key);
-    }
-  };
-  const hasMaxAge = false;
-  const options = {
+  const cache = new Cache({
+    ...constants.DEFAULT_OPTIONS,
+    isPromise: true,
     promiseLibrary: {
       resolve(value) {
         t.is(value, resolvedValue);
       }
     }
+  });
+
+  cache.update = function update(keyToUpdate) {
+    t.is(keyToUpdate, key);
   };
 
-  const result = utils.createPromiseResolver(cache, key, hasMaxAge, options);
+  const hasMaxAge = false;
+
+  const result = utils.createPromiseResolver(cache, key, hasMaxAge, cache.options);
 
   t.is(typeof result, 'function');
 
@@ -552,22 +554,23 @@ test('if createPromiseResolver will create a function that will set the cache to
   const key = 'foo';
   const resolvedValue = 'bar';
   const maxAge = 10;
-  const cache = {
-    expireAfter(keyToExpire, maxAgeOfExpiration) {
-      t.is(keyToExpire, key);
-      t.is(maxAgeOfExpiration, maxAge);
-    },
-    update() {}
-  };
-  const hasMaxAge = true;
-  const options = {
+  const cache = new Cache({
+    ...constants.DEFAULT_OPTIONS,
+    isPromise: true,
     maxAge,
     promiseLibrary: {
       resolve() {}
     }
-  };
+  });
 
-  const result = utils.createPromiseResolver(cache, key, hasMaxAge, options);
+  cache.expireAfter = function expireAfter(keyToExpire) {
+    t.is(keyToExpire, key);
+  };
+  cache.update = function() {};
+
+  const hasMaxAge = true;
+
+  const result = utils.createPromiseResolver(cache, key, hasMaxAge, cache.options);
 
   t.is(typeof result, 'function');
 
@@ -719,7 +722,7 @@ test('if createSetNewCachedValue will set the cache value correctly when isPromi
   t.true(cache.add.calledWith(key, value));
 
   t.true(cache.expireAfter.calledOnce);
-  t.true(cache.expireAfter.calledWith(key, options.maxAge));
+  t.true(cache.expireAfter.calledWith(key));
 
   t.true(cache.remove.notCalled);
 });
@@ -753,6 +756,24 @@ test('if createSetNewCachedValue will set the cache value correctly when isPromi
 
   t.true(cache.remove.calledOnce);
   t.true(cache.remove.calledWith(existingKey));
+});
+
+test('if findExpirationIndex will return the index of the expiration when a matching key is found in expirations', (t) => {
+  const key = 'key';
+  const expirations = [{key}];
+
+  const result = utils.findExpirationIndex(expirations, key);
+
+  t.is(result, 0);
+});
+
+test('if findExpirationIndex will return -1 when no matching key is found in expirations', (t) => {
+  const key = 'key';
+  const expirations = [{key: 'notKey'}];
+
+  const result = utils.findExpirationIndex(expirations, key);
+
+  t.is(result, -1);
 });
 
 test('if getDefaultedOptions will return the options passed merged with the default options, and serializer of null when serialize is not true', (t) => {
@@ -860,7 +881,7 @@ test('if getConstructor will return StandardCacheKey when both isReact and seria
 });
 
 test('if getNewOrExistingCacheKey will get the lastItem key if it matches the key passed', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   const key = ['foo', 'bar'];
   const cacheKey = new StandardCacheKey(key);
@@ -875,7 +896,7 @@ test('if getNewOrExistingCacheKey will get the lastItem key if it matches the ke
 });
 
 test('if getNewOrExistingCacheKey will get the matching cache key if it exists in the list', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   const key = ['foo', 'bar'];
   const cacheKey = new StandardCacheKey(key);
@@ -895,7 +916,7 @@ test('if getNewOrExistingCacheKey will get the matching cache key if it exists i
 });
 
 test('if getNewOrExistingCacheKey will create a new key if it does not exist in the list', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   const key = ['foo', 'bar'];
   const cacheKey = new StandardCacheKey(key);
@@ -919,7 +940,7 @@ test('if getNewOrExistingCacheKey will create a new key if it does not exist in 
 });
 
 test('if getNewOrExistingCacheKeyCustomEquals will get the lastItem key if it matches the key passed', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   const key = ['foo', 'bar'];
   const cacheKey = new StandardCacheKey(key);
@@ -937,7 +958,7 @@ test('if getNewOrExistingCacheKeyCustomEquals will get the lastItem key if it ma
 });
 
 test('if getNewOrExistingCacheKeyCustomEquals will get the matching cache key if it exists in the list', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   const key = ['foo', 'bar'];
   const cacheKey = new StandardCacheKey(key);
@@ -960,7 +981,7 @@ test('if getNewOrExistingCacheKeyCustomEquals will get the matching cache key if
 });
 
 test('if getNewOrExistingCacheKeyCustomEquals will create a new key if it does not exist in the list', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(constants.DEFAULT_OPTIONS);
 
   const key = ['foo', 'bar'];
   const cacheKey = new StandardCacheKey(key);

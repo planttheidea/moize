@@ -70,7 +70,8 @@ export const DEFAULT_OPTIONS: Object = {
   serialize: false,
   serializeFunctions: false,
   serializer: null,
-  transformArgs: null
+  transformArgs: null,
+  updateExpire: false
 };
 
 /**

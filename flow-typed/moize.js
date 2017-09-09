@@ -21,7 +21,8 @@ declare module 'moize' {
     serialize?: boolean,
     serializeFunctions?: boolean,
     serializer?: (...args: any[]) => any,
-    transformArgs?: (args: any[]) => any[]
+    transformArgs?: (args: any[]) => any[],
+    updateExpire?: boolean
   };
 
   declare type Fn = (...args: any[]) => any;
@@ -30,17 +31,16 @@ declare module 'moize' {
 
   declare module.exports: {
     (config: Config): Fn,
-    (fn: Fn): Fn,
-    (fn: Fn, config: Config): Fn,
+    (fn: Fn, config?: Config): Fn,
 
-    maxAge<T>(a: number): (t: T) => T,
-    maxArgs<T>(a: number): (t: T) => T,
-    maxSize<T>(a: number): (t: T) => T,
-    promise<T>(t: T): T,
-    react<T>(t: T): T,
-    reactSimple<T>(t: T): T,
-    serialize<T>(t: T): T,
-    simple<T>(t: T): T,
+    maxAge<T>(a: number): (t: T, c?: Config) => T,
+    maxArgs<T>(a: number): (t: T, c?: Config) => T,
+    maxSize<T>(a: number): (t: T, c?: Config) => T,
+    promise<T>(t: T, c?: Config): T,
+    react<T>(t: T, c?: Config): T,
+    reactSimple<T>(t: T, c?: Config): T,
+    serialize<T>(t: T, c?: Config): T,
+    simple<T>(t: T, c?: Config): T,
     compose<T>(...fns: Array<Moizer<T>>): Moizer<T>
   };
 }

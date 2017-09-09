@@ -34,10 +34,11 @@ export const customReplacer = (key: string, value: any): any => {
  * ES2015-ified version of cycle.decyle
  *
  * @param {*} object object to stringify
+ * @param {Options} options the options passed to the moize method
  * @returns {string} stringified value of object
  */
-export const decycle = (object: any): string => {
-  const cache: Cache = new Cache();
+export const decycle = (object: any, options: Options): string => {
+  const cache: Cache = new Cache(options);
 
   /**
    * @private
@@ -90,13 +91,14 @@ export const decycle = (object: any): string => {
  *
  * @param {*} value value to stringify
  * @param {function} [replacer] replacer to used in stringification
+ * @param {Options} options the options passed to the moize method
  * @returns {string} the stringified version of value
  */
-export const stringify = (value: any, replacer: ?Function) => {
+export const stringify = (value: any, replacer: ?Function, options: Options) => {
   try {
     return JSON.stringify(value, replacer);
   } catch (exception) {
-    return JSON.stringify(decycle(value), replacer);
+    return JSON.stringify(decycle(value, options), replacer);
   }
 };
 
@@ -110,10 +112,11 @@ export const stringify = (value: any, replacer: ?Function) => {
  *
  * @param {*} arg argument to stringify
  * @param {function} [replacer] replacer to used in stringification
- * @returns {string}
+ * @param {Options} options the options passed to the moize method
+ * @returns {string} the stringified argument
  */
-export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
-  return isComplexObject(arg) || isFunction(arg) ? stringify(arg, replacer) : arg;
+export const getStringifiedArgument = (arg: any, replacer: ?Function, options: Options) => {
+  return isComplexObject(arg) || isFunction(arg) ? stringify(arg, replacer, options) : arg;
 };
 
 /**
@@ -141,7 +144,7 @@ export const createArgumentSerializer = (options: Options): Function => {
         value: any;
 
     while (++index < length) {
-      value = getStringifiedArgument(args[index], replacer);
+      value = getStringifiedArgument(args[index], replacer, options);
 
       if (value) {
         key += `${value}|`;
