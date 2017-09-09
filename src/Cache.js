@@ -20,6 +20,10 @@ class Cache {
   list: Array<ListItem> = [];
   size: number = 0;
 
+  constructor(options) {
+      this.options = options || {};
+  }
+
   /**
    * @function add
    * @memberof Cache
@@ -31,10 +35,11 @@ class Cache {
    * @param {*} key the key to assign
    * @param {*} value the value to assign at key
    */
-  add(key: any, value: any): any {
+  add(key: any, value: any, ttlTimer: any): any {
     this.lastItem = unshift(this.list, {
       key,
-      value
+      value,
+      ttlTimer
     });
 
     this.size++;
@@ -63,16 +68,19 @@ class Cache {
    *
    * @param {*} key the key to remove
    * @param {number} maxAge the time in milliseconds to wait before removing the key
-   * @param {Function} onExpire a callback that is called after removing the key
+   * @param {Function} onExpire a callback that is called before removing the key, can return false to cancel removal and reset expiration timer
    */
   expireAfter(key: any, maxAge: number, onExpire: ?Function) {
-    setTimeout(() => {
-      this.remove(key);
-
+    return setTimeout(() => {
       if (isFunction(onExpire)) {
         // $FlowIgnore onExpire is a function
-        onExpire(key.key);
+        if (onExpire(key.key) !== false) {
+            return this.remove(key);
+        } else {
+            return this.expireAfter(key, maxAge, onExpire);
+        }
       }
+      return this.remove(key);
     }, maxAge);
   }
 
@@ -90,6 +98,10 @@ class Cache {
   get(key: any): any {
     if (this.size) {
       if (key === this.lastItem.key) {
+        if (this.options.updateExpire && this.lastItem.ttlTimer) {
+            clearTimeout(this.lastItem.ttlTimer);
+            this.lastItem.ttlTimer = this.expireAfter(key, this.options.maxAge, this.options.onExpire);
+        }
         return this.lastItem.value;
       }
 
@@ -97,6 +109,11 @@ class Cache {
 
       if (~index) {
         this.lastItem = this.list[index];
+
+        if (this.options.updateExpire && this.list[index].ttlTimer) {
+            clearTimeout(this.list[index].ttlTimer);
+            this.list[index].ttlTimer = this.expireAfter(key, this.options.maxAge, this.options.onExpire);
+        }
 
         return unshift(splice(this.list, index), this.lastItem).value;
       }
@@ -124,7 +141,7 @@ class Cache {
    * @instance
    *
    * @description
-   * remove the item at key from cach
+   * remove the item at key from cache
    *
    * @param {*} key the key to remove from cache
    * @returns {void}

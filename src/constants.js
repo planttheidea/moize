@@ -66,6 +66,7 @@ export const DEFAULT_OPTIONS: Object = {
   maxAge: INFINITY,
   maxArgs: INFINITY,
   maxSize: INFINITY,
+  updateExpire: false,
   promiseLibrary: NATIVE_PROMISE,
   serialize: false,
   serializeFunctions: false,

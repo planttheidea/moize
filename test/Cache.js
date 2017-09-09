@@ -24,7 +24,8 @@ test('if add will add the key and value passed to the cache', (t) => {
 
   const lastItem = {
     key,
-    value
+    value,
+    ttlTimer: undefined
   };
 
   t.deepEqual(cache.list, [lastItem]);
@@ -83,6 +84,68 @@ test('if expireAfter will call an onExpire callback', async (t) => {
   t.true(onExpire.calledOnce);
 });
 
+test('if onExpire callback can cancel expireAfter', async (t) => {
+  const key = {key: 'foo'};
+  const maxAge = 100;
+  let stillGood = 1;
+  const onExpire = sinon.spy((k) => {
+    t.is(k, 'foo');
+    return stillGood-- ? false : true;
+  });
+
+  const cache = new Cache();
+
+  cache.add(key, 'bar');
+  cache.expireAfter(key, maxAge, onExpire);
+
+  await sleep(maxAge + 50);
+
+  t.true(onExpire.calledOnce);
+
+  await sleep(maxAge);
+
+  t.true(onExpire.calledTwice);
+
+  await sleep(maxAge);
+
+  t.false(onExpire.calledThrice);
+});
+
+test('if updateExpire prevents cache from expiring', async (t) => {
+  const maxAge = 100;
+  const cache1 = new Cache({maxAge, updateExpire: false});
+  const cache2 = new Cache({maxAge, updateExpire: true});
+  const key = 'foo';
+  const value = 'bar';
+
+  let ttl1 = cache1.expireAfter(key, maxAge);
+  let ttl2 = cache2.expireAfter(key, maxAge);
+
+  cache1.add(key, value, ttl1);
+  cache2.add(key, value, ttl2);
+
+  t.is(cache1.get(key), value);
+  t.is(cache2.get(key), value);
+
+  await sleep(50);
+
+  t.is(cache1.get(key), value);
+  t.is(cache2.get(key), value);
+
+  await sleep(50);
+
+  t.is(cache2.get(key), value);
+
+  await sleep(50);
+
+  t.not(cache1.get(key), value);
+  t.is(cache2.get(key), value);
+
+  await sleep(160);
+
+  t.not(cache2.get(key), value);
+});
+
 test('if get will return undefined if there are no items in cache', (t) => {
   const cache = new Cache();
 
@@ -104,7 +167,8 @@ test('if get will return the value for the passed key in cache', (t) => {
 
   t.deepEqual(cache.lastItem, {
     key,
-    value
+    value,
+    ttlTimer: undefined
   });
 
   t.false(cache.has(value));
@@ -115,7 +179,8 @@ test('if get will return the value for the passed key in cache', (t) => {
 
   t.deepEqual(cache.lastItem, {
     key: value,
-    value: key
+    value: key,
+    ttlTimer: undefined
   });
 });
 
@@ -129,19 +194,23 @@ test('if get will keep the order of retrieval correct', (t) => {
 
   const first = {
     key: 'first',
-    value: 1
+    value: 1,
+    ttlTimer: undefined
   };
   const second = {
     key: 'second',
-    value: 2
+    value: 2,
+    ttlTimer: undefined
   };
   const third = {
     key: 'third',
-    value: 3
+    value: 3,
+    ttlTimer: undefined
   };
   const fourth = {
     key: 'fourth',
-    value: 4
+    value: 4,
+    ttlTimer: undefined
   };
 
   t.deepEqual(cache.list, [fourth, third, second, first]);
@@ -155,7 +224,8 @@ test('if get will keep the order of retrieval correct', (t) => {
 
   const fifth = {
     key: 'fifth',
-    value: 5
+    value: 5,
+    ttlTimer: undefined
   };
 
   t.deepEqual(cache.list, [fifth, second, third, fourth, first]);
@@ -184,13 +254,15 @@ test('if has will identify the existence of a key in the cache', (t) => {
   const cache = new Cache();
   const key = 'foo';
   const value = 'bar';
+  const ttlTimer = undefined;
 
   cache.add(key, value);
 
   t.true(cache.has(key));
   t.deepEqual(cache.lastItem, {
     key,
-    value
+    value,
+    ttlTimer
   });
   t.false(cache.has('bar'));
 });
@@ -291,6 +363,7 @@ test('if update will not update the lastItem if the key does not match the lastI
   const cache = new Cache();
   const key = 'foo';
   const otherKey = 'bar';
+  const ttlTimer = undefined;
 
   cache.add(key, 'baz');
   cache.add(otherKey, 'quz');
@@ -300,6 +373,7 @@ test('if update will not update the lastItem if the key does not match the lastI
   t.is(cache.get(key), 'blah');
   t.deepEqual(cache.lastItem, {
     key,
-    value: cache.get(key)
+    value: cache.get(key),
+    ttlTimer
   });
 });

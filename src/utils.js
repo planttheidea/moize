@@ -623,11 +623,10 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
   }
 
   return (key: any, value: any): any => {
-    cache.add(key, value);
-
-    if (hasMaxAge) {
-      cache.expireAfter(key, options.maxAge, options.onExpire);
-    }
+    let ttlTimer = hasMaxAge
+      ? cache.expireAfter(key, options.maxAge, options.onExpire)
+      : undefined;
+    cache.add(key, value, ttlTimer);
 
     if (hasMaxSize && cache.size > options.maxSize) {
       cache.remove(cache.list[cache.list.length - 1].key);

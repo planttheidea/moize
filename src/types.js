@@ -10,6 +10,7 @@
  * @property {number} maxAge the TTL for the return value to live in cache
  * @property {number} maxArgs the maximum number of arguments to use as the cache key
  * @property {number} maxSize the maximum size of values to store in cache
+ * @property {number} updateExpire reset expiration time to maxAge on cache hit
  * @property {boolean} serialize should the parameters be serialized for the cache key
  * @property {boolean} serializeFunctions should a custom replacer that includes functions be used in serialization
  * @property {function} serializer a custom serializer to use in place of the default
@@ -22,6 +23,7 @@ export type Options = {
   maxAge: number,
   maxArgs: number,
   maxSize: number,
+  updateExpire: boolean,
   onExpire: ?Function,
   promiseLibrary: Function,
   serialize: boolean,

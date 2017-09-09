@@ -98,6 +98,7 @@ The full shape of these options:
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
+  updateExpire: boolean, // reset expiration time to maxAge on cache hit
   promiseLibrary: Function|Object, // promise library to use when isPromise is true, if not using native promises
   serialize: boolean, // should the parameters be serialized instead of directly referenced
   serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
