@@ -215,6 +215,26 @@ const array = [{fn() {}, object: {}, value: foo}, {fn() {}, object: {}, value: b
 
 console.groupEnd('react');
 
+console.group('expiration');
+
+const expiringMemoized = moize(method, {
+  maxAge: 1000,
+  onExpire() {
+    console.log('Expired! I should only fire once, and this should be empty:', expiringMemoized.cache.expirations);
+  },
+  updateExpire: true
+});
+
+expiringMemoized(foo, bar);
+expiringMemoized(foo, bar);
+expiringMemoized(foo, bar);
+expiringMemoized(foo, bar);
+expiringMemoized(foo, bar);
+expiringMemoized(foo, bar);
+expiringMemoized(foo, bar);
+
+console.groupEnd('expiration');
+
 const HEADER_STYLE = {
   margin: 0
 };

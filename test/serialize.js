@@ -4,9 +4,11 @@ import sinon from 'sinon';
 
 // src
 import * as serialize from 'src/serialize';
+import {DEFAULT_OPTIONS} from 'src/constants';
 
 test('if createArgumentSerializer will create a method that serializes the args passed', (t) => {
   const options = {
+    ...DEFAULT_OPTIONS,
     maxArgs: Number.POSITIVE_INFINITY,
     serializeFunctions: false
   };
@@ -24,6 +26,7 @@ test('if createArgumentSerializer will create a method that serializes the args 
 
 test('if createArgumentSerializer will create a method that serializes the args passed using the custom serializer', (t) => {
   const options = {
+    ...DEFAULT_OPTIONS,
     maxArgs: Number.POSITIVE_INFINITY,
     serializeFunctions: true
   };
@@ -41,6 +44,7 @@ test('if createArgumentSerializer will create a method that serializes the args 
 
 test('if createArgumentSerializer will create a method that serializes the args limited to maxArgs', (t) => {
   const options = {
+    ...DEFAULT_OPTIONS,
     maxArgs: 2,
     serializeFunctions: false
   };
@@ -91,7 +95,7 @@ test('if decycle will return an object that has circular references removed', (t
   object.foo.baz = object.foo;
   object.foo.blah = [object.foo];
 
-  const result = serialize.decycle(object);
+  const result = serialize.decycle(object, DEFAULT_OPTIONS);
 
   t.deepEqual(result, {
     foo: {
@@ -234,11 +238,11 @@ test('if stringify will call decycle on the object when it cannot be handled by 
 
   circular.foo.baz = circular.foo;
 
-  const standardResult = serialize.stringify(standard);
+  const standardResult = serialize.stringify(standard, undefined, DEFAULT_OPTIONS);
 
   t.is(standardResult, '{"foo":"bar"}');
 
-  const circularResult = serialize.stringify(circular);
+  const circularResult = serialize.stringify(circular, undefined, DEFAULT_OPTIONS);
 
   t.is(circularResult, '{"foo":{"bar":"baz","baz":{"$ref":"$[\\"foo\\"]"}}}');
 });

@@ -18,6 +18,7 @@ interface Config {
     serializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
     serializer?: (...args: any[]) => any; // provide a serializer and override default,
     transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
+    updateExpire?: boolean; // should the expiration be updated when cache is hit
 }
 
 interface PromiseLibrary<T> {
@@ -34,14 +35,14 @@ declare function moize<T extends Fn>(c: Config): ((t: T) => T);
 declare function moize<T extends Fn>(t: T, c?: Config): T;
 
 declare namespace moize {
-    function maxAge<T extends Fn>(a: number): (t: T) => T;
-    function maxArgs<T extends Fn>(a: number): (t: T) => T;
-    function maxSize<T extends Fn>(a: number): (t: T) => T;
-    function promise<T extends Fn>(t: T): T;
+    function maxAge<T extends Fn>(a: number): (t: T, c?: Config) => T;
+    function maxArgs<T extends Fn>(a: number): (t: T, c?: Config) => T;
+    function maxSize<T extends Fn>(a: number): (t: T, c?: Config) => T;
+    function promise<T extends Fn>(t: T, c?: Config): T;
     function react<T extends Fn>(t: T, c?: Config): T;
-    function reactSimple<T extends Fn>(t: T): T;
-    function serialize<T extends Fn>(t: T): T;
-    function simple<T extends Fn>(t: T): T;
+    function reactSimple<T extends Fn>(t: T, c?: Config): T;
+    function serialize<T extends Fn>(t: T, c?: Config): T;
+    function simple<T extends Fn>(t: T, c?: Config): T;
 
     function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
 }

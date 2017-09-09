@@ -161,15 +161,15 @@ const moize: Function = (functionOrComposableOptions: Function | Object, passedO
   const fn: Function = isComposed ? functionOrComposableOptions.originalFunction : functionOrComposableOptions;
 
   const options: Options = getDefaultedOptions(
-    !isComposed
-      ? passedOptions
-      : {
+    isComposed
+      ? {
         ...functionOrComposableOptions.options,
         ...passedOptions
       }
+      : passedOptions
   );
 
-  const cache: Cache = new Cache();
+  const cache: Cache = new Cache(options);
 
   const addPropertiesToFunction: Function = createAddPropertiesToFunction(cache, fn, options);
   const getCacheKey: Function = createGetCacheKey(cache, options);
