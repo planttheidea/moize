@@ -1,8 +1,8 @@
-interface PromiseLike<R> = {
-	then<U>(
-		onFulfill?: (value: R) => Promise<U> | U,
-		onReject?: (error: any) => Promise<U> | U
-	): Promise<U>;
+interface PromiseLike<R> {
+    then<U>(
+        onFulfill?: (value: R) => Promise<U> | U,
+        onReject?: (error: any) => Promise<U> | U
+    ): Promise<U>;
 }
 
 interface Config {
@@ -38,7 +38,7 @@ declare namespace moize {
     function maxArgs<T extends Fn>(a: number): (t: T) => T;
     function maxSize<T extends Fn>(a: number): (t: T) => T;
     function promise<T extends Fn>(t: T): T;
-    function react<T extends Fn>(t: T): T;
+    function react<T extends Fn>(t: T, c?: Config): T;
     function reactSimple<T extends Fn>(t: T): T;
     function serialize<T extends Fn>(t: T): T;
     function simple<T extends Fn>(t: T): T;
