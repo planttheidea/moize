@@ -5,9 +5,10 @@ import {sleep} from 'test/helpers/utils';
 
 // src
 import Cache from 'src/Cache';
+import {DEFAULT_OPTIONS} from 'src/constants';
 
 test('if creating a new Cache creates an object with the correct instance values', (t) => {
-  const result = new Cache();
+  const result = new Cache(DEFAULT_OPTIONS);
 
   t.deepEqual(result.list, []);
   t.deepEqual(result.lastItem, {});
@@ -15,7 +16,7 @@ test('if creating a new Cache creates an object with the correct instance values
 });
 
 test('if add will add the key and value passed to the cache', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
 
   const key = 'foo';
   const value = 'bar';
@@ -33,7 +34,7 @@ test('if add will add the key and value passed to the cache', (t) => {
 });
 
 test('if clear will return the cache to its original empty state', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
 
   cache.add('foo', 'bar');
   cache.add('bar', 'baz');
@@ -53,13 +54,16 @@ test('if expireAfter will remove the item from cache after maxAge', async (t) =>
   const key = 'foo';
   const maxAge = 100;
 
-  const cache = new Cache();
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    maxAge
+  });
 
   cache.add(key, 'bar');
 
   t.true(cache.has(key));
 
-  cache.expireAfter(key, maxAge);
+  cache.expireAfter(key);
 
   await sleep(maxAge + 50);
 
@@ -73,14 +77,50 @@ test('if expireAfter will call an onExpire callback', async (t) => {
     t.is(k, 'foo');
   });
 
-  const cache = new Cache();
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    maxAge,
+    onExpire
+  });
 
   cache.add(key, 'bar');
-  cache.expireAfter(key, maxAge, onExpire);
+  cache.expireAfter(key);
 
   await sleep(maxAge + 50);
 
   t.true(onExpire.calledOnce);
+});
+
+test('if expireAfter will clear the timeout and add a new one when updateExpire is true if a timeout exists in cache already', async (t) => {
+  const key = {key: 'foo'};
+  const maxAge = 100;
+  const onExpire = sinon.spy((k) => {
+    t.is(k, 'foo');
+  });
+
+  const clearTimeoutSpy = sinon.spy(global, 'clearTimeout');
+
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    maxAge,
+    onExpire,
+    updateExpire: true
+  });
+
+  cache.add(key, 'bar');
+  cache.expireAfter(key);
+
+  const originalTimeoutId = cache.expirations[0].timeoutId;
+
+  cache.expireAfter(key);
+
+  t.true(clearTimeoutSpy.calledOnce);
+  t.true(clearTimeoutSpy.calledWith(originalTimeoutId));
+
+  await sleep(maxAge + 50);
+
+  t.true(onExpire.calledOnce);
+  t.is(cache.expirations.length, 0);
 });
 
 test('if onExpire callback can cancel expireAfter', async (t) => {
@@ -111,7 +151,7 @@ test('if onExpire callback can cancel expireAfter', async (t) => {
 });
 
 test('if get will return undefined if there are no items in cache', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
 
   const result = cache.get('foo');
 
@@ -119,7 +159,7 @@ test('if get will return undefined if there are no items in cache', (t) => {
 });
 
 test('if get will return the value for the passed key in cache', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
   const value = 'bar';
 
@@ -147,7 +187,7 @@ test('if get will return the value for the passed key in cache', (t) => {
 });
 
 test('if get will keep the order of retrieval correct', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
 
   cache.add('first', 1);
   cache.add('second', 2);
@@ -192,6 +232,50 @@ test('if get will keep the order of retrieval correct', (t) => {
   t.deepEqual(cache.list, [second, third, fourth, first]);
 });
 
+test('if get will call expireAfter with the key if updateExpire is true and is the lastItem', (t) => {
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    updateExpire: true
+  });
+
+  cache.expireAfter = sinon.stub();
+
+  const key = 'foo';
+  const value = 'bar';
+
+  t.false(cache.has(key));
+
+  cache.add(key, value);
+
+  t.is(cache.get(key), value);
+
+  t.true(cache.expireAfter.calledOnce);
+  t.true(cache.expireAfter.calledWith(key));
+});
+
+test('if get will call expireAfter with the key if updateExpire is true and is not the lastItem', (t) => {
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    updateExpire: true
+  });
+
+  cache.expireAfter = sinon.stub();
+
+  const key = 'first';
+  const value = 1;
+
+  cache.add(key, value);
+  cache.add('second', 2);
+
+  t.not(cache.lastItem.key, key);
+  t.true(cache.has(key));
+
+  t.is(cache.get(key), value);
+
+  t.true(cache.expireAfter.calledOnce);
+  t.true(cache.expireAfter.calledWith(key));
+});
+
 test('if get will return undefined when no match for the key is found', (t) => {
   const cache = new Cache();
   const key = 'foo';
@@ -208,7 +292,7 @@ test('if get will return undefined when no match for the key is found', (t) => {
 });
 
 test('if has will identify the existence of a key in the cache', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
   const value = 'bar';
 
@@ -223,7 +307,7 @@ test('if has will identify the existence of a key in the cache', (t) => {
 });
 
 test('if remove will remove the key and value pair from the cache', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
 
   cache.add(key, 'bar');
@@ -236,7 +320,7 @@ test('if remove will remove the key and value pair from the cache', (t) => {
 });
 
 test('if remove will set lastItem to undefined when the only item is removed', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
 
   cache.add(key, 'bar');
@@ -250,7 +334,7 @@ test('if remove will set lastItem to undefined when the only item is removed', (
 });
 
 test('if remove will set lastItem to the first item in the list when an item is removed', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
 
   cache.add(key, 'bar');
@@ -267,7 +351,7 @@ test('if remove will set lastItem to the first item in the list when an item is 
 });
 
 test('if remove will do nothing when a match for the key is not found', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
   const otherKey = 'bar';
 
@@ -282,7 +366,7 @@ test('if remove will do nothing when a match for the key is not found', (t) => {
 });
 
 test('if update will assign a new value to the item already in cache', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
   const value = 'bar';
 
@@ -298,7 +382,7 @@ test('if update will assign a new value to the item already in cache', (t) => {
 });
 
 test('if update will not update anything if no match for the key is found', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
   const otherKey = 'bar';
 
@@ -315,7 +399,7 @@ test('if update will not update anything if no match for the key is found', (t) 
 });
 
 test('if update will not update the lastItem if the key does not match the lastItem key', (t) => {
-  const cache = new Cache();
+  const cache = new Cache(DEFAULT_OPTIONS);
   const key = 'foo';
   const otherKey = 'bar';
 

@@ -1,10 +1,10 @@
 // @flow
 
 // types
-import type {ListItem} from './types';
+import type {ExpirationItem, ListItem, Options} from './types';
 
 // utils
-import {findIndex, findIndexAfterFirst, isFunction, splice, unshift} from './utils';
+import {findExpirationIndex, findIndex, findIndexAfterFirst, isFunction, splice, unshift} from './utils';
 
 /**
  * @private
@@ -16,8 +16,14 @@ import {findIndex, findIndexAfterFirst, isFunction, splice, unshift} from './uti
  * more targeted to moize use cases
  */
 class Cache {
+  constructor(options: Options) {
+    this.options = options;
+  }
+
+  expirations: Array<ExpirationItem> = [];
   lastItem: ListItem = {};
   list: Array<ListItem> = [];
+  options: Options;
   size: number = 0;
 
   /**
@@ -62,21 +68,28 @@ class Cache {
    * remove from cache after maxAge time has passed
    *
    * @param {*} key the key to remove
-   * @param {number} maxAge the time in milliseconds to wait before removing the key
-   * @param {Function} onExpire a callback that is called before removing the key, can return false to cancel removal and reset expiration timer
    */
-  expireAfter(key: any, maxAge: number, onExpire: ?Function) {
-    setTimeout(() => {
+  expireAfter(key: any) {
+    const {maxAge, onExpire} = this.options;
+    const indexOfKey = findExpirationIndex(this.expirations, key);
+
+    const timeoutId = setTimeout(() => {
       if (isFunction(onExpire)) {
         // $FlowIgnore onExpire is a function
-        if (onExpire(key.key) !== false) {
-            return this.remove(key);
-        } else {
-            return this.expireAfter(key, maxAge, onExpire);
+        if (onExpire(key.key) === false) {
+          return this.expireAfter(key);
         }
       }
-      return this.remove(key);
+      this.remove(key);
+      this.expirations.splice(indexOfKey, 1);
     }, maxAge);
+
+    if (~indexOfKey) {
+      clearTimeout(this.expirations[indexOfKey].timeoutId);
+      this.expirations[indexOfKey].timeoutId = timeoutId;
+    } else {
+      this.expirations.push({key, timeoutId});
+    }
   }
 
   /**
@@ -93,12 +106,20 @@ class Cache {
   get(key: any): any {
     if (this.size) {
       if (key === this.lastItem.key) {
+        if (this.options.updateExpire) {
+          this.expireAfter(key);
+        }
+
         return this.lastItem.value;
       }
 
       const index: number = findIndexAfterFirst(this.list, key);
 
       if (~index) {
+        if (this.options.updateExpire) {
+          this.expireAfter(key);
+        }
+
         this.lastItem = this.list[index];
 
         return unshift(splice(this.list, index), this.lastItem).value;

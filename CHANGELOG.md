@@ -1,5 +1,12 @@
 # moize CHANGELOG
 
+## 3.5.0
+* Add `updateExpire` option, which if true will reset the expiration countdown based on `maxAge` when a cached value for that key has been hit
+* Update TypeScript typings (thanks @Joshuaweiss)
+
+## 3.4.2
+* Remove unneeded constants declarations for smaller footprint
+
 ## 3.4.1
 * Remove code duplication and unnecessary cache key segregation (reduced library size by ~10.6%)
 * Improve Flow typings (no longer driven off of TypeScript typings)

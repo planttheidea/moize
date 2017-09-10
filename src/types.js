@@ -27,7 +27,8 @@ export type Options = {
   serialize: boolean,
   serializeFunctions: boolean,
   serializer: Function,
-  transformArgs: ?Function
+  transformArgs: ?Function,
+  updateExpire: boolean
 };
 
 /**
@@ -41,4 +42,17 @@ export type Options = {
 export type ListItem = {
   key?: any,
   value?: any
+};
+
+/**
+ * @private
+ *
+ * @typedef {Object} ExpirationItem
+ *
+ * @property {*} key the key stored in cache
+ * @property {*} timeout the timeout id
+ */
+export type ExpirationItem = {
+  key: any,
+  timeoutId: number
 };

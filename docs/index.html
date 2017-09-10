@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 3.4.2</h3>
+    <h3>moize 3.5.0</h3>
 
 
 
@@ -111,6 +111,7 @@
 <li><a href="#serializefunctions">serializeFunctions</a></li>
 <li><a href="#serializer">serializer</a></li>
 <li><a href="#transformargs">transformArgs</a></li>
+<li><a href="#updateexpire">updateExpire</a></li>
 </ul>
 </li>
 <li><a href="#usage-with-shortcut-methods">Usage with shortcut methods</a><ul>
@@ -387,7 +388,22 @@ moize(null, 'bar', 'baz'); // pulled from cache</code></pre><p>Please note that 
 <li>transform by <code>transformArgs</code></li>
 <li>serialize by <code>serializer</code> (if applicable)</li>
 </ol>
-<h2 id="usage-with-shortcut-methods">Usage with shortcut methods</h2>
+<h4 id="updateexpire">updateExpire</h4>
+<p>When a <code>maxAge</code> is set, clear out the scheduled expiration of the key whenever that key is retrieved, updating the new expiration to be based on the last retrieval from cache.</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxAge: 1000 * 60 * 5, // five minutes
+  updateExpire: true
+});
+
+memoized('foo');
+
+setTimeout(() => {
+  memoized('foo'); // hits cache, which updates the expire to be 5 minutes from this run instead of the first
+}, 1000 * 60);</code></pre><h2 id="usage-with-shortcut-methods">Usage with shortcut methods</h2>
 <h4 id="moize-maxage">moize.maxAge</h4>
 <p>Pre-applies the <code>maxAge</code> option as a curriable method.</p>
 <pre class="prettyprint source lang-javascript"><code>import moize from 'moize';

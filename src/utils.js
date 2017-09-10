@@ -22,7 +22,7 @@ import {
 import {getSerializerFunction} from './serialize';
 
 // types
-import type {ListItem, Options} from './types';
+import type {ExpirationItem, ListItem, Options} from './types';
 
 type CacheKey = ReactCacheKey | SerializedCacheKey | StandardCacheKey;
 
@@ -226,6 +226,32 @@ export const createCurriableOptionMethod = (fn: Function, option: string): Funct
 /**
  * @private
  *
+ * @function findExpirationIndex
+ *
+ * @description
+ * find the index of the expiration timeout
+ *
+ * @param {Array<ExpirationItem>} expirations the expirations in cache
+ * @param {CacheKey} key the cache key to match
+ * @returns {number} the index of the expiration, else -1
+ */
+export const findExpirationIndex = (expirations: Array<ExpirationItem>, key: CacheKey): number => {
+  let index: number = 0;
+
+  while (index < expirations.length) {
+    if (expirations[index].key === key) {
+      return index;
+    }
+
+    index++;
+  }
+
+  return -1;
+};
+
+/**
+ * @private
+ *
  * @function createFindIndex
  *
  * @description
@@ -315,7 +341,7 @@ export const createPromiseResolver = (cache: Cache, key: any, hasMaxAge: boolean
     cache.update(key, options.promiseLibrary.resolve(resolvedValue));
 
     if (hasMaxAge) {
-      cache.expireAfter(key, options.maxAge, options.onExpire);
+      cache.expireAfter(key);
     }
 
     return resolvedValue;
@@ -626,7 +652,7 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
     cache.add(key, value);
 
     if (hasMaxAge) {
-      cache.expireAfter(key, options.maxAge, options.onExpire);
+      cache.expireAfter(key);
     }
 
     if (hasMaxSize && cache.size > options.maxSize) {

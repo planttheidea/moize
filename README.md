@@ -23,6 +23,7 @@
   * [serializeFunctions](#serializefunctions)
   * [serializer](#serializer)
   * [transformArgs](#transformargs)
+  * [updateExpire](#updateexpire)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
   * [moize.maxAge](#moizemaxage)
   * [moize.maxArgs](#moizemaxargs)
@@ -401,6 +402,27 @@ Please note that if `transformArgs` is combined with either `maxArgs` or `serial
 1. limit by `maxArgs` (if applicable)
 1. transform by `transformArgs`
 1. serialize by `serializer` (if applicable)
+
+#### updateExpire
+
+When a `maxAge` is set, clear out the scheduled expiration of the key whenever that key is retrieved, updating the new expiration to be based on the last retrieval from cache.
+
+```javascript
+const fn = (item) => {
+  return item;
+};
+
+const memoized = moize(fn, {
+  maxAge: 1000 * 60 * 5, // five minutes
+  updateExpire: true
+});
+
+memoized('foo');
+
+setTimeout(() => {
+  memoized('foo'); // hits cache, which updates the expire to be 5 minutes from this run instead of the first
+}, 1000 * 60);
+```
 
 ## Usage with shortcut methods
 
