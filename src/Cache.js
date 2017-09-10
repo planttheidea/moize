@@ -74,14 +74,11 @@ class Cache {
     const indexOfKey = findExpirationIndex(this.expirations, key);
 
     const timeoutId = setTimeout(() => {
-      if (isFunction(onExpire)) {
-        // $FlowIgnore onExpire is a function
-        if (onExpire(key.key) === false) {
-          return this.expireAfter(key);
-        }
+      if (isFunction(onExpire) && onExpire(key.key) === false) {
+        return this.expireAfter(key);
       }
       this.remove(key);
-      this.expirations.splice(indexOfKey, 1);
+      this.expirations.splice(findExpirationIndex(this.expirations, key), 1);
     }, maxAge);
 
     if (~indexOfKey) {
