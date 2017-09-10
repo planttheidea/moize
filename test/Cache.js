@@ -123,7 +123,7 @@ test('if expireAfter will clear the timeout and add a new one when updateExpire 
   t.is(cache.expirations.length, 0);
 });
 
-test('if onExpire callback can cancel expireAfter', async (t) => {
+test('if onExpire callback can reset cache age', async (t) => {
   const key = {key: 'foo'};
   const maxAge = 100;
   let stillGood = 1;
