@@ -126,22 +126,31 @@ test('if expireAfter will clear the timeout and add a new one when updateExpire 
 test('if onExpire callback can reset cache age', async (t) => {
   const key = {key: 'foo'};
   const maxAge = 100;
+
   let stillGood = 1;
+
   const onExpire = sinon.spy((k) => {
     t.is(k, 'foo');
-    return stillGood-- ? false : true;
+
+    stillGood--;
+
+    return !!stillGood;
   });
 
-  const cache = new Cache();
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    maxAge,
+    onExpire
+  });
 
   cache.add(key, 'bar');
-  cache.expireAfter(key, maxAge, onExpire);
+  cache.expireAfter(key);
 
   await sleep(maxAge + 50);
 
   t.true(onExpire.calledOnce);
 
-  await sleep(maxAge);
+  await sleep(maxAge + 50);
 
   t.true(onExpire.calledTwice);
 

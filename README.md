@@ -243,6 +243,27 @@ const memoized = moize(fn, {
 });
 ```
 
+If you return `false` from this method, it will prevent the key's removal, instead refreshing the expiration in the same vein as `updateExpire` based on `maxAge`:
+
+```javascript
+const fn = (item) => {
+  return item;
+};
+
+let expirationAttempts = 0;
+
+const memoized = moize(fn, {
+  maxAge: 1000 * 10, // 10 seconds
+  onExpire(key) {
+    expirationAttempts++;
+
+    return expirationAttempts < 2;
+  },
+});
+
+memoized('foo'); // will expire key after 30 seconds, or 3 expiration attempts
+```
+
 #### promiseLibrary
 
 *defaults to native Promise*
