@@ -1,5 +1,13 @@
 # moize CHANGELOG
 
+## 4.0.0
+* Add programmatic update of expiration based on return from `onExpire`
+
+**BREAKING CHANGES**
+
+* `onExpire` will update the expiration if `false` is returned
+  * In prior versions, the return of `onExpire` was ignored entirely
+
 ## 3.5.0
 * Add `updateExpire` option, which if true will reset the expiration countdown based on `maxAge` when a cached value for that key has been hit
 * Update TypeScript typings (thanks @Joshuaweiss)

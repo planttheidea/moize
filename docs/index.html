@@ -267,7 +267,23 @@ const memoized = moize(fn, {
   onExpire(key) {
     console.log(key);
   },
-});</code></pre><h4 id="promiselibrary">promiseLibrary</h4>
+});</code></pre><p>If you return <code>false</code> from this method, it will prevent the key's removal, instead refreshing the expiration in the same vein as <code>updateExpire</code> based on <code>maxAge</code>:</p>
+<pre class="prettyprint source lang-javascript"><code>const fn = (item) => {
+  return item;
+};
+
+let expirationAttempts = 0;
+
+const memoized = moize(fn, {
+  maxAge: 1000 * 10, // 10 seconds
+  onExpire(key) {
+    expirationAttempts++;
+
+    return expirationAttempts &lt; 2;
+  },
+});
+
+memoized('foo'); // will expire key after 30 seconds, or 3 expiration attempts</code></pre><h4 id="promiselibrary">promiseLibrary</h4>
 <p><em>defaults to native Promise</em></p>
 <p>The promise library to use for resolution / rejection of promises.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = (foo) => {
