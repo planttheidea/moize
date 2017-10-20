@@ -50,7 +50,7 @@ test('if clear will return the cache to its original empty state', (t) => {
   t.deepEqual(cache.list, []);
 });
 
-test('if expireAfter will remove the item from cache after maxAge', async (t) => {
+test('if expireAfter will remove the item from cache after maxAge if it exists', async (t) => {
   const key = 'foo';
   const maxAge = 100;
 
@@ -63,11 +63,42 @@ test('if expireAfter will remove the item from cache after maxAge', async (t) =>
 
   t.true(cache.has(key));
 
+  const spy = sinon.spy(cache, 'remove');
+
   cache.expireAfter(key);
 
   await sleep(maxAge + 50);
 
   t.false(cache.has(key));
+
+  t.true(spy.calledOnce);
+  t.true(spy.calledWith(key));
+
+  spy.restore();
+});
+
+test('if expireAfter will do nothing if the key does not exist', async (t) => {
+  const key = 'foo';
+  const maxAge = 100;
+
+  const cache = new Cache({
+    ...DEFAULT_OPTIONS,
+    maxAge
+  });
+
+  t.false(cache.has(key));
+
+  const spy = sinon.spy(cache, 'remove');
+
+  cache.expireAfter(key);
+
+  await sleep(maxAge + 50);
+
+  t.false(cache.has(key));
+
+  t.true(spy.notCalled);
+
+  spy.restore();
 });
 
 test('if expireAfter will call an onExpire callback', async (t) => {
@@ -149,10 +180,12 @@ test('if onExpire callback can reset cache age', async (t) => {
   await sleep(maxAge + 50);
 
   t.true(onExpire.calledOnce);
+  t.true(cache.has(key));
 
   await sleep(maxAge + 50);
 
   t.true(onExpire.calledTwice);
+  t.false(cache.has(key));
 
   await sleep(maxAge);
 

@@ -16,6 +16,7 @@ const lruMemoize = require('lru-memoize').default;
 const moize = require('../lib');
 
 const deepEquals = require('lodash').isEqual;
+const fastDeepEqual = require('fast-equals').deepEqual;
 
 const showResults = (benchmarkResults) => {
   const table = new Table({
@@ -300,6 +301,10 @@ const runAlternativeOptionsSuite = () => {
   const mMoizeDeep = moize(fibonacciMultipleDeepEqual, {
     equals: deepEquals
   });
+
+  const mMoizeFastDeep = moize(fibonacciMultipleDeepEqual, {
+    equals: fastDeepEqual
+  });
   const mMoizeSerialize = moize.serialize(fibonacciMultipleDeepEqual);
 
   const Foo = (props) => {
@@ -310,6 +315,11 @@ const runAlternativeOptionsSuite = () => {
   const mMoizeReactDeep = moize.react(Foo, {
     equals(newKey, existingKey) {
       return deepEquals(newKey[0], existingKey[0]) && deepEquals(newKey[1], existingKey[1]);
+    }
+  });
+  const mMoizeReactFastDeep = moize.react(Foo, {
+    equals(newKey, existingKey) {
+      return fastDeepEqual(newKey[0], existingKey[0]) && fastDeepEqual(newKey[1], existingKey[1]);
     }
   });
   const mMoizeReactOld = moize(Foo, {
@@ -346,6 +356,9 @@ const runAlternativeOptionsSuite = () => {
       .add('moize deep equals (lodash isEqual)', () => {
         mMoizeDeep(fibonacciNumber);
       })
+      .add('moize deep equals (fast-equals deepEqual)', () => {
+        mMoizeFastDeep(fibonacciNumber);
+      })
       .add('moize deep equals (serialized)', () => {
         mMoizeSerialize(fibonacciNumber);
       })
@@ -357,6 +370,9 @@ const runAlternativeOptionsSuite = () => {
       })
       .add('moize react deep equals (lodash isEqual)', () => {
         mMoizeReactDeep(props, context);
+      })
+      .add('moize react deep equals (fast-equals deepEqual)', () => {
+        mMoizeReactFastDeep(props, context);
       })
       .add('moize (transform args)', () => {
         mMoizeSpecificArgs('foo', object1, object2);

@@ -219,9 +219,29 @@ console.group('expiration');
 
 const expiringMemoized = moize(method, {
   maxAge: 1000,
-  onExpire() {
-    console.log('Expired! I should only fire once, and this should be empty:', expiringMemoized.cache.expirations);
-  },
+  onExpire: (() => {
+    let count = 0;
+
+    return () => {
+      if (count !== 0) {
+        console.log(
+          'Expired! This is the last time I will fire, and this should be empty:',
+          expiringMemoized.cache.expirations
+        );
+
+        return true;
+      }
+
+      console.log(
+        'Expired! I will now reset the expiration, but this should be empty:',
+        expiringMemoized.cache.expirations
+      );
+
+      count++;
+
+      return false;
+    };
+  })(),
   updateExpire: true
 });
 

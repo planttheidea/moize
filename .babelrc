@@ -3,35 +3,51 @@
     "development": {
       "plugins": ["add-module-exports"],
       "presets": [
-        [ "env", {
-          "loose": true
-        }],
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true
+          }
+        ],
         "stage-2"
       ]
     },
     "es": {
       "presets": [
-        [ "env", {
-          "loose": true,
-          "modules": false
-        }],
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true,
+            "modules": false
+          }
+        ],
         "stage-2"
       ]
     },
     "production": {
       "plugins": ["add-module-exports"],
       "presets": [
-        [ "env", {
-          "loose": true
-        }],
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true
+          }
+        ],
         "stage-2"
       ]
     },
     "test": {
       "presets": [
-        [ "env", {
-          "loose": true
-        }],
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true
+          }
+        ],
         "stage-2"
       ]
     }
