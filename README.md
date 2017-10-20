@@ -113,15 +113,15 @@ The full shape of these options:
 Custom method used to compare equality of keys for cache purposes.
 
 ```javascript
-// using lodash's deep equal comparison method
-import isEqual from 'lodash/isEqual';
+// using fast-equals's deep equal comparison method
+import {deepEqual} from 'fast-equals';
 
 const fn = ({foo, bar}) => {
   return [foo, bar];
 };
 
 const memoized = moize(fn, {
-  equals: isEqual
+  equals: deepEqual
 });
 
 memoized({foo: 'foo', bar: 'bar'});

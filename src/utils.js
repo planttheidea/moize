@@ -472,14 +472,16 @@ export const getKeyCount = (object: Object): number => {
 export const getNewOrExistingCacheKey = (cache: Cache, key: Array<any>, Constructor: Function): CacheKey => {
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matches(key)) {
+    // $FlowIgnore if cache has size, the key exists
     return cache.lastItem.key;
   }
 
   let index: number = 1;
 
   while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
+    // $FlowIgnore if cache matches, the key exists
     if (cache.list[index].key.matches(key)) {
+      // $FlowIgnore if cache matches, the key exists
       return cache.list[index].key;
     }
 
@@ -511,14 +513,16 @@ export const getNewOrExistingCacheKeyCustomEquals = (
 ): CacheKey => {
   // $FlowIgnore if cache has size, the key exists
   if (cache.size && cache.lastItem.key.matchesCustom(key, isEqual)) {
+    // $FlowIgnore if cache has size, the key exists
     return cache.lastItem.key;
   }
 
   let index: number = 1;
 
   while (index < cache.size) {
-    // $FlowIgnore if cache has size, the key exists
+    // $FlowIgnore if cache matches custom, the key exists
     if (cache.list[index].key.matchesCustom(key, isEqual)) {
+      // $FlowIgnore if cache matches custom, the key exists
       return cache.list[index].key;
     }
 

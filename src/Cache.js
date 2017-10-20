@@ -73,13 +73,21 @@ class Cache {
     const {maxAge, onExpire} = this.options;
 
     const timeoutId = setTimeout(() => {
-      // $FlowIgnore onExpire will only fire if it is a function
-      if (isFunction(onExpire) && onExpire(key.key) === false) {
-        return this.expireAfter(key);
-      }
+      const index: number = findIndex(this.list, key);
 
-      this.remove(key);
-      this.expirations.splice(findExpirationIndex(this.expirations, key), 1);
+      if (~index) {
+        const value: any = this.list[index];
+
+        this.remove(key);
+        this.expirations.splice(findExpirationIndex(this.expirations, key), 1);
+
+        // $FlowIgnore onExpire will only fire if it is a function
+        if (isFunction(onExpire) && onExpire(key.key) === false) {
+          this.add(key, value);
+
+          return this.expireAfter(key);
+        }
+      }
     }, maxAge);
 
     const indexOfKey = findExpirationIndex(this.expirations, key);
