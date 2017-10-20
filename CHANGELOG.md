@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+## 4.0.1
+* Update issue where `onExpire` was firing prior to removal of the key from cache
+
 ## 4.0.0
 * Add programmatic update of expiration based on return from `onExpire`
 
