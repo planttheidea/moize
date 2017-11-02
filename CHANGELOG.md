@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+## 4.0.2
+* Remove duplicate internal method
+
 ## 4.0.1
 * Update issue where `onExpire` was firing prior to removal of the key from cache
 
