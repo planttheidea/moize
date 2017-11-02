@@ -226,32 +226,6 @@ export const createCurriableOptionMethod = (fn: Function, option: string): Funct
 /**
  * @private
  *
- * @function findExpirationIndex
- *
- * @description
- * find the index of the expiration timeout
- *
- * @param {Array<ExpirationItem>} expirations the expirations in cache
- * @param {CacheKey} key the cache key to match
- * @returns {number} the index of the expiration, else -1
- */
-export const findExpirationIndex = (expirations: Array<ExpirationItem>, key: CacheKey): number => {
-  let index: number = 0;
-
-  while (index < expirations.length) {
-    if (expirations[index].key === key) {
-      return index;
-    }
-
-    index++;
-  }
-
-  return -1;
-};
-
-/**
- * @private
- *
  * @function createFindIndex
  *
  * @description
@@ -262,7 +236,7 @@ export const findExpirationIndex = (expirations: Array<ExpirationItem>, key: Cac
  */
 export const createFindIndex = (startingIndex: number): Function => {
   // eslint-disable-line no-use-before-define
-  return (list: Array<ListItem>, key: any): number => {
+  return (list: Array<ExpirationItem | ListItem>, key: any): number => {
     let index: number = startingIndex;
 
     while (index < list.length) {
@@ -680,17 +654,15 @@ export const createSetNewCachedValue = (cache: Cache, options: Options): Functio
  * @returns {Array<*>} array minus the item removed
  */
 export const splice = (array: Array<any>, startingIndex: number): Array<any> => {
-  if (!array.length) {
-    return array;
+  if (array.length) {
+    let index: number = startingIndex - 1;
+
+    while (++index < array.length) {
+      array[index] = array[index + 1];
+    }
+
+    array.length -= 1;
   }
-
-  let index: number = startingIndex - 1;
-
-  while (++index < array.length) {
-    array[index] = array[index + 1];
-  }
-
-  array.length -= 1;
 
   return array;
 };

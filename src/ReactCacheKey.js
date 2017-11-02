@@ -21,7 +21,7 @@ class ReactCacheKey {
     return this;
   }
 
-  key: any = null;
+  key: any;
 
   /**
    * @function _getKeyPart

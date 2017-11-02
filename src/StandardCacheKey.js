@@ -16,8 +16,8 @@ class StandardCacheKey {
     return this;
   }
 
-  key: any = null;
-  size: number = 0;
+  key: any;
+  size: number;
 
   /**
    * @function _isMultiParamKey
