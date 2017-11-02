@@ -4,7 +4,7 @@
 import type {ExpirationItem, ListItem, Options} from './types';
 
 // utils
-import {findExpirationIndex, findIndex, findIndexAfterFirst, isFunction, splice, unshift} from './utils';
+import {findIndex, findIndexAfterFirst, isFunction, splice, unshift} from './utils';
 
 /**
  * @private
@@ -79,7 +79,7 @@ class Cache {
         const value: any = this.list[index];
 
         this.remove(key);
-        this.expirations.splice(findExpirationIndex(this.expirations, key), 1);
+        this.expirations.splice(findIndex(this.expirations, key), 1);
 
         // $FlowIgnore onExpire will only fire if it is a function
         if (isFunction(onExpire) && onExpire(key.key) === false) {
@@ -90,7 +90,7 @@ class Cache {
       }
     }, maxAge);
 
-    const indexOfKey = findExpirationIndex(this.expirations, key);
+    const indexOfKey = findIndex(this.expirations, key);
 
     if (~indexOfKey) {
       clearTimeout(this.expirations[indexOfKey].timeoutId);

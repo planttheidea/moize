@@ -15,7 +15,7 @@ class SerializedCacheKey {
     return this;
   }
 
-  key: any = null;
+  key: any;
 
   /**
    * @function matches

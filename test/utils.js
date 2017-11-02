@@ -758,24 +758,6 @@ test('if createSetNewCachedValue will set the cache value correctly when isPromi
   t.true(cache.remove.calledWith(existingKey));
 });
 
-test('if findExpirationIndex will return the index of the expiration when a matching key is found in expirations', (t) => {
-  const key = 'key';
-  const expirations = [{key}];
-
-  const result = utils.findExpirationIndex(expirations, key);
-
-  t.is(result, 0);
-});
-
-test('if findExpirationIndex will return -1 when no matching key is found in expirations', (t) => {
-  const key = 'key';
-  const expirations = [{key: 'notKey'}];
-
-  const result = utils.findExpirationIndex(expirations, key);
-
-  t.is(result, -1);
-});
-
 test('if getDefaultedOptions will return the options passed merged with the default options, and serializer of null when serialize is not true', (t) => {
   const options = {
     isPromise: true,
