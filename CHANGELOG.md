@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+## 4.0.3
+* Fix issue where items manually added to cache did not have the same options (`maxAge`, `maxSize`, etc.) applied to them as those added to cache through function call
+
 ## 4.0.2
 * Remove duplicate internal method
 
