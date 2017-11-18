@@ -705,6 +705,7 @@ export const unshift = (array: Array<any>, item: any): any => {
 export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Function, options: Options) => {
   return (moizedFunction: Function): Function => {
     const getCacheKey = createGetCacheKey(cache, options);
+    const setNewCachedValue = createSetNewCachedValue(cache, options);
 
     moizedFunction.cache = cache;
     moizedFunction.displayName = `moize(${getFunctionName(originalFunction)})`;
@@ -727,7 +728,7 @@ export const createAddPropertiesToFunction = (cache: Cache, originalFunction: Fu
       const internalKey = getCacheKey(key);
 
       if (!cache.has(internalKey)) {
-        cache.add(internalKey, value);
+        setNewCachedValue(internalKey, value);
       }
     };
 

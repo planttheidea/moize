@@ -91,19 +91,23 @@ test('if createAddPropertiesToFunction will create a method that adds the approp
 });
 
 test('if the methods added via createAddPropertiesToFunction will perform as expected', (t) => {
-  const cache = {
-    add: sinon.stub(),
-    clear: sinon.stub(),
-    has: sinon
-      .stub()
-      .onFirstCall()
-      .returns(false)
-      .onSecondCall()
-      .returns(true),
-    remove: sinon.stub()
+  const options = {
+    maxAge: 1000
   };
+  const cache = new Cache(options);
+
+  cache.add = sinon.stub();
+  cache.clear = sinon.stub();
+  cache.expireAfter = sinon.stub();
+  cache.has = sinon
+    .stub()
+    .onFirstCall()
+    .returns(false)
+    .onSecondCall()
+    .returns(true);
+  cache.remove = sinon.stub();
+
   const originalFunction = () => {};
-  const options = {};
 
   const addPropertiesToFunction = utils.createAddPropertiesToFunction(cache, originalFunction, options);
 
@@ -124,12 +128,13 @@ test('if the methods added via createAddPropertiesToFunction will perform as exp
   t.true(cache.add.calledOnce);
   t.true(cache.add.calledWith(cacheKey, value));
 
+  t.true(cache.expireAfter.calledOnce);
+  t.true(cache.expireAfter.calledWith(cacheKey));
+
   result.add(key, value);
 
   t.true(cache.has.calledTwice);
   t.true(cache.add.calledOnce);
-
-  result.add(key, value);
 
   result.clear();
 
