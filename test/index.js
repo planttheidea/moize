@@ -405,3 +405,7 @@ test('if moize.simple will create a memoized method with maxAge set to 1', (t) =
     serializer: null
   });
 });
+
+test('if moize.default is a reference to moize itself (for typescript import purposes)', (t) => {
+  t.is(moize, moize.default);
+});
