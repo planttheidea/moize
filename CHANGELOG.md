@@ -1,5 +1,8 @@
 # moize CHANGELOG
 
+## 4.0.4
+* Add `default` property to `moize` which points to itself, allowing TypeScript to import correctly as an ES module
+
 ## 4.0.3
 * Fix issue where items manually added to cache did not have the same options (`maxAge`, `maxSize`, etc.) applied to them as those added to cache through function call
 
