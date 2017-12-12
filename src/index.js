@@ -111,6 +111,22 @@ const moize: Function = (functionOrComposableOptions: Function | Object, passedO
 };
 
 /**
+ * @function compose
+ *
+ * @description
+ * method to compose moized methods and return a single moized function
+ *
+ * @param {...Array<(function)>} functions the functions to compose
+ * @returns {function(...Array<*>): *} the composed function
+ */
+moize.compose = compose;
+
+/**
+ * @NOTE provide default export for TS to be able to import directly
+ */
+moize.default = moize;
+
+/**
  * @function isMoized
  *
  * @description
@@ -122,17 +138,6 @@ const moize: Function = (functionOrComposableOptions: Function | Object, passedO
 moize.isMoized = (fn: any): boolean => {
   return isFunction(fn) && !!fn.isMoized;
 };
-
-/**
- * @function compose
- *
- * @description
- * method to compose moized methods and return a single moized function
- *
- * @param {...Array<(function)>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
- */
-moize.compose = compose;
 
 /**
  * @function maxAge
