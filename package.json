@@ -140,5 +140,5 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
   },
   "types": "./index.d.ts",
-  "version": "4.0.3"
+  "version": "4.0.4"
 }
