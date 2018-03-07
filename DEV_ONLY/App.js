@@ -9,6 +9,21 @@ import memoizee from 'memoizee';
 
 import moize from '../src';
 
+const div = document.createElement('div');
+
+div.id = 'app-container';
+div.style.backgroundColor = '#1d1d1d';
+div.style.boxSizing = 'border-box';
+div.style.color = '#d5d5d5';
+div.style.height = '100vh';
+div.style.padding = '15px';
+div.style.width = '100vw';
+
+document.body.style.margin = 0;
+document.body.style.padding = 0;
+
+document.body.appendChild(div);
+
 console.group('standard');
 
 const foo = 'foo';
@@ -51,9 +66,7 @@ const deepEqualMethod = ({one, two}) => {
   return [one, two];
 };
 
-const deepEqualMemoized = moize(deepEqualMethod, {
-  equals: isEqual
-});
+const deepEqualMemoized = moize.deep(deepEqualMethod);
 
 deepEqualMemoized({one: 1, two: 2});
 deepEqualMemoized({one: 2, two: 1});
@@ -71,7 +84,7 @@ console.group('promise');
 const promiseMethod = (number, otherNumber) => {
   console.log('promise method fired', number);
 
-  return new Promise((resolve) => {
+  return new Bluebird((resolve) => {
     resolve(number * otherNumber);
   });
 };
@@ -89,9 +102,10 @@ const promiseMethodRejected = (number) => {
 const memoizedPromise = moize(promiseMethod, {
   isPromise: true
 });
-const memoizedPromiseRejected = moize({isPromise: true})({promiseLibrary: Bluebird})(promiseMethodRejected);
+const memoizedPromiseRejected = moize({isPromise: true})(promiseMethodRejected);
 
 console.log('curried options', memoizedPromiseRejected.options);
+console.log('curried options under the hood', memoizedPromiseRejected._microMemoizeOptions);
 
 memoizedPromiseRejected(3)
   .then((foo) => {
@@ -99,6 +113,9 @@ memoizedPromiseRejected(3)
   })
   .catch((bar) => {
     console.error(bar);
+  })
+  .finally(() => {
+    console.log(memoizedPromiseRejected.keys());
   });
 
 memoizedPromiseRejected(3)
@@ -107,6 +124,9 @@ memoizedPromiseRejected(3)
   })
   .catch((bar) => {
     console.error(bar);
+  })
+  .finally(() => {
+    console.log(memoizedPromiseRejected.keys());
   });
 
 memoizedPromiseRejected(3)
@@ -115,6 +135,9 @@ memoizedPromiseRejected(3)
   })
   .catch((bar) => {
     console.error(bar);
+  })
+  .finally(() => {
+    console.log(memoizedPromiseRejected.keys());
   });
 
 // get result
@@ -203,11 +226,11 @@ Foo.defaultProps = {
   bar: 'default'
 };
 
-const MemoizedFoo = moize.react(Foo);
+const MemoizedFoo = moize.react(Foo, {isDeepEqual: true});
 const SimpleMemoizedFoo = moize.reactSimple(Foo);
 
-console.log('MemoizedFoo', MemoizedFoo.options);
-console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
+console.log('MemoizedFoo', MemoizedFoo.options, MemoizedFoo._microMemoizeOptions);
+console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options, SimpleMemoizedFoo._microMemoizeOptions);
 
 console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
@@ -226,7 +249,7 @@ const expiringMemoized = moize(method, {
       if (count !== 0) {
         console.log(
           'Expired! This is the last time I will fire, and this should be empty:',
-          expiringMemoized.cache.expirations
+          expiringMemoized.expirationsSnapshot
         );
 
         return true;
@@ -234,7 +257,7 @@ const expiringMemoized = moize(method, {
 
       console.log(
         'Expired! I will now reset the expiration, but this should be empty:',
-        expiringMemoized.cache.expirations
+        expiringMemoized.expirationsSnapshot
       );
 
       count++;
@@ -252,6 +275,8 @@ expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
+
+console.log('existing expirations', expiringMemoized.expirationsSnapshot);
 
 console.groupEnd('expiration');
 
@@ -289,19 +314,4 @@ class App extends Component {
   }
 }
 
-const div = document.createElement('div');
-
-div.id = 'app-container';
-div.style.backgroundColor = '#1d1d1d';
-div.style.boxSizing = 'border-box';
-div.style.color = '#d5d5d5';
-div.style.height = '100vh';
-div.style.padding = '15px';
-div.style.width = '100vw';
-
-document.body.style.margin = 0;
-document.body.style.padding = 0;
-
 render(<App />, div);
-
-document.body.appendChild(div);

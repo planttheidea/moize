@@ -1,7 +1,6 @@
 {
   "env": {
     "development": {
-      "plugins": ["add-module-exports"],
       "presets": [
         [
           "env",
@@ -27,7 +26,6 @@
       ]
     },
     "production": {
-      "plugins": ["add-module-exports"],
       "presets": [
         [
           "env",

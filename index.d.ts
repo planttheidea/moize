@@ -1,50 +1,46 @@
-interface PromiseLike<R> {
-    then<U>(
-        onFulfill?: (value: R) => Promise<U> | U,
-        onReject?: (error: any) => Promise<U> | U
-    ): Promise<U>;
+interface Cache {
+  keys: Array<Array<any>>;
+  values: Array<any>;
 }
 
-interface Config {
-    equals?: (firstValue: any, secondValue: any) => boolean; // custom equality comparator
-    isPromise?: boolean; // is the result a promise
-    isReact?: boolean; // is the method a functional React component
-    maxAge?: number; // amount of time in milliseconds before the cache will expire
-    maxArgs?: number; // maximum number of arguments to use as key for caching
-    maxSize?: number; // maximum size of cache for this method
-    onExpire?: (key: any) => void; // a callback when a cache item expires
-    promiseLibrary?: PromiseLibrary<any>; // provide a promise library to be used and override default
-    serialize?: boolean; // should the parameters be serialized instead of directly referenced
-    serializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
-    serializer?: (...args: any[]) => any; // provide a serializer and override default,
-    transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
-    updateExpire?: boolean; // should the expiration be updated when cache is hit
-}
-
-interface PromiseLibrary<T> {
-    (callback: (resolve: (r?: T | PromiseLike<T>) => void, reject: (e?: any) => void) => void): PromiseLike<T>;
-    reject: (err: Error) => any;
-    resolve: (v: T) => any;
+interface Options {
+  equals?: (firstValue: any, secondValue: any) => boolean; // custom equality comparator
+  isDeepEqual?: boolean; // is key comparison done via deep equality
+  isPromise?: boolean; // is the result a promise
+  isReact?: boolean; // is the method a functional React component
+  isSerialized?: boolean; // should the parameters be serialized instead of directly referenced
+  maxAge?: number; // amount of time in milliseconds before the cache will expire
+  maxArgs?: number; // maximum number of arguments to use as key for caching
+  maxSize?: number; // maximum size of cache for this method
+  onCacheAdd?: (cache: Cache) => void; // a callback when a new cache item is added
+  onCacheChange?: (cache: Cache) => void; // a callback when the cache changes
+  onCacheHit?: (cache: Cache) => void; // a callback when an existing cache item is retrieved
+  onExpire?: (key: any) => void; // a callback when a cache item expires
+  serializer?: (...args: any[]) => any; // provide a serializer and override default,
+  shouldSerializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
+  transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
+  updateExpire?: boolean; // should the expiration be updated when cache is hit
 }
 
 type Fn = (...args: any[]) => any;
 
 type Moizer<T extends Fn> = (t: T) => T;
 
-declare function moize<T extends Fn>(c: Config): ((t: T) => T);
-declare function moize<T extends Fn>(t: T, c?: Config): T;
+declare function moize<T extends Fn>(o: Options): ((t: T) => T);
+declare function moize<T extends Fn>(t: T, o?: Options): T;
 
 declare namespace moize {
-    function maxAge<T extends Fn>(a: number): (t: T, c?: Config) => T;
-    function maxArgs<T extends Fn>(a: number): (t: T, c?: Config) => T;
-    function maxSize<T extends Fn>(a: number): (t: T, c?: Config) => T;
-    function promise<T extends Fn>(t: T, c?: Config): T;
-    function react<T extends Fn>(t: T, c?: Config): T;
-    function reactSimple<T extends Fn>(t: T, c?: Config): T;
-    function serialize<T extends Fn>(t: T, c?: Config): T;
-    function simple<T extends Fn>(t: T, c?: Config): T;
+  function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
 
-    function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
+  function deep<T extends Fn>(t: T, o?: Options): T;
+  function maxAge<T extends Fn>(a: number): (t: T, o?: Options) => T;
+  function maxArgs<T extends Fn>(a: number): (t: T, o?: Options) => T;
+  function maxSize<T extends Fn>(a: number): (t: T, o?: Options) => T;
+  function promise<T extends Fn>(t: T, o?: Options): T;
+  function react<T extends Fn>(t: T, o?: Options): T;
+  function reactSimple<T extends Fn>(t: T, o?: Options): T;
+  function serialize<T extends Fn>(t: T, o?: Options): T;
+  function simple<T extends Fn>(t: T, o?: Options): T;
 }
 
 export default moize;
