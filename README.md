@@ -683,6 +683,12 @@ Each benchmark was performed using the default configuration of the library, wit
 | underscore   | N/A               | 12,505,751       | N/A                | 24,051,104         | 5,404,896      | 8,061,254       | N/A                  | N/A              | N/A               |
 | ramda        | N/A               | 551,402          | N/A                | 1,142,370          | 303,464        | 208,372         | N/A                  | N/A              | N/A               |
 
+![Overall average image](img/overall-average.png)
+
+![Single parameter image](img/single-parameter.png)
+
+![Multiple parameters image](img/multiple-parameters.png)
+
 ## Direct cache manipulation
 
 There are a few methods provided on the `moize`d function which allow for programmatic manipulation of the cache:
