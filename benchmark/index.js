@@ -593,13 +593,13 @@ const runAlternativeOptionsSuite = () => {
 };
 
 const writeCsv = () => {
-  let headers = ['Name'];
+  let invidualResultsHeaders = ['Name', 'Overall (average)', 'Single (average)', 'Multiple (average)'];
 
-  const tableMap = Object.keys(csvResults).reduce((rows, key) => {
+  const individualTableMap = Object.keys(csvResults).reduce((rows, key) => {
     const header = key.replace(/ (parameters|parameter)/, '');
 
-    if (!~headers.indexOf(header)) {
-      headers.push(header);
+    if (!~invidualResultsHeaders.indexOf(header)) {
+      invidualResultsHeaders.push(header);
     }
 
     return Object.keys(csvResults[key]).reduce((values, library) => {
@@ -613,20 +613,19 @@ const writeCsv = () => {
     }, rows);
   }, {});
 
-  headers.push('Single (average)');
-  headers.push('Multiple (average)');
+  const averages = Object.keys(individualTableMap).reduce((rows, library) => {
+    if (!rows[library]) {
+      rows[library] = {};
+    }
 
-  const averagedTableMap = Object.keys(tableMap).reduce((rows, key) => {
-    const averages = Object.keys(tableMap[key]).reduce(
+    const libraryAverages = Object.keys(individualTableMap[library]).reduce(
       ({multiple, single}, header) => {
-        if (tableMap[key][header]) {
-          if (~header.indexOf('Single')) {
-            single.length++;
-            single.total += tableMap[key][header];
-          } else {
-            multiple.length++;
-            multiple.total += tableMap[key][header];
-          }
+        if (~header.indexOf('Multiple')) {
+          multiple.length++;
+          multiple.total += ~~individualTableMap[library][header];
+        } else {
+          single.length++;
+          single.total += ~~individualTableMap[library][header];
         }
 
         return {
@@ -646,31 +645,41 @@ const writeCsv = () => {
       }
     );
 
-    rows[key]['Multiple (average)'] = ~~(averages.multiple.total / averages.multiple.length);
-    rows[key]['Single (average)'] = ~~(averages.single.total / averages.single.length);
+    rows[library] = {
+      multiple: libraryAverages.multiple.length
+        ? ~~(libraryAverages.multiple.total / libraryAverages.multiple.length)
+        : 0,
+      overall: libraryAverages.multiple.length
+        ? ~~(
+          (libraryAverages.multiple.total + libraryAverages.single.total) /
+            (libraryAverages.multiple.length + libraryAverages.single.length)
+        )
+        : 0,
+      single: libraryAverages.single.length ? ~~(libraryAverages.single.total / libraryAverages.single.length) : 0
+    };
 
     return rows;
-  }, tableMap);
+  }, {});
 
-  const rows = Object.keys(averagedTableMap).reduce((csvRows, key) => {
-    const values = headers.slice(1).map((header) => {
-      return averagedTableMap[key][header] ? averagedTableMap[key][header].toLocaleString() : '0';
+  const individualRows = Object.keys(individualTableMap).reduce((csvRows, key) => {
+    const values = invidualResultsHeaders.slice(4).map((header) => {
+      return individualTableMap[key][header];
     });
 
-    csvRows.push([key].concat(values));
+    csvRows.push([key, averages[key].overall, averages[key].single, averages[key].multiple].concat(values));
 
     return csvRows;
   }, []);
 
-  const csvText = `${headers
+  const individualCsvText = `${invidualResultsHeaders
     .map((header) => {
       return `"${header}"`;
     })
-    .join(',')}\n${rows
+    .join(',')}\n${individualRows
     .map((row) => {
       return row
         .map((value) => {
-          return `"${value}"`;
+          return value ? `"${value.toLocaleString()}"` : '"N/A"';
         })
         .join(',');
     })
@@ -678,7 +687,7 @@ const writeCsv = () => {
 
   // write to file
   if (fs && fs.writeFileSync) {
-    fs.writeFileSync('benchmark_results.csv', csvText, 'utf8');
+    fs.writeFileSync('benchmark/benchmark_results.csv', individualCsvText, 'utf8');
     console.log('benchmarks done! Results saved to benchmark_results.csv');
   } else {
     console.log('benchmarks done!');
@@ -694,3 +703,5 @@ runSinglePrimitiveSuite()
   .then(runMultipleArraySuite)
   .then(runMultipleObjectSuite)
   .then(writeCsv);
+
+// runMultipleObjectSuite().then(writeCsv);

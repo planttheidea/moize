@@ -669,21 +669,19 @@ moize.isMoized(moizedFn); // true
 
 All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Note that `underscore`, `lodash`, and `ramda` do not support mulitple-parameter memoization, so they are not included in those benchmarks.
 
-Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, and in the case of multiple parameters a second parameter (`boolean` for primitives, `object` for complex objects) was used.
+Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, using single and multiparameters based on difference object types. The results were averaged to determine overall speed across all scenarios.
 
-#### Single parameter
-
-|              | Single (primitive) | Single (object) | Single (average) | Multiple (primitives) | Multiple (objects) |
-| ------------ | ------------------ | --------------- | ---------------- | --------------------- | ------------------ |
-| **moize**    | **72,673,601**     | **56,145,067**  | **64359334**     | **47,140,063**        | **46,089,976**     |
-| fast-memoize | 210,576,701        | 1,437,754       | 1,183,934        | 800,788               |
-| underscore   | 23,151,241         | 7,831,437       | N/A              | N/A                   |
-| memoizee     | 15,301,745         | 10,828,028      | 9,822,758        | 7,428,066             |
-| lodash       | 25,820,327         | 7,955,241       | N/A              | N/A                   |
-| lru-memoize  | 7,827,321          | 6,933,155       | 6,382,053        | 6,391,135             |
-| Addy Osmani  | 6,267,043          | 1,760,585       | 3,255,834        | 970,044               |
-| memoizerific | 5,520,946          | 4,316,649       | 4,504,313        | 3,466,529             |
-| ramda        | 1,092,163          | 204,127         | N/A              | N/A                   |
+| Name         | Overall (average) | Single (average) | Multiple (average) | Single (primitive) | Single (Array) | Single (Object) | Multiple (primitive) | Multiple (Array) | Multiple (Object) |
+| ------------ | ----------------- | ---------------- | ------------------ | ------------------ | -------------- | --------------- | -------------------- | ---------------- | ----------------- |
+| **moize**    | **58,669,248**    | **67,308,143**   | **50,030,353**     | **80,260,036**     | **60,871,531** | **60,792,864**  | **50,510,487**       | **50,281,433**   | **49,299,140**    |
+| fast-memoize | 37,901,525        | 74,753,514       | 1,049,536          | 221,161,329        | 1,594,143      | 1,505,072       | 1,215,892            | 1,111,605        | 821,111           |
+| memoizee     | 11,128,750        | 13,712,714       | 8,544,786          | 16,811,901         | 11,983,924     | 12,342,317      | 10,568,148           | 7,401,170        | 7,665,041         |
+| lru-memoize  | 7,042,509         | 7,492,004        | 6,593,015          | 8,189,054          | 7,153,791      | 7,133,169       | 6,675,840            | 6,592,401        | 6,510,804         |
+| memoizerific | 4,484,511         | 4,840,758        | 4,128,264          | 5,641,865          | 4,418,423      | 4,461,986       | 4,761,211            | 3,998,986        | 3,624,597         |
+| addy-osmani  | 2,730,139         | 3,381,737        | 2,078,540          | 6,580,745          | 1,784,218      | 1,780,250       | 3,478,684            | 1,786,383        | 970,555           |
+| lodash       | N/A               | 14,825,854       | N/A                | 27,985,602         | 8,207,788      | 8,284,173       | N/A                  | N/A              | N/A               |
+| underscore   | N/A               | 12,505,751       | N/A                | 24,051,104         | 5,404,896      | 8,061,254       | N/A                  | N/A              | N/A               |
+| ramda        | N/A               | 551,402          | N/A                | 1,142,370          | 303,464        | 208,372         | N/A                  | N/A              | N/A               |
 
 ## Direct cache manipulation
 
