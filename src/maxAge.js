@@ -29,43 +29,45 @@ export const createOnCacheAddSetExpiration: Function = (
   return function onCacheAdd(cache: Cache): ?Function {
     const key: any = cache.keys[0];
 
-    const expirationMethod = () => {
-      const keyIndex: number = findKeyIndex(isEqual, cache.keys, key);
-      const value: any = cache.values[keyIndex];
+    if (!~findExpirationIndex(expirations, key)) {
+      const expirationMethod = () => {
+        const keyIndex: number = findKeyIndex(isEqual, cache.keys, key);
+        const value: any = cache.values[keyIndex];
 
-      if (~keyIndex) {
-        cache.keys.splice(keyIndex, 1);
-        cache.values.splice(keyIndex, 1);
+        if (~keyIndex) {
+          cache.keys.splice(keyIndex, 1);
+          cache.values.splice(keyIndex, 1);
 
-        if (typeof onCacheChange === 'function') {
-          onCacheChange(cache);
+          if (typeof onCacheChange === 'function') {
+            onCacheChange(cache);
+          }
         }
-      }
 
-      const currentExpirationIndex = findExpirationIndex(expirations, key);
+        const currentExpirationIndex = findExpirationIndex(expirations, key);
 
-      if (~currentExpirationIndex) {
-        expirations.splice(currentExpirationIndex, 1);
-      }
-
-      if (typeof onExpire === 'function' && onExpire(key) === false) {
-        cache.keys.unshift(key);
-        cache.values.unshift(value);
-
-        createOnCacheAddSetExpiration(expirations, options, isEqual)(cache);
-
-        if (typeof onCacheChange === 'function') {
-          onCacheChange(cache);
+        if (~currentExpirationIndex) {
+          expirations.splice(currentExpirationIndex, 1);
         }
-      }
-    };
 
-    expirations.push({
-      expirationMethod,
-      key,
-      // $FlowIgnore maxAge is an number
-      timeoutId: setTimeout(expirationMethod, maxAge)
-    });
+        if (typeof onExpire === 'function' && onExpire(key) === false) {
+          cache.keys.unshift(key);
+          cache.values.unshift(value);
+
+          createOnCacheAddSetExpiration(expirations, options, isEqual)(cache);
+
+          if (typeof onCacheChange === 'function') {
+            onCacheChange(cache);
+          }
+        }
+      };
+
+      expirations.push({
+        expirationMethod,
+        key,
+        // $FlowIgnore maxAge is an number
+        timeoutId: setTimeout(expirationMethod, maxAge)
+      });
+    }
   };
 };
 
@@ -91,16 +93,14 @@ export const createOnCacheHitResetExpiration: Function = (
 
     const expirationIndex: number = findExpirationIndex(expirations, key);
 
-    if (!~expirationIndex) {
-      return;
+    if (~expirationIndex) {
+      clearTimeout(expirations[expirationIndex].timeoutId);
+
+      // $FlowIgnore options exists
+      const maxAge: number = options.maxAge;
+
+      expirations[expirationIndex].timeoutId = setTimeout(expirations[expirationIndex].expirationMethod, maxAge);
     }
-
-    clearTimeout(expirations[expirationIndex].timeoutId);
-
-    // $FlowIgnore options exists
-    const maxAge: number = options.maxAge;
-
-    expirations[expirationIndex].timeoutId = setTimeout(expirations[expirationIndex].expirationMethod, maxAge);
   };
 };
 
@@ -124,13 +124,9 @@ export const getMaxAgeOptions = (expirations: Array<Expiration>, options: Option
     onAdd,
     typeof maxAge === 'number' && isFinite(maxAge) && createOnCacheAddSetExpiration(expirations, options, isEqual)
   );
-  const onCacheHit = combine(
-    onHit,
-    onCacheAdd && updateExpire && createOnCacheHitResetExpiration(expirations, options)
-  );
 
   return {
     onCacheAdd,
-    onCacheHit
+    onCacheHit: combine(onHit, onCacheAdd && updateExpire && createOnCacheHitResetExpiration(expirations, options))
   };
 };

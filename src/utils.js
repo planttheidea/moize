@@ -11,8 +11,8 @@ import type {Expiration} from './types';
  * @description
  * method to combine functions and return a single function that fires them all
  *
- * @param {...Array<function>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
+ * @param {...Array<any>} functions the functions to compose
+ * @returns {function(...Array<any>): any} the composed function
  */
 export const combine = (...functions: Array<any>): Function => {
   // $FlowIgnore return value is always a function
@@ -38,8 +38,8 @@ export const combine = (...functions: Array<any>): Function => {
  * @description
  * method to compose functions and return a single function
  *
- * @param {...Array<function>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
+ * @param {...Array<any>} functions the functions to compose
+ * @returns {function(...Array<any>): any} the composed function
  */
 export const compose = (...functions: Array<any>): Function => {
   // $FlowIgnore return value is always a function

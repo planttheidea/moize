@@ -17,20 +17,6 @@ import type {Options} from './types';
  * @param {Options} options the options passed to the moizer
  * @returns {function} the isEqual method to apply
  */
-export const getIsEqual = (options: Options): Function => {
-  const {equals, isDeepEqual, isReact} = options;
-
-  if (equals) {
-    return equals;
-  }
-
-  if (isDeepEqual) {
-    return deepEqual;
-  }
-
-  if (isReact) {
-    return shallowEqual;
-  }
-
-  return sameValueZeroEqual;
+export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function => {
+  return equals || (isDeepEqual && deepEqual) || (isReact && shallowEqual) || sameValueZeroEqual;
 };

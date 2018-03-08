@@ -36,12 +36,12 @@ export const getTransformKey = (options: Options): ?Function => {
     transformKey = compose(createGetInitialArgs(2), transformKey);
   }
 
-  if (isSerialized) {
-    transformKey = compose(getSerializerFunction(options), transformKey);
-  }
-
   if (typeof transformArgs === 'function') {
     transformKey = compose(transformArgs, transformKey);
+  }
+
+  if (isSerialized) {
+    transformKey = compose(getSerializerFunction(options), transformKey);
   }
 
   return transformKey;

@@ -183,14 +183,12 @@ export const getStats = (profileName: ?string): StatsObject => {
     }
   );
 
-  const profiles = Object.keys(statsCache.profiles).reduce((profiles, profileName) => {
-    profiles[profileName] = getStats(profileName);
-
-    return profiles;
-  }, {});
-
   return Object.assign({}, completeStats, {
-    profiles,
+    profiles: Object.keys(statsCache.profiles).reduce((profiles, profileName) => {
+      profiles[profileName] = getStats(profileName);
+
+      return profiles;
+    }, {}),
     usage: getUsagePercentage(completeStats.calls, completeStats.hits)
   });
 };
@@ -207,10 +205,11 @@ export const getStats = (profileName: ?string): StatsObject => {
  * @returns {Object} the options specific to keeping stats
  */
 export const getStatsOptions = (options: Options): Object => {
-  const {onCacheAdd: onAdd, onCacheHit: onHit} = options;
-
   return {
-    onCacheAdd: combine(onAdd, statsCache.isCollectingStats && createOnCacheAddIncrementCalls(options)),
-    onCacheHit: combine(onHit, statsCache.isCollectingStats && createOnCacheHitIncrementCallsAndHits(options))
+    onCacheAdd: combine(options.onCacheAdd, statsCache.isCollectingStats && createOnCacheAddIncrementCalls(options)),
+    onCacheHit: combine(
+      options.onCacheHit,
+      statsCache.isCollectingStats && createOnCacheHitIncrementCallsAndHits(options)
+    )
   };
 };
