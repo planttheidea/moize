@@ -1,6 +1,7 @@
 declare module 'moize' {
   declare type Cache = {
     keys: Array<Array<any>>,
+    size: number,
     values: Array<any>
   };
 

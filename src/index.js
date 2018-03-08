@@ -15,6 +15,9 @@ import {getIsEqual} from './isEqual';
 // max age
 import {getMaxAgeOptions} from './maxAge';
 
+// stats
+import {collectStats, getStatsOptions, getAnonymousProfileName, getStats, statsCache} from './stats';
+
 // transform key
 import {getTransformKey} from './transformKey';
 
@@ -22,20 +25,38 @@ import {getTransformKey} from './transformKey';
 import type {Expiration, MicroMemoizeOptions, Options} from './types';
 
 // utils
-import {compose} from './utils';
+import {combine, compose} from './utils';
+
+export {collectStats};
 
 function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Function {
   if (typeof fn === 'object') {
     return (curriedFn: Function | Object, curriedOptions: Object = {}) => {
       return typeof curriedFn === 'function'
-        ? // $FlowIgnore fn is actually an object of options
-        moize(curriedFn, Object.assign({}, fn, curriedOptions))
-        : // $FlowIgnore fn is actually an object of options
-        moize(Object.assign({}, fn, curriedFn));
+        ? moize(
+          curriedFn,
+          // $FlowIgnore fn is actually an object of options
+          Object.assign({}, fn, curriedOptions, {
+            onCacheAdd: combine(curriedOptions.onCacheAdd, fn.onCacheAdd),
+            onCacheChange: combine(curriedOptions.onCacheChange, fn.onCacheChange),
+            onCacheHit: combine(curriedOptions.onCacheHit, fn.onCacheHit)
+          })
+        )
+        : moize(
+          // $FlowIgnore fn is actually an object of options
+          Object.assign({}, fn, curriedFn, {
+            onCacheAdd: combine(curriedFn.onCacheAdd, fn.onCacheAdd),
+            onCacheChange: combine(curriedFn.onCacheChange, fn.onCacheChange),
+            onCacheHit: combine(curriedFn.onCacheHit, fn.onCacheHit)
+          })
+        );
     };
   }
 
-  const coalescedOptions: Options = Object.assign({}, DEFAULT_OPTIONS, options);
+  const coalescedOptions: Options = Object.assign({}, DEFAULT_OPTIONS, options, {
+    profileName: options.profileName || getAnonymousProfileName(fn)
+  });
+  const collectStats: boolean = false;
   const expirations: Array<Expiration> = [];
 
   const {
@@ -46,10 +67,11 @@ function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Funct
     maxAge: maxAgeIgnored,
     maxArgs: maxArgsIgnored,
     maxSize,
-    onCacheAdd,
+    onCacheAdd: onCacheAddIgnored,
     onCacheChange: onCacheChangeIgnored,
     onCacheHit: onCacheHitIgnored,
     onExpire: onExpireIgnored,
+    profileName: profileNameIgnored,
     shouldSerializeFunctions: shouldSerializeFunctionsIgnored,
     serializer: serializerIgnored,
     transformArgs: transformArgsIgnored,
@@ -58,20 +80,22 @@ function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Funct
   } = coalescedOptions;
 
   const isEqual: Function = getIsEqual(coalescedOptions);
-  const {onCacheChange, onCacheHit} = getMaxAgeOptions(expirations, coalescedOptions, isEqual);
+  const maxAgeOptions: Object = getMaxAgeOptions(expirations, coalescedOptions, isEqual);
+  const statsOptions: Object = getStatsOptions(coalescedOptions);
   const transformKey: ?Function = getTransformKey(coalescedOptions);
 
   const microMemoizeOptions: MicroMemoizeOptions = Object.assign({}, customOptions, {
     isEqual,
     isPromise,
     maxSize,
-    onCacheAdd,
-    onCacheChange,
-    onCacheHit,
+    onCacheAdd: statsOptions.onCacheAdd,
+    onCacheChange: maxAgeOptions.onCacheChange,
+    onCacheHit: combine(maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
     transformKey
   });
 
   return augmentMoizeInstance(memoize(fn, microMemoizeOptions), {
+    collectStats,
     expirations,
     options: coalescedOptions,
     originalFunction: fn
@@ -81,6 +105,12 @@ function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Funct
 moize.compose = compose;
 
 moize.deep = moize({isDeepEqual: true});
+
+moize.getStats = getStats;
+
+moize.isCollectingStats = (): boolean => {
+  return statsCache.isCollectingStats;
+};
 
 moize.isMoized = (fn: any): boolean => {
   return typeof fn === 'function' && fn.isMoized;

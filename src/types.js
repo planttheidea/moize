@@ -42,10 +42,14 @@ export type MicroMemoizeOptions = {
  * @property {function} [equals] a custom equality comparator used for key matching
  * @property {boolean} isPromise is the return value a promise or not
  * @property {boolean} isSerialized should the parameters be serialized for the cache key
- * @property {number} maxAge the TTL for the return value to live in cache
- * @property {number} maxArgs the maximum number of arguments to use as the cache key
+ * @property {number} [maxAge] the TTL for the return value to live in cache
+ * @property {number} [maxArgs] the maximum number of arguments to use as the cache key
  * @property {number} maxSize the maximum size of values to store in cache
- * @property {function} onExpire method to call when cache is expired
+ * @property {function} [onCacheAdd] method called when cache item is added
+ * @property {function} [onCacheChange] method called when cache is added to or reordered
+ * @property {function} [onCacheHit] method called when existing cache item is retrieved
+ * @property {function} [onExpire] method to call when cache is expired
+ * @property {string} [profileName] the name to use when profiling for statistics
  * @property {boolean} shouldSerializeFunctions should a custom replacer that includes functions be used in serialization
  * @property {function} [transformArgs] method to transform the arguments
  * @property {boolean} updateExpire should the expiration be updated when cache is hit
@@ -63,10 +67,33 @@ export type Options = {
   onCacheChange: ?Function,
   onCacheHit: ?Function,
   onExpire: ?Function,
+  profileName: ?string,
   serializer: ?Function,
   shouldSerializeFunctions: boolean,
   transformArgs: ?Function,
   updateExpire: boolean
+};
+
+export type StatsProfile = {
+  calls: number,
+  hits: number
+};
+
+export type StatsObject = {
+  calls: number,
+  hits: number,
+  profiles?: {
+    [key: string]: StatsProfile
+  },
+  usage: string
+};
+
+export type StatsCache = {
+  anonymousProfileNameCounter: number,
+  isCollectingStats: boolean,
+  profiles: {
+    [key: string]: StatsProfile
+  }
 };
 
 /* eslint-enable */

@@ -12,14 +12,19 @@ import type {Expiration} from './types';
  * @param {...Array<function>} functions the functions to compose
  * @returns {function(...Array<*>): *} the composed function
  */
-export const combine = (...functions: Array<Function>): Function => {
+export const combine = (...functions: Array<?Function>): Function => {
+  // $FlowIgnore return value is always a function
   return functions.reduce((f: Function, g: Function): Function => {
-    return function(): any {
-      /* eslint-disable prefer-spread */
-      f.apply(this, arguments);
-      g.apply(this, arguments);
-      /* eslint-enable */
-    };
+    return typeof f === 'function'
+      ? typeof g === 'function'
+        ? function(): any {
+          /* eslint-disable prefer-spread */
+          f.apply(this, arguments);
+          g.apply(this, arguments);
+          /* eslint-enable */
+        }
+        : f
+      : typeof g === 'function' ? g : function() {};
   });
 };
 

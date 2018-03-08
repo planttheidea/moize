@@ -7,7 +7,7 @@ import React, {Component} from 'react';
 import {render} from 'react-dom';
 import memoizee from 'memoizee';
 
-import moize from '../src';
+import moize, {collectStats} from '../src';
 
 const div = document.createElement('div');
 
@@ -23,6 +23,8 @@ document.body.style.margin = 0;
 document.body.style.padding = 0;
 
 document.body.appendChild(div);
+
+collectStats();
 
 console.group('standard');
 
@@ -46,6 +48,8 @@ memoized(foo, bar);
 console.log(memoized.cache);
 console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
+
+console.log(memoized.getStats());
 
 console.groupEnd('standard');
 
@@ -102,7 +106,7 @@ const promiseMethodRejected = (number) => {
 const memoizedPromise = moize(promiseMethod, {
   isPromise: true
 });
-const memoizedPromiseRejected = moize({isPromise: true})(promiseMethodRejected);
+const memoizedPromiseRejected = moize({isPromise: true, profileName: 'rejected promise'})(promiseMethodRejected);
 
 console.log('curried options', memoizedPromiseRejected.options);
 console.log('curried options under the hood', memoizedPromiseRejected._microMemoizeOptions);
@@ -227,7 +231,7 @@ Foo.defaultProps = {
 };
 
 const MemoizedFoo = moize.react(Foo, {isDeepEqual: true});
-const SimpleMemoizedFoo = moize.reactSimple(Foo);
+const SimpleMemoizedFoo = moize.reactSimple(Foo, {profileName: 'SimpleMemoizedFoo'});
 
 console.log('MemoizedFoo', MemoizedFoo.options, MemoizedFoo._microMemoizeOptions);
 console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options, SimpleMemoizedFoo._microMemoizeOptions);
@@ -251,6 +255,8 @@ const expiringMemoized = moize(method, {
           'Expired! This is the last time I will fire, and this should be empty:',
           expiringMemoized.expirationsSnapshot
         );
+
+        console.log(moize.getStats());
 
         return true;
       }
@@ -279,6 +285,8 @@ expiringMemoized(foo, bar);
 console.log('existing expirations', expiringMemoized.expirationsSnapshot);
 
 console.groupEnd('expiration');
+
+console.log(moize.getStats());
 
 const HEADER_STYLE = {
   margin: 0

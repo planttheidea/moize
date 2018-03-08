@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const fs = require('fs');
 const React = require('react');
 
@@ -8,7 +9,7 @@ const Table = require('cli-table2');
 const ora = require('ora');
 
 const underscore = require('underscore').memoize;
-const lodash = require('lodash').memoize;
+const lodash = _.memoize;
 const ramda = require('ramda').memoize;
 const memoizee = require('memoizee');
 const fastMemoize = require('fast-memoize');
@@ -661,15 +662,17 @@ const writeCsv = () => {
     return rows;
   }, {});
 
-  const individualRows = Object.keys(individualTableMap).reduce((csvRows, key) => {
-    const values = invidualResultsHeaders.slice(4).map((header) => {
-      return individualTableMap[key][header];
-    });
+  const individualRows = _.orderBy(
+    Object.keys(individualTableMap).map((key) => {
+      const values = invidualResultsHeaders.slice(4).map((header) => {
+        return individualTableMap[key][header];
+      });
 
-    csvRows.push([key, averages[key].overall, averages[key].single, averages[key].multiple].concat(values));
-
-    return csvRows;
-  }, []);
+      return [key, averages[key].overall, averages[key].single, averages[key].multiple].concat(values);
+    }),
+    [1, 2],
+    ['desc', 'desc']
+  );
 
   const individualCsvText = `${invidualResultsHeaders
     .map((header) => {
@@ -694,14 +697,15 @@ const writeCsv = () => {
   }
 };
 
-// runAlternativeOptionsSuite();
-
-runSinglePrimitiveSuite()
+Promise.resolve()
+  .then(runSinglePrimitiveSuite)
   .then(runSingleArraySuite)
   .then(runSingleObjectSuite)
   .then(runMultiplePrimitiveSuite)
   .then(runMultipleArraySuite)
   .then(runMultipleObjectSuite)
   .then(writeCsv);
+
+// runAlternativeOptionsSuite();
 
 // runMultipleObjectSuite().then(writeCsv);

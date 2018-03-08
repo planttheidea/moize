@@ -11,7 +11,7 @@ export const createOnCacheChangeSetExpiration: Function = (
   options: Options,
   isEqual: Function
 ): ?Function => {
-  const {maxAge, onExpire} = options;
+  const {maxAge, onCacheChange: existingOnCacheChange, onExpire} = options;
 
   return function onCacheChange(cache: Object): ?Function {
     const key: any = cache.keys[0];
@@ -27,6 +27,10 @@ export const createOnCacheChangeSetExpiration: Function = (
       if (~keyIndex) {
         cache.keys.splice(keyIndex, 1);
         cache.values.splice(keyIndex, 1);
+
+        if (typeof existingOnCacheChange === 'function') {
+          existingOnCacheChange(cache);
+        }
       }
 
       const currentExpirationIndex = findExpirationIndex(expirations, key);
@@ -40,6 +44,10 @@ export const createOnCacheChangeSetExpiration: Function = (
         cache.values.unshift(value);
 
         createOnCacheChangeSetExpiration(expirations, options, isEqual)(cache);
+
+        if (typeof existingOnCacheChange === 'function') {
+          existingOnCacheChange(cache);
+        }
       }
     };
 
@@ -86,20 +94,12 @@ export const createOnCacheHitResetExpiration: Function = (
 export const getMaxAgeOptions = (expirations: Array<Expiration>, options: Options, isEqual: Function): Object => {
   const {maxAge, onCacheChange: onChange, onCacheHit: onHit, updateExpire} = options;
 
-  let onCacheChange, onCacheHit;
-
-  if (typeof maxAge === 'number' && isFinite(maxAge)) {
-    const onCacheChangeSetExpiration = createOnCacheChangeSetExpiration(expirations, options, isEqual);
-
-    onCacheChange =
-      typeof onChange === 'function' ? combine(onChange, onCacheChangeSetExpiration) : onCacheChangeSetExpiration;
-  }
-
-  if (onCacheChange && updateExpire) {
-    const onCacheHitResetExpiration = createOnCacheHitResetExpiration(expirations, options);
-
-    onCacheHit = typeof onHit === 'function' ? combine(onHit, onCacheHitResetExpiration) : onCacheHitResetExpiration;
-  }
+  const onCacheChange =
+    typeof maxAge === 'number' && isFinite(maxAge)
+      ? combine(onChange, createOnCacheChangeSetExpiration(expirations, options, isEqual))
+      : onChange;
+  const onCacheHit =
+    onCacheChange && updateExpire ? combine(onHit, createOnCacheHitResetExpiration(expirations, options)) : onHit;
 
   return {
     onCacheChange,
