@@ -4,6 +4,8 @@
 import type {Options} from './types';
 
 /**
+ * @private
+ *
  * @constant {Object} DEFAULT_OPTIONS
  */
 export const DEFAULT_OPTIONS: Options = {

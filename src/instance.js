@@ -1,7 +1,7 @@
 // @flow
 
 // stats
-import {getStats} from './stats';
+import {getStats, statsCache} from './stats';
 
 // types
 import type {Cache, MicroMemoizeOptions, StatsProfile} from './types';
@@ -9,6 +9,19 @@ import type {Cache, MicroMemoizeOptions, StatsProfile} from './types';
 // utils
 import {findKeyIndex} from './utils';
 
+/**
+ * @private
+ *
+ * @function addInstanceMethods
+ *
+ * @description
+ * add methods to the moized fuction object that allow extra features
+ *
+ * @modifies {moized}
+ *
+ * @param {function} moized the memoized function
+ * @returns {void}
+ */
 export const addInstanceMethods = (moized: Function): void => {
   const {isEqual, onCacheAdd, onCacheChange, transformKey} = moized.options;
 
@@ -67,9 +80,25 @@ export const addInstanceMethods = (moized: Function): void => {
   };
 };
 
+/**
+ * @private
+ *
+ * @function addInstanceMethods
+ *
+ * @description
+ * add propeties to the moized fuction object that surfaces extra information
+ *
+ * @modifies {moized}
+ *
+ * @param {function} moized the memoized function
+ * @param {Array<Expiration>} expirations the list of expirations for cache items
+ * @param {Options} options the options passed to the moizer
+ * @param {function} originalFunctionthe function that is being memoized
+ * @returns {void}
+ */
 export const addInstanceProperties = (
   moized: Function,
-  {collectStats, expirations, options: moizeOptions, originalFunction}: Object
+  {expirations, options: moizeOptions, originalFunction}: Object
 ): void => {
   const cache: Cache = moized.cache;
   const microMemoizeOptions: MicroMemoizeOptions = moized.options;
@@ -106,7 +135,7 @@ export const addInstanceProperties = (
       collectStats: {
         configurable: true,
         get() {
-          return collectStats;
+          return statsCache.isCollectingStats;
         }
       },
       expirations: {
@@ -150,6 +179,18 @@ export const addInstanceProperties = (
   }
 };
 
+/**
+ * @private
+ *
+ * @function augmentMoizeInstance
+ *
+ * @description
+ * add methods and properties to the memoized function for more features
+ *
+ * @param {function} moized the memoized function
+ * @param {Object} configuration the configuration object for the instance
+ * @returns {function} the memoized function passed
+ */
 export const augmentMoizeInstance = (moized: Function, configuration: Object): Function => {
   addInstanceMethods(moized);
   addInstanceProperties(moized, configuration);

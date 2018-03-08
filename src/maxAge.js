@@ -6,19 +6,28 @@ import type {Cache, Expiration, Options} from './types';
 // utils
 import {combine, findExpirationIndex, findKeyIndex} from './utils';
 
-export const createOnCacheChangeSetExpiration: Function = (
+export const createOnCacheAddSetExpiration: Function = (
   expirations: Array<Expiration>,
   options: Options,
   isEqual: Function
 ): ?Function => {
-  const {maxAge, onCacheChange: existingOnCacheChange, onExpire} = options;
+  const {maxAge, onCacheChange, onExpire} = options;
 
-  return function onCacheChange(cache: Cache): ?Function {
+  /**
+   * @private
+   *
+   * @function onCacheAdd
+   *
+   * @description
+   * when an item is added to the cache, add an expiration for it
+   *
+   * @modifies {expirations}
+   *
+   * @param {Cache} cache the cache of the memoized function
+   * @returns {void}
+   */
+  return function onCacheAdd(cache: Cache): ?Function {
     const key: any = cache.keys[0];
-
-    if (~findExpirationIndex(expirations, key)) {
-      return;
-    }
 
     const expirationMethod = () => {
       const keyIndex: number = findKeyIndex(isEqual, cache.keys, key);
@@ -28,8 +37,8 @@ export const createOnCacheChangeSetExpiration: Function = (
         cache.keys.splice(keyIndex, 1);
         cache.values.splice(keyIndex, 1);
 
-        if (typeof existingOnCacheChange === 'function') {
-          existingOnCacheChange(cache);
+        if (typeof onCacheChange === 'function') {
+          onCacheChange(cache);
         }
       }
 
@@ -43,10 +52,10 @@ export const createOnCacheChangeSetExpiration: Function = (
         cache.keys.unshift(key);
         cache.values.unshift(value);
 
-        createOnCacheChangeSetExpiration(expirations, options, isEqual)(cache);
+        createOnCacheAddSetExpiration(expirations, options, isEqual)(cache);
 
-        if (typeof existingOnCacheChange === 'function') {
-          existingOnCacheChange(cache);
+        if (typeof onCacheChange === 'function') {
+          onCacheChange(cache);
         }
       }
     };
@@ -65,12 +74,16 @@ export const createOnCacheHitResetExpiration: Function = (
   options: Options
 ): ?Function => {
   /**
+   * @private
+   *
    * @function onCacheHit
    *
    * @description
    * when a cache item is hit, reset the expiration
    *
-   * @param {Cache} cache the cache object
+   * @modifies {expirations}
+   *
+   * @param {Cache} cache the cache of the memoized function
    * @returns {void}
    */
   return function onCacheHit(cache: Cache) {
@@ -91,18 +104,33 @@ export const createOnCacheHitResetExpiration: Function = (
   };
 };
 
+/**
+ * @private
+ *
+ * @function getMaxAgeOptions
+ *
+ * @description
+ * get the micro-memoize options specific to the maxAge option
+ *
+ * @param {Array<Expiration>} expirations the expirations for the memoized function
+ * @param {Options} options the options passed to the moizer
+ * @param {function} isEqual the function to test equality
+ * @returns {Object} the object of options based on the entries passed
+ */
 export const getMaxAgeOptions = (expirations: Array<Expiration>, options: Options, isEqual: Function): Object => {
-  const {maxAge, onCacheChange: onChange, onCacheHit: onHit, updateExpire} = options;
+  const {maxAge, onCacheAdd: onAdd, onCacheHit: onHit, updateExpire} = options;
 
-  const onCacheChange =
-    typeof maxAge === 'number' && isFinite(maxAge)
-      ? combine(onChange, createOnCacheChangeSetExpiration(expirations, options, isEqual))
-      : onChange;
-  const onCacheHit =
-    onCacheChange && updateExpire ? combine(onHit, createOnCacheHitResetExpiration(expirations, options)) : onHit;
+  const onCacheAdd = combine(
+    onAdd,
+    typeof maxAge === 'number' && isFinite(maxAge) && createOnCacheAddSetExpiration(expirations, options, isEqual)
+  );
+  const onCacheHit = combine(
+    onHit,
+    onCacheAdd && updateExpire && createOnCacheHitResetExpiration(expirations, options)
+  );
 
   return {
-    onCacheChange,
+    onCacheAdd,
     onCacheHit
   };
 };

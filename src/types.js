@@ -85,11 +85,25 @@ export type Options = {
   updateExpire?: boolean
 };
 
+/**
+ * @typedef {Object} StatsProfile
+ *
+ * @property {number} calls the total number of calls
+ * @property {number} hits the number of hits in cache
+ */
 export type StatsProfile = {
   calls: number,
   hits: number
 };
 
+/**
+ * @typedef {Object} StatsObject
+ *
+ * @property {number} calls the total number of calls
+ * @property {number} hits the number of hits in cache
+ * @property {Object} [profiles] the profile-specific statistics (only when all stats are retrieved)
+ * @property {string} usage the usage percentage
+ */
 export type StatsObject = {
   calls: number,
   hits: number,
@@ -99,6 +113,13 @@ export type StatsObject = {
   usage: string
 };
 
+/**
+ * @typedef {Object} StatsCache
+ *
+ * @property {number} anonymousProfileNameCounter the counter of anonymous methods tracked as unique profiles
+ * @property {boolea} isCollectingStats are stats currently being collected
+ * @property {Object} profiles the individual function statistics profiles
+ */
 export type StatsCache = {
   anonymousProfileNameCounter: number,
   isCollectingStats: boolean,

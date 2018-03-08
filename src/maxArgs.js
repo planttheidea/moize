@@ -2,6 +2,8 @@
 
 export const createGetInitialArgs = (size: number) => {
   /**
+   * @private
+   *
    * @function getInitialArgs
    *
    * @description

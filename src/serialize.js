@@ -68,7 +68,7 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function): string =>
  * @description
  * create the internal argument serializer based on the options passed
  *
- * @param {Object} options the options passed
+ * @param {Options} options the options passed to the moizer
  * @param {boolean} options.serializeFunctions should functions be included in the serialization
  * @param {number} options.maxArgs the cap on the number of arguments used in serialization
  * @returns {function(...Array<*>): string} argument serialization method

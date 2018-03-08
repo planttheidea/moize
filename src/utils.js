@@ -4,6 +4,8 @@
 import type {Expiration} from './types';
 
 /**
+ * @private
+ *
  * @function combine
  *
  * @description
@@ -12,9 +14,9 @@ import type {Expiration} from './types';
  * @param {...Array<function>} functions the functions to compose
  * @returns {function(...Array<*>): *} the composed function
  */
-export const combine = (...functions: Array<?Function>): Function => {
+export const combine = (...functions: Array<any>): Function => {
   // $FlowIgnore return value is always a function
-  return functions.reduce((f: Function, g: Function): Function => {
+  return functions.reduce((f: Function, g: any): Function => {
     return typeof f === 'function'
       ? typeof g === 'function'
         ? function(): any {
@@ -29,6 +31,8 @@ export const combine = (...functions: Array<?Function>): Function => {
 };
 
 /**
+ * @private
+ *
  * @function compose
  *
  * @description
@@ -37,9 +41,9 @@ export const combine = (...functions: Array<?Function>): Function => {
  * @param {...Array<function>} functions the functions to compose
  * @returns {function(...Array<*>): *} the composed function
  */
-export const compose = (...functions: Array<?Function>): Function => {
+export const compose = (...functions: Array<any>): Function => {
   // $FlowIgnore return value is always a function
-  return functions.reduce((f: Function, g: Function): Function => {
+  return functions.reduce((f: Function, g: any): Function => {
     return typeof f === 'function'
       ? typeof g === 'function'
         ? function(): any {
@@ -55,6 +59,8 @@ export const compose = (...functions: Array<?Function>): Function => {
 };
 
 /**
+ * @private
+ *
  * @function findExpirationIndex
  *
  * @description
@@ -74,6 +80,19 @@ export const findExpirationIndex = (expirations: Array<Expiration>, key: Array<a
   return -1;
 };
 
+/**
+ * @private
+ *
+ * @function findKeyIndex
+ *
+ * @description
+ * find the index of the key in the list of cache keys
+ *
+ * @param {function} isEqual the method to test equality
+ * @param {Array<Array<any>>} keys the list of keys in cache
+ * @param {Array<any>} key the key to match
+ * @returns {number} the index of the key
+ */
 export const findKeyIndex = (isEqual: Function, keys: Array<Array<any>>, key: Array<any>): number => {
   cacheKeys: for (let keysIndex = 0; keysIndex < keys.length; keysIndex++) {
     if (keys[keysIndex].length === key.length) {

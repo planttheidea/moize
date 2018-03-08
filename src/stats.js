@@ -6,12 +6,32 @@ import type {Options, StatsCache, StatsObject, StatsProfile} from './types';
 // utils
 import {combine} from './utils';
 
+/**
+ * @private
+ *
+ * @constant {StatsCache} statsCache
+ */
 export const statsCache: StatsCache = {
   anonymousProfileNameCounter: 1,
   isCollectingStats: false,
   profiles: {}
 };
 
+/**
+ * @private
+ *
+ * @var {boolean} hasWarningDisplayed
+ */
+let hasWarningDisplayed: boolean = false;
+
+/**
+ * @private
+ *
+ * @function collectStats
+ *
+ * @description
+ * activate stats collection
+ */
 export const collectStats = (): void => {
   statsCache.isCollectingStats = true;
 };
@@ -28,6 +48,16 @@ export const createOnCacheAddIncrementCalls = (options: Options) => {
     };
   }
 
+  /**
+   * @private
+   *
+   * @function onCacheAddIncrementCalls
+   *
+   * @description
+   * increment the number of calls for the specific profile
+   *
+   * @modifies {statsCache}
+   */
   return () => {
     // $FlowIgnore profileName is populated
     statsCache.profiles[profileName].calls++;
@@ -37,6 +67,16 @@ export const createOnCacheAddIncrementCalls = (options: Options) => {
 export const createOnCacheHitIncrementCallsAndHits = (options: Options) => {
   const {profileName} = options;
 
+  /**
+   * @private
+   *
+   * @function onCacheHitIncrementCallsAndHits
+   *
+   * @description
+   * increment the number of calls and cache hits for the specific profile
+   *
+   * @modifies {statsCache}
+   */
   return () => {
     // $FlowIgnore profileName is populated
     statsCache.profiles[profileName].calls++;
@@ -45,7 +85,18 @@ export const createOnCacheHitIncrementCallsAndHits = (options: Options) => {
   };
 };
 
-export const getAnonymousProfileName = (fn: Function): string => {
+/**
+ * @private
+ *
+ * @function getDefaultProfileName
+ *
+ * @description
+ * get the profileName for the function when one is not provided
+ *
+ * @param {function} fn the function to be memoized
+ * @returns {string} the derived profileName for the function
+ */
+export const getDefaultProfileName = (fn: Function): string => {
   const stack = new Error().stack;
   const fnName = fn.displayName || fn.name || `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
 
@@ -69,9 +120,38 @@ export const getAnonymousProfileName = (fn: Function): string => {
   return profileNameLocation ? `${fnName} ${profileNameLocation}` : fnName;
 };
 
+/**
+ * @private
+ *
+ * @function getUsagePercentage
+ *
+ * @description
+ * get the usage percentage based on the number of hits and total calls
+ *
+ * @param {number} calls the number of calls made
+ * @param {number} hits the number of cache hits when called
+ * @returns {string} the usage as a percentage string
+ */
+export const getUsagePercentage = (calls: number, hits: number): string => {
+  return calls ? `${(hits / calls * 100).toFixed(4)}%` : '0%';
+};
+
+/**
+ * @private
+ *
+ * @function getStats
+ *
+ * @description
+ * get the statistics for a given method or all methods
+ *
+ * @param {string} [profileName] the profileName to get the statistics for (get all when not provided)
+ * @returns {StatsObject} the object with stats information
+ */
 export const getStats = (profileName: ?string): StatsObject => {
-  if (!statsCache.isCollectingStats) {
-    throw new ReferenceError('Stats are not currently being collected, please run "collectStats" to enable them.');
+  if (!statsCache.isCollectingStats && !hasWarningDisplayed) {
+    console.warn('Stats are not currently being collected, please run "collectStats" to enable them.'); // eslint-disable-line no-console
+
+    hasWarningDisplayed = true;
   }
 
   if (profileName) {
@@ -86,7 +166,7 @@ export const getStats = (profileName: ?string): StatsObject => {
     const profile: StatsProfile = statsCache.profiles[profileName];
 
     return Object.assign({}, profile, {
-      usage: profile.calls ? `${(profile.hits / profile.calls * 100).toFixed(4)}%` : '0%'
+      usage: getUsagePercentage(profile.calls, profile.hits)
     });
   }
 
@@ -111,20 +191,26 @@ export const getStats = (profileName: ?string): StatsObject => {
 
   return Object.assign({}, completeStats, {
     profiles,
-    usage: `${(completeStats.hits / completeStats.calls * 100).toFixed(4)}%`
+    usage: getUsagePercentage(completeStats.calls, completeStats.hits)
   });
 };
 
+/**
+ * @private
+ *
+ * @function getStatsOptions
+ *
+ * @description
+ * get the options specific to storing statistics
+ *
+ * @param {Options} options the options passed to the moizer
+ * @returns {Object} the options specific to keeping stats
+ */
 export const getStatsOptions = (options: Options): Object => {
   const {onCacheAdd: onAdd, onCacheHit: onHit} = options;
 
-  return statsCache.isCollectingStats
-    ? {
-      onCacheAdd: combine(onAdd, createOnCacheAddIncrementCalls(options)),
-      onCacheHit: combine(onHit, createOnCacheHitIncrementCallsAndHits(options))
-    }
-    : {
-      onCacheAdd: onAdd,
-      onCacheHit: onHit
-    };
+  return {
+    onCacheAdd: combine(onAdd, statsCache.isCollectingStats && createOnCacheAddIncrementCalls(options)),
+    onCacheHit: combine(onHit, statsCache.isCollectingStats && createOnCacheHitIncrementCallsAndHits(options))
+  };
 };
