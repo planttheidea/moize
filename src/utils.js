@@ -37,11 +37,20 @@ export const combine = (...functions: Array<?Function>): Function => {
  * @param {...Array<function>} functions the functions to compose
  * @returns {function(...Array<*>): *} the composed function
  */
-export const compose = (...functions: Array<Function>): Function => {
+export const compose = (...functions: Array<?Function>): Function => {
+  // $FlowIgnore return value is always a function
   return functions.reduce((f: Function, g: Function): Function => {
-    return function(): any {
-      return f(g.apply(this, arguments)); // eslint-disable-line prefer-spread
-    };
+    return typeof f === 'function'
+      ? typeof g === 'function'
+        ? function(): any {
+          return f(g.apply(this, arguments)); // eslint-disable-line prefer-spread
+        }
+        : f
+      : typeof g === 'function'
+        ? g
+        : function(arg) {
+          return arg;
+        };
   });
 };
 

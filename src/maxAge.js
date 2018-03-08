@@ -1,7 +1,7 @@
 // @flow
 
 // types
-import type {Expiration, Options} from './types';
+import type {Cache, Expiration, Options} from './types';
 
 // utils
 import {combine, findExpirationIndex, findKeyIndex} from './utils';
@@ -13,7 +13,7 @@ export const createOnCacheChangeSetExpiration: Function = (
 ): ?Function => {
   const {maxAge, onCacheChange: existingOnCacheChange, onExpire} = options;
 
-  return function onCacheChange(cache: Object): ?Function {
+  return function onCacheChange(cache: Cache): ?Function {
     const key: any = cache.keys[0];
 
     if (~findExpirationIndex(expirations, key)) {
@@ -70,10 +70,10 @@ export const createOnCacheHitResetExpiration: Function = (
    * @description
    * when a cache item is hit, reset the expiration
    *
-   * @param {Object} cache the cache object
+   * @param {Cache} cache the cache object
    * @returns {void}
    */
-  return function onCacheHit(cache: Object) {
+  return function onCacheHit(cache: Cache) {
     const key: any = cache.keys[0];
 
     const expirationIndex: number = findExpirationIndex(expirations, key);

@@ -1,9 +1,12 @@
 // @flow
 
+// types
+import type {Options} from './types';
+
 /**
  * @constant {Object} DEFAULT_OPTIONS
  */
-export const DEFAULT_OPTIONS: Object = {
+export const DEFAULT_OPTIONS: Options = {
   equals: undefined,
   isDeepEqual: false,
   isPromise: false,
@@ -13,6 +16,7 @@ export const DEFAULT_OPTIONS: Object = {
   maxArgs: undefined,
   maxSize: Infinity,
   onExpire: undefined,
+  profileName: undefined,
   serializer: undefined,
   shouldSerializeFunctions: false,
   transformArgs: undefined,

@@ -3,6 +3,17 @@
 /* eslint-disable max-len */
 
 /**
+ * @typedef {Object} Cache
+ *
+ * @property {Array<Array<any>>} keys the arguments passed which yield a specific value
+ * @property {Array<any>} values the values based on the arguments passed
+ */
+export type Cache = {
+  keys: Array<any>,
+  values: Array<any>
+};
+
+/**
  * @typedef {Object} Expiration
  *
  * @property {function} expirationMethod the method that will expire the cache entry
@@ -55,23 +66,23 @@ export type MicroMemoizeOptions = {
  * @property {boolean} updateExpire should the expiration be updated when cache is hit
  */
 export type Options = {
-  equals: ?Function,
-  isDeepEqual: boolean,
-  isPromise: boolean,
-  isReact: boolean,
-  isSerialized: boolean,
-  maxAge: ?number,
-  maxArgs: ?number,
-  maxSize: number,
-  onCacheAdd: ?Function,
-  onCacheChange: ?Function,
-  onCacheHit: ?Function,
-  onExpire: ?Function,
-  profileName: ?string,
-  serializer: ?Function,
-  shouldSerializeFunctions: boolean,
-  transformArgs: ?Function,
-  updateExpire: boolean
+  equals?: Function,
+  isDeepEqual?: boolean,
+  isPromise?: boolean,
+  isReact?: boolean,
+  isSerialized?: boolean,
+  maxAge?: number,
+  maxArgs?: number,
+  maxSize?: number,
+  onCacheAdd?: Function,
+  onCacheChange?: Function,
+  onCacheHit?: Function,
+  onExpire?: Function,
+  profileName?: string,
+  serializer?: Function,
+  shouldSerializeFunctions?: boolean,
+  transformArgs?: Function,
+  updateExpire?: boolean
 };
 
 export type StatsProfile = {

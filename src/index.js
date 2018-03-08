@@ -29,9 +29,9 @@ import {combine, compose} from './utils';
 
 export {collectStats};
 
-function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Function {
+function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Function {
   if (typeof fn === 'object') {
-    return (curriedFn: Function | Object, curriedOptions: Object = {}) => {
+    return (curriedFn: Function | Options, curriedOptions: Options = {}) => {
       return typeof curriedFn === 'function'
         ? moize(
           curriedFn,
@@ -68,7 +68,7 @@ function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Funct
     maxArgs: maxArgsIgnored,
     maxSize,
     onCacheAdd: onCacheAddIgnored,
-    onCacheChange: onCacheChangeIgnored,
+    onCacheChange: onCacheChangCacheeIgnored,
     onCacheHit: onCacheHitIgnored,
     onExpire: onExpireIgnored,
     profileName: profileNameIgnored,
@@ -80,8 +80,8 @@ function moize(fn: Function | Object, options: Options = DEFAULT_OPTIONS): Funct
   } = coalescedOptions;
 
   const isEqual: Function = getIsEqual(coalescedOptions);
-  const maxAgeOptions: Object = getMaxAgeOptions(expirations, coalescedOptions, isEqual);
-  const statsOptions: Object = getStatsOptions(coalescedOptions);
+  const maxAgeOptions: Options = getMaxAgeOptions(expirations, coalescedOptions, isEqual);
+  const statsOptions: Options = getStatsOptions(coalescedOptions);
   const transformKey: ?Function = getTransformKey(coalescedOptions);
 
   const microMemoizeOptions: MicroMemoizeOptions = Object.assign({}, customOptions, {

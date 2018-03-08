@@ -34,7 +34,7 @@ export const customReplacer = (key: string, value: any): any => {
  * @param {function} [replacer] replacer to used in stringification
  * @returns {string} the stringified version of value
  */
-export const stringify = (value: any, replacer: ?Function) => {
+export const stringify = (value: any, replacer: ?Function): string => {
   try {
     return JSON.stringify(value, replacer);
   } catch (exception) {
@@ -54,7 +54,7 @@ export const stringify = (value: any, replacer: ?Function) => {
  * @param {function} [replacer] replacer to used in stringification
  * @returns {string} the stringified argument
  */
-export const getStringifiedArgument = (arg: any, replacer: ?Function) => {
+export const getStringifiedArgument = (arg: any, replacer: ?Function): string => {
   const typeOfArg: string = typeof arg;
 
   return arg && (typeOfArg === 'object' || typeOfArg === 'function') ? stringify(arg, replacer) : arg;
