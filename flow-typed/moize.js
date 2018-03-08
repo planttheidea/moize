@@ -18,6 +18,7 @@ declare module 'moize' {
     onCacheChange?: (cache: Cache) => void,
     onCacheHit?: (cache: Cache) => void,
     onExpire?: (key: any) => void,
+    profileName?: string,
     serializer?: (...args: any[]) => any,
     shouldSerializeFunctions?: boolean,
     transformArgs?: (args: any[]) => any[],
@@ -28,12 +29,15 @@ declare module 'moize' {
 
   declare type Moizer<T> = (t: T) => T;
 
-  declare module.exports: {
+  declare export function collectStats(): void;
+
+  declare export default {
     (options: Options): Fn,
     (fn: Fn, options?: Options): Fn,
 
     compose<T>(...fns: Array<Moizer<T>>): Moizer<T>,
     deep<T>(t: T, c?: Options): T,
+    isMoized<T>(t: T): boolean,
     maxAge<T>(a: number): (t: T, c?: Options) => T,
     maxArgs<T>(a: number): (t: T, c?: Options) => T,
     maxSize<T>(a: number): (t: T, c?: Options) => T,

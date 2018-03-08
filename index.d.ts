@@ -16,6 +16,7 @@ interface Options {
   onCacheChange?: (cache: Cache) => void; // a callback when the cache changes
   onCacheHit?: (cache: Cache) => void; // a callback when an existing cache item is retrieved
   onExpire?: (key: any) => void; // a callback when a cache item expires
+  profileName?: string; // a custom name to associate stats for the method to
   serializer?: (...args: any[]) => any; // provide a serializer and override default,
   shouldSerializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
   transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
@@ -33,6 +34,7 @@ declare namespace moize {
   function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
 
   function deep<T extends Fn>(t: T, o?: Options): T;
+  function isMoized<T extends Fn>(t: T): boolean;
   function maxAge<T extends Fn>(a: number): (t: T, o?: Options) => T;
   function maxArgs<T extends Fn>(a: number): (t: T, o?: Options) => T;
   function maxSize<T extends Fn>(a: number): (t: T, o?: Options) => T;
@@ -42,5 +44,7 @@ declare namespace moize {
   function serialize<T extends Fn>(t: T, o?: Options): T;
   function simple<T extends Fn>(t: T, o?: Options): T;
 }
+
+export function collectStats<T extends Fn>(): void;
 
 export default moize;
