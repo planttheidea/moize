@@ -13,6 +13,19 @@ import type {Options} from './types';
 import {compose} from './utils';
 
 /**
+ * @function getArrayKey
+ *
+ * @description
+ * return the transformed key as an array
+ *
+ * @param {any} key the transformed key
+ * @returns {Array<any>} the key as an array
+ */
+export const getArrayKey = (key: any): Array<any> => {
+  return Array.isArray(key) ? key : [key];
+};
+
+/**
  * @private
  *
  * @function getTransformKey
@@ -37,11 +50,11 @@ export const getTransformKey = (options: Options): ?Function => {
   }
 
   if (typeof transformArgs === 'function') {
-    transformKey = compose(transformArgs, transformKey);
+    transformKey = compose(getArrayKey, transformArgs, transformKey);
   }
 
   if (isSerialized) {
-    transformKey = compose(getSerializerFunction(options), transformKey);
+    transformKey = compose(getArrayKey, getSerializerFunction(options), transformKey);
   }
 
   return transformKey;

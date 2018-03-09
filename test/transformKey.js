@@ -5,6 +5,23 @@ import sinon from 'sinon';
 // src
 import * as transformKey from 'src/transformKey';
 
+test('if getArrayKey returns the key if an array', (t) => {
+  const key = ['key'];
+
+  const result = transformKey.getArrayKey(key);
+
+  t.is(result, key);
+});
+
+test('if getArrayKey returns the key if an array', (t) => {
+  const key = 'key';
+
+  const result = transformKey.getArrayKey(key);
+
+  t.not(result, key);
+  t.deepEqual(result, [key]);
+});
+
 test('if getTransformKey will not return a function when not required', (t) => {
   const options = {
     maxArgs: undefined,
@@ -66,7 +83,7 @@ test('if getTransformKey will serialize the args if isSerialized is true', (t) =
 
   const args = ['one', 'two', 'three'];
 
-  t.is(result(args), '|one|two|three|');
+  t.deepEqual(result(args), ['|one|two|three|']);
 });
 
 test('if getTransformKey will call transformArgs if passed', (t) => {
@@ -109,5 +126,5 @@ test('if getTransformKey will compose all transforms in the correct order', (t) 
 
   const args = ['one', 'two', 'three'];
 
-  t.deepEqual(result(args), '|eno|');
+  t.deepEqual(result(args), ['|eno|']);
 });

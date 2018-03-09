@@ -93,7 +93,7 @@ export const addInstanceMethods = (moized: Function): void => {
  * @param {function} moized the memoized function
  * @param {Array<Expiration>} expirations the list of expirations for cache items
  * @param {Options} options the options passed to the moizer
- * @param {function} originalFunctionthe function that is being memoized
+ * @param {function} originalFunction the function that is being memoized
  * @returns {void}
  */
 export const addInstanceProperties = (
@@ -172,9 +172,9 @@ export const addInstanceProperties = (
   );
 
   if (moizeOptions.isReact) {
-    moized.displayName = `Moized(${originalFunction.displayName || originalFunction.name || 'Component'})`;
     moized.contextTypes = originalFunction.contextTypes;
     moized.defaultProps = originalFunction.defaultProps;
+    moized.displayName = `Moized(${originalFunction.displayName || originalFunction.name || 'Component'})`;
     moized.propTypes = originalFunction.propTypes;
   }
 };

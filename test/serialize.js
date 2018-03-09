@@ -133,7 +133,7 @@ test('if createArgumentSerializer will create a method that serializes the args 
 
   const result = argumentSerializer(args);
 
-  t.is(result, '|foo|["bar"]|{"baz":"baz"}|undefined|');
+  t.deepEqual(result, ['|foo|["bar"]|{"baz":"baz"}|undefined|']);
 });
 
 test('if createArgumentSerializer will create a method that serializes the args passed using the custom serializer', (t) => {
@@ -149,7 +149,7 @@ test('if createArgumentSerializer will create a method that serializes the args 
 
   const result = argumentSerializer(args);
 
-  t.is(result, '|foo|["bar"]|{"baz":"baz"}|"function () {}"|');
+  t.deepEqual(result, ['|foo|["bar"]|{"baz":"baz"}|"function () {}"|']);
 });
 
 test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
@@ -168,10 +168,9 @@ test('if getSerializerFunction returns a function that produces a stringified ve
   };
   const args = [string, number, boolean, fn, object];
 
-  const expectedResult = `|${string}|${number}|${boolean}|undefined|{"bar":"baz"}|`;
   const result = serializeArguments(args);
 
-  t.is(result, expectedResult);
+  t.deepEqual(result, [`|${string}|${number}|${boolean}|undefined|{"bar":"baz"}|`]);
 });
 
 test('if getSerializerFunction uses the serializer passed when it is a function', (t) => {

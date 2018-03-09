@@ -76,14 +76,14 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function): string =>
 export const createArgumentSerializer = (options: Options): Function => {
   const replacer: ?Function = options.shouldSerializeFunctions ? customReplacer : null;
 
-  return (args: Array<any>): string => {
+  return (args: Array<any>): Array<string> => {
     let key: string = '|';
 
     for (let index: number = 0; index < args.length; index++) {
       key += `${getStringifiedArgument(args[index], replacer)}|`;
     }
 
-    return key;
+    return [key];
   };
 };
 

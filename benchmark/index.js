@@ -697,15 +697,15 @@ const writeCsv = () => {
   }
 };
 
-Promise.resolve()
-  .then(runSinglePrimitiveSuite)
-  .then(runSingleArraySuite)
-  .then(runSingleObjectSuite)
-  .then(runMultiplePrimitiveSuite)
-  .then(runMultipleArraySuite)
-  .then(runMultipleObjectSuite)
-  .then(writeCsv);
+// Promise.resolve()
+//   .then(runSinglePrimitiveSuite)
+//   .then(runSingleArraySuite)
+//   .then(runSingleObjectSuite)
+//   .then(runMultiplePrimitiveSuite)
+//   .then(runMultipleArraySuite)
+//   .then(runMultipleObjectSuite)
+//   .then(writeCsv);
 
-// runAlternativeOptionsSuite();
+runAlternativeOptionsSuite();
 
 // runMultipleObjectSuite().then(writeCsv);
