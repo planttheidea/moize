@@ -25,8 +25,8 @@ export const combine = (...functions: Array<any>): ?Function => {
         ? typeof g === 'function'
           ? function(): any {
             /* eslint-disable prefer-spread */
-            f.apply(this, arguments);
             g.apply(this, arguments);
+            f.apply(this, arguments);
             /* eslint-enable */
           }
           : f
