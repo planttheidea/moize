@@ -9,17 +9,14 @@ import {DEFAULT_OPTIONS} from './constants';
 // instance
 import {augmentMoizeInstance} from './instance';
 
-// is equal
-import {getIsEqual} from './isEqual';
-
 // max age
 import {getMaxAgeOptions} from './maxAge';
 
+// is equal
+import {getIsEqual, getTransformKey} from './options';
+
 // stats
 import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache} from './stats';
-
-// transform key
-import {getTransformKey} from './transformKey';
 
 // types
 import type {Expiration, MicroMemoizeOptions, Options} from './types';

@@ -1,18 +1,21 @@
 {
   "env": {
     "development": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
           {
             "exclude": ["transform-es2015-typeof-symbol"],
-            "loose": true
+            "loose": true,
+            "modules": false
           }
         ],
         "stage-2"
       ]
     },
     "es": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
@@ -26,18 +29,21 @@
       ]
     },
     "production": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
           {
             "exclude": ["transform-es2015-typeof-symbol"],
-            "loose": true
+            "loose": true,
+            "modules": false
           }
         ],
         "stage-2"
       ]
     },
     "test": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
@@ -49,6 +55,5 @@
         "stage-2"
       ]
     }
-  },
-  "plugins": ["syntax-flow", "transform-flow-strip-types"]
+  }
 }

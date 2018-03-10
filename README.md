@@ -8,7 +8,6 @@
 
 ## Table of contents
 
-* [Upgrade notification](#upgrade-notification)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Advanced usage](#advanced-usage)
@@ -51,10 +50,6 @@
 * [Browser support](#browser-support)
 * [Development](#development)
 
-## Upgrade notification
-
-Users of `moize` 2.x.x may experience breaking changes, especially if using a custom cache or using `moize.react` in a mutative way. Please see the [changelog](CHANGELOG.md) for more details about how to manage the upgrade.
-
 ## Installation
 
 ```
@@ -76,7 +71,7 @@ memoized(2, 4); // 6
 memoized(2, 4); // 6, pulled from cache
 ```
 
-All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional `React` components based on their `props` + `context` combination (see the [`isReact`](#isreact) option, or the [`moize.react`](#moizereact) shortcut method)!
+All parameter types are supported, including circular objects, functions, etc. There are also a number of [shortcut methods](#usage-with-shortcut-methods) to memoize for unique use-cases with ease.
 
 ## Advanced usage
 
@@ -95,14 +90,15 @@ The full shape of these options:
 ```javascript
 {
   equals: Function, // custom method to compare equality between two objects
+  isDeepEqual: boolean, // is the cache based on deep equality of keys
   isPromise: boolean, // is the result a promise
   isReact: boolean, // is the result a React component
+  isSerialized: boolean, // should the parameters be serialized instead of directly referenced
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
-  promiseLibrary: Function|Object, // promise library to use when isPromise is true, if not using native promises
-  serialize: boolean, // should the parameters be serialized instead of directly referenced
-  serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
+  profileName: string, // the unique identifier to give the memoized method when collecting statistics
+  shouldSerializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }
 ```
@@ -792,7 +788,7 @@ const memoized = moize(item => {
 
 const foo = "foo";
 
-memoized(foo);
+memoized(foo);moize.min.js
 
 const bar = {
   baz: "baz"

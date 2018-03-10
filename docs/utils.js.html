@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>moize Modules</title>
+	<title>moize Source: utils.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -67,93 +67,143 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Modules</h1>
+		<h1 class="page-title">Source: utils.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">// @flow
 
-<header>
-    
-        <h2>
-        
-        </h2>
-        
-    
-</header>
+// types
+import type {Expiration} from './types';
 
+/**
+ * @private
+ *
+ * @function combine
+ *
+ * @description
+ * method to combine functions and return a single function that fires them all
+ *
+ * @param {...Array&lt;any>} functions the functions to compose
+ * @returns {function(...Array&lt;any>): any} the composed function
+ */
+export const combine = (...functions: Array&lt;any>): Function => {
+  // $FlowIgnore return value is always a function
+  return functions.reduce((f: Function, g: any): Function => {
+    return typeof f === 'function'
+      ? typeof g === 'function'
+        ? function(): any {
+          /* eslint-disable prefer-spread */
+          f.apply(this, arguments);
+          g.apply(this, arguments);
+          /* eslint-enable */
+        }
+        : f
+      : typeof g === 'function' ? g : function() {};
+  });
+};
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ * @private
+ *
+ * @function compose
+ *
+ * @description
+ * method to compose functions and return a single function
+ *
+ * @param {...Array&lt;any>} functions the functions to compose
+ * @returns {function(...Array&lt;any>): any} the composed function
+ */
+export const compose = (...functions: Array&lt;any>): Function => {
+  // $FlowIgnore return value is always a function
+  return functions.reduce((f: Function, g: any): Function => {
+    return typeof f === 'function'
+      ? typeof g === 'function'
+        ? function(): any {
+          return f(g.apply(this, arguments)); // eslint-disable-line prefer-spread
+        }
+        : f
+      : typeof g === 'function'
+        ? g
+        : function(arg) {
+          return arg;
+        };
+  });
+};
 
-        
-<dl class="details">
-    
+/**
+ * @private
+ *
+ * @function findExpirationIndex
+ *
+ * @description
+ * find the index of the expiration based on the key
+ *
+ * @param {Array&lt;Expiration>} expirations the list of expirations
+ * @param {Array&lt;any>} key the key to match
+ * @returns {number} the index of the expiration
+ */
+export const findExpirationIndex = (expirations: Array&lt;Expiration>, key: Array&lt;any>): number => {
+  for (let index: number = 0; index &lt; expirations.length; index++) {
+    if (expirations[index].key === key) {
+      return index;
+    }
+  }
 
-	
+  return -1;
+};
 
-	
+/**
+ * @private
+ *
+ * @function findKeyIndex
+ *
+ * @description
+ * find the index of the key in the list of cache keys
+ *
+ * @param {function} isEqual the method to test equality
+ * @param {Array&lt;Array&lt;any>>} keys the list of keys in cache
+ * @param {Array&lt;any>} key the key to match
+ * @returns {number} the index of the key
+ */
+export const findKeyIndex = (isEqual: Function, keys: Array&lt;Array&lt;any>>, key: Array&lt;any>): number => {
+  cacheKeys: for (let keysIndex = 0; keysIndex &lt; keys.length; keysIndex++) {
+    if (keys[keysIndex].length === key.length) {
+      for (let keyIndex = 0; keyIndex &lt; key.length; keyIndex++) {
+        if (!isEqual(key[keyIndex], keys[keysIndex][keyIndex])) {
+          continue cacheKeys;
+        }
+      }
 
-	
+      return keysIndex;
+    }
+  }
 
-    
+  return -1;
+};
 
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+/**
+ * @function getArrayKey
+ *
+ * @description
+ * return the transformed key as an array
+ *
+ * @param {any} key the transformed key
+ * @returns {Array&lt;any>} the key as an array
+ */
+export const getArrayKey = (key: any): Array&lt;any> => {
+  return Array.isArray(key) ? key : [key];
+};
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -163,10 +213,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

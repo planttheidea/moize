@@ -6,6 +6,9 @@ import stringifySafe from 'json-stringify-safe';
 // types
 import type {Options} from './types';
 
+// utils
+import {compose, getArrayKey} from './utils';
+
 /**
  * @private
  *
@@ -99,5 +102,7 @@ export const createArgumentSerializer = (options: Options): Function => {
  * @returns {function} the function to use in serializing the arguments
  */
 export const getSerializerFunction = (options: Options): Function => {
-  return typeof options.serializer === 'function' ? options.serializer : createArgumentSerializer(options);
+  return typeof options.serializer === 'function'
+    ? compose(getArrayKey, options.serializer)
+    : createArgumentSerializer(options);
 };

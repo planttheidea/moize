@@ -108,3 +108,16 @@ export const findKeyIndex = (isEqual: Function, keys: Array<Array<any>>, key: Ar
 
   return -1;
 };
+
+/**
+ * @function getArrayKey
+ *
+ * @description
+ * return the transformed key as an array
+ *
+ * @param {any} key the transformed key
+ * @returns {Array<any>} the key as an array
+ */
+export const getArrayKey = (key: any): Array<any> => {
+  return Array.isArray(key) ? key : [key];
+};

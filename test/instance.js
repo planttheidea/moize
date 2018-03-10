@@ -5,8 +5,8 @@ import sinon from 'sinon';
 
 // src
 import * as instance from 'src/instance';
+import * as options from 'src/options';
 import * as stats from 'src/stats';
-import * as transformKey from 'src/transformKey';
 
 test('if addInstanceMethods will add functions to the moized object', (t) => {
   const moized = () => {};
@@ -76,7 +76,7 @@ test('if moized.add will add the item to the cache if it does not already exist 
     },
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
-    transformKey: transformKey.getTransformKey({
+    transformKey: options.getTransformKey({
       transformArgs: (args) => {
         return args[0]
           .split('')

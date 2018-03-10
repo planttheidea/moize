@@ -37,6 +37,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#getArrayKey">getArrayKey</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -95,7 +102,6 @@
 <p><code>moize</code> is a <a href="#benchmarks">blazing fast</a> memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3.2kb when minified and gzipped.</p>
 <h2 id="table-of-contents">Table of contents</h2>
 <ul>
-<li><a href="#upgrade-notification">Upgrade notification</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#advanced-usage">Advanced usage</a><ul>
@@ -148,8 +154,6 @@
 <li><a href="#browser-support">Browser support</a></li>
 <li><a href="#development">Development</a></li>
 </ul>
-<h2 id="upgrade-notification">Upgrade notification</h2>
-<p>Users of <code>moize</code> 2.x.x may experience breaking changes, especially if using a custom cache or using <code>moize.react</code> in a mutative way. Please see the <a href="CHANGELOG.md">changelog</a> for more details about how to manage the upgrade.</p>
 <h2 id="installation">Installation</h2>
 <pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h2 id="usage">Usage</h2>
 <pre class="prettyprint source lang-javascript"><code>import moize from &quot;moize&quot;;
@@ -161,7 +165,7 @@ const method = (a, b) => {
 const memoized = moize(method);
 
 memoized(2, 4); // 6
-memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. There are also a number of shortcut methods to easily create memoization for targeted use-cases. You can even memoize functional <code>React</code> components based on their <code>props</code> + <code>context</code> combination (see the <a href="#isreact"><code>isReact</code></a> option, or the <a href="#moizereact"><code>moize.react</code></a> shortcut method)!</p>
+memoized(2, 4); // 6, pulled from cache</code></pre><p>All parameter types are supported, including circular objects, functions, etc. There are also a number of <a href="#usage-with-shortcut-methods">shortcut methods</a> to memoize for unique use-cases with ease.</p>
 <h2 id="advanced-usage">Advanced usage</h2>
 <p><code>moize</code> optionally accepts an object of options as either the second parameter or as the first step in a curried function:</p>
 <pre class="prettyprint source lang-javascript"><code>// inline
@@ -171,14 +175,15 @@ moize(fn, options);
 moize(options)(fn);</code></pre><p>The full shape of these options:</p>
 <pre class="prettyprint source lang-javascript"><code>{
   equals: Function, // custom method to compare equality between two objects
+  isDeepEqual: boolean, // is the cache based on deep equality of keys
   isPromise: boolean, // is the result a promise
   isReact: boolean, // is the result a React component
+  isSerialized: boolean, // should the parameters be serialized instead of directly referenced
   maxAge: number, // amount of time in milliseconds before the cache will expire
   maxArgs: number, // maximum number of arguments to use as key for caching
   maxSize: number, // maximum size of cache for this method
-  promiseLibrary: Function|Object, // promise library to use when isPromise is true, if not using native promises
-  serialize: boolean, // should the parameters be serialized instead of directly referenced
-  serializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
+  profileName: string, // the unique identifier to give the memoized method when collecting statistics
+  shouldSerializeFunctions: boolean, // should functions be included in the serialization of multiple parameters
   serializer: Function // method to serialize the arguments to build a unique cache key
 }</code></pre><h4 id="equals">equals</h4>
 <p><em>defaults to strict equality</em></p>
@@ -748,7 +753,7 @@ memoized(foo);</code></pre><h4 id="values-">values()</h4>
 
 const foo = &quot;foo&quot;;
 
-memoized(foo);
+memoized(foo);moize.min.js
 
 const bar = {
   baz: &quot;baz&quot;

@@ -193,5 +193,5 @@ test('if getSerializerFunction uses the serializer passed when it is a function'
 
   const result = serializeArguments(args);
 
-  t.is(result, `KEY: ${JSON.stringify(args)}`);
+  t.deepEqual(result, [`KEY: ${JSON.stringify(args)}`]);
 });

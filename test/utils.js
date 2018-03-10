@@ -170,3 +170,20 @@ test('if findKeyIndex will return the default when not able to match key in keys
 
   t.is(result, -1);
 });
+
+test('if getArrayKey returns the key if an array', (t) => {
+  const key = ['key'];
+
+  const result = utils.getArrayKey(key);
+
+  t.is(result, key);
+});
+
+test('if getArrayKey returns the key if an array', (t) => {
+  const key = 'key';
+
+  const result = utils.getArrayKey(key);
+
+  t.not(result, key);
+  t.deepEqual(result, [key]);
+});

@@ -1,5 +1,8 @@
 // @flow
 
+// external dependencies
+import {deepEqual, sameValueZeroEqual, shallowEqual} from 'fast-equals';
+
 // max args
 import {createGetInitialArgs} from './maxArgs';
 
@@ -10,19 +13,21 @@ import {getSerializerFunction} from './serialize';
 import type {Options} from './types';
 
 // utils
-import {compose} from './utils';
+import {compose, getArrayKey} from './utils';
 
 /**
- * @function getArrayKey
+ * @private
+ *
+ * @function getIsEqual
  *
  * @description
- * return the transformed key as an array
+ * get the isEqual method passed to micro-memoize
  *
- * @param {any} key the transformed key
- * @returns {Array<any>} the key as an array
+ * @param {Options} options the options passed to the moizer
+ * @returns {function} the isEqual method to apply
  */
-export const getArrayKey = (key: any): Array<any> => {
-  return Array.isArray(key) ? key : [key];
+export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function => {
+  return equals || (isDeepEqual && deepEqual) || (isReact && shallowEqual) || sameValueZeroEqual;
 };
 
 /**
@@ -54,7 +59,7 @@ export const getTransformKey = (options: Options): ?Function => {
   }
 
   if (isSerialized) {
-    transformKey = compose(getArrayKey, getSerializerFunction(options), transformKey);
+    transformKey = compose(getSerializerFunction(options), transformKey);
   }
 
   return transformKey;
