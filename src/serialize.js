@@ -103,6 +103,7 @@ export const createArgumentSerializer = (options: Options): Function => {
  */
 export const getSerializerFunction = (options: Options): Function => {
   return typeof options.serializer === 'function'
-    ? compose(getArrayKey, options.serializer)
+    ? // $FlowIgnore serializer is a function
+    compose(getArrayKey, options.serializer)
     : createArgumentSerializer(options);
 };

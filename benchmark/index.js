@@ -19,7 +19,6 @@ const lruMemoize = require('lru-memoize').default;
 const moize = require('../lib').default;
 
 const deepEquals = require('lodash').isEqual;
-const fastDeepEqual = require('fast-equals').deepEqual;
 
 const showResults = (benchmarkResults) => {
   const table = new Table({
@@ -691,21 +690,22 @@ const writeCsv = () => {
   // write to file
   if (fs && fs.writeFileSync) {
     fs.writeFileSync('benchmark/benchmark_results.csv', individualCsvText, 'utf8');
-    console.log('benchmarks done! Results saved to benchmark_results.csv');
+
+    console.log('Benchmarks done! Results saved to benchmark_results.csv');
   } else {
-    console.log('benchmarks done!');
+    console.log('Benchmarks done!');
   }
 };
 
-// Promise.resolve()
-//   .then(runSinglePrimitiveSuite)
-//   .then(runSingleArraySuite)
-//   .then(runSingleObjectSuite)
-//   .then(runMultiplePrimitiveSuite)
-//   .then(runMultipleArraySuite)
-//   .then(runMultipleObjectSuite)
-//   .then(writeCsv);
-
-runAlternativeOptionsSuite();
-
-// runMultipleObjectSuite().then(writeCsv);
+if (process.env.ALTERNATIVE) {
+  runAlternativeOptionsSuite();
+} else {
+  Promise.resolve()
+    .then(runSinglePrimitiveSuite)
+    .then(runSingleArraySuite)
+    .then(runSingleObjectSuite)
+    .then(runMultiplePrimitiveSuite)
+    .then(runMultipleArraySuite)
+    .then(runMultipleObjectSuite)
+    .then(writeCsv);
+}

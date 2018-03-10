@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers options to help satisfy a number of implementation-specific needs. It has no dependencies, and is ~3.2kb when minified and gzipped.
+`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
 
 ## Table of contents
 
@@ -12,19 +12,24 @@
 * [Usage](#usage)
 * [Advanced usage](#advanced-usage)
   * [equals](#equals)
+  * [isDeepEqual](#isdeepequal)
   * [isPromise](#ispromise)
   * [isReact](#isreact)
+  * [isSerialized](#isserialized)
   * [maxAge](#maxage)
   * [maxArgs](#maxargs)
   * [maxSize](#maxsize)
+  * [onCacheAdd](#oncacheadd)
+  * [onCacheChange](#oncachechange)
+  * [onCacheHit](#oncachehit)
   * [onExpire](#onexpire)
-  * [promiseLibrary](#promiselibrary)
-  * [serialize](#serialize)
-  * [serializeFunctions](#serializefunctions)
+  * [profileName](#profilename)
+  * [shouldSerializeFunctions](#serializefunctions)
   * [serializer](#serializer)
   * [transformArgs](#transformargs)
   * [updateExpire](#updateexpire)
 * [Usage with shortcut methods](#usage-with-shortcut-methods)
+  * [moize.deep](#moizemaxage)
   * [moize.maxAge](#moizemaxage)
   * [moize.maxArgs](#moizemaxargs)
   * [moize.maxSize](#moizemaxsize)
@@ -35,18 +40,20 @@
   * [moize.simple](#moizesimple)
 * [Composition](#composition)
 * [Introspection](#introspection)
+  * [getStats](#getstatsprofilename)
+  * [isCollectingStats](#iscollectingstats)
   * [isMoized](#ismoized)
-* [Benchmarks](#benchmarks)
-  * [Single parameter](#single-parameter)
-  * [Multiple parameters (primitives only)](#multiple-parameters-primitives-only)
-  * [Multiple parameters (complex objects)](#multiple-parameters-complex-objects)
+* [Collecting statistics](#collecting-statistics)
 * [Direct cache manipulation](#direct-cache-manipulation)
   * [add](#addkey-value)
   * [clear](#clear)
+  * [get](#getkey)
+  * [getStats](#getstats)
   * [has](#hasargs)
   * [keys](#keys)
   * [remove](#removekey)
   * [values](#values)
+* [Benchmarks](#benchmarks)
 * [Browser support](#browser-support)
 * [Development](#development)
 
@@ -110,15 +117,15 @@ _defaults to strict equality_
 Custom method used to compare equality of keys for cache purposes.
 
 ```javascript
-// using fast-equals's deep equal comparison method
-import { deepEqual } from "fast-equals";
+// using lodash's deep equal comparison method
+import isEqual from "lodash/isEqual";
 
 const fn = ({ foo, bar }) => {
   return [foo, bar];
 };
 
 const memoized = moize(fn, {
-  equals: deepEqual
+  equals: isEqual
 });
 
 memoized({ foo: "foo", bar: "bar" });
@@ -126,6 +133,25 @@ memoized({ foo: "foo", bar: "bar" }); // pulls from cache
 ```
 
 The `equals` method receives two parameters (cache key values) and should return a `boolean`. Please note that this will be slower than the default strict equality comparison, however how much slower is based on the efficiency of the method passed.
+
+#### isDeepEqual
+
+_defaults to false_
+
+Should deep equality be used to compare cache keys. This is also available via the shortcut method of [`moize.deep`](#moizedeep)
+
+```javascript
+const fn = ({ foo, bar }) => {
+  return [foo, bar];
+};
+
+const memoized = moize(fn, {
+  isDeepEqual: true
+});
+
+memoized({ foo: "foo", bar: "bar" });
+memoized({ foo: "foo", bar: "bar" }); // pulls from cache
+```
 
 #### isPromise
 
@@ -165,7 +191,39 @@ export default moize(Foo, {
 });
 ```
 
-The method will do a shallow comparison of both `props` and `context` of the component based on strict equality. If you have mutative props and instead want to do a deep equals comparison, provide a custom [`equals`](#equals) option.
+The method will do a shallow comparison of both `props` and `context` of the component based on strict equality. If you have mutative props and instead want to do a deep equals comparison, set [`isDeepEqual`](#isdeepequal) to true.
+
+#### isSerialized
+
+_defaults to false_
+
+Serializes the parameters passed into a string and uses this as the key for cache comparison. This is also available via the shortcut method of [`moize.serialize`](#moizeserialize).
+
+```javascript
+const fn = mutableObject => {
+  return mutableObject.foo;
+};
+
+const memoized = moize(fn, {
+  isSerialized: true
+});
+
+const object = {
+  foo: "foo"
+};
+
+memoized(object); // 'foo'
+
+object.foo = "bar";
+
+memoized(object); // 'bar'
+```
+
+Please note that this is slower than the default key storage ([see benchmarks](#benchmarks)). Also note that if `serialize` is combined with either `maxArgs` or `transformArgs`, the following order is used:
+
+1.  limit by `maxArgs` (if applicable)
+1.  transform by `transformArgs` (if applicable)
+1.  serialize by `serializer`
 
 #### maxAge
 
@@ -224,6 +282,75 @@ const memoized = moize(fn, {
 });
 ```
 
+#### onCacheAdd
+
+Method to fire when an item has been added to cache. Receives the `cache` object as the only parameter.
+
+```javascript
+const fn = (foo, bar) => {
+  return [foo, bar];
+};
+
+const moized = moize(fn, {
+  onCacheAdd(cache) {
+    console.log(cache.keys);
+  }
+});
+
+moized("foo", "bar"); // [["foo","bar"]]
+moized("foo", "bar");
+moized("bar", "foo"); // [["bar","foo"], ["foo","bar"]]
+moized("foo", "bar");
+```
+
+**NOTE**: When combined with `onCacheChange`, this method will always fire first.
+
+#### onCacheChange
+
+Method to fire when an item has been either added to cache, or existing cache was reordered based on a cache hit. Receives the `cache` object as the only parameter.
+
+```javascript
+const fn = (foo, bar) => {
+  return [foo, bar];
+};
+
+const moized = moize(fn, {
+  onCacheChange(cache) {
+    console.log(cache.keys);
+  }
+});
+
+moized("foo", "bar"); // [["foo","bar"]]
+moized("foo", "bar");
+moized("bar", "foo"); // [["bar","foo"], ["foo","bar"]]
+moized("foo", "bar"); // [["foo","bar"], ["bar","foo"]]
+```
+
+**NOTE**: When combined with `onCacheAdd` or `onCacheHit`, this method will always fire last.
+
+#### onCacheHit
+
+Method to fire when an existing cache item is found. Receives the `cache` object as the only parameter.
+
+```javascript
+const fn = (foo, bar) => {
+  return [foo, bar];
+};
+
+const moized = moize(fn, {
+  onCacheHit(cache) {
+    console.log(cache.keys);
+  }
+});
+
+moized("foo", "bar");
+moized("foo", "bar"); // [["foo","bar"]]
+moized("bar", "foo");
+moized("foo", "bar"); // [["bar","foo"], ["foo","bar"]]
+```
+
+**NOTE**: When combined with `onCacheChange`, this method will always fire first.
+
 #### onExpire
 
 A callback that is called when one of cache item expires. Note that [maxAge](#maxage) must also be set because by default keys never expire.
@@ -262,98 +389,27 @@ const memoized = moize(fn, {
 memoized("foo"); // will expire key after 30 seconds, or 3 expiration attempts
 ```
 
-#### promiseLibrary
+#### profileName
 
-_defaults to native Promise_
+_defaults to function name_
 
-The promise library to use for resolution / rejection of promises.
+Name to use as unique identifier for the function when collecting statistics.
 
 ```javascript
-const fn = foo => {
-  return new Bluebird(resolve => {
-    resolve(foo);
-  });
+collectStats();
+
+const fn = item => {
+  return item;
 };
 
 const memoized = moize(fn, {
-  isPromise: true,
-  promiseLibrary: Bluebird
+  profileName: "my fancy identity"
 });
 ```
 
-_Please note that for this option to work `isPromise` must be set to `true`._
+**NOTE**: You must be collecting statistics for this option to take effect.
 
-You can use any library where the following aspects of the [specification](http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects) are included:
-
-* It is thenable (the generated promise has a `.then()` function)
-* The `Promise` object itself has `.resolve()` and `.reject()` functions on it
-
-Most modern libraries (`bluebird`, `q`, etc.) include these by default, however if you are using a custom library that does not meet these requirements then you will need to implement them yourself. An example of a wrapper that creates the `.resolve()` and `.reject()` methods:
-
-```javascript
-import foo from "my-promise-library";
-
-// create a wrapper so as not to touch the library itself
-
-const customPromise = fn => {
-  return foo(fn);
-};
-
-// lets pretend foo has a .result() method that has the first
-// parameter as successful, second as failure
-
-customPromise.resolve = function(value) {
-  return foo.result(value);
-};
-customPromise.reject = function(error) {
-  return foo.result(undefined, error);
-};
-
-const fn = foo => {
-  return customPromise(resolve => {
-    resolve(foo);
-  });
-};
-
-const memoized = moize(fn, {
-  isPromise: true,
-  promiseLibrary: customPromise
-});
-```
-
-#### serialize
-
-_defaults to false_
-
-Serializes the parameters passed into a string and uses this as the key for cache comparison. This is also available via the shortcut method of [`moize.serialize`](#moizeserialize).
-
-```javascript
-const fn = mutableObject => {
-  return mutableObject.foo;
-};
-
-const memoized = moize(fn, {
-  serialize: true
-});
-
-const object = {
-  foo: "foo"
-};
-
-memoized(object); // 'foo'
-
-object.foo = "bar";
-
-memoized(object); // 'bar'
-```
-
-Please note that this is slower than the default key storage ([see benchmarks](#benchmarks)). Also note that if `serialize` is combined with either `maxArgs` or `transformArgs`, the following order is used:
-
-1.  limit by `maxArgs` (if applicable)
-1.  transform by `transformArgs` (if applicable)
-1.  serialize by `serializer`
-
-#### serializeFunctions
+#### shouldSerializeFunctions
 
 _defaults to false_
 
@@ -369,12 +425,12 @@ const FunctionalComponent = ({ onClickFoo }) => {
 };
 
 const MemoizedFunctionalComponent = moize(FunctionalComponent, {
-  serialize: true,
-  serializeFunctions: true
+  isSerialized: true,
+  shouldSerializeFunctions: true
 });
 ```
 
-Please note that you must also set `serialize` to `true` for this setting to take effect.
+Please note that you must also set `isSerialized` to `true` for this setting to take effect.
 
 #### serializer
 
@@ -388,12 +444,12 @@ const serializer = args => {
 };
 
 const memoized = moize(fn, {
-  serialize: true,
+  isSerialized: true,
   serializer
 });
 ```
 
-Please note that you must also set `serialize` to `true` for this setting to take effect.
+Please note that you must also set `isSerialized` to `true` for this setting to take effect.
 
 #### transformArgs
 
@@ -444,6 +500,20 @@ setTimeout(() => {
 ```
 
 ## Usage with shortcut methods
+
+#### moize.deep
+
+Pre-applies the `isDeepEqual` option.
+
+```javascript
+import moize from "moize";
+
+const foo = (bar, baz) => {
+  return `${bar} ${baz}`;
+};
+
+export default moize.deep(foo);
+```
 
 #### moize.maxAge
 
@@ -647,7 +717,65 @@ const superLimitedReactMoize = moize.compose(
 
 ## Introspection
 
-There currently is only one method to introspect objects specific to moize, but if you want more just ask!
+#### getStats([profileName])
+
+Get the statistics for a specific function, or globally.
+
+```javascript
+collectStats();
+
+const fn = (foo, bar) => {
+  return [foo, bar];
+};
+const moized = moize(fn);
+
+const otherFn = bar => {
+  return bar.slice(0, 1);
+};
+const otherMoized = moize(otherFn, { profileName: "otherMoized" });
+
+moized("foo", "bar");
+moized("foo", "bar");
+
+moized.getStats(); // {"calls": 2, "hits": 1, "usage": "50%"}
+
+otherMoized(["baz"]);
+
+moize.getStats("otherMoized"); // {"calls": 1, "hits": 0, "usage": "0%"}
+
+moize.getStats();
+/*
+ {
+   "calls": 3,
+   "hits": 1,
+   "profiles": {
+     "fn": {
+       "calls": 2,
+       "hits": 1,
+       "usage": "50%"
+     },
+     "otherFn": {
+       "calls": 1,
+       "hits": 0,
+       "usage": "0%"
+     }
+   },
+   "usage": "33.3333%"
+ }
+ */
+```
+
+#### isCollectingStats
+
+Are statistics being collected on memoization usage.
+
+```javascript
+moize.isCollectingStats(); // false
+
+collectStats();
+
+moize.isCollectingStats(); // true
+```
 
 #### isMoized
 
@@ -661,29 +789,27 @@ moize.isMoized(fn); // false
 moize.isMoized(moizedFn); // true
 ```
 
-## Benchmarks
+## Collecting statistics
 
-All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Note that `underscore`, `lodash`, and `ramda` do not support mulitple-parameter memoization, so they are not included in those benchmarks.
+As-of version 5, you can now collect statistics of moize to determine if your cached methods are effective.
 
-Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, using single and multiple parameters with different object types. The results were averaged to determine overall speed across all scenarios.
+```javascript
+import moize, { collectStats } from "moize";
 
-| Name         | Overall (average) | Single (average) | Multiple (average) | Single (primitive) | Single (Array) | Single (Object) | Multiple (primitive) | Multiple (Array) | Multiple (Object) |
-| ------------ | ----------------- | ---------------- | ------------------ | ------------------ | -------------- | --------------- | -------------------- | ---------------- | ----------------- |
-| **moize**    | **58,669,248**    | **67,308,143**   | **50,030,353**     | **80,260,036**     | **60,871,531** | **60,792,864**  | **50,510,487**       | **50,281,433**   | **49,299,140**    |
-| fast-memoize | 37,901,525        | 74,753,514       | 1,049,536          | 221,161,329        | 1,594,143      | 1,505,072       | 1,215,892            | 1,111,605        | 821,111           |
-| memoizee     | 11,128,750        | 13,712,714       | 8,544,786          | 16,811,901         | 11,983,924     | 12,342,317      | 10,568,148           | 7,401,170        | 7,665,041         |
-| lru-memoize  | 7,042,509         | 7,492,004        | 6,593,015          | 8,189,054          | 7,153,791      | 7,133,169       | 6,675,840            | 6,592,401        | 6,510,804         |
-| memoizerific | 4,484,511         | 4,840,758        | 4,128,264          | 5,641,865          | 4,418,423      | 4,461,986       | 4,761,211            | 3,998,986        | 3,624,597         |
-| addy-osmani  | 2,730,139         | 3,381,737        | 2,078,540          | 6,580,745          | 1,784,218      | 1,780,250       | 3,478,684            | 1,786,383        | 970,555           |
-| lodash       | N/A               | 14,825,854       | N/A                | 27,985,602         | 8,207,788      | 8,284,173       | N/A                  | N/A              | N/A               |
-| underscore   | N/A               | 12,505,751       | N/A                | 24,051,104         | 5,404,896      | 8,061,254       | N/A                  | N/A              | N/A               |
-| ramda        | N/A               | 551,402          | N/A                | 1,142,370          | 303,464        | 208,372         | N/A                  | N/A              | N/A               |
+collectStats();
 
-![Overall average image](img/overall-average.png)
+const fn = (foo, bar) => {
+  return [foo, bar];
+};
+const moized = moize(fn);
 
-![Single parameter image](img/single-parameter.png)
+moized("foo", "bar");
+moized("foo", "bar");
 
-![Multiple parameters image](img/multiple-parameters.png)
+moized.getStats(); // {"calls": 2, "hits": 1, "usage": "50%"}
+```
+
+**NOTE**: It is recommended not to do this in production, as it will have a performance decrease.
 
 ## Direct cache manipulation
 
@@ -716,6 +842,40 @@ const memoized = moize(item => {
 
 memoized.clear();
 ```
+
+#### get(key)
+
+Returns the value in cache if the key matches, else returns `undefined`.
+
+```javascript
+const memoized = moize((first, second) => {
+  return [first, second];
+});
+
+memoized("foo", "bar");
+
+console.log(memoized.get(["foo", "bar"])); // ["foo","bar"]
+console.log(memoized.get(["bar", "baz"])); // undefined
+```
+
+#### getStats()
+
+Returns the statistics for the function.
+
+```javascript
+collectStats();
+
+const memoized = moize((first, second) => {
+  return [first, second];
+});
+
+memoized("foo", "bar");
+memoized("foo", "bar");
+
+console.log(memoized.getStats()); // {"calls": 2, "hits": 1, "usage": "50%"}
+```
+
+**NOTE**: You must be collecting statistics for the data to be populated correctly.
 
 #### has(key)
 
@@ -751,7 +911,7 @@ const bar = {
 
 memoized(bar);
 
-const keys = memoized.keys(); // ['foo', {baz: 'baz'}]
+const keys = memoized.keys(); // [['foo'], [{baz: 'baz'}]]
 ```
 
 #### remove(key)
@@ -788,7 +948,7 @@ const memoized = moize(item => {
 
 const foo = "foo";
 
-memoized(foo);moize.min.js
+memoized(foo);
 
 const bar = {
   baz: "baz"
@@ -798,6 +958,30 @@ memoized(bar);
 
 const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 ```
+
+## Benchmarks
+
+All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Note that `underscore`, `lodash`, and `ramda` do not support mulitple-parameter memoization, so they are not included in those benchmarks.
+
+Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, using single and multiple parameters with different object types. The results were averaged to determine overall speed across possible usage.
+
+| Name         | Overall (average) | Single (average) | Multiple (average) | Single (primitive) | Single (Array) | Single (Object) | Multiple (primitive) | Multiple (Array) | Multiple (Object) |
+| ------------ | ----------------- | ---------------- | ------------------ | ------------------ | -------------- | --------------- | -------------------- | ---------------- | ----------------- |
+| **moize**    | **58,669,248**    | **67,308,143**   | **50,030,353**     | **80,260,036**     | **60,871,531** | **60,792,864**  | **50,510,487**       | **50,281,433**   | **49,299,140**    |
+| fast-memoize | 37,901,525        | 74,753,514       | 1,049,536          | 221,161,329        | 1,594,143      | 1,505,072       | 1,215,892            | 1,111,605        | 821,111           |
+| memoizee     | 11,128,750        | 13,712,714       | 8,544,786          | 16,811,901         | 11,983,924     | 12,342,317      | 10,568,148           | 7,401,170        | 7,665,041         |
+| lru-memoize  | 7,042,509         | 7,492,004        | 6,593,015          | 8,189,054          | 7,153,791      | 7,133,169       | 6,675,840            | 6,592,401        | 6,510,804         |
+| memoizerific | 4,484,511         | 4,840,758        | 4,128,264          | 5,641,865          | 4,418,423      | 4,461,986       | 4,761,211            | 3,998,986        | 3,624,597         |
+| addy-osmani  | 2,730,139         | 3,381,737        | 2,078,540          | 6,580,745          | 1,784,218      | 1,780,250       | 3,478,684            | 1,786,383        | 970,555           |
+| lodash       | N/A               | 14,825,854       | N/A                | 27,985,602         | 8,207,788      | 8,284,173       | N/A                  | N/A              | N/A               |
+| underscore   | N/A               | 12,505,751       | N/A                | 24,051,104         | 5,404,896      | 8,061,254       | N/A                  | N/A              | N/A               |
+| ramda        | N/A               | 551,402          | N/A                | 1,142,370          | 303,464        | 208,372         | N/A                  | N/A              | N/A               |
+
+![Overall average image](img/overall-average.png)
+
+![Single parameter image](img/single-parameter.png)
+
+![Multiple parameters image](img/multiple-parameters.png)
 
 ## Browser support
 

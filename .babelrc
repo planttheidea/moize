@@ -28,6 +28,19 @@
         "stage-2"
       ]
     },
+    "lib": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "presets": [
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true
+          }
+        ],
+        "stage-2"
+      ]
+    },
     "production": {
       "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [

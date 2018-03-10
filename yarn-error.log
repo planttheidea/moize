@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/bin/node /usr/bin/yarn build
+  /usr/bin/node /usr/bin/yarn test:coverage
 
 PATH: 
   /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
@@ -19,33 +19,16 @@ npm manifest:
     "ava": {
       "babel": {
         "babelrc": true,
-        "presets": [
-          "react"
-        ]
+        "presets": ["react"]
       },
       "failFast": true,
-      "files": [
-        "test/*.js",
-        "!test-utils/*.js"
-      ],
-      "require": [
-        "babel-register",
-        "babel-polyfill"
-      ],
-      "source": [
-        "src/*.js"
-      ],
+      "files": ["test/*.js", "!test-utils/*.js"],
+      "require": ["babel-register", "babel-polyfill"],
+      "source": ["src/*.js"],
       "verbose": true
     },
     "browser": "dist/moize.min.js",
-    "browserslist": [
-      "defaults",
-      "Explorer >= 9",
-      "Safari >= 6",
-      "Opera >= 15",
-      "iOS >= 8",
-      "Android >= 4"
-    ],
+    "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
     "bugs": {
       "url": "https://github.com/planttheidea/moize/issues"
     },
@@ -137,6 +120,7 @@ npm manifest:
     },
     "scripts": {
       "benchmark": "npm run transpile:lib -- --no-comments && node benchmark/index.js",
+      "benchmark:alternative": "npm run transpile:lib -- --no-comments && ALTERNATIVE=true node benchmark/index.js",
       "build": "NODE_ENV=production rollup -c",
       "clean": "npm run clean:lib && npm run clean:dist && npm run clean:docs",
       "clean:docs": "rimraf docs",
@@ -150,13 +134,15 @@ npm manifest:
       "flow:generate": "flowgen ./index.d.ts --output-file flow-typed/moize.js",
       "lint": "NODE_ENV=test eslint src",
       "lint:fix": "NODE_ENV=test eslint src --fix",
+      "postpublish": "npm run docs",
       "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-      "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist && npm run docs",
+      "prepublish:compile":
+        "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
       "start": "npm run dev",
       "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
       "test:coverage": "nyc npm test",
       "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch",
-      "transpile:lib": "npm run clean:lib && babel src --out-dir lib",
+      "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib",
       "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
     },
     "types": "./index.d.ts",
@@ -8601,7 +8587,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c NODE_ENV=production rollup -c
+  Arguments: -c nyc npm test
   Directory: /home/tquetano/git/moize
   Output:
   

@@ -253,9 +253,11 @@ Foo.defaultProps = {
 
 const MemoizedFoo = moize.react(Foo, {isDeepEqual: true});
 const SimpleMemoizedFoo = moize.reactSimple(Foo, {profileName: 'SimpleMemoizedFoo'});
+const LimitedMemoizedFoo = moize.compose()(Foo);
 
 console.log('MemoizedFoo', MemoizedFoo.options, MemoizedFoo._microMemoizeOptions);
 console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options, SimpleMemoizedFoo._microMemoizeOptions);
+console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options, LimitedMemoizedFoo._microMemoizeOptions);
 
 console.log('MemoizedFoo cache', MemoizedFoo.cache);
 

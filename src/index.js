@@ -22,7 +22,7 @@ import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCac
 import type {Expiration, MicroMemoizeOptions, Options} from './types';
 
 // utils
-import {combine, compose} from './utils';
+import {combine, compose, mergeOptions} from './utils';
 
 /**
  * @module moize
@@ -56,26 +56,18 @@ export {collectStats};
  * @returns {function} the memoized function
  */
 function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Function {
+  if (fn.isMoized) {
+    // $FlowIgnore if moized, originalFunction and options exist
+    return moize(fn.originalFunction, mergeOptions(fn.options, options));
+  }
+
   if (typeof fn === 'object') {
     return (curriedFn: Function | Options, curriedOptions: Options = {}) => {
       return typeof curriedFn === 'function'
-        ? moize(
-          curriedFn,
-          // $FlowIgnore fn is actually an object of options
-          Object.assign({}, fn, curriedOptions, {
-            onCacheAdd: combine(curriedOptions.onCacheAdd, fn.onCacheAdd),
-            onCacheChange: combine(curriedOptions.onCacheChange, fn.onCacheChange),
-            onCacheHit: combine(curriedOptions.onCacheHit, fn.onCacheHit)
-          })
-        )
-        : moize(
-          // $FlowIgnore fn is actually an object of options
-          Object.assign({}, fn, curriedFn, {
-            onCacheAdd: combine(curriedFn.onCacheAdd, fn.onCacheAdd),
-            onCacheChange: combine(curriedFn.onCacheChange, fn.onCacheChange),
-            onCacheHit: combine(curriedFn.onCacheHit, fn.onCacheHit)
-          })
-        );
+        ? // $FlowIgnore fn is actually an object of options
+        moize(curriedFn, mergeOptions(fn, curriedOptions))
+        : // $FlowIgnore fn is actually an object of options
+        moize(mergeOptions(fn, curriedFn));
     };
   }
 
@@ -138,7 +130,11 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
  * @param {...Array<(function)>} functions the functions to compose
  * @returns {function(...Array<*>): *} the composed function
  */
-moize.compose = compose;
+moize.compose = function() {
+  /* eslint-disable prefer-spread */
+  return compose.apply(null, arguments) || moize;
+  /* eslint-enable */
+};
 
 /**
  * @function
