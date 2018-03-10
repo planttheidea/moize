@@ -54,6 +54,7 @@
   * [remove](#removekey)
   * [values](#values)
 * [Benchmarks](#benchmarks)
+* [Filesize](#filesize)
 * [Browser support](#browser-support)
 * [Development](#development)
 
@@ -982,6 +983,10 @@ Each benchmark was performed using the default configuration of the library, wit
 ![Single parameter image](img/single-parameter.png)
 
 ![Multiple parameters image](img/multiple-parameters.png)
+
+## Filesize
+
+`moize` is fairly small (about 4KB when minified and gzipped), however it provides a large number of configuration options to satisfy a multitude of edge cases. If filesize is a concern, you should consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at almost 1/4 the size of `moize`.
 
 ## Browser support
 
