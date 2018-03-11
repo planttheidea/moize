@@ -3,33 +3,16 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": [
-        "react"
-      ]
+      "presets": ["react"]
     },
     "failFast": true,
-    "files": [
-      "test/*.js",
-      "!test-utils/*.js"
-    ],
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "source": [
-      "src/*.js"
-    ],
+    "files": ["test/*.js", "!test-utils/*.js"],
+    "require": ["babel-register", "babel-polyfill"],
+    "source": ["src/*.js"],
     "verbose": true
   },
   "browser": "dist/moize.min.js",
-  "browserslist": [
-    "defaults",
-    "Explorer >= 9",
-    "Safari >= 6",
-    "Opera >= 15",
-    "iOS >= 8",
-    "Android >= 4"
-  ],
+  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
@@ -96,17 +79,7 @@
     "webpack-dev-server": "^3.1.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
-  "keywords": [
-    "cache",
-    "expire",
-    "lru",
-    "memoize",
-    "memoization",
-    "optimize",
-    "performance",
-    "promise",
-    "ttl"
-  ],
+  "keywords": ["cache", "expire", "lru", "memoize", "memoization", "optimize", "performance", "promise", "ttl"],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -130,9 +103,10 @@
     "flow": "flow check src",
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "NODE_ENV=test eslint src --fix",
-    "postpublish": "npm run docs",
+    "postpublish": "npm run docs && git add . && git commit -m \"Update docs\" && git push",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile":
+      "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
     "test:coverage": "nyc npm test",
