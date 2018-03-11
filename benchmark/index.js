@@ -8,15 +8,16 @@ const Benchmark = require('benchmark');
 const Table = require('cli-table2');
 const ora = require('ora');
 
-const underscore = require('underscore').memoize;
-const lodash = _.memoize;
-const ramda = require('ramda').memoize;
-const memoizee = require('memoizee');
-const fastMemoize = require('fast-memoize');
 const addyOsmani = require('./addy-osmani');
-const memoizerific = require('memoizerific');
+const fastMemoize = require('fast-memoize');
+const lodash = _.memoize;
 const lruMemoize = require('lru-memoize').default;
+const mem = require('mem');
+const memoizee = require('memoizee');
+const memoizerific = require('memoizerific');
 const moize = require('../lib').default;
+const ramda = require('ramda').memoize;
+const underscore = require('underscore').memoize;
 
 const deepEquals = require('lodash').isEqual;
 
@@ -135,15 +136,16 @@ const runSinglePrimitiveSuite = () => {
   const fibonacciSuite = new Benchmark.Suite('Single parameter (primitive)');
   const fibonacciNumber = 35;
 
-  const mUnderscore = underscore(fibonacciSinglePrimitive);
-  const mLodash = lodash(fibonacciSinglePrimitive);
-  const mRamda = ramda(fibonacciSinglePrimitive);
-  const mMemoizee = memoizee(fibonacciSinglePrimitive);
-  const mFastMemoize = fastMemoize(fibonacciSinglePrimitive);
   const mAddyOsmani = addyOsmani(fibonacciSinglePrimitive);
-  const mMemoizerific = memoizerific(Infinity)(fibonacciSinglePrimitive);
+  const mFastMemoize = fastMemoize(fibonacciSinglePrimitive);
+  const mLodash = lodash(fibonacciSinglePrimitive);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciSinglePrimitive);
+  const mMem = mem(fibonacciSinglePrimitive);
+  const mMemoizee = memoizee(fibonacciSinglePrimitive);
+  const mMemoizerific = memoizerific(Infinity)(fibonacciSinglePrimitive);
   const mMoize = moize(fibonacciSinglePrimitive);
+  const mRamda = ramda(fibonacciSinglePrimitive);
+  const mUnderscore = underscore(fibonacciSinglePrimitive);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -158,6 +160,9 @@ const runSinglePrimitiveSuite = () => {
       })
       .add('lru-memoize', () => {
         mLruMemoize(fibonacciNumber);
+      })
+      .add('mem', () => {
+        mMem(fibonacciNumber);
       })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber);
@@ -197,15 +202,16 @@ const runSingleArraySuite = () => {
   const fibonacciSuite = new Benchmark.Suite('Single parameter (Array)');
   const fibonacciNumber = [35];
 
-  const mUnderscore = underscore(fibonacciSingleArray);
-  const mLodash = lodash(fibonacciSingleArray);
-  const mRamda = ramda(fibonacciSingleArray);
-  const mMemoizee = memoizee(fibonacciSingleArray);
-  const mFastMemoize = fastMemoize(fibonacciSingleArray);
   const mAddyOsmani = addyOsmani(fibonacciSingleArray);
-  const mMemoizerific = memoizerific(Infinity)(fibonacciSingleArray);
+  const mFastMemoize = fastMemoize(fibonacciSingleArray);
+  const mLodash = lodash(fibonacciSingleArray);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciSingleArray);
+  const mMem = mem(fibonacciSingleArray);
+  const mMemoizee = memoizee(fibonacciSingleArray);
+  const mMemoizerific = memoizerific(Infinity)(fibonacciSingleArray);
   const mMoize = moize(fibonacciSingleArray);
+  const mRamda = ramda(fibonacciSingleArray);
+  const mUnderscore = underscore(fibonacciSingleArray);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -220,6 +226,9 @@ const runSingleArraySuite = () => {
       })
       .add('lru-memoize', () => {
         mLruMemoize(fibonacciNumber);
+      })
+      .add('mem', () => {
+        mMem(fibonacciNumber);
       })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber);
@@ -261,15 +270,16 @@ const runSingleObjectSuite = () => {
     number: 35
   };
 
-  const mUnderscore = underscore(fibonacciSingleObject);
-  const mLodash = lodash(fibonacciSingleObject);
-  const mRamda = ramda(fibonacciSingleObject);
-  const mMemoizee = memoizee(fibonacciSingleObject);
-  const mFastMemoize = fastMemoize(fibonacciSingleObject);
   const mAddyOsmani = addyOsmani(fibonacciSingleObject);
-  const mMemoizerific = memoizerific(Infinity)(fibonacciSingleObject);
+  const mFastMemoize = fastMemoize(fibonacciSingleObject);
+  const mLodash = lodash(fibonacciSingleObject);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciSingleObject);
+  const mMem = mem(fibonacciSingleObject);
+  const mMemoizee = memoizee(fibonacciSingleObject);
+  const mMemoizerific = memoizerific(Infinity)(fibonacciSingleObject);
   const mMoize = moize(fibonacciSingleObject);
+  const mRamda = ramda(fibonacciSingleObject);
+  const mUnderscore = underscore(fibonacciSingleObject);
 
   return new Promise((resolve) => {
     fibonacciSuite
@@ -284,6 +294,9 @@ const runSingleObjectSuite = () => {
       })
       .add('lru-memoize', () => {
         mLruMemoize(fibonacciNumber);
+      })
+      .add('mem', () => {
+        mMem(fibonacciNumber);
       })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber);
@@ -324,11 +337,12 @@ const runMultiplePrimitiveSuite = () => {
   const fibonacciNumber = 35;
   const isComplete = false;
 
-  const mMemoizee = memoizee(fibonacciMultiplePrimitive);
-  const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
   const mAddyOsmani = addyOsmani(fibonacciMultiplePrimitive);
-  const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
+  const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciMultiplePrimitive);
+  const mMem = mem(fibonacciMultiplePrimitive);
+  const mMemoizee = memoizee(fibonacciMultiplePrimitive);
+  const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
   const mMoize = moize(fibonacciMultiplePrimitive);
 
   return new Promise((resolve) => {
@@ -341,6 +355,9 @@ const runMultiplePrimitiveSuite = () => {
       })
       .add('fast-memoize', () => {
         mFastMemoize(fibonacciNumber, isComplete);
+      })
+      .add('mem', () => {
+        mMem(fibonacciNumber, isComplete);
       })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber, isComplete);
@@ -375,11 +392,12 @@ const runMultipleArraySuite = () => {
   const fibonacciNumber = [35];
   const isComplete = false;
 
-  const mMemoizee = memoizee(fibonacciMultipleArray);
-  const mFastMemoize = fastMemoize(fibonacciMultipleArray);
   const mAddyOsmani = addyOsmani(fibonacciMultipleArray);
-  const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleArray);
+  const mFastMemoize = fastMemoize(fibonacciMultipleArray);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleArray);
+  const mMem = mem(fibonacciMultipleArray);
+  const mMemoizee = memoizee(fibonacciMultipleArray);
+  const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleArray);
   const mMoize = moize(fibonacciMultipleArray);
 
   return new Promise((resolve) => {
@@ -392,6 +410,9 @@ const runMultipleArraySuite = () => {
       })
       .add('fast-memoize', () => {
         mFastMemoize(fibonacciNumber, isComplete);
+      })
+      .add('mem', () => {
+        mMem(fibonacciNumber, isComplete);
       })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber, isComplete);
@@ -430,11 +451,12 @@ const runMultipleObjectSuite = () => {
     isComplete: false
   };
 
-  const mMemoizee = memoizee(fibonacciMultipleObject);
-  const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
-  const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
+  const mFastMemoize = fastMemoize(fibonacciMultipleObject);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleObject);
+  const mMem = mem(fibonacciMultipleObject);
+  const mMemoizee = memoizee(fibonacciMultipleObject);
+  const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
   const mMoize = moize(fibonacciMultipleObject);
 
   return new Promise((resolve) => {
@@ -447,6 +469,9 @@ const runMultipleObjectSuite = () => {
       })
       .add('fast-memoize', () => {
         mFastMemoize(fibonacciNumber, isComplete);
+      })
+      .add('mem', () => {
+        mMem(fibonacciNumber, isComplete);
       })
       .add('memoizee', () => {
         mMemoizee(fibonacciNumber, isComplete);
@@ -697,15 +722,26 @@ const writeCsv = () => {
   }
 };
 
+const pauseBetweenSuites = () => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
+};
+
 if (process.env.ALTERNATIVE) {
   runAlternativeOptionsSuite();
 } else {
   Promise.resolve()
     .then(runSinglePrimitiveSuite)
+    .then(pauseBetweenSuites)
     .then(runSingleArraySuite)
+    .then(pauseBetweenSuites)
     .then(runSingleObjectSuite)
+    .then(pauseBetweenSuites)
     .then(runMultiplePrimitiveSuite)
+    .then(pauseBetweenSuites)
     .then(runMultipleArraySuite)
+    .then(pauseBetweenSuites)
     .then(runMultipleObjectSuite)
     .then(writeCsv);
 }

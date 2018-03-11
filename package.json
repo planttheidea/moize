@@ -3,33 +3,16 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": [
-        "react"
-      ]
+      "presets": ["react"]
     },
     "failFast": true,
-    "files": [
-      "test/*.js",
-      "!test-utils/*.js"
-    ],
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "source": [
-      "src/*.js"
-    ],
+    "files": ["test/*.js", "!test-utils/*.js"],
+    "require": ["babel-register", "babel-polyfill"],
+    "source": ["src/*.js"],
     "verbose": true
   },
   "browser": "dist/moize.min.js",
-  "browserslist": [
-    "defaults",
-    "Explorer >= 9",
-    "Safari >= 6",
-    "Opera >= 15",
-    "iOS >= 8",
-    "Android >= 4"
-  ],
+  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
@@ -72,6 +55,7 @@
     "jsdom-global": "3.0.2",
     "lodash": "4.17.5",
     "lru-memoize": "1.0.2",
+    "mem": "^3.0.0",
     "memoizee": "^0.4.12",
     "memoizerific": "1.11.2",
     "nyc": "11.4.1",
@@ -95,26 +79,7 @@
     "webpack-dev-server": "^3.1.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
-  "keywords": [
-    "memoize",
-    "memoized",
-    "memoizer",
-    "memoization",
-    "memo",
-    "memcache",
-    "memcached",
-    "cache",
-    "cached",
-    "async",
-    "storage",
-    "memory",
-    "optimize",
-    "performance",
-    "lru",
-    "ttl",
-    "expire",
-    "promise"
-  ],
+  "keywords": ["cache", "expire", "lru", "memoize", "memoization", "optimize", "performance", "promise", "ttl"],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -140,7 +105,8 @@
     "lint:fix": "NODE_ENV=test eslint src --fix",
     "postpublish": "npm run docs",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile":
+      "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
     "test:coverage": "nyc npm test",
