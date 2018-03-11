@@ -50,11 +50,6 @@ console.log('has false', memoized.has([foo, 'baz']));
 
 console.log(memoized.getStats());
 
-lodashMemoized(foo, bar);
-lodashMemoized(bar, foo);
-lodashMemoized(foo, bar);
-lodashMemoized(foo, bar);
-
 console.groupEnd('standard');
 
 console.group('maxArgs');

@@ -35,11 +35,14 @@ test('if moized.add will add the item to the cache if it does not already exist'
 
   moized.cache = {
     keys: [],
+    size: 0,
     values: []
   };
 
   moized.options = {
-    isEqual() {},
+    isEqual(a, b) {
+      return a === b;
+    },
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
     transformKey: undefined
@@ -67,6 +70,7 @@ test('if moized.add will add the item to the cache if it does not already exist 
 
   moized.cache = {
     keys: [],
+    size: 0,
     values: []
   };
 
@@ -115,6 +119,7 @@ test('if moized.add will add the item to the cache if it does not already exist 
 
   moized.cache = {
     keys: [],
+    size: 0,
     values: []
   };
 
@@ -146,6 +151,42 @@ test('if moized.add will add the item to the cache if it does not already exist 
   t.true(moized.options.onCacheChange.calledWith(moized.cache));
 });
 
+test('if moized.add will remove the oldest item from cache if the maxSize is exceeded', (t) => {
+  const moized = () => {};
+
+  moized.cache = {
+    keys: [['existingKey']],
+    size: 1,
+    values: ['existingValue']
+  };
+
+  moized.options = {
+    isEqual(a, b) {
+      return a === b;
+    },
+    maxSize: 1,
+    onCacheAdd: sinon.spy(),
+    onCacheChange: sinon.spy(),
+    transformKey: undefined
+  };
+
+  instance.addInstanceMethods(moized);
+
+  const key = ['key'];
+  const value = 'value';
+
+  moized.add(key, value);
+
+  t.deepEqual(moized.cache.keys, [key]);
+  t.deepEqual(moized.cache.values, [value]);
+
+  t.true(moized.options.onCacheAdd.calledOnce);
+  t.true(moized.options.onCacheAdd.calledWith(moized.cache));
+
+  t.true(moized.options.onCacheChange.calledOnce);
+  t.true(moized.options.onCacheChange.calledWith(moized.cache));
+});
+
 test('if moized.add will do nothing if the item already exists in cache', (t) => {
   const moized = () => {};
 
@@ -154,6 +195,7 @@ test('if moized.add will do nothing if the item already exists in cache', (t) =>
 
   moized.cache = {
     keys: [key],
+    size: 1,
     values: [value]
   };
 

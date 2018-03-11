@@ -29,6 +29,11 @@ export const addInstanceMethods = (moized: Function): void => {
     const savedKey: Array<any> = transformKey ? transformKey(key) : key;
 
     if (!~findKeyIndex(isEqual, moized.cache.keys, savedKey)) {
+      if (moized.cache.size >= moized.options.maxSize) {
+        moized.cache.keys.pop();
+        moized.cache.values.pop();
+      }
+
       moized.cache.keys.unshift(savedKey);
       moized.cache.values.unshift(value);
 

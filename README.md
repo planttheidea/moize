@@ -10,7 +10,7 @@
 
 * [Installation](#installation)
 * [Usage](#usage)
-* [Advanced usage](#advanced-usage)
+* [Configuration options](#configuration-options)
   * [equals](#equals)
   * [isDeepEqual](#isdeepequal)
   * [isPromise](#ispromise)
@@ -83,7 +83,7 @@ memoized(2, 4); // 6, pulled from cache
 
 All parameter types are supported, including circular objects, functions, etc. There are also a number of [shortcut methods](#usage-with-shortcut-methods) to memoize for unique use-cases.
 
-## Advanced usage
+## Configuration options
 
 `moize` optionally accepts an object of options as either the second parameter or as the first step in a curried function:
 
@@ -121,27 +121,27 @@ The full shape of these options:
 
 #### equals
 
-_defaults to strict equality_
+_defaults to [SameValueZero](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero) equality_
 
 Custom method used to compare equality of keys for cache purposes.
 
 ```javascript
 // using lodash's deep equal comparison method
-import isEqual from "lodash/isEqual";
-
 const fn = ({ foo, bar }) => {
   return [foo, bar];
 };
 
 const memoized = moize(fn, {
-  equals: isEqual
+  equals(cacheKeyArgument, keyArgument) {
+    return cacheKeyArgument.foo === "bar" && keyArgument.foo === "bar";
+  }
 });
 
-memoized({ foo: "foo", bar: "bar" });
-memoized({ foo: "foo", bar: "bar" }); // pulls from cache
+memoized({ foo: "bar" });
+memoized({ foo: "bar", bar: "baz" }); // pulls from cache
 ```
 
-The `equals` method receives two parameters (cache key values) and should return a `boolean`. Please note that this will be slower than the default SameValueZero equality comparison, however how much slower is based on the efficiency of the method passed.
+The `equals` method receives two parameters (cache key arguments) and should return a `boolean`.
 
 **NOTE**: This comparison is used iteratively on each argument, rather than comparing the two keys as a whole.
 
@@ -202,7 +202,7 @@ export default moize(Foo, {
 });
 ```
 
-The method will do a shallow comparison of both `props` and `context` of the component based on strict equality. If you have mutative props and instead want to do a deep equals comparison, set [`isDeepEqual`](#isdeepequal) to true.
+The method will do a shallow equal comparison of both `props` and `context` of the component based on strict equality. If you want to do a deep equals comparison, set [`isDeepEqual`](#isdeepequal) to true.
 
 #### isSerialized
 
@@ -230,11 +230,13 @@ object.foo = "bar";
 memoized(object); // 'bar'
 ```
 
-**NOTE**: This is much slower than the default key storage, and usually the same requirements can be meet with `isDeepEqual`, so use at your discretion. Also, if `serialize` is combined with either `maxArgs` or `transformArgs`, the following order is used:
+If `serialize` is combined with either `maxArgs` or `transformArgs`, the following order is used:
 
 1.  limit by `maxArgs` (if applicable)
 1.  transform by `transformArgs` (if applicable)
 1.  serialize by `serializer`
+
+**NOTE**: This is much slower than the default key storage, and usually the same requirements can be meet with `isDeepEqual`, so use at your discretion.
 
 #### maxAge
 
@@ -269,7 +271,7 @@ memoize("foo", "bar", "baz");
 memoize("foo", "bar", "quz"); // pulls from cache, as the first two args are the same
 ```
 
-Please note that if `maxArgs` is combined with either `serialize` or `transformArgs`, the following order is used:
+If `maxArgs` is combined with either `serialize` or `transformArgs`, the following order is used:
 
 1.  limit by `maxArgs`
 1.  transform by `transformArgs` (if applicable)
@@ -293,7 +295,7 @@ const memoized = moize(fn, {
 
 #### onCacheAdd
 
-Method to fire when an item has been added to cache. Receives the `cache` object as a parameter.
+Method to fire when an item has been added to cache. Receives the cache, options, and memoized function as a parameters.
 
 ```javascript
 const fn = (foo, bar) => {
@@ -301,7 +303,7 @@ const fn = (foo, bar) => {
 };
 
 const moized = moize(fn, {
-  onCacheAdd(cache) {
+  onCacheAdd(cache, options, moized) {
     console.log(cache.keys);
   }
 });
@@ -316,7 +318,7 @@ moized("foo", "bar");
 
 #### onCacheChange
 
-Method to fire when an item has been either added to cache, or existing cache was reordered based on a cache hit. Receives the `cache` object as a parameter.
+Method to fire when an item has been either added to cache, or existing cache was reordered based on a cache hit. Receives the cache, options, and memoized function as a parameters.
 
 ```javascript
 const fn = (foo, bar) => {
@@ -324,7 +326,7 @@ const fn = (foo, bar) => {
 };
 
 const moized = moize(fn, {
-  onCacheChange(cache) {
+  onCacheChange(cache, options, moized) {
     console.log(cache.keys);
   }
 });
@@ -339,7 +341,7 @@ moized("foo", "bar"); // [["foo","bar"], ["bar","foo"]]
 
 #### onCacheHit
 
-Method to fire when an existing cache item is found. Receives the `cache` object as a parameter.
+Method to fire when an existing cache item is found. Receives the cache, options, and memoized function as a parameters.
 
 ```javascript
 const fn = (foo, bar) => {
@@ -347,7 +349,7 @@ const fn = (foo, bar) => {
 };
 
 const moized = moize(fn, {
-  onCacheHit(cache) {
+  onCacheHit(cache, options, moized) {
     console.log(cache.keys);
   }
 });
@@ -362,7 +364,7 @@ moized("foo", "bar"); // [["bar","foo"], ["foo","bar"]]
 
 #### onExpire
 
-A callback that is called when one of cache item expires.
+A callback that is called when the cached entry expires.
 
 ```javascript
 const fn = item => {
@@ -377,7 +379,7 @@ const memoized = moize(fn, {
 });
 ```
 
-If you return `false` from this method, it will prevent the key's removal, instead refreshing the expiration in the same vein as `updateExpire` based on `maxAge`:
+If you return `false` from this method, it will prevent the key's removal and refresh the expiration in the same vein as `updateExpire` based on `maxAge`:
 
 ```javascript
 const fn = item => {
@@ -402,7 +404,7 @@ memoized("foo"); // will expire key after 30 seconds, or 3 expiration attempts
 
 #### profileName
 
-_defaults to function name_
+_defaults to function name and file/line location_
 
 Name to use as unique identifier for the function when collecting statistics.
 
@@ -483,7 +485,7 @@ moize("foo", "bar", "baz");
 moize(null, "bar", "baz"); // pulled from cache
 ```
 
-Please note that if `transformArgs` is combined with either `maxArgs` or `serialize`, the following order is used:
+If `transformArgs` is combined with either `maxArgs` or `serialize`, the following order is used:
 
 1.  limit by `maxArgs` (if applicable)
 1.  transform by `transformArgs`
@@ -491,7 +493,7 @@ Please note that if `transformArgs` is combined with either `maxArgs` or `serial
 
 #### updateExpire
 
-When a `maxAge` is set, clear out the scheduled expiration of the key whenever that key is retrieved, updating the new expiration to be based on the last retrieval from cache.
+When a `maxAge` is set, clear the scheduled expiration of the key when that key is retrieved, setting a new expiration based on the most recent retrieval from cache.
 
 ```javascript
 const fn = item => {
@@ -570,7 +572,7 @@ export default moize.maxSize(5)(foo);
 
 #### moize.promise
 
-Pre-applies the `isPromise` and `updateExpire` options.
+Pre-applies the `isPromise` and `updateExpire` options. The `updateExpire` option does nothing if `maxAge` is not also applied, but ensures that the expiration begins at the resolution of the promise rather than the instantiation of it.
 
 ```javascript
 import moize from "moize";
@@ -586,7 +588,7 @@ export default moize.promise(foo);
 
 #### moize.react
 
-Shortcut for memoizing functional components in [React](https://github.com/facebook/react). Key comparisons will be based on a shallow equal comparison of both props and context.
+Shortcut for memoizing functional components in [React](https://github.com/facebook/react). Key comparisons are based on a shallow equal comparison of both props and context.
 
 ```javascript
 import moize from "moize";
@@ -608,7 +610,7 @@ export default moize.react(Foo);
 
 #### moize.reactSimple
 
-Shortcut for memoizing functional components in [React](https://github.com/facebook/react), with the cache size limited to a single entry. This mimics the `PureComponent` optimization, where the cache will only contain the component with the most recent `props` and `context` combination.
+Shortcut for memoizing functional components in [React](https://github.com/facebook/react), with the cache size limited to a single entry.
 
 ```javascript
 import moize from "moize";
@@ -712,7 +714,7 @@ const superLimitedReactMoize = moize.compose(
 
 ## Collecting statistics
 
-As-of version 5, you can now collect statistics of moize to determine if your cached methods are effective.
+As-of version 5, you can collect statistics of moize to determine if your cached methods are effective.
 
 ```javascript
 import moize, { collectStats } from "moize";
@@ -730,7 +732,7 @@ moized("foo", "bar");
 moized.getStats(); // {"calls": 2, "hits": 1, "usage": "50%"}
 ```
 
-**NOTE**: It is recommended not to do this in production, as it will have a performance decrease.
+**NOTE**: It is recommended not to activate this in production, as it will have a performance decrease.
 
 ## Introspection
 
@@ -766,12 +768,12 @@ moize.getStats();
    "calls": 3,
    "hits": 1,
    "profiles": {
-     "fn": {
+     "fn at Object..src/utils.js (http://localhost:3000/app.js:153:68)": {
        "calls": 2,
        "hits": 1,
        "usage": "50%"
      },
-     "otherFn": {
+     "otherMoized": {
        "calls": 1,
        "hits": 0,
        "usage": "0%"
@@ -828,7 +830,7 @@ Regardless of how the key is transformed, it is always stored as an array (if th
 
 #### cacheSnapshot
 
-The `cache` is mutated internally for performance reasons, so logging out the cache at a specific step in the workflow may not give you the information you need. As such, to help with debugging you can request the `cacheSnapshot`, which has the same shape as the `cache` but is a shallow clone for persistence.
+The `cache` is mutated internally for performance reasons, so logging out the cache at a specific step in the workflow may not give you the information you need. As such, to help with debugging you can request the `cacheSnapshot`, which has the same shape as the `cache` but is a shallow clone of each property for persistence.
 
 There are also convenience methods provided on the `moize`d function which allow for programmatic manipulation of the cache.
 
@@ -892,7 +894,7 @@ memoized("foo", "bar");
 console.log(memoized.getStats()); // {"calls": 2, "hits": 1, "usage": "50%"}
 ```
 
-**NOTE**: You must be collecting statistics for the data to be populated correctly.
+**NOTE**: You must be collecting statistics for this to be populated.
 
 #### has(key)
 
@@ -978,9 +980,9 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 
 ## Benchmarks
 
-All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, using single and multiple parameters with different object types. The results were averaged to determine overall speed across possible usage.
+All values provided are the number of operations per second calculated by the [Benchmark suite](https://benchmarkjs.com/), where a higher value is better. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, using single and multiple parameters with different object types. The results were averaged to determine overall speed across possible usage.
 
-**NOTE**: `lodash`, `ramda`, and `underscore` do not support mulitple-parameter memoization without use of a `resolver` function. For consistency in comparison, each use the same `resolver` than returns the result of `JSON.stringify` on the arguments.
+**NOTE**: `lodash`, `ramda`, and `underscore` do not support mulitple-parameter memoization without use of a `resolver` function. For consistency in comparison, each use the same `resolver` that returns the result of `JSON.stringify` on the arguments.
 
 | Name         | Overall (average) | Single (average) | Multiple (average) | single primitive | single array   | single object  | multiple primitive | multiple array | multiple object |
 | ------------ | ----------------- | ---------------- | ------------------ | ---------------- | -------------- | -------------- | ------------------ | -------------- | --------------- |
@@ -1003,7 +1005,7 @@ All values provided are the number of operations per second (ops/sec) calculated
 
 ## Filesize
 
-`moize` is fairly small (about 4KB when minified and gzipped), however it provides a large number of configuration options to satisfy a multitude of edge cases. If filesize is a concern, you should consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
+`moize` is fairly small (about 4KB when minified and gzipped), however it provides a large number of configuration options to satisfy a large number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
 
 ## Browser support
 
