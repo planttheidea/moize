@@ -113,6 +113,8 @@ export const findKeyIndex = (isEqual: Function, keys: Array<Array<any>>, key: Ar
 };
 
 /**
+ * @private
+ *
  * @function getArrayKey
  *
  * @description
@@ -126,6 +128,8 @@ export const getArrayKey = (key: any): Array<any> => {
 };
 
 /**
+ * @private
+ *
  * @function mergeOptions
  *
  * @description

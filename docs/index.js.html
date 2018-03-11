@@ -37,13 +37,6 @@
 				</ul>
 			</li>
 			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="global.html#getArrayKey">getArrayKey</a></li>
-				</ul>
-			</li>
-			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -91,8 +84,8 @@ import {augmentMoizeInstance} from './instance';
 // max age
 import {getMaxAgeOptions} from './maxAge';
 
-// is equal
-import {getIsEqual, getTransformKey} from './options';
+// options
+import {createOnCacheOperation, getIsEqual, getTransformKey} from './options';
 
 // stats
 import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache} from './stats';
@@ -101,7 +94,7 @@ import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCac
 import type {Expiration, MicroMemoizeOptions, Options} from './types';
 
 // utils
-import {combine, compose} from './utils';
+import {combine, compose, mergeOptions} from './utils';
 
 /**
  * @module moize
@@ -135,26 +128,18 @@ export {collectStats};
  * @returns {function} the memoized function
  */
 function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Function {
+  if (fn.isMoized) {
+    // $FlowIgnore if moized, originalFunction and options exist
+    return moize(fn.originalFunction, mergeOptions(fn.options, options));
+  }
+
   if (typeof fn === 'object') {
     return (curriedFn: Function | Options, curriedOptions: Options = {}) => {
       return typeof curriedFn === 'function'
-        ? moize(
-          curriedFn,
-          // $FlowIgnore fn is actually an object of options
-          Object.assign({}, fn, curriedOptions, {
-            onCacheAdd: combine(curriedOptions.onCacheAdd, fn.onCacheAdd),
-            onCacheChange: combine(curriedOptions.onCacheChange, fn.onCacheChange),
-            onCacheHit: combine(curriedOptions.onCacheHit, fn.onCacheHit)
-          })
-        )
-        : moize(
-          // $FlowIgnore fn is actually an object of options
-          Object.assign({}, fn, curriedFn, {
-            onCacheAdd: combine(curriedFn.onCacheAdd, fn.onCacheAdd),
-            onCacheChange: combine(curriedFn.onCacheChange, fn.onCacheChange),
-            onCacheHit: combine(curriedFn.onCacheHit, fn.onCacheHit)
-          })
-        );
+        ? // $FlowIgnore fn is actually an object of options
+        moize(curriedFn, mergeOptions(fn, curriedOptions))
+        : // $FlowIgnore fn is actually an object of options
+        moize(mergeOptions(fn, curriedFn));
     };
   }
 
@@ -171,9 +156,9 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
     maxAge: maxAgeIgnored,
     maxArgs: maxArgsIgnored,
     maxSize,
-    onCacheAdd: onCacheAddIgnored,
+    onCacheAdd,
     onCacheChange,
-    onCacheHit: onCacheHitIgnored,
+    onCacheHit,
     onExpire: onExpireIgnored,
     profileName: profileNameIgnored,
     shouldSerializeFunctions: shouldSerializeFunctionsIgnored,
@@ -192,9 +177,9 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
     isEqual,
     isPromise,
     maxSize,
-    onCacheAdd: combine(maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
-    onCacheChange,
-    onCacheHit: combine(maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
+    onCacheAdd: createOnCacheOperation(combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd)),
+    onCacheChange: createOnCacheOperation(onCacheChange),
+    onCacheHit: createOnCacheOperation(combine(onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit)),
     transformKey
   });
 
@@ -206,8 +191,8 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
 }
 
 /**
- * @function compose
- * @name isCollectingStats
+ * @function
+ * @name compose
  * @memberof module:moize
  * @alias moize.compose
  *
@@ -217,7 +202,11 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
  * @param {...Array&lt;(function)>} functions the functions to compose
  * @returns {function(...Array&lt;*>): *} the composed function
  */
-moize.compose = compose;
+moize.compose = function() {
+  /* eslint-disable prefer-spread */
+  return compose.apply(null, arguments) || moize;
+  /* eslint-enable */
+};
 
 /**
  * @function
@@ -273,7 +262,7 @@ moize.isCollectingStats = (): boolean => {
  * @returns {boolean} is fn a moized function
  */
 moize.isMoized = (fn: any): boolean => {
-  return typeof fn === 'function' &amp;&amp; fn.isMoized;
+  return typeof fn === 'function' &amp;&amp; !!fn.isMoized;
 };
 
 /**
@@ -335,7 +324,10 @@ moize.maxSize = (maxSize: number): Function => {
  *
  * @returns {function} the moizer function
  */
-moize.promise = moize({isPromise: true});
+moize.promise = moize({
+  isPromise: true,
+  updateExpire: true
+});
 
 /**
  * @function
