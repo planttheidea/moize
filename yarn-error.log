@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/bin/node /usr/bin/yarn test:coverage
+  /usr/bin/node /usr/bin/yarn benchmark:alternative
 
 PATH: 
   /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
@@ -19,18 +19,39 @@ npm manifest:
     "ava": {
       "babel": {
         "babelrc": true,
-        "presets": ["react"]
+        "presets": [
+          "react"
+        ]
       },
       "failFast": true,
-      "files": ["test/*.js", "!test-utils/*.js"],
-      "require": ["babel-register", "babel-polyfill"],
-      "source": ["src/*.js"],
+      "files": [
+        "test/*.js",
+        "!test-utils/*.js"
+      ],
+      "require": [
+        "babel-register",
+        "babel-polyfill"
+      ],
+      "source": [
+        "src/*.js"
+      ],
       "verbose": true
     },
     "browser": "dist/moize.min.js",
-    "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
+    "browserslist": [
+      "defaults",
+      "Explorer >= 9",
+      "Safari >= 6",
+      "Opera >= 15",
+      "iOS >= 8",
+      "Android >= 4"
+    ],
     "bugs": {
       "url": "https://github.com/planttheidea/moize/issues"
+    },
+    "dependencies": {
+      "json-stringify-safe": "5.0.1",
+      "micro-memoize": "1.6.2"
     },
     "description": "Blazing fast memoization based on all parameters passed",
     "devDependencies": {
@@ -136,8 +157,7 @@ npm manifest:
       "lint:fix": "NODE_ENV=test eslint src --fix",
       "postpublish": "npm run docs",
       "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-      "prepublish:compile":
-        "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+      "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
       "start": "npm run dev",
       "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
       "test:coverage": "nyc npm test",
@@ -146,11 +166,7 @@ npm manifest:
       "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
     },
     "types": "./index.d.ts",
-    "version": "4.0.4",
-    "dependencies": {
-      "json-stringify-safe": "5.0.1",
-      "micro-memoize": "1.6.1"
-    }
+    "version": "4.0.4"
   }
 
 yarn manifest: 
@@ -5323,9 +5339,9 @@ Lockfile:
     version "1.1.2"
     resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   
-  micro-memoize@1.6.1:
-    version "1.6.1"
-    resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-1.6.1.tgz#311334c48dae6c11cebc9df7f18e9f86fbd4d671"
+  micro-memoize@1.6.2:
+    version "1.6.2"
+    resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-1.6.2.tgz#409222546eb5548c56cac807c5086fbf00535c5d"
   
   micromatch@^2.1.5, micromatch@^2.3.11, micromatch@^2.3.7:
     version "2.3.11"
@@ -8587,7 +8603,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c nyc npm test
+  Arguments: -c npm run transpile:lib -- --no-comments && ALTERNATIVE=true node benchmark/index.js
   Directory: /home/tquetano/git/moize
   Output:
   

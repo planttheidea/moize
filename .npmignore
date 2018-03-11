@@ -2,9 +2,8 @@
 .eslintrc
 .flowconfig
 .gitignore
-.nyc_output
 .idea
-.yarnrc
+.nyc_output
 benchmark
 coverage
 DEV_ONLY
@@ -13,8 +12,8 @@ img
 node_modules
 src
 test
+webpack
 jsdoc.config.json
-webpack.config.dev.js
-webpack.config.js
-webpack.config.minified.js
+rollup.config.js
+yarn-error.log
 yarn.lock

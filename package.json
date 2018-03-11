@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "json-stringify-safe": "5.0.1",
-    "micro-memoize": "1.6.2"
+    "micro-memoize": "1.6.3"
   },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {

@@ -4,7 +4,6 @@ import sinon from 'sinon';
 
 // src
 import * as maxAge from 'src/maxAge';
-import * as utils from 'src/utils';
 
 test('if onCacheAddSetExpiration will do nothing if an existing expiration is found', (t) => {
   const originalExpirations = [{expirationMethod() {}, key: 'key', timeoutId: 123}];
@@ -303,15 +302,41 @@ test('if getMaxAgeOptions will return the combined onCacheAdd and onCacheHit met
     updateExpire: true
   };
 
-  const combineSpy = sinon.spy(utils, 'combine');
-
   const result = maxAge.getMaxAgeOptions(expirations, options);
-
-  t.true(combineSpy.calledTwice);
-
-  combineSpy.restore();
 
   t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
   t.is(typeof result.onCacheAdd, 'function');
   t.is(typeof result.onCacheHit, 'function');
+});
+
+test('if getMaxAgeOptions will return undefined for onCacheHit if updateExpire is false', (t) => {
+  const expirations = [];
+  const options = {
+    maxAge: 100,
+    onCacheAdd() {},
+    onCacheHit() {},
+    updateExpire: false
+  };
+
+  const result = maxAge.getMaxAgeOptions(expirations, options);
+
+  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
+  t.is(typeof result.onCacheAdd, 'function');
+  t.is(result.onCacheHit, undefined);
+});
+
+test('if getMaxAgeOptions will return undefined for onCacheHit if onCacheAdd is not a function', (t) => {
+  const expirations = [];
+  const options = {
+    maxAge: undefined,
+    onCacheAdd() {},
+    onCacheHit() {},
+    updateExpire: false
+  };
+
+  const result = maxAge.getMaxAgeOptions(expirations, options);
+
+  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
+  t.is(result.onCacheAdd, undefined);
+  t.is(result.onCacheHit, undefined);
 });

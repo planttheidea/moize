@@ -3,9 +3,6 @@
 // types
 import type {Options, StatsCache, StatsObject, StatsProfile} from './types';
 
-// utils
-import {combine} from './utils';
-
 /**
  * @private
  *
@@ -205,11 +202,10 @@ export const getStats = (profileName: ?string): StatsObject => {
  * @returns {Object} the options specific to keeping stats
  */
 export const getStatsOptions = (options: Options): Object => {
-  return {
-    onCacheAdd: combine(options.onCacheAdd, statsCache.isCollectingStats && createOnCacheAddIncrementCalls(options)),
-    onCacheHit: combine(
-      options.onCacheHit,
-      statsCache.isCollectingStats && createOnCacheHitIncrementCallsAndHits(options)
-    )
-  };
+  return statsCache.isCollectingStats
+    ? {
+      onCacheAdd: createOnCacheAddIncrementCalls(options),
+      onCacheHit: createOnCacheHitIncrementCallsAndHits(options)
+    }
+    : {};
 };

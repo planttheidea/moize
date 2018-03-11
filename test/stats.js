@@ -356,7 +356,7 @@ test('if getUsagePercentage will return the correct percentage when calls is zer
   t.is(result, '0%');
 });
 
-test('if getStatsOptions will combine the options methods and the statsCache methods', (t) => {
+test.serial('if getStatsOptions will return the statsCache methods when collecting stats', (t) => {
   stats.statsCache.isCollectingStats = true;
 
   const options = {
@@ -364,17 +364,25 @@ test('if getStatsOptions will combine the options methods and the statsCache met
     onCacheHit() {}
   };
 
-  const combineStub = sinon.stub(utils, 'combine').returnsArg(0);
+  const result = stats.getStatsOptions(options);
+
+  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
+  t.is(typeof result.onCacheAdd, 'function');
+  t.is(typeof result.onCacheHit, 'function');
+
+  t.is(result.onCacheAdd.toString(), stats.createOnCacheAddIncrementCalls(options).toString());
+  t.is(result.onCacheHit.toString(), stats.createOnCacheHitIncrementCallsAndHits(options).toString());
+});
+
+test.serial('if getStatsOptions will return the an empty object when not collecting stats', (t) => {
+  stats.statsCache.isCollectingStats = false;
+
+  const options = {
+    onCacheAdd() {},
+    onCacheHit() {}
+  };
 
   const result = stats.getStatsOptions(options);
 
-  t.true(combineStub.calledTwice);
-
-  t.is(combineStub.args[0][0], options.onCacheAdd);
-  t.is(combineStub.args[0][1].toString(), stats.createOnCacheAddIncrementCalls(options).toString());
-
-  t.is(combineStub.args[1][0], options.onCacheHit);
-  t.is(combineStub.args[1][1].toString(), stats.createOnCacheHitIncrementCallsAndHits(options).toString());
-
-  t.deepEqual(result, options);
+  t.deepEqual(result, {});
 });

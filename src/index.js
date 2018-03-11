@@ -84,9 +84,9 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
     maxAge: maxAgeIgnored,
     maxArgs: maxArgsIgnored,
     maxSize,
-    onCacheAdd: onCacheAddIgnored,
+    onCacheAdd,
     onCacheChange,
-    onCacheHit: onCacheHitIgnored,
+    onCacheHit,
     onExpire: onExpireIgnored,
     profileName: profileNameIgnored,
     shouldSerializeFunctions: shouldSerializeFunctionsIgnored,
@@ -105,9 +105,9 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
     isEqual,
     isPromise,
     maxSize,
-    onCacheAdd: combine(maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
+    onCacheAdd: combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
     onCacheChange,
-    onCacheHit: combine(maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
+    onCacheHit: combine(onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
     transformKey
   });
 
@@ -190,7 +190,7 @@ moize.isCollectingStats = (): boolean => {
  * @returns {boolean} is fn a moized function
  */
 moize.isMoized = (fn: any): boolean => {
-  return typeof fn === 'function' && fn.isMoized;
+  return typeof fn === 'function' && !!fn.isMoized;
 };
 
 /**

@@ -4,7 +4,7 @@
 import type {Cache, Expiration, Options} from './types';
 
 // utils
-import {combine, findExpirationIndex, findKeyIndex} from './utils';
+import {findExpirationIndex, findKeyIndex} from './utils';
 
 export const createOnCacheAddSetExpiration: Function = (
   expirations: Array<Expiration>,
@@ -118,15 +118,15 @@ export const createOnCacheHitResetExpiration: Function = (
  * @returns {Object} the object of options based on the entries passed
  */
 export const getMaxAgeOptions = (expirations: Array<Expiration>, options: Options, isEqual: Function): Object => {
-  const {maxAge, onCacheAdd: onAdd, onCacheHit: onHit, updateExpire} = options;
+  const {maxAge, updateExpire} = options;
 
-  const onCacheAdd = combine(
-    onAdd,
-    typeof maxAge === 'number' && isFinite(maxAge) && createOnCacheAddSetExpiration(expirations, options, isEqual)
-  );
+  const onCacheAdd =
+    typeof maxAge === 'number' && isFinite(maxAge)
+      ? createOnCacheAddSetExpiration(expirations, options, isEqual)
+      : undefined;
 
   return {
     onCacheAdd,
-    onCacheHit: combine(onHit, onCacheAdd && updateExpire && createOnCacheHitResetExpiration(expirations, options))
+    onCacheHit: onCacheAdd && updateExpire ? createOnCacheHitResetExpiration(expirations, options) : undefined
   };
 };

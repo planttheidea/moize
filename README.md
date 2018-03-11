@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
 
-`moize` is a [blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
+`moize` is a [consistently blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
 
 ## Table of contents
 
@@ -45,6 +45,8 @@
   * [isMoized](#ismoized)
 * [Collecting statistics](#collecting-statistics)
 * [Direct cache manipulation](#direct-cache-manipulation)
+  * [cache](#cache)
+  * [cacheSnapshot](#cachesnapshot)
   * [add](#addkey-value)
   * [clear](#clear)
   * [get](#getkey)
@@ -814,7 +816,27 @@ moized.getStats(); // {"calls": 2, "hits": 1, "usage": "50%"}
 
 ## Direct cache manipulation
 
-There are a few methods provided on the `moize`d function which allow for programmatic manipulation of the cache:
+The cache is available on the `moize`d function as a property, and while it is not recommended to modify it directly, that option is available for edge case scenarios.
+
+#### cache
+
+The shape of the `cache` is as follows:
+
+```javascript
+{
+  keys: Array<Array<any>>,
+  size: number,
+  values: Array<any>
+}
+```
+
+Regardless of how the key is transformed, it is always stored as an array (if the value returned is not an array, it is coalesced to one). The order of `keys` and `values` should always align, so be aware when manually manipulating the cache that you need to manually keep in sync any changes to those arrays.
+
+#### cacheSnapshot
+
+The `cache` is mutated internally for performance reasons, so logging out the cache at a specific step in the workflow may not give you the information you need. As such, to help with debugging you can request the `cacheSnapshot`, which has the same shape as the `cache` but is a shallow clone for persistence.
+
+There are also convenience methods provided on the `moize`d function which allow for programmatic manipulation of the cache.
 
 #### add(key, value)
 
@@ -831,6 +853,8 @@ memoized.add(["foo"], "bar");
 // pulls from cache
 memoized("foo");
 ```
+
+**NOTE**: The `key` passed should be an `Array`, otherwise you may experience breakages.
 
 #### clear()
 
@@ -858,6 +882,8 @@ memoized("foo", "bar");
 console.log(memoized.get(["foo", "bar"])); // ["foo","bar"]
 console.log(memoized.get(["bar", "baz"])); // undefined
 ```
+
+**NOTE**: The `key` passed should be an `Array`, otherwise you may experience breakages.
 
 #### getStats()
 
@@ -892,6 +918,8 @@ memoized("foo", "bar");
 console.log(memoized.has(["foo", "bar"])); // true
 console.log(memoized.has(["bar", "baz"])); // false
 ```
+
+**NOTE**: The `key` passed should be an `Array`, otherwise you may experience breakages.
 
 #### keys()
 
@@ -936,6 +964,8 @@ memoized.remove([foo]);
 memoized(foo);
 ```
 
+**NOTE**: The `key` passed should be an `Array`, otherwise you may experience breakages.
+
 #### values()
 
 This will return a list of the current values in `cache` when the native `Cache`.
@@ -968,15 +998,15 @@ Each benchmark was performed using the default configuration of the library, wit
 
 | Name         | Overall (average) | Single (average) | Multiple (average) | Single (primitive) | Single (Array) | Single (Object) | Multiple (primitive) | Multiple (Array) | Multiple (Object) |
 | ------------ | ----------------- | ---------------- | ------------------ | ------------------ | -------------- | --------------- | -------------------- | ---------------- | ----------------- |
-| moize        | 55,205,113        | 63,248,398       | 47,161,828         | 73,478,914         | 58,205,148     | 58,061,133      | 48,187,157           | 47,384,691       | 45,913,636        |
-| fast-memoize | 37,537,162        | 74,042,278       | 1,032,046          | 219,022,899        | 1,624,274      | 1,479,662       | 1,175,061            | 1,086,790        | 834,287           |
-| memoizee     | 10,631,691        | 12,965,728       | 8,297,654          | 16,395,781         | 11,263,987     | 11,237,416      | 9,756,499            | 7,530,822        | 7,605,643         |
-| lru-memoize  | 6,757,032         | 7,163,329        | 6,350,735          | 7,913,745          | 6,783,980      | 6,792,264       | 6,452,358            | 6,264,020        | 6,335,827         |
-| memoizerific | 4,408,276         | 4,795,399        | 4,021,153          | 5,595,529          | 4,400,864      | 4,389,804       | 4,588,841            | 3,917,837        | 3,556,782         |
-| addy-osmani  | 2,735,586         | 3,381,603        | 2,089,568          | 6,432,484          | 1,906,135      | 1,806,192       | 3,422,628            | 1,858,279        | 987,799           |
-| lodash       | N/A               | 14,382,674       | N/A                | 26,855,491         | 8,186,175      | 8,106,357       | N/A                  | N/A              | N/A               |
-| underscore   | N/A               | 12,371,321       | N/A                | 24,016,825         | 5,146,314      | 7,950,825       | N/A                  | N/A              | N/A               |
-| ramda        | N/A               | 525,718          | N/A                | 1,093,643          | 279,193        | 204,319         | N/A                  | N/A              | N/A               |
+| **moize**    | **53,943,962**    | **61,361,181**   | **46,526,742**     | **73,075,444**     | **55,344,659** | **55,663,442**  | **47,202,940**       | **47,042,076**   | **45,335,212**    |
+| fast-memoize | 37,666,664        | 74,308,761       | 1,024,567          | 219,846,132        | 1,596,677      | 1,483,474       | 1,198,489            | 1,068,301        | 806,912           |
+| memoizee     | 10,584,552        | 12,947,066       | 8,222,038          | 15,857,760         | 11,535,729     | 11,447,711      | 9,945,693            | 7,384,667        | 7,335,756         |
+| lru-memoize  | 6,691,450         | 7,095,403        | 6,287,496          | 7,770,364          | 6,723,133      | 6,792,713       | 6,332,268            | 6,216,507        | 6,313,715         |
+| memoizerific | 4,394,515         | 4,781,474        | 4,007,555          | 5,580,712          | 4,396,929      | 4,366,783       | 4,614,424            | 3,874,353        | 3,533,889         |
+| addy-osmani  | 2,595,949         | 3,247,715        | 1,944,182          | 6,104,330          | 1,907,097      | 1,731,720       | 3,161,842            | 1,729,164        | 941,542           |
+| lodash       | N/A               | 14,363,850       | N/A                | 26,849,641         | 8,075,312      | 8,166,599       | N/A                  | N/A              | N/A               |
+| underscore   | N/A               | 12,783,200       | N/A                | 24,940,343         | 5,369,347      | 8,039,911       | N/A                  | N/A              | N/A               |
+| ramda        | N/A               | 529,250          | N/A                | 1,097,825          | 283,984        | 205,942         | N/A                  | N/A              | N/A               |
 
 ![Overall average image](img/overall-average.png)
 
