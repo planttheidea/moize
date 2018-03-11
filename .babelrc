@@ -1,19 +1,7 @@
 {
   "env": {
     "development": {
-      "plugins": ["add-module-exports"],
-      "presets": [
-        [
-          "env",
-          {
-            "exclude": ["transform-es2015-typeof-symbol"],
-            "loose": true
-          }
-        ],
-        "stage-2"
-      ]
-    },
-    "es": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
@@ -26,8 +14,22 @@
         "stage-2"
       ]
     },
-    "production": {
-      "plugins": ["add-module-exports"],
+    "es": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "presets": [
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true,
+            "modules": false
+          }
+        ],
+        "stage-2"
+      ]
+    },
+    "lib": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
@@ -39,7 +41,22 @@
         "stage-2"
       ]
     },
+    "production": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "presets": [
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true,
+            "modules": false
+          }
+        ],
+        "stage-2"
+      ]
+    },
     "test": {
+      "plugins": ["syntax-flow", "transform-flow-strip-types"],
       "presets": [
         [
           "env",
@@ -51,6 +68,5 @@
         "stage-2"
       ]
     }
-  },
-  "plugins": ["syntax-flow", "transform-flow-strip-types"]
+  }
 }

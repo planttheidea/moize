@@ -1,13 +1,13 @@
 // @flow
 
-// cache
-import Cache from './Cache';
+// external dependencies
+import stringifySafe from 'json-stringify-safe';
 
 // types
 import type {Options} from './types';
 
 // utils
-import {isComplexObject, isFiniteAndPositiveInteger, isFunction, isValueObjectOrArray} from './utils';
+import {compose, getArrayKey} from './utils';
 
 /**
  * @private
@@ -22,63 +22,7 @@ import {isComplexObject, isFiniteAndPositiveInteger, isFunction, isValueObjectOr
  * @returns {*} if function then toString of it, else the value itself
  */
 export const customReplacer = (key: string, value: any): any => {
-  return isFunction(value) ? `${value}` : value;
-};
-
-/**
- * @private
- *
- * @function decycle
- *
- * @description
- * ES2015-ified version of cycle.decyle
- *
- * @param {*} object object to stringify
- * @param {Options} options the options passed to the moize method
- * @returns {string} stringified value of object
- */
-export const decycle = (object: any, options: Options): string => {
-  const cache: Cache = new Cache(options);
-
-  /**
-   * @private
-   *
-   * @function coalesceCircularReferences
-   *
-   * @description
-   * recursive method to replace any circular references with a placeholder
-   *
-   * @param {*} value value in object to decycle
-   * @param {string} path path to reference
-   * @returns {*} clean value
-   */
-  const coalesceCircularReferences = (value: any, path: string): any => {
-    if (!isValueObjectOrArray(value)) {
-      return value;
-    }
-
-    if (cache.has(value)) {
-      return {
-        $ref: cache.get(value)
-      };
-    }
-
-    cache.add(value, path);
-
-    if (Array.isArray(value)) {
-      return value.map((item, itemIndex) => {
-        return coalesceCircularReferences(item, `${path}[${itemIndex}]`);
-      });
-    }
-
-    return Object.keys(value).reduce((object, name) => {
-      object[name] = coalesceCircularReferences(value[name], `${path}[${JSON.stringify(name)}]`);
-
-      return object;
-    }, {});
-  };
-
-  return coalesceCircularReferences(object, '$');
+  return typeof value === 'function' ? `${value}` : value;
 };
 
 /**
@@ -91,14 +35,13 @@ export const decycle = (object: any, options: Options): string => {
  *
  * @param {*} value value to stringify
  * @param {function} [replacer] replacer to used in stringification
- * @param {Options} options the options passed to the moize method
  * @returns {string} the stringified version of value
  */
-export const stringify = (value: any, replacer: ?Function, options: Options) => {
+export const stringify = (value: any, replacer: ?Function): string => {
   try {
     return JSON.stringify(value, replacer);
   } catch (exception) {
-    return JSON.stringify(decycle(value, options), replacer);
+    return stringifySafe(value, replacer);
   }
 };
 
@@ -112,11 +55,12 @@ export const stringify = (value: any, replacer: ?Function, options: Options) => 
  *
  * @param {*} arg argument to stringify
  * @param {function} [replacer] replacer to used in stringification
- * @param {Options} options the options passed to the moize method
  * @returns {string} the stringified argument
  */
-export const getStringifiedArgument = (arg: any, replacer: ?Function, options: Options) => {
-  return isComplexObject(arg) || isFunction(arg) ? stringify(arg, replacer, options) : arg;
+export const getStringifiedArgument = (arg: any, replacer: ?Function): string => {
+  const typeOfArg: string = typeof arg;
+
+  return arg && (typeOfArg === 'object' || typeOfArg === 'function') ? stringify(arg, replacer) : arg;
 };
 
 /**
@@ -127,31 +71,22 @@ export const getStringifiedArgument = (arg: any, replacer: ?Function, options: O
  * @description
  * create the internal argument serializer based on the options passed
  *
- * @param {Object} options the options passed
+ * @param {Options} options the options passed to the moizer
  * @param {boolean} options.serializeFunctions should functions be included in the serialization
  * @param {number} options.maxArgs the cap on the number of arguments used in serialization
  * @returns {function(...Array<*>): string} argument serialization method
  */
 export const createArgumentSerializer = (options: Options): Function => {
-  const replacer: ?Function = options.serializeFunctions ? customReplacer : null;
-  const hasMaxArgs: boolean = isFiniteAndPositiveInteger(options.maxArgs);
+  const replacer: ?Function = options.shouldSerializeFunctions ? customReplacer : null;
 
-  return (args: Array<any>): string => {
-    const length: number = hasMaxArgs ? options.maxArgs : args.length;
+  return (args: Array<any>): Array<string> => {
+    let key: string = '|';
 
-    let index: number = -1,
-        key: string = '|',
-        value: any;
-
-    while (++index < length) {
-      value = getStringifiedArgument(args[index], replacer, options);
-
-      if (value) {
-        key += `${value}|`;
-      }
+    for (let index: number = 0; index < args.length; index++) {
+      key += `${getStringifiedArgument(args[index], replacer)}|`;
     }
 
-    return key;
+    return [key];
   };
 };
 
@@ -167,5 +102,8 @@ export const createArgumentSerializer = (options: Options): Function => {
  * @returns {function} the function to use in serializing the arguments
  */
 export const getSerializerFunction = (options: Options): Function => {
-  return isFunction(options.serializer) ? options.serializer : createArgumentSerializer(options);
+  return typeof options.serializer === 'function'
+    ? // $FlowIgnore serializer is a function
+    compose(getArrayKey, options.serializer)
+    : createArgumentSerializer(options);
 };

@@ -1,26 +1,20 @@
 {
   "babel": {
-    "plugins": [
-      "syntax-flow",
-      "transform-flow-strip-types",
-      "add-module-exports"
-    ],
+    "plugins": ["syntax-flow", "transform-flow-strip-types"],
     "presets": [
-      ["env", {
-        "loose": true,
-        "targets": [
-          "last 2 versions",
-          "ie 9"
-        ]
-      }],
+      [
+        "env",
+        {
+          "exclude": ["transform-es2015-typeof-symbol"],
+          "loose": true
+        }
+      ],
       "stage-2"
     ]
   },
   "configHelpUrl": "http://usejsdoc.org/about-configuring-jsdoc.html",
   "markdown": {
-    "excludeTags": [
-      "author"
-    ],
+    "excludeTags": ["author"],
     "idInHeadings": true
   },
   "opts": {
@@ -31,24 +25,16 @@
     "template": "./node_modules/ink-docstrap/template",
     "verbose": true
   },
-  "plugins": [
-    "node_modules/jsdoc-babel",
-    "plugins/markdown"
-  ],
+  "plugins": ["node_modules/jsdoc-babel", "plugins/markdown"],
   "source": {
-    "include": [
-      "src"
-    ],
+    "include": ["src"],
     "exclude": [],
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs)"
   },
   "tags": {
     "allowUnknownTags": true,
-    "dictionaries": [
-      "closure",
-      "jsdoc"
-    ]
+    "dictionaries": ["closure", "jsdoc"]
   },
   "templates": {
     "collapseSymbols": true,

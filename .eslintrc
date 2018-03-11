@@ -1,18 +1,17 @@
 {
-  "extends": [
-    "rapid7/browser"
-  ],
+  "extends": ["rapid7/browser"],
   "globals": {
     "__dirname": true,
     "global": true,
     "module": true,
     "process": true,
-    "require": true
+    "require": true,
+    "TimeoutID": true
   },
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "rules":{}
+  "rules": {}
 }
