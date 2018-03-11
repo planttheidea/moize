@@ -6,6 +6,7 @@
 
 **BREAKING CHANGES**
 
+* The default `equals` option now uses [SameValueZero](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero) equality instead of strict equality
 * `equals` option is now performed iteratively on each argument in the key, rather on the key as a whole
 * `serialize` option has been changed to `isSerialized`
 * `serializeFunctions` option has been changed to `shouldSerializeFunctions`

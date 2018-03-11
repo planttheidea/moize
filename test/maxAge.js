@@ -193,6 +193,8 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
     onExpire: sinon.stub().returns(false),
     maxAge: 100
   };
+  const moized = () => {};
+
   const isEqual = (object1, object2) => {
     return object1 === object2;
   };
@@ -203,13 +205,10 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
     keys: ['key'],
     values: ['value']
   };
-  const _microMemoizeOptions = {
-    microMemoize: 'options'
-  };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
 
-  result(cache, _microMemoizeOptions);
+  result(cache, options, moized);
 
   t.true(setTimeoutStub.calledOnce);
 
@@ -231,7 +230,7 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
   expirationMethod();
 
   t.true(options.onCacheChange.calledTwice);
-  t.deepEqual(options.onCacheChange.args, [[cache, _microMemoizeOptions], [cache, _microMemoizeOptions]]);
+  t.deepEqual(options.onCacheChange.args, [[cache, options, moized], [cache, options, moized]]);
 
   t.is(cache.keys.length, 1);
   t.deepEqual(cache.keys, currentKeys);

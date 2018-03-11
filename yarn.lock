@@ -5160,9 +5160,9 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
-micro-memoize@1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-1.7.0.tgz#95c96dedc975b8c230808382b27d4f4c33438ecf"
+micro-memoize@1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-1.8.1.tgz#e167969062a23c7746464242638738942141fdb4"
 
 micromatch@^2.1.5, micromatch@^2.3.11, micromatch@^2.3.7:
   version "2.3.11"

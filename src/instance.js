@@ -32,8 +32,8 @@ export const addInstanceMethods = (moized: Function): void => {
       moized.cache.keys.unshift(savedKey);
       moized.cache.values.unshift(value);
 
-      onCacheAdd(moized.cache, moized._microMemoizeOptions);
-      onCacheChange(moized.cache, moized._microMemoizeOptions);
+      onCacheAdd(moized.cache, moized.options, moized);
+      onCacheChange(moized.cache, moized.options, moized);
     }
   };
 
@@ -41,7 +41,7 @@ export const addInstanceMethods = (moized: Function): void => {
     moized.cache.keys.length = 0;
     moized.cache.values.length = 0;
 
-    onCacheChange(moized.cache, moized._microMemoizeOptions);
+    onCacheChange(moized.cache, moized.options, moized);
   };
 
   moized.get = function(key: Array<any>): any {
@@ -71,7 +71,7 @@ export const addInstanceMethods = (moized: Function): void => {
       moized.cache.keys.splice(keyIndex, 1);
       moized.cache.values.splice(keyIndex, 1);
 
-      onCacheChange(moized.cache, moized._microMemoizeOptions);
+      onCacheChange(moized.cache, moized.options, moized);
     }
   };
 

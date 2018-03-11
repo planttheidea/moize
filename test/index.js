@@ -11,6 +11,7 @@ import * as index from 'src/index';
 import {DEFAULT_OPTIONS} from 'src/constants';
 import * as maxAge from 'src/maxAge';
 import * as maxArgs from 'src/maxArgs';
+import * as optionsUtils from 'src/options';
 import * as serialize from 'src/serialize';
 import * as stats from 'src/stats';
 import * as utils from 'src/utils';
@@ -461,7 +462,11 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
 
   t.is(
     onCacheAdd.toString(),
-    maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual).toString()
+    optionsUtils
+      .createOnCacheOperation(
+        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+      )
+      .toString()
   );
 
   t.is(moized.cache.keys.length, 1);
@@ -599,15 +604,7 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
   t.true(fn.calledWith(...args));
 
   t.true(options.onCacheAdd.calledOnce);
-  t.true(
-    options.onCacheAdd.calledWith(
-      {
-        keys: moized.cache.keys,
-        values: moized.cache.values
-      },
-      moized._microMemoizeOptions
-    )
-  );
+  t.true(options.onCacheAdd.calledWith(moized.cache, moized.options, moized));
 });
 
 test('if moize will handle an onCacheChange method correctly', (t) => {
@@ -652,15 +649,7 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
   t.true(fn.calledWith(...args));
 
   t.true(options.onCacheChange.calledOnce);
-  t.true(
-    options.onCacheChange.calledWith(
-      {
-        keys: moized.cache.keys,
-        values: moized.cache.values
-      },
-      moized._microMemoizeOptions
-    )
-  );
+  t.true(options.onCacheChange.calledWith(moized.cache, moized.options, moized));
 });
 
 test('if moize will handle an onCacheHit method correctly', (t) => {
@@ -712,12 +701,12 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   };
 
   t.deepEqual(options.onCacheHit.args, [
-    [expectedArg, moized._microMemoizeOptions],
-    [expectedArg, moized._microMemoizeOptions],
-    [expectedArg, moized._microMemoizeOptions],
-    [expectedArg, moized._microMemoizeOptions],
-    [expectedArg, moized._microMemoizeOptions],
-    [expectedArg, moized._microMemoizeOptions]
+    [moized.cache, moized.options, moized],
+    [moized.cache, moized.options, moized],
+    [moized.cache, moized.options, moized],
+    [moized.cache, moized.options, moized],
+    [moized.cache, moized.options, moized],
+    [moized.cache, moized.options, moized]
   ]);
 });
 
@@ -766,7 +755,11 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
 
   t.is(
     onCacheAdd.toString(),
-    maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual).toString()
+    optionsUtils
+      .createOnCacheOperation(
+        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+      )
+      .toString()
   );
 
   t.is(moized.cache.keys.length, 1);
@@ -900,9 +893,16 @@ test('if moize will handle an updateExpire method for cache expiration correctly
 
   t.is(
     onCacheAdd.toString(),
-    maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual).toString()
+    optionsUtils
+      .createOnCacheOperation(
+        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+      )
+      .toString()
   );
-  t.is(onCacheHit.toString(), maxAge.createOnCacheHitResetExpiration(moized.expirations, options).toString());
+  t.is(
+    onCacheHit.toString(),
+    optionsUtils.createOnCacheOperation(maxAge.createOnCacheHitResetExpiration(moized.expirations, options)).toString()
+  );
 
   t.is(moized.cache.keys.length, 1);
 
@@ -1257,7 +1257,11 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
 
   t.is(
     onCacheAdd.toString(),
-    maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual).toString()
+    optionsUtils
+      .createOnCacheOperation(
+        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+      )
+      .toString()
   );
 });
 

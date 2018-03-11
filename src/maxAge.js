@@ -1,7 +1,7 @@
 // @flow
 
 // types
-import type {Cache, Expiration, Options, MicroMemoizeOptions} from './types';
+import type {Cache, Expiration, Options} from './types';
 
 // utils
 import {findExpirationIndex, findKeyIndex} from './utils';
@@ -24,10 +24,11 @@ export const createOnCacheAddSetExpiration: Function = (
    * @modifies {expirations}
    *
    * @param {Cache} cache the cache of the memoized function
-   * @param {MicroMemoizeOptions} _microMemoizeOptions the options passed to the memoized function
+   * @param {Options} moizedOptions the options passed to the memoized function
+   * @param {function} moized the memoized function
    * @returns {void}
    */
-  return function onCacheAdd(cache: Cache, _microMemoizeOptions: MicroMemoizeOptions): ?Function {
+  return function onCacheAdd(cache: Cache, moizedOptions: Options, moized: Function): ?Function {
     const key: any = cache.keys[0];
 
     if (!~findExpirationIndex(expirations, key)) {
@@ -40,7 +41,7 @@ export const createOnCacheAddSetExpiration: Function = (
           cache.values.splice(keyIndex, 1);
 
           if (typeof onCacheChange === 'function') {
-            onCacheChange(cache, _microMemoizeOptions);
+            onCacheChange(cache, moizedOptions, moized);
           }
         }
 
@@ -54,10 +55,10 @@ export const createOnCacheAddSetExpiration: Function = (
           cache.keys.unshift(key);
           cache.values.unshift(value);
 
-          createOnCacheAddSetExpiration(expirations, options, isEqual)(cache, _microMemoizeOptions);
+          createOnCacheAddSetExpiration(expirations, options, isEqual)(cache, moizedOptions, moized);
 
           if (typeof onCacheChange === 'function') {
-            onCacheChange(cache, _microMemoizeOptions);
+            onCacheChange(cache, moizedOptions, moized);
           }
         }
       };
@@ -76,6 +77,8 @@ export const createOnCacheHitResetExpiration: Function = (
   expirations: Array<Expiration>,
   options: Options
 ): ?Function => {
+  const {maxAge} = options;
+
   /**
    * @private
    *
@@ -95,9 +98,6 @@ export const createOnCacheHitResetExpiration: Function = (
 
     if (~expirationIndex) {
       clearTimeout(expirations[expirationIndex].timeoutId);
-
-      // $FlowIgnore options exists
-      const maxAge: number = options.maxAge;
 
       expirations[expirationIndex].timeoutId = setTimeout(expirations[expirationIndex].expirationMethod, maxAge);
     }

@@ -10,10 +10,19 @@ import {createGetInitialArgs} from './maxArgs';
 import {getSerializerFunction} from './serialize';
 
 // types
-import type {Options} from './types';
+import type {Cache, MicroMemoizeOptions, Options} from './types';
 
 // utils
 import {compose, getArrayKey} from './utils';
+
+export const createOnCacheOperation = (fn: ?Function): ?Function => {
+  if (typeof fn === 'function') {
+    return (cache: Cache, _microMemoizeOptions: MicroMemoizeOptions, memoized: Function): void => {
+      // $FlowIgnore fn is a function if this is hit
+      return fn(memoized.cache, memoized.options, memoized);
+    };
+  }
+};
 
 /**
  * @private

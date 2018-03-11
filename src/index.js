@@ -12,8 +12,8 @@ import {augmentMoizeInstance} from './instance';
 // max age
 import {getMaxAgeOptions} from './maxAge';
 
-// is equal
-import {getIsEqual, getTransformKey} from './options';
+// options
+import {createOnCacheOperation, getIsEqual, getTransformKey} from './options';
 
 // stats
 import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache} from './stats';
@@ -105,9 +105,9 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
     isEqual,
     isPromise,
     maxSize,
-    onCacheAdd: combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
-    onCacheChange,
-    onCacheHit: combine(onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
+    onCacheAdd: createOnCacheOperation(combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd)),
+    onCacheChange: createOnCacheOperation(onCacheChange),
+    onCacheHit: createOnCacheOperation(combine(onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit)),
     transformKey
   });
 
