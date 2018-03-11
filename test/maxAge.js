@@ -203,10 +203,13 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
     keys: ['key'],
     values: ['value']
   };
+  const _microMemoizeOptions = {
+    microMemoize: 'options'
+  };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
 
-  result(cache);
+  result(cache, _microMemoizeOptions);
 
   t.true(setTimeoutStub.calledOnce);
 
@@ -228,7 +231,7 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
   expirationMethod();
 
   t.true(options.onCacheChange.calledTwice);
-  t.deepEqual(options.onCacheChange.args, [[cache], [cache]]);
+  t.deepEqual(options.onCacheChange.args, [[cache, _microMemoizeOptions], [cache, _microMemoizeOptions]]);
 
   t.is(cache.keys.length, 1);
   t.deepEqual(cache.keys, currentKeys);

@@ -1357,7 +1357,8 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
+    updateExpire: true
   });
 
   t.deepEqual(moized.options, {
@@ -1366,7 +1367,8 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
+    updateExpire: true
   });
 
   t.deepEqual(moized._microMemoizeOptions, {

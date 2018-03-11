@@ -119,8 +119,8 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
 }
 
 /**
- * @function compose
- * @name isCollectingStats
+ * @function
+ * @name compose
  * @memberof module:moize
  * @alias moize.compose
  *
@@ -252,7 +252,10 @@ moize.maxSize = (maxSize: number): Function => {
  *
  * @returns {function} the moizer function
  */
-moize.promise = moize({isPromise: true});
+moize.promise = moize({
+  isPromise: true,
+  updateExpire: true
+});
 
 /**
  * @function

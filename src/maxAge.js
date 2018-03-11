@@ -1,7 +1,7 @@
 // @flow
 
 // types
-import type {Cache, Expiration, Options} from './types';
+import type {Cache, Expiration, Options, MicroMemoizeOptions} from './types';
 
 // utils
 import {findExpirationIndex, findKeyIndex} from './utils';
@@ -24,9 +24,10 @@ export const createOnCacheAddSetExpiration: Function = (
    * @modifies {expirations}
    *
    * @param {Cache} cache the cache of the memoized function
+   * @param {MicroMemoizeOptions} _microMemoizeOptions the options passed to the memoized function
    * @returns {void}
    */
-  return function onCacheAdd(cache: Cache): ?Function {
+  return function onCacheAdd(cache: Cache, _microMemoizeOptions: MicroMemoizeOptions): ?Function {
     const key: any = cache.keys[0];
 
     if (!~findExpirationIndex(expirations, key)) {
@@ -39,7 +40,7 @@ export const createOnCacheAddSetExpiration: Function = (
           cache.values.splice(keyIndex, 1);
 
           if (typeof onCacheChange === 'function') {
-            onCacheChange(cache);
+            onCacheChange(cache, _microMemoizeOptions);
           }
         }
 
@@ -53,10 +54,10 @@ export const createOnCacheAddSetExpiration: Function = (
           cache.keys.unshift(key);
           cache.values.unshift(value);
 
-          createOnCacheAddSetExpiration(expirations, options, isEqual)(cache);
+          createOnCacheAddSetExpiration(expirations, options, isEqual)(cache, _microMemoizeOptions);
 
           if (typeof onCacheChange === 'function') {
-            onCacheChange(cache);
+            onCacheChange(cache, _microMemoizeOptions);
           }
         }
       };
@@ -90,7 +91,6 @@ export const createOnCacheHitResetExpiration: Function = (
    */
   return function onCacheHit(cache: Cache) {
     const key: any = cache.keys[0];
-
     const expirationIndex: number = findExpirationIndex(expirations, key);
 
     if (~expirationIndex) {

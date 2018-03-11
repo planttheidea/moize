@@ -177,6 +177,28 @@ memoizedPromise(2, 2).then((value) => {
 
 console.log(memoizedPromise.keys());
 
+const otherPromiseMethod = (number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(number * 2);
+    }, 1000);
+  });
+};
+
+const memoizedOtherPromise = moize.promise(otherPromiseMethod, {
+  maxAge: 1500,
+  onCacheHit(cache) {
+    console.log('must have resolved!', cache);
+  },
+  onExpire() {
+    console.log('updated promise expired');
+  }
+});
+
+memoizedOtherPromise(4).then((number) => {
+  console.log('i should be 8', number);
+});
+
 console.groupEnd('promise');
 
 console.group('with default parameters');

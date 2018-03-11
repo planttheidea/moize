@@ -1,5 +1,6 @@
 interface Cache {
   keys: Array<Array<any>>;
+  size: number;
   values: Array<any>;
 }
 
