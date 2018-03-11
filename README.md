@@ -980,20 +980,20 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
 
 All values provided are the number of operations per second (ops/sec) calculated by the [Benchmark suite](https://benchmarkjs.com/). Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of `35`, using single and multiple parameters with different object types. The results were averaged to determine overall speed across possible usage.
 
-**NOTE**: `lodash`, `ramda`, and `underscore` do not support mulitple-parameter memoization, so they are not included in those benchmarks.
+**NOTE**: `lodash`, `ramda`, and `underscore` do not support mulitple-parameter memoization without use of a `resolver` function. For consistency in comparison, each use the same `resolver` than returns the result of `JSON.stringify` on the arguments.
 
-| Name         | Overall (average) | Single (average) | Multiple (average) | Single (primitive) | Single (Array) | Single (Object) | Multiple (primitive) | Multiple (Array) | Multiple (Object) |
-| ------------ | ----------------- | ---------------- | ------------------ | ------------------ | -------------- | --------------- | -------------------- | ---------------- | ----------------- |
-| **moize**    | **54,049,694**    | **62,485,200**   | **45,614,188**     | **71,194,403**     | **58,210,912** | **58,050,286**  | **46,234,437**       | **45,898,810**   | **44,709,318**    |
-| fast-memoize | 37,448,048        | 73,862,382       | 1,033,714          | 218,572,933        | 1,575,627      | 1,438,587       | 1,194,182            | 1,092,453        | 814,507           |
-| memoizee     | 10,522,358        | 12,733,020       | 8,311,696          | 15,243,681         | 11,310,768     | 11,644,612      | 9,832,601            | 7,479,853        | 7,622,636         |
-| lru-memoize  | 6,744,145         | 7,198,151        | 6,290,139          | 8,001,721          | 6,697,666      | 6,895,068       | 6,362,105            | 6,194,207        | 6,314,105         |
-| memoizerific | 4,391,063         | 4,785,000        | 3,997,126          | 5,625,963          | 4,361,767      | 4,367,271       | 4,576,996            | 3,888,147        | 3,526,237         |
-| mem          | 2,791,309         | 4,263,653        | 1,318,965          | 9,595,171          | 1,688,105      | 1,507,683       | 1,640,567            | 1,346,912        | 969,418           |
-| addy-osmani  | 2,711,133         | 3,405,007        | 2,017,258          | 6,358,682          | 2,033,139      | 1,823,201       | 3,248,815            | 1,852,464        | 950,497           |
-| lodash       | N/A               | 14,269,696       | N/A                | 26,462,567         | 8,164,835      | 8,181,688       | N/A                  | N/A              | N/A               |
-| underscore   | N/A               | 12,235,223       | N/A                | 23,300,304         | 5,358,188      | 8,047,177       | N/A                  | N/A              | N/A               |
-| ramda        | N/A               | 521,228          | N/A                | 1,078,127          | 284,487        | 201,072         | N/A                  | N/A              | N/A               |
+| Name         | Overall (average) | Single (average) | Multiple (average) | single primitive | single array   | single object  | multiple primitive | multiple array | multiple object |
+| ------------ | ----------------- | ---------------- | ------------------ | ---------------- | -------------- | -------------- | ------------------ | -------------- | --------------- |
+| **moize**    | **54,174,185**    | **63,114,600**   | **45,233,770**     | **71,543,826**   | **58,764,177** | **59,035,797** | **59,035,797**     | **44,978,364** | **45,017,968**  |
+| fast-memoize | 37,591,552        | 74,183,948       | 999,155            | 219,504,451      | 1,582,247      | 1,465,147      | 1,210,230          | 972,741        | 814,496         |
+| memoizee     | 10,953,206        | 13,429,670       | 8,476,743          | 16,114,807       | 12,226,505     | 11,947,699     | 10,238,867         | 7,615,024      | 7,576,339       |
+| lodash       | 7,760,981         | 14,392,042       | 1,129,921          | 27,195,493       | 8,059,276      | 7,921,357      | 1,396,024          | 1,106,101      | 887,640         |
+| lru-memoize  | 6,818,881         | 7,216,322        | 6,421,440          | 7,761,636        | 7,016,605      | 6,870,726      | 6,472,962          | 6,323,183      | 6,468,176       |
+| underscore   | 5,140,473         | 9,073,217        | 1,207,730          | 22,750,266       | 2,419,458      | 2,049,928      | 1,490,129          | 1,181,751      | 951,310         |
+| memoizerific | 4,320,437         | 4,784,512        | 3,856,362          | 5,608,168        | 4,374,440      | 4,370,928      | 4,568,332          | 3,455,887      | 3,544,867       |
+| ramda        | 3,831,370         | 6,470,175        | 1,192,564          | 15,012,589       | 2,380,971      | 2,016,966      | 1,470,378          | 1,161,390      | 945,926         |
+| mem          | 2,679,860         | 4,138,450        | 1,221,271          | 9,431,005        | 1,554,267      | 1,430,078      | 1,537,629          | 1,197,269      | 928,915         |
+| addy-osmani  | 2,504,948         | 3,224,227        | 1,785,669          | 6,430,710        | 1,560,466      | 1,681,506      | 3,215,093          | 1,184,364      | 957,550         |
 
 ![Overall average image](img/overall-average.png)
 

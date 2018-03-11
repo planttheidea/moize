@@ -1,6 +1,5 @@
 import 'babel-polyfill';
 
-import isEqual from 'lodash/isEqual';
 import Bluebird from 'bluebird';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -50,6 +49,11 @@ console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
 
 console.log(memoized.getStats());
+
+lodashMemoized(foo, bar);
+lodashMemoized(bar, foo);
+lodashMemoized(foo, bar);
+lodashMemoized(foo, bar);
 
 console.groupEnd('standard');
 
