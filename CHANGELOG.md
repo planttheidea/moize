@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.0.1
+
+* Include `fast-equals` as an explicit dependency
+
 ## 5.0.0
 
 * Complete refactor to leverage [`micro-memoize`](https://github.com/planttheidea/micro-memoize) under the hood (doubles the speed, and allows for more functionality)
