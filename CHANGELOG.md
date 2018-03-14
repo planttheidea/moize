@@ -3,6 +3,7 @@
 ## 5.1.0
 
 * Add [`matchesKey`](#matcheskey) option
+* Change `isSerialized` to use `matchesKey` with custom `isMatchingKey` instead of standard `isEqual`
 
 ## 5.0.1
 

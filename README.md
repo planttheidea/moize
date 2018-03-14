@@ -265,7 +265,7 @@ memoized({ foo: "bar" }, { bar: "baz" }); // pulls from cache
 
 The `matchesKey` method receives two parameters (cache keys) and should return a `boolean`.
 
-**NOTE**: This comparison uses the two keys as a whole, which can be less performant than if used iteratively on each argument. Generally speaking you should use the [`equals`](#equals) option for equality comparison.
+**NOTE**: This comparison uses the two keys as a whole, which is usually less performant than the `equals` comparison used iteratively on each argument. Generally speaking you should use the [`equals`](#equals) option for equality comparison.
 
 #### maxAge
 
