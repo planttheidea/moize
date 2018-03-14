@@ -23,6 +23,7 @@
 
 * The default `equals` option now uses [SameValueZero](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero) equality instead of strict equality
 * `equals` option is now performed iteratively on each argument in the key, rather on the key as a whole
+  * `matchesKey` option now performs the full-key comparison that `equals` did in v4
 * `serialize` option has been changed to `isSerialized`
 * `serializeFunctions` option has been changed to `shouldSerializeFunctions`
 * CommonJS consumers must now use `require('moize').default`
