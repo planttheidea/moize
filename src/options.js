@@ -7,7 +7,7 @@ import {deepEqual, sameValueZeroEqual, shallowEqual} from 'fast-equals';
 import {createGetInitialArgs} from './maxArgs';
 
 // serialize
-import {getSerializerFunction} from './serialize';
+import {getIsSerializedKeyEqual, getSerializerFunction} from './serialize';
 
 // types
 import type {Cache, MicroMemoizeOptions, Options} from './types';
@@ -37,6 +37,21 @@ export const createOnCacheOperation = (fn: ?Function): ?Function => {
  */
 export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function => {
   return equals || (isDeepEqual && deepEqual) || (isReact && shallowEqual) || sameValueZeroEqual;
+};
+
+/**
+ * @private
+ *
+ * @function getIsMatchingKey
+ *
+ * @description
+ * get the isEqual method passed to micro-memoize
+ *
+ * @param {Options} options the options passed to the moizer
+ * @returns {function} the isEqual method to apply
+ */
+export const getIsMatchingKey = ({isSerialized, matchesKey}: Options): ?Function => {
+  return matchesKey || (isSerialized ? getIsSerializedKeyEqual : undefined);
 };
 
 /**

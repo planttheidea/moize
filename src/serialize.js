@@ -107,3 +107,19 @@ export const getSerializerFunction = (options: Options): Function => {
     compose(getArrayKey, options.serializer)
     : createArgumentSerializer(options);
 };
+
+/**
+ * @private
+ *
+ * @function getIsSerializedKeyEqual
+ *
+ * @description
+ * are the serialized keys equal to one another
+ *
+ * @param {Array<string>} cacheKey the cache key to compare
+ * @param {*} key the key to test
+ * @returns {boolean} are the keys equal
+ */
+export const getIsSerializedKeyEqual = (cacheKey: Array<string>, key: Array<string>): boolean => {
+  return cacheKey[0] === key[0];
+};

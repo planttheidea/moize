@@ -634,6 +634,7 @@ test('if addInstanceProperties will add the correct properties to the moized met
   };
   const cache = {
     keys: [],
+    size: 0,
     values: []
   };
 
@@ -643,15 +644,7 @@ test('if addInstanceProperties will add the correct properties to the moized met
   instance.addInstanceProperties(moized, options);
 
   t.is(moized._microMemoizeOptions, _microMemoizeOptions);
-  t.deepEqual(moized.cache, {
-    ...cache,
-    size: cache.keys.length
-  });
-  t.deepEqual(moized.cacheSnapshot, {
-    keys: [...cache.keys],
-    size: cache.keys.length,
-    values: [...cache.values]
-  });
+  t.deepEqual(moized.cache, cache);
   t.is(moized.collectStats, stats.statsCache.isCollectingStats);
   t.is(moized.expirations, options.expirations);
   t.not(moized.expirationsSnapshot, options.expirations);
@@ -691,20 +684,13 @@ test('if addInstanceProperties will add the correct properties to the moized Rea
   };
 
   moized.cache = cache;
+  moized.cacheSnapshot = {...cache};
   moized.options = _microMemoizeOptions;
 
   instance.addInstanceProperties(moized, options);
 
   t.is(moized._microMemoizeOptions, _microMemoizeOptions);
-  t.deepEqual(moized.cache, {
-    ...cache,
-    size: cache.keys.length
-  });
-  t.deepEqual(moized.cacheSnapshot, {
-    keys: [...cache.keys],
-    size: cache.keys.length,
-    values: [...cache.values]
-  });
+  t.deepEqual(moized.cache, cache);
   t.is(moized.collectStats, stats.statsCache.isCollectingStats);
   t.is(moized.expirations, options.expirations);
   t.not(moized.expirationsSnapshot, options.expirations);

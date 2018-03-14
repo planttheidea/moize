@@ -5,6 +5,7 @@ import {deepEqual, shallowEqual, sameValueZeroEqual} from 'fast-equals';
 
 // src
 import * as options from 'src/options';
+import * as serialize from 'src/serialize';
 
 test('if getIsEqual will return equals if passed in options', (t) => {
   const moizeOptions = {
@@ -40,6 +41,28 @@ test('if getIsEqual will return shallowEqual if isReact is true', (t) => {
   const result = options.getIsEqual(moizeOptions);
 
   t.is(result, shallowEqual);
+});
+
+test('if getIsMatchingKey will return the matchesKey function if passed', (t) => {
+  const moizeOptions = {
+    matchesKey: sinon.spy(),
+    isSerialized: true
+  };
+
+  const result = options.getIsMatchingKey(moizeOptions);
+
+  t.is(result, moizeOptions.matchesKey);
+});
+
+test('if getIsMatchingKey will return the default is serialized key equal method when no matchesKey is passed', (t) => {
+  const moizeOptions = {
+    matchesKey: null,
+    isSerialized: true
+  };
+
+  const result = options.getIsMatchingKey(moizeOptions);
+
+  t.is(result, serialize.getIsSerializedKeyEqual);
 });
 
 test('if getIsEqual will return sameValueZeroEqual as an ultimate fallback', (t) => {

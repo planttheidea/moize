@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.1.0
+
+* Add [`matchesKey`](#matcheskey) option
+
 ## 5.0.1
 
 * Include `fast-equals` as an explicit dependency
