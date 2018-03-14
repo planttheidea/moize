@@ -5,11 +5,12 @@ interface Cache {
 }
 
 interface Options {
-  equals?: (firstValue: any, secondValue: any) => boolean; // custom equality comparator
+  equals?: (cacheKeyArgument: any, keyArgument: any) => boolean; // custom equality comparator comparing a specific key argument
   isDeepEqual?: boolean; // is key comparison done via deep equality
   isPromise?: boolean; // is the result a promise
   isReact?: boolean; // is the method a functional React component
   isSerialized?: boolean; // should the parameters be serialized instead of directly referenced
+  matchesKey?: (cacheKey: Array<any>, key: Array<any>) => boolean; // custom equality comparator comparing the entire key
   maxAge?: number; // amount of time in milliseconds before the cache will expire
   maxArgs?: number; // maximum number of arguments to use as key for caching
   maxSize?: number; // maximum size of cache for this method

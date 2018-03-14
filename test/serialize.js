@@ -195,3 +195,8 @@ test('if getSerializerFunction uses the serializer passed when it is a function'
 
   t.deepEqual(result, [`KEY: ${JSON.stringify(args)}`]);
 });
+
+test('if getIsSerializedKeyEqual will return correctly when the values match', (t) => {
+  t.true(serialize.getIsSerializedKeyEqual(['key'], ['key']));
+  t.false(serialize.getIsSerializedKeyEqual(['key'], ['not key']));
+});

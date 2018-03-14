@@ -16,6 +16,7 @@
   * [isPromise](#ispromise)
   * [isReact](#isreact)
   * [isSerialized](#isserialized)
+  * [matchesKey](#matcheskey)
   * [maxAge](#maxage)
   * [maxArgs](#maxargs)
   * [maxSize](#maxsize)
@@ -123,7 +124,7 @@ The full shape of these options:
 
 _defaults to [SameValueZero](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero) equality_
 
-Custom method used to compare equality of keys for cache purposes.
+Custom method used to compare equality of keys for cache purposes by comparing each argument.
 
 ```javascript
 // using lodash's deep equal comparison method
@@ -143,7 +144,7 @@ memoized({ foo: "bar", bar: "baz" }); // pulls from cache
 
 The `equals` method receives two parameters (cache key arguments) and should return a `boolean`.
 
-**NOTE**: This comparison is used iteratively on each argument, rather than comparing the two keys as a whole.
+**NOTE**: This comparison is used iteratively on each argument, rather than comparing the two keys as a whole. If you want to compare the key as a whole, you should use [`matchesKey`](#matcheskey).
 
 #### isDeepEqual
 
@@ -237,6 +238,34 @@ If `serialize` is combined with either `maxArgs` or `transformArgs`, the followi
 1.  serialize by `serializer`
 
 **NOTE**: This is much slower than the default key storage, and usually the same requirements can be meet with `isDeepEqual`, so use at your discretion.
+
+#### matchesKey
+
+Custom method used to compare equality of keys for cache purposes by comparing the entire key.
+
+```javascript
+// using lodash's deep equal comparison method
+const fn = ({ foo, bar }) => {
+  return [foo, bar];
+};
+
+const memoized = moize(fn, {
+  matchesKey(cacheKey, key) {
+    return (
+      cacheKey[0].foo === key[0].foo &&
+      cacheKey[1].hasOwnProperty("bar") &&
+      key[1].hasOwnProperty("bar")
+    );
+  }
+});
+
+memoized({ foo: "bar" }, { bar: null });
+memoized({ foo: "bar" }, { bar: "baz" }); // pulls from cache
+```
+
+The `matchesKey` method receives two parameters (cache keys) and should return a `boolean`.
+
+**NOTE**: This comparison uses the two keys as a whole, which is usually less performant than the `equals` comparison used iteratively on each argument. Generally speaking you should use the [`equals`](#equals) option for equality comparison.
 
 #### maxAge
 
@@ -1005,7 +1034,7 @@ All values provided are the number of operations per second calculated by the [B
 
 ## Filesize
 
-`moize` is fairly small (about 4KB when minified and gzipped), however it provides a large number of configuration options to satisfy a large number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
+`moize` is fairly small (about 4.2KB when minified and gzipped), however it provides a large number of configuration options to satisfy a large number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
 
 ## Browser support
 

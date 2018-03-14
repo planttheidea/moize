@@ -13,7 +13,7 @@ import {augmentMoizeInstance} from './instance';
 import {getMaxAgeOptions} from './maxAge';
 
 // options
-import {createOnCacheOperation, getIsEqual, getTransformKey} from './options';
+import {createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey} from './options';
 
 // stats
 import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache} from './stats';
@@ -78,9 +78,11 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
 
   const {
     equals: equalsIgnored,
+    isDeepEqual: isDeepEqualIgnored,
     isPromise,
     isReact: isReactIgnored,
     isSerialized: isSerialzedIgnored,
+    matchesKey: matchesKeyIgnored,
     maxAge: maxAgeIgnored,
     maxArgs: maxArgsIgnored,
     maxSize,
@@ -97,12 +99,14 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
   } = coalescedOptions;
 
   const isEqual: Function = getIsEqual(coalescedOptions);
+  const isMatchingKey: ?Function = getIsMatchingKey(coalescedOptions);
   const maxAgeOptions: Options = getMaxAgeOptions(expirations, coalescedOptions, isEqual);
   const statsOptions: Options = getStatsOptions(coalescedOptions);
   const transformKey: ?Function = getTransformKey(coalescedOptions);
 
   const microMemoizeOptions: MicroMemoizeOptions = Object.assign({}, customOptions, {
     isEqual,
+    isMatchingKey,
     isPromise,
     maxSize,
     onCacheAdd: createOnCacheOperation(combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd)),

@@ -51,8 +51,8 @@ test('if moize will handle the standard use-case', (t) => {
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -94,8 +94,8 @@ test('if moize will handle a custom equals function correctly', (t) => {
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: options.equals,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -135,8 +135,8 @@ test('if moize will handle deep equals correctly', (t) => {
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: true,
     isEqual: deepEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -178,8 +178,8 @@ test('if moize will handle promises correctly', (t) => {
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: true,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -231,8 +231,8 @@ test.serial('if moize will handle React components correctly', (t) => {
   const {transformKey, ..._microMemoizeOptions} = Moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: shallowEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -281,8 +281,8 @@ test('if moize will handle serialization of keys correctly', (t) => {
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -333,8 +333,8 @@ test('if moize will handle serialization of keys correctly when functions should
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -385,8 +385,8 @@ test('if moize will handle serialization of keys correctly when a custom seriali
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -438,8 +438,8 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
@@ -497,8 +497,8 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -540,8 +540,8 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: 1,
     onCacheAdd: onCacheOperation,
@@ -581,8 +581,8 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
   const {onCacheAdd: onCacheAddIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
@@ -626,8 +626,8 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
   const {onCacheChange: onCacheChangeIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -671,8 +671,8 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   const {onCacheHit: onCacheHitIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -731,8 +731,8 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
@@ -789,8 +789,8 @@ test('if moize will handle a custom profileName for stats collection correctly',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -821,8 +821,8 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -868,8 +868,8 @@ test('if moize will handle an updateExpire method for cache expiration correctly
   const {onCacheAdd, onCacheHit, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
@@ -935,8 +935,8 @@ test('if moize will handle additional custom options correctly', (t) => {
 
   t.deepEqual(moized._microMemoizeOptions, {
     customOption: 'value',
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -987,8 +987,8 @@ test('if moize will handle a curried options implementation correctly', (t) => {
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: true,
     isEqual: deepEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1041,8 +1041,8 @@ test('if moize will handle a curried options implementation correctly when the f
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: true,
     isEqual: deepEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1098,8 +1098,8 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
   const {transformKey, ..._microMemoizeOptions} = secondMoized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: true,
     isEqual: deepEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1177,8 +1177,8 @@ test('if moize.deep will produce the correct moized function options', (t) => {
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: true,
     isEqual: deepEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1246,8 +1246,8 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
@@ -1295,8 +1295,8 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1335,8 +1335,8 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: options.maxSize,
     onCacheAdd: onCacheOperation,
@@ -1376,8 +1376,8 @@ test('if moize.promise will produce the correct moized function options', (t) =>
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: options.isPromise,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1417,8 +1417,8 @@ test('if moize.react will produce the correct moized function options', (t) => {
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: shallowEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1461,8 +1461,8 @@ test('if moize.reactSimple will produce the correct moized function options', (t
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: shallowEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: options.maxSize,
     onCacheAdd: onCacheOperation,
@@ -1503,8 +1503,8 @@ test('if moize.serialize will produce the correct moized function options', (t) 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
   t.deepEqual(_microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
@@ -1543,8 +1543,8 @@ test('if moize.simple will produce the correct moized function options', (t) => 
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
-    isDeepEqual: false,
     isEqual: sameValueZeroEqual,
+    isMatchingKey: undefined,
     isPromise: false,
     maxSize: options.maxSize,
     onCacheAdd: onCacheOperation,

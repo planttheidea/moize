@@ -3,40 +3,23 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": [
-        "react"
-      ]
+      "presets": ["react"]
     },
     "failFast": true,
-    "files": [
-      "test/*.js",
-      "!test-utils/*.js"
-    ],
-    "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "source": [
-      "src/*.js"
-    ],
+    "files": ["test/*.js", "!test-utils/*.js"],
+    "require": ["babel-register", "babel-polyfill"],
+    "source": ["src/*.js"],
     "verbose": true
   },
   "browser": "dist/moize.min.js",
-  "browserslist": [
-    "defaults",
-    "Explorer >= 9",
-    "Safari >= 6",
-    "Opera >= 15",
-    "iOS >= 8",
-    "Android >= 4"
-  ],
+  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
   "bugs": {
     "url": "https://github.com/planttheidea/moize/issues"
   },
   "dependencies": {
     "fast-equals": "^1.2.1",
     "json-stringify-safe": "^5.0.1",
-    "micro-memoize": "^1.8.1"
+    "micro-memoize": "^2.0.0"
   },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {
@@ -59,7 +42,7 @@
     "eslint-config-rapid7": "^2.11.1",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^2.0.0",
-    "fast-memoize": "^2.3.0",
+    "fast-memoize": "^2.3.2",
     "flow-babel-webpack-plugin": "^1.1.1",
     "flow-bin": "^0.67.1",
     "html-webpack-plugin": "^3.0.6",
@@ -75,7 +58,7 @@
     "mem": "^3.0.0",
     "memoizee": "^0.4.12",
     "memoizerific": "^1.11.2",
-    "nyc": "^11.4.1",
+    "nyc": "^11.6.0",
     "optimize-js-plugin": "^0.0.4",
     "ora": "^2.0.0",
     "prop-types": "^15.6.1",
@@ -83,30 +66,20 @@
     "ramda": "^0.25.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "rollup": "^0.56.5",
     "rimraf": "^2.6.2",
+    "rollup": "^0.56.5",
     "rollup-plugin-babel": "^3.0.3",
-    "rollup-plugin-commonjs": "^9.0.0",
+    "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-node-resolve": "^3.2.0",
     "rollup-plugin-uglify": "^3.0.0",
-    "sinon": "^4.4.2",
+    "sinon": "^4.4.5",
     "underscore": "^1.8.3",
     "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.11",
+    "webpack-cli": "^2.0.12",
     "webpack-dev-server": "^3.1.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
-  "keywords": [
-    "cache",
-    "expire",
-    "lru",
-    "memoize",
-    "memoization",
-    "optimize",
-    "performance",
-    "promise",
-    "ttl"
-  ],
+  "keywords": ["cache", "expire", "lru", "memoize", "memoization", "optimize", "performance", "promise", "ttl"],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -132,7 +105,8 @@
     "lint:fix": "NODE_ENV=test eslint src --fix",
     "postpublish": "npm run docs && git add . && git commit -m \"Update docs\" && git push",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile":
+      "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
     "test:coverage": "nyc npm test",

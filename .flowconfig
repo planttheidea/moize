@@ -2,6 +2,7 @@
 .*/node_modules/fbjs/lib/.*
 .*/node_modules/esformatter/test/.*
 .*/node_modules/config-chain/test/.*
+.*/node_modules/webpack-cli/.*
 
 [options]
 suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore

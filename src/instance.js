@@ -4,7 +4,7 @@
 import {getStats, statsCache} from './stats';
 
 // types
-import type {Cache, MicroMemoizeOptions, StatsProfile} from './types';
+import type {MicroMemoizeOptions, StatsProfile} from './types';
 
 // utils
 import {findKeyIndex} from './utils';
@@ -105,7 +105,6 @@ export const addInstanceProperties = (
   moized: Function,
   {expirations, options: moizeOptions, originalFunction}: Object
 ): void => {
-  const cache: Cache = moized.cache;
   const microMemoizeOptions: MicroMemoizeOptions = moized.options;
 
   Object.defineProperties(
@@ -115,26 +114,6 @@ export const addInstanceProperties = (
         configurable: true,
         get() {
           return microMemoizeOptions;
-        }
-      },
-      cache: {
-        configurable: true,
-        get() {
-          return Object.assign({}, cache, {
-            get size() {
-              return cache.keys.length;
-            }
-          });
-        }
-      },
-      cacheSnapshot: {
-        configurable: true,
-        get() {
-          return {
-            keys: cache.keys.slice(0),
-            size: cache.keys.length,
-            values: cache.values.slice(0)
-          };
         }
       },
       collectStats: {

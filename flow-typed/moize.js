@@ -6,11 +6,12 @@ declare module 'moize' {
   };
 
   declare type Options = {
-    equals?: (firstValue: any, secondValue: any) => boolean,
+    equals?: (cacheKeyArgument: any, keyArgument: any) => boolean,
     isDeepEqual?: boolean,
     isPromise?: boolean,
     isReact?: boolean,
     isSerialized?: boolean,
+    matchesKey?: (cacheKey: Array<any>, key: Array<any>) => boolean,
     maxAge?: number,
     maxArgs?: number,
     maxSize?: number,

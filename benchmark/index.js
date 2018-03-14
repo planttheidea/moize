@@ -480,8 +480,6 @@ const runMultipleObjectSuite = () => {
 };
 
 const runAlternativeOptionsSuite = () => {
-  const fibonacciNumber = {number: 35};
-
   const props = {
     foo: {
       foo: {
@@ -546,27 +544,60 @@ const runAlternativeOptionsSuite = () => {
   const object2 = ['foo'];
 
   return new Promise((resolve) => {
-    new Benchmark.Suite('Alternative cache types', getSuiteOptions(resolve))
+    new Benchmark.Suite('Alternative options', getSuiteOptions('alternative options', resolve))
       .add('moize serialized', () => {
-        mMoizeSerialize(fibonacciNumber);
+        mMoizeSerialize({number: 35});
       })
       .add('moize deep equals', () => {
-        mMoizeDeep(fibonacciNumber);
+        mMoizeDeep({number: 35});
       })
       .add('moize deep equals (lodash isEqual)', () => {
-        mMoizeLodashDeep(fibonacciNumber);
+        mMoizeLodashDeep({number: 35});
       })
       .add('moize react', () => {
         mMoizeReact(props, context);
       })
       .add('moize react serialized', () => {
-        mMoizeReactOld(props, context);
+        mMoizeReactOld({
+          foo: {
+            foo: {
+              foo: 'foo'
+            }
+          },
+          bar: {
+            bar: {
+              bar: 'bar'
+            }
+          }
+        }, context);
       })
       .add('moize react deep equals', () => {
-        mMoizeReactDeep(props, context);
+        mMoizeReactDeep({
+          foo: {
+            foo: {
+              foo: 'foo'
+            }
+          },
+          bar: {
+            bar: {
+              bar: 'bar'
+            }
+          }
+        }, context);
       })
       .add('moize react deep equals (lodash isEqual)', () => {
-        mMoizeReactLodashDeep(props, context);
+        mMoizeReactLodashDeep({
+          foo: {
+            foo: {
+              foo: 'foo'
+            }
+          },
+          bar: {
+            bar: {
+              bar: 'bar'
+            }
+          }
+        }, context);
       })
       .add('moize (transform args)', () => {
         mMoizeSpecificArgs('foo', object1, object2);
@@ -686,7 +717,7 @@ const writeCsv = () => {
 };
 
 if (process.env.ALTERNATIVE) {
-  runAlternativeOptionsSuite();
+  Promise.resolve().then(runAlternativeOptionsSuite);
 } else {
   Promise.resolve()
     .then(runSinglePrimitiveSuite)
@@ -695,5 +726,6 @@ if (process.env.ALTERNATIVE) {
     .then(runMultiplePrimitiveSuite)
     .then(runMultipleArraySuite)
     .then(runMultipleObjectSuite)
-    .then(writeCsv);
+    .then(writeCsv)
+    .then(runAlternativeOptionsSuite);
 }

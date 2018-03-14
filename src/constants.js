@@ -14,6 +14,7 @@ export const DEFAULT_OPTIONS: Options = {
   isPromise: false,
   isReact: false,
   isSerialized: false,
+  matchesKey: undefined,
   maxAge: undefined,
   maxArgs: undefined,
   maxSize: Infinity,

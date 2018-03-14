@@ -90,16 +90,19 @@ const serializeMethod = ({one, two}) => {
   return [one, two];
 };
 
-const serializeMemized = moize.serialize(serializeMethod);
+const serializeMemoized = moize.serialize(serializeMethod);
 
-serializeMemized({one: 1, two: 2});
-serializeMemized({one: 2, two: 1});
-serializeMemized({one: 1, two: 2});
-serializeMemized({one: 1, two: 2});
+serializeMemoized({one: 1, two: 2});
+serializeMemoized({one: 2, two: 1});
+serializeMemoized({one: 1, two: 2});
+serializeMemoized({one: 1, two: 2});
 
-console.log(serializeMemized.cache);
-console.log('has serialized true', serializeMemized.has([{one: 1, two: 2}]));
-console.log('has serialized false', serializeMemized.has([{one: 1, two: 3}]));
+console.log(serializeMemoized.cache);
+console.log(serializeMemoized.options);
+console.log(serializeMemoized._microMemoizeOptions);
+console.log('has serialized true', serializeMemoized.has([{one: 1, two: 2}]));
+console.log('has serialized false', serializeMemoized.has([{one: 1, two: 3}]));
+
 
 console.groupEnd('serialize');
 
