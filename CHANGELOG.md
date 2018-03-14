@@ -2,8 +2,14 @@
 
 ## 5.1.0
 
+**NEW FEATURES**
+
 * Add [`matchesKey`](#matcheskey) option
 * Change `isSerialized` to use `matchesKey` with custom `isMatchingKey` instead of standard `isEqual`
+
+**BUGFIXES**
+
+* Prevent `isDeepEqual` from being passed to the `micro-memoize` options
 
 ## 5.0.1
 
