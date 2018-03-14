@@ -726,5 +726,6 @@ if (process.env.ALTERNATIVE) {
     .then(runMultiplePrimitiveSuite)
     .then(runMultipleArraySuite)
     .then(runMultipleObjectSuite)
-    .then(writeCsv);
+    .then(writeCsv)
+    .then(runAlternativeOptionsSuite);
 }
