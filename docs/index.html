@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 5.0.1</h3>
+    <h3>moize 5.1.0</h3>
 
 
 
@@ -103,6 +103,7 @@
 <li><a href="#ispromise">isPromise</a></li>
 <li><a href="#isreact">isReact</a></li>
 <li><a href="#isserialized">isSerialized</a></li>
+<li><a href="#matcheskey">matchesKey</a></li>
 <li><a href="#maxage">maxAge</a></li>
 <li><a href="#maxargs">maxArgs</a></li>
 <li><a href="#maxsize">maxSize</a></li>
@@ -194,7 +195,7 @@ moize(options)(fn);</code></pre><p>The full shape of these options:</p>
   updateExpire: boolean // should the cache entry's expiration be refreshed when the cache entry is hit (in combination with maxAge)
 }</code></pre><h4 id="equals">equals</h4>
 <p><em>defaults to <a href="http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero">SameValueZero</a> equality</em></p>
-<p>Custom method used to compare equality of keys for cache purposes.</p>
+<p>Custom method used to compare equality of keys for cache purposes by comparing each argument.</p>
 <pre class="prettyprint source lang-javascript"><code>// using lodash's deep equal comparison method
 const fn = ({ foo, bar }) => {
   return [foo, bar];
@@ -208,7 +209,7 @@ const memoized = moize(fn, {
 
 memoized({ foo: &quot;bar&quot; });
 memoized({ foo: &quot;bar&quot;, bar: &quot;baz&quot; }); // pulls from cache</code></pre><p>The <code>equals</code> method receives two parameters (cache key arguments) and should return a <code>boolean</code>.</p>
-<p><strong>NOTE</strong>: This comparison is used iteratively on each argument, rather than comparing the two keys as a whole.</p>
+<p><strong>NOTE</strong>: This comparison is used iteratively on each argument, rather than comparing the two keys as a whole. If you want to compare the key as a whole, you should use <a href="#matcheskey"><code>matchesKey</code></a>.</p>
 <h4 id="isdeepequal">isDeepEqual</h4>
 <p><em>defaults to false</em></p>
 <p>Should deep equality be used to compare cache keys. This is also available via the shortcut method of <a href="#moizedeep"><code>moize.deep</code></a></p>
@@ -271,6 +272,26 @@ memoized(object); // 'bar'</code></pre><p>If <code>serialize</code> is combined 
 <li>serialize by <code>serializer</code></li>
 </ol>
 <p><strong>NOTE</strong>: This is much slower than the default key storage, and usually the same requirements can be meet with <code>isDeepEqual</code>, so use at your discretion.</p>
+<h4 id="matcheskey">matchesKey</h4>
+<p>Custom method used to compare equality of keys for cache purposes by comparing the entire key.</p>
+<pre class="prettyprint source lang-javascript"><code>// using lodash's deep equal comparison method
+const fn = ({ foo, bar }) => {
+  return [foo, bar];
+};
+
+const memoized = moize(fn, {
+  matchesKey(cacheKey, key) {
+    return (
+      cacheKey[0].foo === key[0].foo &&
+      cacheKey[1].hasOwnProperty(&quot;bar&quot;) &&
+      key[1].hasOwnProperty(&quot;bar&quot;)
+    );
+  }
+});
+
+memoized({ foo: &quot;bar&quot; }, { bar: null });
+memoized({ foo: &quot;bar&quot; }, { bar: &quot;baz&quot; }); // pulls from cache</code></pre><p>The <code>matchesKey</code> method receives two parameters (cache keys) and should return a <code>boolean</code>.</p>
+<p><strong>NOTE</strong>: This comparison uses the two keys as a whole, which is usually less performant than the <code>equals</code> comparison used iteratively on each argument. Generally speaking you should use the <a href="#equals"><code>equals</code></a> option for equality comparison.</p>
 <h4 id="maxage">maxAge</h4>
 <p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method. This is also available via the shortcut method of <a href="#moizemaxage"><code>moize.maxAge</code></a>.</p>
 <pre class="prettyprint source lang-javascript"><code>const fn = item => {
@@ -899,7 +920,7 @@ const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]</code
 <p><img src="img/single-parameter.png" alt="Single parameter image"></p>
 <p><img src="img/multiple-parameters.png" alt="Multiple parameters image"></p>
 <h2 id="filesize">Filesize</h2>
-<p><code>moize</code> is fairly small (about 4KB when minified and gzipped), however it provides a large number of configuration options to satisfy a large number of edge cases. If filesize is a concern, you may consider using <a href="https://github.com/planttheidea/micro-memoize"><code>micro-memoize</code></a>. This is the memoization library that powers <code>moize</code> under-the-hood, and will handle most common use cases at 1/4 the size of <code>moize</code>.</p>
+<p><code>moize</code> is fairly small (about 4.2KB when minified and gzipped), however it provides a large number of configuration options to satisfy a large number of edge cases. If filesize is a concern, you may consider using <a href="https://github.com/planttheidea/micro-memoize"><code>micro-memoize</code></a>. This is the memoization library that powers <code>moize</code> under-the-hood, and will handle most common use cases at 1/4 the size of <code>moize</code>.</p>
 <h2 id="browser-support">Browser support</h2>
 <ul>
 <li>Chrome (all versions)</li>
