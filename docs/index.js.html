@@ -172,7 +172,7 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
 
   const isEqual: Function = getIsEqual(coalescedOptions);
   const isMatchingKey: ?Function = getIsMatchingKey(coalescedOptions);
-  const maxAgeOptions: Options = getMaxAgeOptions(expirations, coalescedOptions, isEqual);
+  const maxAgeOptions: Options = getMaxAgeOptions(expirations, coalescedOptions, isEqual, isMatchingKey);
   const statsOptions: Options = getStatsOptions(coalescedOptions);
   const transformKey: ?Function = getTransformKey(coalescedOptions);
 
