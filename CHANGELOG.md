@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.1.2
+
+**BUGFIXES**
+
+* Reference the correct option name for `micro-memoize` (isMatchingKey) instead of `moize` (matchesKey) for instance methods (oops)
+
 ## 5.1.1
 
 **BUGFIXES**

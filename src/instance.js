@@ -23,9 +23,9 @@ import {createFindKeyIndex} from './utils';
  * @returns {void}
  */
 export const addInstanceMethods = (moized: Function): void => {
-  const {isEqual, matchesKey, onCacheAdd, onCacheChange, transformKey} = moized.options;
+  const {isEqual, isMatchingKey, onCacheAdd, onCacheChange, transformKey} = moized.options;
 
-  const findKeyIndex: Function = createFindKeyIndex(isEqual, matchesKey);
+  const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
 
   moized.add = (key: Array<any>, value: any): void => {
     const savedKey: Array<any> = transformKey ? transformKey(key) : key;
