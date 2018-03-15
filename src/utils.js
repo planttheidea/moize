@@ -83,33 +83,43 @@ export const findExpirationIndex = (expirations: Array<Expiration>, key: Array<a
   return -1;
 };
 
-/**
- * @private
- *
- * @function findKeyIndex
- *
- * @description
- * find the index of the key in the list of cache keys
- *
- * @param {function} isEqual the method to test equality
- * @param {Array<Array<any>>} keys the list of keys in cache
- * @param {Array<any>} key the key to match
- * @returns {number} the index of the key
- */
-export const findKeyIndex = (isEqual: Function, keys: Array<Array<any>>, key: Array<any>): number => {
-  cacheKeys: for (let keysIndex = 0; keysIndex < keys.length; keysIndex++) {
-    if (keys[keysIndex].length === key.length) {
-      for (let keyIndex = 0; keyIndex < key.length; keyIndex++) {
-        if (!isEqual(key[keyIndex], keys[keysIndex][keyIndex])) {
-          continue cacheKeys;
+export const createFindKeyIndex = (isEqual: Function, isMatchingKey: ?Function) => {
+  const areKeysEqual: Function =
+    typeof isMatchingKey === 'function'
+      ? isMatchingKey
+      : (cacheKey: Array<any>, key: Array<any>) => {
+        for (let index = 0; index < key.length; index++) {
+          if (!isEqual(cacheKey[index], key[index])) {
+            return false;
+          }
+        }
+
+        return true;
+      };
+
+  /**
+   * @private
+   *
+   * @function findKeyIndex
+   *
+   * @description
+   * find the index of the key in the list of cache keys
+   *
+   * @param {Array<Array<any>>} keys the list of keys in cache
+   * @param {Array<any>} key the key to match
+   * @returns {number} the index of the key
+   */
+  return (keys: Array<Array<any>>, key: Array<any>): number => {
+    for (let keysIndex = 0; keysIndex < keys.length; keysIndex++) {
+      if (keys[keysIndex].length === key.length) {
+        if (areKeysEqual(keys[keysIndex], key)) {
+          return keysIndex;
         }
       }
-
-      return keysIndex;
     }
-  }
 
-  return -1;
+    return -1;
+  };
 };
 
 /**

@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.1.1
+
+**BUGFIXES**
+
+* Ensure instance methods that update the cache work correctly with new `matchesKey` option
+
 ## 5.1.0
 
 **NEW FEATURES**

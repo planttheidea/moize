@@ -4,14 +4,17 @@
 import type {Cache, Expiration, Options} from './types';
 
 // utils
-import {findExpirationIndex, findKeyIndex} from './utils';
+import {createFindKeyIndex, findExpirationIndex} from './utils';
 
 export const createOnCacheAddSetExpiration: Function = (
   expirations: Array<Expiration>,
   options: Options,
-  isEqual: Function
+  isEqual: Function,
+  isMatchingKey: ?Function
 ): ?Function => {
   const {maxAge, onCacheChange, onExpire} = options;
+
+  const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
 
   /**
    * @private
@@ -33,7 +36,7 @@ export const createOnCacheAddSetExpiration: Function = (
 
     if (!~findExpirationIndex(expirations, key)) {
       const expirationMethod = () => {
-        const keyIndex: number = findKeyIndex(isEqual, cache.keys, key);
+        const keyIndex: number = findKeyIndex(cache.keys, key);
         const value: any = cache.values[keyIndex];
 
         if (~keyIndex) {
@@ -114,15 +117,21 @@ export const createOnCacheHitResetExpiration: Function = (
  *
  * @param {Array<Expiration>} expirations the expirations for the memoized function
  * @param {Options} options the options passed to the moizer
- * @param {function} isEqual the function to test equality
+ * @param {function} isEqual the function to test equality of the key on a per-argument basis
+ * @param {function} isMatchingKey the function to test equality of the whole key
  * @returns {Object} the object of options based on the entries passed
  */
-export const getMaxAgeOptions = (expirations: Array<Expiration>, options: Options, isEqual: Function): Object => {
+export const getMaxAgeOptions = (
+  expirations: Array<Expiration>,
+  options: Options,
+  isEqual: Function,
+  isMatchingKey: ?Function
+): Object => {
   const {maxAge, updateExpire} = options;
 
   const onCacheAdd =
     typeof maxAge === 'number' && isFinite(maxAge)
-      ? createOnCacheAddSetExpiration(expirations, options, isEqual)
+      ? createOnCacheAddSetExpiration(expirations, options, isEqual, isMatchingKey)
       : undefined;
 
   return {

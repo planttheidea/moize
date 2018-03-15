@@ -7,7 +7,7 @@ import {getStats, statsCache} from './stats';
 import type {MicroMemoizeOptions, StatsProfile} from './types';
 
 // utils
-import {findKeyIndex} from './utils';
+import {createFindKeyIndex} from './utils';
 
 /**
  * @private
@@ -23,12 +23,14 @@ import {findKeyIndex} from './utils';
  * @returns {void}
  */
 export const addInstanceMethods = (moized: Function): void => {
-  const {isEqual, onCacheAdd, onCacheChange, transformKey} = moized.options;
+  const {isEqual, matchesKey, onCacheAdd, onCacheChange, transformKey} = moized.options;
+
+  const findKeyIndex: Function = createFindKeyIndex(isEqual, matchesKey);
 
   moized.add = (key: Array<any>, value: any): void => {
     const savedKey: Array<any> = transformKey ? transformKey(key) : key;
 
-    if (!~findKeyIndex(isEqual, moized.cache.keys, savedKey)) {
+    if (!~findKeyIndex(moized.cache.keys, savedKey)) {
       if (moized.cache.size >= moized.options.maxSize) {
         moized.cache.keys.pop();
         moized.cache.values.pop();
@@ -50,7 +52,7 @@ export const addInstanceMethods = (moized: Function): void => {
   };
 
   moized.get = function(key: Array<any>): any {
-    const keyIndex: number = findKeyIndex(isEqual, moized.cache.keys, transformKey ? transformKey(key) : key);
+    const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
 
     return ~keyIndex ? moized.apply(this, moized.cache.keys[keyIndex]) : undefined; // eslint-disable-line prefer-spread
   };
@@ -62,7 +64,7 @@ export const addInstanceMethods = (moized: Function): void => {
   };
 
   moized.has = (key: Array<any>): boolean => {
-    return !!~findKeyIndex(isEqual, moized.cache.keys, transformKey ? transformKey(key) : key);
+    return !!~findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
   };
 
   moized.keys = (): Array<Array<any>> => {
@@ -70,7 +72,7 @@ export const addInstanceMethods = (moized: Function): void => {
   };
 
   moized.remove = (key: Array<any>): void => {
-    const keyIndex: number = findKeyIndex(isEqual, moized.cache.keys, transformKey ? transformKey(key) : key);
+    const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
 
     if (~keyIndex) {
       moized.cache.keys.splice(keyIndex, 1);
