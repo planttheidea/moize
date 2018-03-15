@@ -139,10 +139,26 @@ test('if findKeyIndex will return the matching key in keys', (t) => {
   const isEqual = (a, b) => {
     return a === b;
   };
+  const isMatchingKey = undefined;
+
   const key = ['key'];
   const keys = [['not key'], ['key'], ['also not key']];
 
-  const result = utils.findKeyIndex(isEqual, keys, key);
+  const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
+
+  t.is(result, 1);
+});
+
+test('if findKeyIndex will return the matching key in keys', (t) => {
+  const isEqual = (a, b) => {
+    return a === b;
+  };
+  const isMatchingKey = undefined;
+
+  const key = ['key'];
+  const keys = [['not key'], ['key'], ['also not key']];
+
+  const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
   t.is(result, 1);
 });
@@ -151,10 +167,12 @@ test('if findKeyIndex will return the default when not able to match key in keys
   const isEqual = (a, b) => {
     return a === b;
   };
+  const isMatchingKey = undefined;
+
   const key = ['key'];
   const keys = [['not key'], ['also not key']];
 
-  const result = utils.findKeyIndex(isEqual, keys, key);
+  const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
   t.is(result, -1);
 });
@@ -163,12 +181,30 @@ test('if findKeyIndex will return the default when not able to match key in keys
   const isEqual = (a, b) => {
     return a === b;
   };
+  const isMatchingKey = undefined;
+
   const key = ['key'];
   const keys = [['not key'], ['key', 'negated'], ['also not key']];
 
-  const result = utils.findKeyIndex(isEqual, keys, key);
+  const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
   t.is(result, -1);
+});
+
+test('if findKeyIndex will return the matching key in keys based on isMatchingKey', (t) => {
+  const isEqual = (a, b) => {
+    return a === b;
+  };
+  const isMatchingKey = (a, b) => {
+    return a[0] === b[0];
+  };
+
+  const key = ['key'];
+  const keys = [['not key'], ['key'], ['also not key']];
+
+  const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
+
+  t.is(result, 1);
 });
 
 test('if getArrayKey returns the key if an array', (t) => {

@@ -51,7 +51,7 @@ export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function =>
  * @returns {function} the isEqual method to apply
  */
 export const getIsMatchingKey = ({isSerialized, matchesKey}: Options): ?Function => {
-  return matchesKey || (isSerialized ? getIsSerializedKeyEqual : undefined);
+  return matchesKey || (isSerialized && getIsSerializedKeyEqual) || undefined;
 };
 
 /**
@@ -68,23 +68,10 @@ export const getIsMatchingKey = ({isSerialized, matchesKey}: Options): ?Function
 export const getTransformKey = (options: Options): ?Function => {
   const {maxArgs, isReact, isSerialized, transformArgs} = options;
 
-  let transformKey: ?Function;
-
-  if (typeof maxArgs === 'number') {
-    transformKey = createGetInitialArgs(maxArgs);
-  }
-
-  if (isReact) {
-    transformKey = compose(createGetInitialArgs(2), transformKey);
-  }
-
-  if (typeof transformArgs === 'function') {
-    transformKey = compose(getArrayKey, transformArgs, transformKey);
-  }
-
-  if (isSerialized) {
-    transformKey = compose(getSerializerFunction(options), transformKey);
-  }
-
-  return transformKey;
+  return compose(
+    isSerialized && getSerializerFunction(options),
+    typeof transformArgs === 'function' && compose(getArrayKey, transformArgs),
+    isReact && createGetInitialArgs(2),
+    typeof maxArgs === 'number' && createGetInitialArgs(maxArgs)
+  );
 };
