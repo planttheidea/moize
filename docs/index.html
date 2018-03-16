@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 5.1.2</h3>
+    <h3>moize 5.2.0</h3>
 
 
 
@@ -613,7 +613,9 @@ moized(&quot;foo&quot;, &quot;bar&quot;);
 
 moized.getStats(); // {&quot;calls&quot;: 2, &quot;hits&quot;: 1, &quot;usage&quot;: &quot;50%&quot;}</code></pre><p><strong>NOTE</strong>: It is recommended not to activate this in production, as it will have a performance decrease.</p>
 <h2 id="introspection">Introspection</h2>
-<h4 id="getstats-profilename-">getStats([profileName])</h4>
+<h4 id="collectstats">collectStats</h4>
+<p>Start collecting statistics on <code>moize</code>d functions. The same function as if you were to import <code>collectStats</code> directly and call it, just placed on the default object as a convenience.</p>
+<pre class="prettyprint source lang-javascript"><code>moize.collectStats();</code></pre><h4 id="getstats-profilename-">getStats([profileName])</h4>
 <p>Get the statistics for a specific function, or globally.</p>
 <pre class="prettyprint source lang-javascript"><code>collectStats();
 
