@@ -1,5 +1,15 @@
 # moize CHANGELOG
 
+## 5.2.0
+
+**NEW FEATURES**
+
+* Add `collectStats` as a convenience method on the main `moize` object
+
+**BUGFIXES**
+
+* Fix naming convention for determining if statistics are being collected on the `moize`d function (`isCollectingStats` now, was mistakenly `collectStats` before)
+
 ## 5.1.2
 
 **BUGFIXES**

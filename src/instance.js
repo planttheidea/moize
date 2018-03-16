@@ -27,64 +27,59 @@ export const addInstanceMethods = (moized: Function): void => {
 
   const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
 
-  moized.add = (key: Array<any>, value: any): void => {
-    const savedKey: Array<any> = transformKey ? transformKey(key) : key;
+  Object.assign(moized, {
+    add(key: Array<any>, value: any): void {
+      const savedKey: Array<any> = transformKey ? transformKey(key) : key;
 
-    if (!~findKeyIndex(moized.cache.keys, savedKey)) {
-      if (moized.cache.size >= moized.options.maxSize) {
-        moized.cache.keys.pop();
-        moized.cache.values.pop();
+      if (!~findKeyIndex(moized.cache.keys, savedKey)) {
+        if (moized.cache.size >= moized.options.maxSize) {
+          moized.cache.keys.pop();
+          moized.cache.values.pop();
+        }
+
+        moized.cache.keys.unshift(savedKey);
+        moized.cache.values.unshift(value);
+
+        onCacheAdd(moized.cache, moized.options, moized);
+        onCacheChange(moized.cache, moized.options, moized);
       }
-
-      moized.cache.keys.unshift(savedKey);
-      moized.cache.values.unshift(value);
-
-      onCacheAdd(moized.cache, moized.options, moized);
-      onCacheChange(moized.cache, moized.options, moized);
-    }
-  };
-
-  moized.clear = (): void => {
-    moized.cache.keys.length = 0;
-    moized.cache.values.length = 0;
-
-    onCacheChange(moized.cache, moized.options, moized);
-  };
-
-  moized.get = function(key: Array<any>): any {
-    const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
-
-    return ~keyIndex ? moized.apply(this, moized.cache.keys[keyIndex]) : undefined; // eslint-disable-line prefer-spread
-  };
-
-  moized.getStats = (): StatsProfile => {
-    const {profileName} = moized.options;
-
-    return getStats(profileName);
-  };
-
-  moized.has = (key: Array<any>): boolean => {
-    return !!~findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
-  };
-
-  moized.keys = (): Array<Array<any>> => {
-    return moized.cacheSnapshot.keys;
-  };
-
-  moized.remove = (key: Array<any>): void => {
-    const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
-
-    if (~keyIndex) {
-      moized.cache.keys.splice(keyIndex, 1);
-      moized.cache.values.splice(keyIndex, 1);
+    },
+    clear(): void {
+      moized.cache.keys.length = 0;
+      moized.cache.values.length = 0;
 
       onCacheChange(moized.cache, moized.options, moized);
-    }
-  };
+    },
+    get(key: Array<any>): any {
+      const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
 
-  moized.values = (): Array<Array<any>> => {
-    return moized.cacheSnapshot.values;
-  };
+      return ~keyIndex ? moized.apply(this, moized.cache.keys[keyIndex]) : undefined;
+    },
+    getStats(): StatsProfile {
+      const {profileName} = moized.options;
+
+      return getStats(profileName);
+    },
+    has(key: Array<any>): boolean {
+      return !!~findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
+    },
+    keys(): Array<Array<any>> {
+      return moized.cacheSnapshot.keys;
+    },
+    remove(key: Array<any>): void {
+      const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
+
+      if (~keyIndex) {
+        moized.cache.keys.splice(keyIndex, 1);
+        moized.cache.values.splice(keyIndex, 1);
+
+        onCacheChange(moized.cache, moized.options, moized);
+      }
+    },
+    values(): Array<Array<any>> {
+      return moized.cacheSnapshot.values;
+    }
+  });
 };
 
 /**
@@ -118,12 +113,6 @@ export const addInstanceProperties = (
           return microMemoizeOptions;
         }
       },
-      collectStats: {
-        configurable: true,
-        get() {
-          return statsCache.isCollectingStats;
-        }
-      },
       expirations: {
         configurable: true,
         get() {
@@ -134,6 +123,12 @@ export const addInstanceProperties = (
         configurable: true,
         get() {
           return expirations.slice(0);
+        }
+      },
+      isCollectingStats: {
+        configurable: true,
+        get() {
+          return statsCache.isCollectingStats;
         }
       },
       isMoized: {
@@ -158,10 +153,12 @@ export const addInstanceProperties = (
   );
 
   if (moizeOptions.isReact) {
-    moized.contextTypes = originalFunction.contextTypes;
-    moized.defaultProps = originalFunction.defaultProps;
-    moized.displayName = `Moized(${originalFunction.displayName || originalFunction.name || 'Component'})`;
-    moized.propTypes = originalFunction.propTypes;
+    Object.assign(moized, {
+      contextTypes: originalFunction.contextTypes,
+      defaultProps: originalFunction.defaultProps,
+      displayName: `Moized(${originalFunction.displayName || originalFunction.name || 'Component'})`,
+      propTypes: originalFunction.propTypes
+    });
   }
 };
 

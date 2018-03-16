@@ -645,10 +645,10 @@ test('if addInstanceProperties will add the correct properties to the moized met
 
   t.is(moized._microMemoizeOptions, _microMemoizeOptions);
   t.deepEqual(moized.cache, cache);
-  t.is(moized.collectStats, stats.statsCache.isCollectingStats);
   t.is(moized.expirations, options.expirations);
   t.not(moized.expirationsSnapshot, options.expirations);
   t.deepEqual(moized.expirationsSnapshot, options.expirations);
+  t.is(moized.isCollectingStats, stats.statsCache.isCollectingStats);
   t.true(moized.isMoized);
   t.is(moized.options, options.options);
   t.is(moized.originalFunction, options.originalFunction);
@@ -691,10 +691,10 @@ test('if addInstanceProperties will add the correct properties to the moized Rea
 
   t.is(moized._microMemoizeOptions, _microMemoizeOptions);
   t.deepEqual(moized.cache, cache);
-  t.is(moized.collectStats, stats.statsCache.isCollectingStats);
   t.is(moized.expirations, options.expirations);
   t.not(moized.expirationsSnapshot, options.expirations);
   t.deepEqual(moized.expirationsSnapshot, options.expirations);
+  t.is(moized.isCollectingStats, stats.statsCache.isCollectingStats);
   t.true(moized.isMoized);
   t.is(moized.options, options.options);
   t.is(moized.originalFunction, options.originalFunction);
@@ -800,9 +800,9 @@ test('if augmentMoizeInstance will add the methods and properties to the moized 
   t.true(moized.hasOwnProperty('_microMemoizeOptions'));
   t.true(moized.hasOwnProperty('cache'));
   t.true(moized.hasOwnProperty('cacheSnapshot'));
-  t.true(moized.hasOwnProperty('collectStats'));
   t.true(moized.hasOwnProperty('expirations'));
   t.true(moized.hasOwnProperty('expirationsSnapshot'));
+  t.true(moized.hasOwnProperty('isCollectingStats'));
   t.true(moized.hasOwnProperty('isMoized'));
   t.true(moized.hasOwnProperty('options'));
   t.true(moized.hasOwnProperty('originalFunction'));
