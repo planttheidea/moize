@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.2.1
+
+**BUGFIXES**
+
+* Fix `Object.assign` usage on functions (derp)
+
 ## 5.2.0
 
 **NEW FEATURES**
