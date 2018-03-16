@@ -24,10 +24,8 @@ export const combine = (...functions: Array<any>): ?Function => {
       return typeof f === 'function'
         ? typeof g === 'function'
           ? function(): any {
-            /* eslint-disable prefer-spread */
             g.apply(this, arguments);
             f.apply(this, arguments);
-            /* eslint-enable */
           }
           : f
         : typeof g === 'function' ? g : undefined;
@@ -53,7 +51,7 @@ export const compose = (...functions: Array<any>): ?Function => {
       return typeof f === 'function'
         ? typeof g === 'function'
           ? function(): any {
-            return f(g.apply(this, arguments)); // eslint-disable-line prefer-spread
+            return f(g.apply(this, arguments));
           }
           : f
         : typeof g === 'function' ? g : undefined;

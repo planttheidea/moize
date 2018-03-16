@@ -765,6 +765,14 @@ moized.getStats(); // {"calls": 2, "hits": 1, "usage": "50%"}
 
 ## Introspection
 
+#### collectStats
+
+Start collecting statistics on `moize`d functions. The same function as if you were to import `collectStats` directly and call it, just placed on the default object as a convenience.
+
+```javascript
+moize.collectStats();
+```
+
 #### getStats([profileName])
 
 Get the statistics for a specific function, or globally.

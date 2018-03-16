@@ -122,195 +122,206 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
   });
 }
 
-/**
- * @function
- * @name compose
- * @memberof module:moize
- * @alias moize.compose
- *
- * @description
- * method to compose moized methods and return a single moized function
- *
- * @param {...Array<(function)>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
- */
-moize.compose = function() {
-  /* eslint-disable prefer-spread */
-  return compose.apply(null, arguments) || moize;
-  /* eslint-enable */
-};
+Object.assign(moize, {
+  /**
+   * @function
+   * @name collectStats
+   * @memberof module:moize
+   * @alias moize.collectStats
+   *
+   * @description
+   * start collecting statistics
+   */
+  collectStats,
 
-/**
- * @function
- * @name deep
- * @memberof module:moize
- * @alias moize.deep
- *
- * @description
- * should deep equality check be used
- *
- * @returns {function} the moizer function
- */
-moize.deep = moize({isDeepEqual: true});
+  /**
+   * @function
+   * @name compose
+   * @memberof module:moize
+   * @alias moize.compose
+   *
+   * @description
+   * method to compose moized methods and return a single moized function
+   *
+   * @param {...Array<(function)>} functions the functions to compose
+   * @returns {function(...Array<*>): *} the composed function
+   */
+  compose(): Function {
+    return compose.apply(null, arguments) || moize;
+  },
 
-/**
- * @function
- * @name getStats
- * @memberof module:moize
- * @alias moize.getStats
- *
- * @description
- * get the statistics of a given profile, or overall usage
- *
- * @returns {StatsProfile} statistics for a given profile or overall usage
- */
-moize.getStats = getStats;
+  /**
+   * @function
+   * @name deep
+   * @memberof module:moize
+   * @alias moize.deep
+   *
+   * @description
+   * should deep equality check be used
+   *
+   * @returns {function} the moizer function
+   */
+  deep: moize({isDeepEqual: true}),
 
-/**
- * @function
- * @name isCollectingStats
- * @memberof module:moize
- * @alias moize.isCollectingStats
- *
- * @description
- * are stats being collected
- *
- * @returns {boolean} are stats being collected
- */
-moize.isCollectingStats = (): boolean => {
-  return statsCache.isCollectingStats;
-};
+  /**
+   * @function
+   * @name getStats
+   * @memberof module:moize
+   * @alias moize.getStats
+   *
+   * @description
+   * get the statistics of a given profile, or overall usage
+   *
+   * @returns {StatsProfile} statistics for a given profile or overall usage
+   */
+  getStats,
 
-/**
- * @function
- * @name isMoized
- * @memberof module:moize
- * @alias moize.isMoized
- *
- * @description
- * is the fn passed a moized function
- *
- * @param {*} fn the object to test
- * @returns {boolean} is fn a moized function
- */
-moize.isMoized = (fn: any): boolean => {
-  return typeof fn === 'function' && !!fn.isMoized;
-};
+  /**
+   * @function
+   * @name isCollectingStats
+   * @memberof module:moize
+   * @alias moize.isCollectingStats
+   *
+   * @description
+   * are stats being collected
+   *
+   * @returns {boolean} are stats being collected
+   */
+  isCollectingStats(): boolean {
+    return statsCache.isCollectingStats;
+  },
 
-/**
- * @function
- * @name maxAge
- * @memberof module:moize
- * @alias moize.maxAge
- *
- * @description
- * a moized method where the age of the cache is limited to the number of milliseconds passed
- *
- * @param {number} maxAge the TTL of the value in cache
- * @returns {function} the moizer function
- */
-moize.maxAge = (maxAge: number): Function => {
-  return moize({maxAge});
-};
+  /**
+   * @function
+   * @name isMoized
+   * @memberof module:moize
+   * @alias moize.isMoized
+   *
+   * @description
+   * is the fn passed a moized function
+   *
+   * @param {*} fn the object to test
+   * @returns {boolean} is fn a moized function
+   */
+  isMoized(fn: any): boolean {
+    return typeof fn === 'function' && !!fn.isMoized;
+  },
 
-/**
- * @function
- * @name maxArgs
- * @memberof module:moize
- * @alias moize.maxArgs
- *
- * @description
- * a moized method where the number of arguments used for determining cache is limited to the value passed
- *
- * @param {number} maxArgs the number of args to base the key on
- * @returns {function} the moizer function
- */
-moize.maxArgs = (maxArgs: number): Function => {
-  return moize({maxArgs});
-};
+  /**
+   * @function
+   * @name maxAge
+   * @memberof module:moize
+   * @alias moize.maxAge
+   *
+   * @description
+   * a moized method where the age of the cache is limited to the number of milliseconds passed
+   *
+   * @param {number} maxAge the TTL of the value in cache
+   * @returns {function} the moizer function
+   */
+  maxAge(maxAge: number): Function {
+    return moize({maxAge});
+  },
 
-/**
- * @function
- * @name maxSize
- * @memberof module:moize
- * @alias moize.maxSize
- *
- * @description
- * a moized method where the total size of the cache is limited to the value passed
- *
- * @param {number} maxSize the maximum size of the cache
- * @returns {function} the moizer function
- */
-moize.maxSize = (maxSize: number): Function => {
-  return moize({maxSize});
-};
+  /**
+   * @function
+   * @name maxArgs
+   * @memberof module:moize
+   * @alias moize.maxArgs
+   *
+   * @description
+   * a moized method where the number of arguments used for determining cache is limited to the value passed
+   *
+   * @param {number} maxArgs the number of args to base the key on
+   * @returns {function} the moizer function
+   */
+  maxArgs(maxArgs: number): Function {
+    return moize({maxArgs});
+  },
 
-/**
- * @function
- * @name promise
- * @memberof module:moize
- * @alias moize.promise
- *
- * @description
- * a moized method specific to caching resolved promise / async values
- *
- * @returns {function} the moizer function
- */
-moize.promise = moize({
-  isPromise: true,
-  updateExpire: true
+  /**
+   * @function
+   * @name maxSize
+   * @memberof module:moize
+   * @alias moize.maxSize
+   *
+   * @description
+   * a moized method where the total size of the cache is limited to the value passed
+   *
+   * @param {number} maxSize the maximum size of the cache
+   * @returns {function} the moizer function
+   */
+  maxSize(maxSize: number): Function {
+    return moize({maxSize});
+  },
+
+  /**
+   * @function
+   * @name promise
+   * @memberof module:moize
+   * @alias moize.promise
+   *
+   * @description
+   * a moized method specific to caching resolved promise / async values
+   *
+   * @returns {function} the moizer function
+   */
+  promise: moize({
+    isPromise: true,
+    updateExpire: true
+  }),
+
+  /**
+   * @function
+   * @name react
+   * @memberof module:moize
+   * @alias moize.react
+   *
+   * @description
+   * a moized method specific to caching React element values
+   *
+   * @returns {function} the moizer function
+   */
+  react: moize({isReact: true}),
+
+  /**
+   * @function
+   * @name reactSimple
+   * @memberof module:moize
+   * @alias moize.reactSimple
+   *
+   * @description
+   * a moized method specific to caching React element values, limiting to only the most recent result
+   *
+   * @returns {function} the moizer function
+   */
+  reactSimple: moize({isReact: true, maxSize: 1}),
+
+  /**
+   * @function
+   * @name serialize
+   * @memberof module:moize
+   * @alias moize.serialize
+   *
+   * @description
+   * a moized method that will serialize the arguments passed to use as the cache key
+   *
+   * @returns {function} the moizer function
+   */
+  serialize: moize({isSerialized: true}),
+
+  /**
+   * @function
+   * @name simple
+   * @memberof module:moize
+   * @alias moize.simple
+   *
+   * @description
+   * a moized method that will limit the cache values to only the most recent result
+   *
+   * @returns {function} the moizer function
+   */
+  simple: moize({maxSize: 1})
 });
-
-/**
- * @function
- * @name react
- * @memberof module:moize
- * @alias moize.react
- *
- * @description
- * a moized method specific to caching React element values
- *
- * @returns {function} the moizer function
- */
-moize.react = moize({isReact: true});
-
-/**
- * @function
- * @name reactSimple
- * @memberof module:moize
- * @alias moize.reactSimple
- *
- * @description
- * a moized method specific to caching React element values, limiting to only the most recent result
- *
- * @returns {function} the moizer function
- */
-moize.reactSimple = moize({isReact: true, maxSize: 1});
-
-/**
- * @function
- * @name serialize
- * @memberof module:moize
- * @alias moize.serialize
- *
- * @description
- * a moized method that will serialize the arguments passed to use as the cache key
- *
- * @returns {function} the moizer function
- */
-moize.serialize = moize({isSerialized: true});
-
-/**
- * @function
- * @name simple
- * @memberof module:moize
- * @alias moize.simple
- *
- * @description
- * a moized method that will limit the cache values to only the most recent result
- *
- * @returns {function} the moizer function
- */
-moize.simple = moize.maxSize(1);
 
 export default moize;
