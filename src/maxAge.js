@@ -7,6 +7,8 @@ import type {Cache, Expiration, Options} from './types';
 import {createFindKeyIndex, findExpirationIndex} from './utils';
 
 /**
+ * @private
+ *
  * @function clearExpiration
  *
  * @description
