@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.2.2
+
+**BUGFIXES**
+
+* Fix issue where manually removing a key from `cache` would not clear / remove the expiration timeout
+
 ## 5.2.1
 
 **BUGFIXES**

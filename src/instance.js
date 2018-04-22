@@ -1,5 +1,8 @@
 // @flow
 
+// maxAge
+import {clearExpiration} from './maxAge';
+
 // stats
 import {getStats, statsCache} from './stats';
 
@@ -22,7 +25,7 @@ import {createFindKeyIndex} from './utils';
  * @param {function} moized the memoized function
  * @returns {void}
  */
-export const addInstanceMethods = (moized: Function): void => {
+export const addInstanceMethods = (moized: Function, {expirations}: Object): void => {
   const {isEqual, isMatchingKey, onCacheAdd, onCacheChange, transformKey} = moized.options;
 
   const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
@@ -72,13 +75,16 @@ export const addInstanceMethods = (moized: Function): void => {
   };
 
   moized.remove = (key: Array<any>): void => {
-    const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
+    const normalizedKey = transformKey ? transformKey(key) : key;
+    const keyIndex: number = findKeyIndex(moized.cache.keys, normalizedKey);
 
     if (~keyIndex) {
       moized.cache.keys.splice(keyIndex, 1);
       moized.cache.values.splice(keyIndex, 1);
 
       onCacheChange(moized.cache, moized.options, moized);
+
+      clearExpiration(expirations, normalizedKey);
     }
   };
 
@@ -178,7 +184,7 @@ export const addInstanceProperties = (
  * @returns {function} the memoized function passed
  */
 export const augmentMoizeInstance = (moized: Function, configuration: Object): Function => {
-  addInstanceMethods(moized);
+  addInstanceMethods(moized, configuration);
   addInstanceProperties(moized, configuration);
 
   return moized;
