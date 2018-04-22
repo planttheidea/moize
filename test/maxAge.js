@@ -5,6 +5,48 @@ import sinon from 'sinon';
 // src
 import * as maxAge from 'src/maxAge';
 
+test('if clearExpiration will clear the expiration if it exists', (t) => {
+  const key = ['foo'];
+  const expirations = [{key, timeoutId: 123}];
+
+  const stub = sinon.stub(global, 'clearTimeout');
+
+  maxAge.clearExpiration(expirations, key);
+
+  t.true(stub.calledOnce);
+  t.is(expirations.length, 1);
+
+  stub.restore();
+});
+
+test('if clearExpiration will clear the expiration if it exists and remove it if requested', (t) => {
+  const key = ['foo'];
+  const expirations = [{key, timeoutId: 123}];
+
+  const stub = sinon.stub(global, 'clearTimeout');
+
+  maxAge.clearExpiration(expirations, key, true);
+
+  t.true(stub.calledOnce);
+  t.is(expirations.length, 0);
+
+  stub.restore();
+});
+
+test('if clearExpiration will do nothing if the expiration is not found', (t) => {
+  const key = ['foo'];
+  const expirations = [{key: ['bar'], timeoutId: 123}];
+
+  const stub = sinon.stub(global, 'clearTimeout');
+
+  maxAge.clearExpiration(expirations, key, true);
+
+  t.true(stub.notCalled);
+  t.is(expirations.length, 1);
+
+  stub.restore();
+});
+
 test('if onCacheAddSetExpiration will do nothing if an existing expiration is found', (t) => {
   const originalExpirations = [{expirationMethod() {}, key: 'key', timeoutId: 123}];
 

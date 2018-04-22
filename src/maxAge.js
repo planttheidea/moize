@@ -6,6 +6,30 @@ import type {Cache, Expiration, Options} from './types';
 // utils
 import {createFindKeyIndex, findExpirationIndex} from './utils';
 
+/**
+ * @private
+ *
+ * @function clearExpiration
+ *
+ * @description
+ * clear an active expiration and remove it from the list if applicable
+ *
+ * @param {Array<Expiration>} expirations the list of expirations
+ * @param {any} key the key to clear
+ * @param {boolean} [shouldRemove] should the expiration be removed from the list
+ */
+export const clearExpiration: Function = (expirations: Array<Expiration>, key: any, shouldRemove: boolean) => {
+  const expirationIndex = findExpirationIndex(expirations, key);
+
+  if (~expirationIndex) {
+    clearTimeout(expirations[expirationIndex].timeoutId);
+
+    if (shouldRemove) {
+      expirations.splice(expirationIndex, 1);
+    }
+  }
+};
+
 export const createOnCacheAddSetExpiration: Function = (
   expirations: Array<Expiration>,
   options: Options,
@@ -48,11 +72,7 @@ export const createOnCacheAddSetExpiration: Function = (
           }
         }
 
-        const currentExpirationIndex = findExpirationIndex(expirations, key);
-
-        if (~currentExpirationIndex) {
-          expirations.splice(currentExpirationIndex, 1);
-        }
+        clearExpiration(expirations, key, true);
 
         if (typeof onExpire === 'function' && onExpire(key) === false) {
           cache.keys.unshift(key);
@@ -100,7 +120,7 @@ export const createOnCacheHitResetExpiration: Function = (
     const expirationIndex: number = findExpirationIndex(expirations, key);
 
     if (~expirationIndex) {
-      clearTimeout(expirations[expirationIndex].timeoutId);
+      clearExpiration(expirations, key, false);
 
       expirations[expirationIndex].timeoutId = setTimeout(expirations[expirationIndex].expirationMethod, maxAge);
     }
