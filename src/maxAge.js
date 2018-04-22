@@ -120,7 +120,7 @@ export const createOnCacheHitResetExpiration: Function = (
     const expirationIndex: number = findExpirationIndex(expirations, key);
 
     if (~expirationIndex) {
-      clearExpiration(expirations, key);
+      clearExpiration(expirations, key, false);
 
       expirations[expirationIndex].timeoutId = setTimeout(expirations[expirationIndex].expirationMethod, maxAge);
     }

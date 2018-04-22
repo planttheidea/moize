@@ -84,7 +84,7 @@ export const addInstanceMethods = (moized: Function, {expirations}: Object): voi
 
       onCacheChange(moized.cache, moized.options, moized);
 
-      clearExpiration(expirations, normalizedKey);
+      clearExpiration(expirations, normalizedKey, true);
     }
   };
 
