@@ -1553,3 +1553,33 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     transformKey: undefined
   });
 });
+
+test('if moize will not call onExpire for removed cache items', async (t) => {
+  const fn = sinon.spy();
+  const options = {
+    maxAge: 500,
+    onExpire: sinon.spy()
+  };
+
+  const moized = moize(fn, options);
+
+  const args = ['foo', 'bar'];
+
+  moized(...args);
+
+  t.is(moized.cache.keys.length, 1);
+
+  moized.remove(args); 
+
+  t.is(moized.cache.keys.length, 0);
+
+  moized(...args);
+
+  t.is(moized.cache.keys.length, 1);
+
+  await new Promise((resolve) => { 
+    setTimeout(resolve, options.maxAge * 2);
+  });
+
+  t.is(options.onExpire.callCount, 1);
+});
