@@ -75,16 +75,17 @@ export const addInstanceMethods = (moized: Function, {expirations}: Object): voi
   };
 
   moized.remove = (key: Array<any>): void => {
-    const normalizedKey = transformKey ? transformKey(key) : key;
-    const keyIndex: number = findKeyIndex(moized.cache.keys, normalizedKey);
+    const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
 
     if (~keyIndex) {
+      const key: Array<any> = moized.cache.keys[keyIndex];
+
       moized.cache.keys.splice(keyIndex, 1);
       moized.cache.values.splice(keyIndex, 1);
 
       onCacheChange(moized.cache, moized.options, moized);
 
-      clearExpiration(expirations, normalizedKey, true);
+      clearExpiration(expirations, key, true);
     }
   };
 

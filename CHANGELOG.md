@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.2.3
+
+**BUGFIXES**
+
+* Actually fix the issue that `5.2.2` was supposed to fix (appreciate the persistence [@vlad-zhukov](https://github.com/vlad-zhukov))
+
 ## 5.2.2
 
 **BUGFIXES**
