@@ -48,6 +48,10 @@ console.log(memoized.cache);
 console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
 
+memoized.update([foo, bar], 'something totally different');
+
+console.log(memoized(foo, bar));
+
 console.log(memoized.getStats());
 
 console.groupEnd('standard');

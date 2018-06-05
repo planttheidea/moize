@@ -614,7 +614,7 @@ test('if moized.remove will do nothing if the key is not found in cache', (t) =>
   t.deepEqual(moized.cache.values, ['bar']);
 });
 
-test('if moized.remove will remove the existing key from cache', (t) => {
+test('if moized.remove will remove the existing key from cache with a custom transformKey', (t) => {
   const key = ['key'];
   const value = 'value';
 
@@ -648,6 +648,78 @@ test('if moized.remove will remove the existing key from cache', (t) => {
 
   t.deepEqual(moized.cache.keys, []);
   t.deepEqual(moized.cache.values, []);
+});
+
+test('if moized.update will set the new value in cache for the moized item', (t) => {
+  const key = ['key'];
+  const value = 'value';
+
+  const moized = sinon.stub().callsFake(() => {
+    return value;
+  });
+
+  moized.cache = {
+    keys: [key],
+    values: [value]
+  };
+
+  moized.options = {
+    isEqual(a, b) {
+      return a === b;
+    },
+    onCacheAdd() {},
+    onCacheChange() {},
+    transformKey: undefined
+  };
+
+  const configuration = {
+    expirations: []
+  };
+
+  instance.addInstanceMethods(moized, configuration);
+
+  const newValue = 'new value';
+
+  moized.update(key, newValue);
+
+  t.deepEqual(moized.cache.keys, [key]);
+  t.deepEqual(moized.cache.values, [newValue]);
+});
+
+test('if moized.update will do nothing if the key does not exist in keys', (t) => {
+  const key = ['key'];
+  const value = 'value';
+
+  const moized = sinon.stub().callsFake(() => {
+    return value;
+  });
+
+  moized.cache = {
+    keys: [key],
+    values: [value]
+  };
+
+  moized.options = {
+    isEqual(a, b) {
+      return a === b;
+    },
+    onCacheAdd() {},
+    onCacheChange() {},
+    transformKey: undefined
+  };
+
+  const configuration = {
+    expirations: []
+  };
+
+  instance.addInstanceMethods(moized, configuration);
+
+  const newValue = 'new value';
+
+  moized.update('other key', newValue);
+
+  t.deepEqual(moized.cache.keys, [key]);
+  t.deepEqual(moized.cache.values, [value]);
 });
 
 test('if moize will not call onExpire for removed cache items', async (t) => {
