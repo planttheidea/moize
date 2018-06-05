@@ -107,7 +107,6 @@ console.log(serializeMemoized._microMemoizeOptions);
 console.log('has serialized true', serializeMemoized.has([{one: 1, two: 2}]));
 console.log('has serialized false', serializeMemoized.has([{one: 1, two: 3}]));
 
-
 console.groupEnd('serialize');
 
 console.group('promise');
@@ -353,19 +352,25 @@ class App extends Component {
           <h3>Uncached values (first time running)</h3>
 
           {array.map((values) => {
-            return (<MemoizedFoo
-              key={`called-${values.value}`}
-              {...values}
-            />);
+            return (
+              // prettier
+              <MemoizedFoo
+                key={`called-${values.value}`}
+                {...values}
+              />
+            );
           })}
 
           <h3>Cached values</h3>
 
           {array.map((values) => {
-            return (<MemoizedFoo
-              key={`memoized-${values.value}`}
-              {...values}
-            />);
+            return (
+              // prettier
+              <MemoizedFoo
+                key={`memoized-${values.value}`}
+                {...values}
+              />
+            );
           })}
         </div>
       </div>
