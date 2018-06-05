@@ -76,7 +76,7 @@ test.serial('if stringify will call stringifySafe on the object when it cannot b
 
   const circularResult = serialize.stringify(circular, undefined);
 
-  t.is(circularResult, '{"foo":{"bar":"baz","baz":"[Circular ~.foo]"}}');
+  t.is(circularResult, '{"foo":{"bar":"baz","baz":"[ref-1]"}}');
 });
 
 test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {

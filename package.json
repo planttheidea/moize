@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "fast-equals": "^1.5.3",
-    "json-stringify-safe": "^5.0.1",
+    "fast-stringify": "^1.0.3",
     "micro-memoize": "^2.0.3"
   },
   "description": "Blazing fast memoization based on all parameters passed",

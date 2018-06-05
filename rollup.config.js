@@ -20,7 +20,7 @@ export default [
         module: true
       }),
       commonjs({
-        include: 'node_modules/json-stringify-safe/**'
+        include: 'node_modules/micro-memoize/**'
       }),
       babel({
         exclude: 'node_modules/**'
@@ -42,7 +42,7 @@ export default [
         module: true
       }),
       commonjs({
-        include: 'node_modules/**',
+        include: 'node_modules/micro-memoize/**',
         sourceMap: false
       }),
       babel({

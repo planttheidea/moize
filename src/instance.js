@@ -1,5 +1,8 @@
 // @flow
 
+// external dependencies
+import {orderByLru} from 'micro-memoize/lib/utils';
+
 // maxAge
 import {clearExpiration} from './maxAge';
 
@@ -95,7 +98,8 @@ export const addInstanceMethods = (moized: Function, {expirations}: Object): voi
     if (~keyIndex) {
       const existingKey: Array<any> = moized.cache.keys[keyIndex];
 
-      moized.apply(this, existingKey);
+      orderByLru(moized.cache.keys, existingKey, keyIndex);
+      orderByLru(moized.cache.values, existingKey, keyIndex);
 
       moized.cache.values[0] = value;
 
