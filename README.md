@@ -8,58 +8,59 @@
 
 ## Table of contents
 
-* [Installation](#installation)
-* [Usage](#usage)
-* [Configuration options](#configuration-options)
-  * [equals](#equals)
-  * [isDeepEqual](#isdeepequal)
-  * [isPromise](#ispromise)
-  * [isReact](#isreact)
-  * [isSerialized](#isserialized)
-  * [matchesKey](#matcheskey)
-  * [maxAge](#maxage)
-  * [maxArgs](#maxargs)
-  * [maxSize](#maxsize)
-  * [onCacheAdd](#oncacheadd)
-  * [onCacheChange](#oncachechange)
-  * [onCacheHit](#oncachehit)
-  * [onExpire](#onexpire)
-  * [profileName](#profilename)
-  * [shouldSerializeFunctions](#serializefunctions)
-  * [serializer](#serializer)
-  * [transformArgs](#transformargs)
-  * [updateExpire](#updateexpire)
-* [Usage with shortcut methods](#usage-with-shortcut-methods)
-  * [moize.deep](#moizedeep)
-  * [moize.maxAge](#moizemaxage)
-  * [moize.maxArgs](#moizemaxargs)
-  * [moize.maxSize](#moizemaxsize)
-  * [moize.promise](#moizepromise)
-  * [moize.react](#moizereact)
-  * [moize.reactSimple](#moizereactsimple)
-  * [moize.serialize](#moizeserialize)
-  * [moize.simple](#moizesimple)
-* [Composition](#composition)
-* [Introspection](#introspection)
-  * [getStats](#getstatsprofilename)
-  * [isCollectingStats](#iscollectingstats)
-  * [isMoized](#ismoized)
-* [Collecting statistics](#collecting-statistics)
-* [Direct cache manipulation](#direct-cache-manipulation)
-  * [cache](#cache)
-  * [cacheSnapshot](#cachesnapshot)
-  * [add](#addkey-value)
-  * [clear](#clear)
-  * [get](#getkey)
-  * [getStats](#getstats)
-  * [has](#hasargs)
-  * [keys](#keys)
-  * [remove](#removekey)
-  * [values](#values)
-* [Benchmarks](#benchmarks)
-* [Filesize](#filesize)
-* [Browser support](#browser-support)
-* [Development](#development)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration options](#configuration-options)
+  - [equals](#equals)
+  - [isDeepEqual](#isdeepequal)
+  - [isPromise](#ispromise)
+  - [isReact](#isreact)
+  - [isSerialized](#isserialized)
+  - [matchesKey](#matcheskey)
+  - [maxAge](#maxage)
+  - [maxArgs](#maxargs)
+  - [maxSize](#maxsize)
+  - [onCacheAdd](#oncacheadd)
+  - [onCacheChange](#oncachechange)
+  - [onCacheHit](#oncachehit)
+  - [onExpire](#onexpire)
+  - [profileName](#profilename)
+  - [shouldSerializeFunctions](#serializefunctions)
+  - [serializer](#serializer)
+  - [transformArgs](#transformargs)
+  - [updateExpire](#updateexpire)
+- [Usage with shortcut methods](#usage-with-shortcut-methods)
+  - [moize.deep](#moizedeep)
+  - [moize.maxAge](#moizemaxage)
+  - [moize.maxArgs](#moizemaxargs)
+  - [moize.maxSize](#moizemaxsize)
+  - [moize.promise](#moizepromise)
+  - [moize.react](#moizereact)
+  - [moize.reactSimple](#moizereactsimple)
+  - [moize.serialize](#moizeserialize)
+  - [moize.simple](#moizesimple)
+- [Composition](#composition)
+- [Introspection](#introspection)
+  - [getStats](#getstatsprofilename)
+  - [isCollectingStats](#iscollectingstats)
+  - [isMoized](#ismoized)
+- [Collecting statistics](#collecting-statistics)
+- [Direct cache manipulation](#direct-cache-manipulation)
+  - [cache](#cache)
+  - [cacheSnapshot](#cachesnapshot)
+  - [add](#addkey-value)
+  - [clear](#clear)
+  - [get](#getkey)
+  - [getStats](#getstats)
+  - [has](#hasargs)
+  - [keys](#keys)
+  - [remove](#removekey)
+  - [update](#updatekey-value)
+  - [values](#values)
+- [Benchmarks](#benchmarks)
+- [Filesize](#filesize)
+- [Browser support](#browser-support)
+- [Development](#development)
 
 ## Installation
 
@@ -887,6 +888,8 @@ memoized.add(["foo"], "bar");
 memoized("foo");
 ```
 
+**NOTE**: This will only add `key`s that do not exist in the cache. If you want to update keys that already exist, use [`update`](#updatekey-value).
+
 #### clear()
 
 This will clear all values in the cache, resetting it to an empty state.
@@ -991,6 +994,26 @@ memoized.remove([foo]);
 memoized(foo);
 ```
 
+**NOTE**: This will only remove `key`s that exist in the cache.
+
+#### update(key, value)
+
+This will manually update the _value_ at _key_ in cache if _key_ exists. _key_ should be an `Array` of values, meant to reflect the arguments passed to the method.
+
+```javascript
+// single parameter is straightforward
+const memoized = moize(item => {
+  return item;
+});
+
+memoized.add(["foo"], "bar");
+
+// pulls from cache
+memoized("foo");
+```
+
+**NOTE**: This will only update `key`s that exist in the cache. If you want to add keys that do not already exist, use [`add`](#addkey-value).
+
 #### values()
 
 This will return a list of the current values in `cache`.
@@ -1042,42 +1065,42 @@ All values provided are the number of operations per second calculated by the [B
 
 ## Filesize
 
-`moize` is fairly small (about 4.2KB when minified and gzipped), however it provides a large number of configuration options to satisfy a number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
+`moize` is fairly small (about 4.5KB when minified and gzipped), however it provides a large number of configuration options to satisfy a number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
 
 ## Browser support
 
-* Chrome (all versions)
-* Firefox (all versions)
-* Edge (all versions)
-* Opera 15+
-* IE 9+
-* Safari 6+
-* iOS 8+
-* Android 4+
+- Chrome (all versions)
+- Firefox (all versions)
+- Edge (all versions)
+- Opera 15+
+- IE 9+
+- Safari 6+
+- iOS 8+
+- Android 4+
 
 ## Development
 
 Standard stuff, clone the repo and `npm install` dependencies. The npm scripts available:
 
-* `benchmark` => run the benchmark suite pitting `moize` against other libraries in common use-cases
-* `benchmark:alternative` => run the benchmark suite for alternative forms of caching in `moize`
-* `build` => run rollup to build the distributed files in `dist`
-* `clean` => run `clean:lib`, `clean:es`, `clean:dist`, and `clean:docs`
-* `clean:dist` => run `rimraf` on the `dist` folder
-* `clean:docs` => run `rimraf` on the `docs` folder
-* `clean:es` => run `rimraf` on the `es` folder
-* `clean:lib` => run `rimraf` on the `lib` folder
-* `dev` => run webpack dev server to run example app (playground!)
-* `dist` => runs `clean:dist` and `build`
-* `docs` => runs `clean:docs` and builds the docs via `jsdoc`
-* `flow` => runs `flow check` on the files in `src`
-* `lint` => runs ESLint against all files in the `src` folder
-* `lint:fix` => runs `lint``, fixing any errors if possible
-* `postpublish` => runs `docs`
-* `prepublish` => runs `compile-for-publish`
-* `prepublish:compile` => run `lint`, `flow`, `test:coverage`, `transpile:lib`, `transpile:es`, and `dist`
-* `test` => run AVA test functions with `NODE_ENV=test`
-* `test:coverage` => run `test` but with `nyc` for coverage checker
-* `test:watch` => run `test`, but with persistent watcher
-* `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module))
-* `transpile:lib` => run babel against all files in `src` to create files in `lib`
+- `benchmark` => run the benchmark suite pitting `moize` against other libraries in common use-cases
+- `benchmark:alternative` => run the benchmark suite for alternative forms of caching in `moize`
+- `build` => run rollup to build the distributed files in `dist`
+- `clean` => run `clean:lib`, `clean:es`, `clean:dist`, and `clean:docs`
+- `clean:dist` => run `rimraf` on the `dist` folder
+- `clean:docs` => run `rimraf` on the `docs` folder
+- `clean:es` => run `rimraf` on the `es` folder
+- `clean:lib` => run `rimraf` on the `lib` folder
+- `dev` => run webpack dev server to run example app (playground!)
+- `dist` => runs `clean:dist` and `build`
+- `docs` => runs `clean:docs` and builds the docs via `jsdoc`
+- `flow` => runs `flow check` on the files in `src`
+- `lint` => runs ESLint against all files in the `src` folder
+- `lint:fix` => runs `lint``, fixing any errors if possible
+- `postpublish` => runs `docs`
+- `prepublish` => runs `compile-for-publish`
+- `prepublish:compile` => run `lint`, `flow`, `test:coverage`, `transpile:lib`, `transpile:es`, and `dist`
+- `test` => run AVA test functions with `NODE_ENV=test`
+- `test:coverage` => run `test` but with `nyc` for coverage checker
+- `test:watch` => run `test`, but with persistent watcher
+- `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module))
+- `transpile:lib` => run babel against all files in `src` to create files in `lib`

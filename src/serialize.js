@@ -1,7 +1,7 @@
 // @flow
 
 // external dependencies
-import stringifySafe from 'json-stringify-safe';
+import stringifySafe from 'fast-stringify';
 
 // types
 import type {Options} from './types';
@@ -104,7 +104,10 @@ export const createArgumentSerializer = (options: Options): Function => {
 export const getSerializerFunction = (options: Options): Function => {
   return typeof options.serializer === 'function'
     ? // $FlowIgnore serializer is a function
-    compose(getArrayKey, options.serializer)
+    compose(
+      getArrayKey,
+      options.serializer
+    )
     : createArgumentSerializer(options);
 };
 

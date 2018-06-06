@@ -48,6 +48,10 @@ console.log(memoized.cache);
 console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
 
+memoized.update([foo, bar], 'something totally different');
+
+console.log(memoized(foo, bar));
+
 console.log(memoized.getStats());
 
 console.groupEnd('standard');
@@ -102,7 +106,6 @@ console.log(serializeMemoized.options);
 console.log(serializeMemoized._microMemoizeOptions);
 console.log('has serialized true', serializeMemoized.has([{one: 1, two: 2}]));
 console.log('has serialized false', serializeMemoized.has([{one: 1, two: 3}]));
-
 
 console.groupEnd('serialize');
 
@@ -349,19 +352,25 @@ class App extends Component {
           <h3>Uncached values (first time running)</h3>
 
           {array.map((values) => {
-            return (<MemoizedFoo
-              key={`called-${values.value}`}
-              {...values}
-            />);
+            return (
+              // prettier
+              <MemoizedFoo
+                key={`called-${values.value}`}
+                {...values}
+              />
+            );
           })}
 
           <h3>Cached values</h3>
 
           {array.map((values) => {
-            return (<MemoizedFoo
-              key={`memoized-${values.value}`}
-              {...values}
-            />);
+            return (
+              // prettier
+              <MemoizedFoo
+                key={`memoized-${values.value}`}
+                {...values}
+              />
+            );
           })}
         </div>
       </div>

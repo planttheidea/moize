@@ -1,7 +1,7 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
-import uglify from 'rollup-plugin-uglify';
+import {uglify} from 'rollup-plugin-uglify';
 
 export default [
   {
@@ -20,7 +20,7 @@ export default [
         module: true
       }),
       commonjs({
-        include: 'node_modules/json-stringify-safe/**'
+        include: 'node_modules/micro-memoize/**'
       }),
       babel({
         exclude: 'node_modules/**'
@@ -42,7 +42,7 @@ export default [
         module: true
       }),
       commonjs({
-        include: 'node_modules/**',
+        include: 'node_modules/micro-memoize/**',
         sourceMap: false
       }),
       babel({
