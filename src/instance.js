@@ -1,7 +1,7 @@
 // @flow
 
 // external dependencies
-import {orderByLru} from 'micro-memoize/lib/utils';
+import {orderByLru} from 'micro-memoize/es/utils';
 
 // maxAge
 import {clearExpiration} from './maxAge';

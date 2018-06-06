@@ -29,7 +29,16 @@
       ]
     },
     "lib": {
-      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "plugins": [
+        "syntax-flow", 
+        "transform-flow-strip-types",
+        ["search-and-replace", [
+          {
+            "search": "micro-memoize/es/utils",
+            "replace": "micro-memoize/lib/utils"
+          }
+        ]]
+      ],
       "presets": [
         [
           "env",
@@ -56,7 +65,16 @@
       ]
     },
     "test": {
-      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "plugins": [
+        "syntax-flow", 
+        "transform-flow-strip-types",
+        ["search-and-replace", [
+          {
+            "search": "micro-memoize/es/utils",
+            "replace": "micro-memoize/lib/utils"
+          }
+        ]]
+      ],
       "presets": [
         [
           "env",
