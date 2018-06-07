@@ -658,8 +658,8 @@ test('if moized.update will set the new value in cache for the moized item', (t)
     return value;
   });
 
-  const keys = [['foo'], key];
-  const values = ['bar', value];
+  const keys = [['foo'], [{bar: 'baz'}], key];
+  const values = ['bar', ['quz'], value];
 
   moized.cache = {
     keys: [...keys],
@@ -685,8 +685,8 @@ test('if moized.update will set the new value in cache for the moized item', (t)
 
   moized.update(key, newValue);
 
-  t.deepEqual(moized.cache.keys, [key, keys[0]]);
-  t.deepEqual(moized.cache.values, [newValue, values[0]]);
+  t.deepEqual(moized.cache.keys, [key, ...keys.slice(0, keys.length - 1)]);
+  t.deepEqual(moized.cache.values, [newValue, ...values.slice(0, values.length - 1)]);
 });
 
 test('if moized.update will do nothing if the key does not exist in keys', (t) => {

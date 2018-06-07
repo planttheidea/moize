@@ -888,7 +888,7 @@ memoized.add(["foo"], "bar");
 memoized("foo");
 ```
 
-**NOTE**: This will only add `key`s that do not exist in the cache. If you want to update keys that already exist, use [`update`](#updatekey-value).
+**NOTE**: This will only add `key`s that do not exist in the cache, and will do nothing if the `key` already exists. If you want to update keys that already exist, use [`update`](#updatekey-value).
 
 #### clear()
 
@@ -994,7 +994,7 @@ memoized.remove([foo]);
 memoized(foo);
 ```
 
-**NOTE**: This will only remove `key`s that exist in the cache.
+**NOTE**: This will only remove `key`s that exist in the cache, and will do nothing if the `key` does not exist.
 
 #### update(key, value)
 
@@ -1012,7 +1012,7 @@ memoized.add(["foo"], "bar");
 memoized("foo");
 ```
 
-**NOTE**: This will only update `key`s that exist in the cache. If you want to add keys that do not already exist, use [`add`](#addkey-value).
+**NOTE**: This will only update `key`s that exist in the cache, and will do nothing if the `key` does not exist. If you want to add keys that do not already exist, use [`add`](#addkey-value).
 
 #### values()
 

@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.3.1
+
+**BUGFIXES**
+
+- Clean up logic surrounding `update` function to not unnecessarily assign the value twice
+
 ## 5.3.0
 
 **NEW FEATURES**
