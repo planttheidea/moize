@@ -99,9 +99,7 @@ export const addInstanceMethods = (moized: Function, {expirations}: Object): voi
       const existingKey: Array<any> = moized.cache.keys[keyIndex];
 
       orderByLru(moized.cache.keys, existingKey, keyIndex);
-      orderByLru(moized.cache.values, existingKey, keyIndex);
-
-      moized.cache.values[0] = value;
+      orderByLru(moized.cache.values, value, keyIndex);
 
       onCacheChange(moized.cache, moized.options, moized);
     }
