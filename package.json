@@ -142,5 +142,5 @@
     "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib"
   },
   "types": "./index.d.ts",
-  "version": "5.3.0"
+  "version": "5.3.1"
 }
