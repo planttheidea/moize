@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 5.3.0</h3>
+    <h3>moize 5.3.1</h3>
 
 
 
@@ -693,7 +693,7 @@ const memoized = moize(item => {
 memoized.add([&quot;foo&quot;], &quot;bar&quot;);
 
 // pulls from cache
-memoized(&quot;foo&quot;);</code></pre><p><strong>NOTE</strong>: This will only add <code>key</code>s that do not exist in the cache. If you want to update keys that already exist, use <a href="#updatekey-value"><code>update</code></a>.</p>
+memoized(&quot;foo&quot;);</code></pre><p><strong>NOTE</strong>: This will only add <code>key</code>s that do not exist in the cache, and will do nothing if the <code>key</code> already exists. If you want to update keys that already exist, use <a href="#updatekey-value"><code>update</code></a>.</p>
 <h4 id="clear-">clear()</h4>
 <p>This will clear all values in the cache, resetting it to an empty state.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize(item => {
@@ -761,7 +761,7 @@ memoized(foo);
 memoized.remove([foo]);
 
 // will re-execute, as it is no longer in cache
-memoized(foo);</code></pre><p><strong>NOTE</strong>: This will only remove <code>key</code>s that exist in the cache.</p>
+memoized(foo);</code></pre><p><strong>NOTE</strong>: This will only remove <code>key</code>s that exist in the cache, and will do nothing if the <code>key</code> does not exist.</p>
 <h4 id="update-key-value-">update(key, value)</h4>
 <p>This will manually update the <em>value</em> at <em>key</em> in cache if <em>key</em> exists. <em>key</em> should be an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
 <pre class="prettyprint source lang-javascript"><code>// single parameter is straightforward
@@ -772,7 +772,7 @@ const memoized = moize(item => {
 memoized.add([&quot;foo&quot;], &quot;bar&quot;);
 
 // pulls from cache
-memoized(&quot;foo&quot;);</code></pre><p><strong>NOTE</strong>: This will only update <code>key</code>s that exist in the cache. If you want to add keys that do not already exist, use <a href="#addkey-value"><code>add</code></a>.</p>
+memoized(&quot;foo&quot;);</code></pre><p><strong>NOTE</strong>: This will only update <code>key</code>s that exist in the cache, and will do nothing if the <code>key</code> does not exist. If you want to add keys that do not already exist, use <a href="#addkey-value"><code>add</code></a>.</p>
 <h4 id="values-">values()</h4>
 <p>This will return a list of the current values in <code>cache</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const memoized = moize(item => {
