@@ -15,11 +15,11 @@ test('if addInstanceMethods will add functions to the moized object', (t) => {
     isEqual() {},
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey() {}
+    transformKey() {},
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -40,7 +40,7 @@ test('if moized.add will add the item to the cache if it does not already exist'
   moized.cache = {
     keys: [],
     size: 0,
-    values: []
+    values: [],
   };
 
   moized.options = {
@@ -49,11 +49,11 @@ test('if moized.add will add the item to the cache if it does not already exist'
     },
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -79,7 +79,7 @@ test('if moized.add will add the item to the cache if it does not already exist 
   moized.cache = {
     keys: [],
     size: 0,
-    values: []
+    values: [],
   };
 
   moized.options = {
@@ -89,17 +89,16 @@ test('if moized.add will add the item to the cache if it does not already exist 
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
     transformKey: options.getTransformKey({
-      transformArgs: (args) => {
-        return args[0]
+      transformArgs: (args) =>
+        args[0]
           .split('')
           .reverse()
-          .join('');
-      }
-    })
+          .join(''),
+    }),
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -114,8 +113,8 @@ test('if moized.add will add the item to the cache if it does not already exist 
       key[0]
         .split('')
         .reverse()
-        .join('')
-    ]
+        .join(''),
+    ],
   ]);
   t.deepEqual(moized.cache.values, [value]);
 
@@ -132,7 +131,7 @@ test('if moized.add will add the item to the cache if it does not already exist 
   moized.cache = {
     keys: [],
     size: 0,
-    values: []
+    values: [],
   };
 
   moized.options = {
@@ -141,13 +140,11 @@ test('if moized.add will add the item to the cache if it does not already exist 
     },
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
-    transformKey: sinon.stub().callsFake((args) => {
-      return ['foo', args[0]];
-    })
+    transformKey: sinon.stub().callsFake((args) => ['foo', args[0]]),
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -173,7 +170,7 @@ test('if moized.add will remove the oldest item from cache if the maxSize is exc
   moized.cache = {
     keys: [['existingKey']],
     size: 1,
-    values: ['existingValue']
+    values: ['existingValue'],
   };
 
   moized.options = {
@@ -183,11 +180,11 @@ test('if moized.add will remove the oldest item from cache if the maxSize is exc
     maxSize: 1,
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -216,7 +213,7 @@ test('if moized.add will do nothing if the item already exists in cache', (t) =>
   moized.cache = {
     keys: [key],
     size: 1,
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -225,11 +222,11 @@ test('if moized.add will do nothing if the item already exists in cache', (t) =>
     },
     onCacheAdd: sinon.spy(),
     onCacheChange: sinon.spy(),
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -252,18 +249,18 @@ test('if moized.clear will clear the items in cache', (t) => {
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
     isEqual() {},
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -278,13 +275,11 @@ test('if moized.get will get the item from cache if the key exists', (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -293,11 +288,11 @@ test('if moized.get will get the item from cache if the key exists', (t) => {
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -314,13 +309,11 @@ test('if moized.get will not get the item from cache if the key does not exist',
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [],
-    values: []
+    values: [],
   };
 
   moized.options = {
@@ -329,11 +322,11 @@ test('if moized.get will not get the item from cache if the key does not exist',
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -349,13 +342,11 @@ test('if moized.get will get the item from cache if the transformed key exists',
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -366,11 +357,11 @@ test('if moized.get will get the item from cache if the transformed key exists',
     onCacheChange() {},
     transformKey(key) {
       return key;
-    }
+    },
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -387,13 +378,13 @@ test('if moize.getStats will call getStats with the profileName in options', (t)
   const moized = () => {};
 
   moized.options = {
-    profileName: 'profileName'
+    profileName: 'profileName',
   };
 
   const stub = sinon.stub(stats, 'getStats').returnsArg(0);
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -410,13 +401,11 @@ test('if moized.has will return true if the key exists', (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -425,11 +414,11 @@ test('if moized.has will return true if the key exists', (t) => {
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -441,13 +430,11 @@ test('if moized.has will return false if the key does not exist', (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [],
-    values: []
+    values: [],
   };
 
   moized.options = {
@@ -456,11 +443,11 @@ test('if moized.has will return false if the key does not exist', (t) => {
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -472,13 +459,11 @@ test('if moized.has will return true if the transformed key exists in cache', (t
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -489,11 +474,11 @@ test('if moized.has will return true if the transformed key exists in cache', (t
     onCacheChange() {},
     transformKey(key) {
       return key;
-    }
+    },
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -505,13 +490,11 @@ test('if moized.keys will return a shallow clone of the keys', (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   Object.defineProperties(moized, {
@@ -519,10 +502,10 @@ test('if moized.keys will return a shallow clone of the keys', (t) => {
       get() {
         return {
           keys: [...moized.cache.keys],
-          values: [...moized.cache.values]
+          values: [...moized.cache.values],
         };
-      }
-    }
+      },
+    },
   });
 
   moized.options = {
@@ -531,11 +514,11 @@ test('if moized.keys will return a shallow clone of the keys', (t) => {
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -550,13 +533,11 @@ test('if moized.remove will remove the existing key from cache', (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -565,11 +546,11 @@ test('if moized.remove will remove the existing key from cache', (t) => {
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -584,13 +565,11 @@ test('if moized.remove will do nothing if the key is not found in cache', (t) =>
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [['foo']],
-    values: ['bar']
+    values: ['bar'],
   };
 
   moized.options = {
@@ -599,11 +578,11 @@ test('if moized.remove will do nothing if the key is not found in cache', (t) =>
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -618,13 +597,11 @@ test('if moized.remove will remove the existing key from cache with a custom tra
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -635,11 +612,11 @@ test('if moized.remove will remove the existing key from cache with a custom tra
     onCacheChange() {},
     transformKey(key) {
       return key;
-    }
+    },
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -654,16 +631,14 @@ test('if moized.update will set the new value in cache for the moized item', (t)
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   const keys = [['foo'], [{bar: 'baz'}], key];
   const values = ['bar', ['quz'], value];
 
   moized.cache = {
     keys: [...keys],
-    values: [...values]
+    values: [...values],
   };
 
   moized.options = {
@@ -672,11 +647,11 @@ test('if moized.update will set the new value in cache for the moized item', (t)
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -693,13 +668,11 @@ test('if moized.update will do nothing if the key does not exist in keys', (t) =
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -708,11 +681,11 @@ test('if moized.update will do nothing if the key does not exist in keys', (t) =
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -729,13 +702,11 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   moized.options = {
@@ -747,7 +718,7 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
     onCacheChange() {},
     transformKey(key) {
       return key;
-    }
+    },
   };
 
   const expirationMethod = sinon.spy();
@@ -757,9 +728,9 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
       {
         expirationMethod,
         key,
-        timeoutId: setTimeout(expirationMethod, moized.options.maxAge)
-      }
-    ]
+        timeoutId: setTimeout(expirationMethod, moized.options.maxAge),
+      },
+    ],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -781,13 +752,11 @@ test('if moized.values will return a shallow clone of the values', (t) => {
   const key = ['key'];
   const value = 'value';
 
-  const moized = sinon.stub().callsFake(() => {
-    return value;
-  });
+  const moized = sinon.stub().callsFake(() => value);
 
   moized.cache = {
     keys: [key],
-    values: [value]
+    values: [value],
   };
 
   Object.defineProperties(moized, {
@@ -795,10 +764,10 @@ test('if moized.values will return a shallow clone of the values', (t) => {
       get() {
         return {
           keys: [...moized.cache.keys],
-          values: [...moized.cache.values]
+          values: [...moized.cache.values],
         };
-      }
-    }
+      },
+    },
   });
 
   moized.options = {
@@ -807,11 +776,11 @@ test('if moized.values will return a shallow clone of the values', (t) => {
     },
     onCacheAdd() {},
     onCacheChange() {},
-    transformKey: undefined
+    transformKey: undefined,
   };
 
   const configuration = {
-    expirations: []
+    expirations: [],
   };
 
   instance.addInstanceMethods(moized, configuration);
@@ -827,18 +796,18 @@ test('if addInstanceProperties will add the correct properties to the moized met
   const options = {
     expirations: [],
     options: {
-      key: 'value'
+      key: 'value',
     },
-    originalFunction() {}
+    originalFunction() {},
   };
 
   const _microMemoizeOptions = {
-    micro: 'memoize'
+    micro: 'memoize',
   };
   const cache = {
     keys: [],
     size: 0,
-    values: []
+    values: [],
   };
 
   moized.cache = cache;
@@ -867,10 +836,10 @@ test('if addInstanceProperties will add the correct properties to the moized Rea
   const options = {
     expirations: [],
     options: {
+      isReact: true,
       key: 'value',
-      isReact: true
     },
-    originalFunction() {}
+    originalFunction() {},
   };
 
   options.originalFunction.contextTypes = 'contextTypes';
@@ -879,11 +848,11 @@ test('if addInstanceProperties will add the correct properties to the moized Rea
   options.originalFunction.propTypes = 'propTypes';
 
   const _microMemoizeOptions = {
-    micro: 'memoize'
+    micro: 'memoize',
   };
   const cache = {
     keys: [],
-    values: []
+    values: [],
   };
 
   moized.cache = cache;
@@ -920,18 +889,18 @@ test('if addInstanceProperties will add the correct displayName when none is pro
   const options = {
     expirations: [],
     options: {
+      isReact: true,
       key: 'value',
-      isReact: true
     },
-    originalFunction() {}
+    originalFunction() {},
   };
 
   const _microMemoizeOptions = {
-    micro: 'memoize'
+    micro: 'memoize',
   };
   const cache = {
     keys: [],
-    values: []
+    values: [],
   };
 
   moized.cache = cache;
@@ -948,19 +917,19 @@ test('if addInstanceProperties will add the correct displayName when the functio
   const options = {
     expirations: [],
     options: {
+      isReact: true,
       key: 'value',
-      isReact: true
-    }
+    },
   };
 
   options.originalFunction = () => {};
 
   const _microMemoizeOptions = {
-    micro: 'memoize'
+    micro: 'memoize',
   };
   const cache = {
     keys: [],
-    values: []
+    values: [],
   };
 
   moized.cache = cache;
@@ -982,9 +951,9 @@ test('if augmentMoizeInstance will add the methods and properties to the moized 
       },
       onCacheAdd() {},
       onCacheChange() {},
-      transformKey: undefined
+      transformKey: undefined,
     },
-    originalFunction() {}
+    originalFunction() {},
   };
 
   const result = instance.augmentMoizeInstance(moized, configuration);

@@ -1,7 +1,12 @@
 // @flow
 
 // types
-import type {Options, StatsCache, StatsObject, StatsProfile} from './types';
+import type {
+  Options,
+  StatsCache,
+  StatsObject,
+  StatsProfile
+} from './types';
 
 /**
  * @private
@@ -11,7 +16,7 @@ import type {Options, StatsCache, StatsObject, StatsProfile} from './types';
 export const statsCache: StatsCache = {
   anonymousProfileNameCounter: 1,
   isCollectingStats: false,
-  profiles: {}
+  profiles: {},
 };
 
 /**
@@ -41,7 +46,7 @@ export const createOnCacheAddIncrementCalls = (options: Options) => {
     // $FlowIgnore profileName is populated
     statsCache.profiles[profileName] = {
       calls: 0,
-      hits: 0
+      hits: 0,
     };
   }
 
@@ -129,9 +134,8 @@ export const getDefaultProfileName = (fn: Function): string => {
  * @param {number} hits the number of cache hits when called
  * @returns {string} the usage as a percentage string
  */
-export const getUsagePercentage = (calls: number, hits: number): string => {
-  return calls ? `${(hits / calls * 100).toFixed(4)}%` : '0%';
-};
+export const getUsagePercentage = (calls: number, hits: number): string =>
+  calls ? `${((hits / calls) * 100).toFixed(4)}%` : '0%';
 
 /**
  * @private
@@ -156,14 +160,14 @@ export const getStats = (profileName: ?string): StatsObject => {
       return {
         calls: 0,
         hits: 0,
-        usage: '0%'
+        usage: '0%',
       };
     }
 
     const profile: StatsProfile = statsCache.profiles[profileName];
 
     return Object.assign({}, profile, {
-      usage: getUsagePercentage(profile.calls, profile.hits)
+      usage: getUsagePercentage(profile.calls, profile.hits),
     });
   }
 
@@ -176,7 +180,7 @@ export const getStats = (profileName: ?string): StatsObject => {
     },
     {
       calls: 0,
-      hits: 0
+      hits: 0,
     }
   );
 
@@ -186,7 +190,7 @@ export const getStats = (profileName: ?string): StatsObject => {
 
       return profiles;
     }, {}),
-    usage: getUsagePercentage(completeStats.calls, completeStats.hits)
+    usage: getUsagePercentage(completeStats.calls, completeStats.hits),
   });
 };
 
@@ -201,11 +205,10 @@ export const getStats = (profileName: ?string): StatsObject => {
  * @param {Options} options the options passed to the moizer
  * @returns {Object} the options specific to keeping stats
  */
-export const getStatsOptions = (options: Options): Object => {
-  return statsCache.isCollectingStats
+export const getStatsOptions = (options: Options): Object =>
+  statsCache.isCollectingStats
     ? {
       onCacheAdd: createOnCacheAddIncrementCalls(options),
-      onCacheHit: createOnCacheHitIncrementCallsAndHits(options)
+      onCacheHit: createOnCacheHitIncrementCallsAndHits(options),
     }
     : {};
-};

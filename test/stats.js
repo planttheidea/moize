@@ -4,7 +4,6 @@ import sinon from 'sinon';
 
 // src
 import * as stats from 'src/stats';
-import * as utils from 'src/utils';
 
 test.serial('if getStats will warn in the console when not collecting statistics', (t) => {
   if (stats.statsCache.isCollectingStats || stats.hasWarningDisplayed) {
@@ -29,17 +28,20 @@ test.serial('if collectStats will set isCollectingStats to true', (t) => {
 });
 
 test.serial('if getStats will return all stats if no profileName is passed', (t) => {
-  const statsCache = {...stats.statsCache, profiles: {...stats.statsCache.profiles}};
+  const statsCache = {
+    ...stats.statsCache,
+    profiles: {...stats.statsCache.profiles},
+  };
 
   stats.statsCache.profiles = {
-    foo: {
-      calls: 2,
-      hits: 1
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 2,
+      hits: 1,
+    },
   };
 
   const result = stats.getStats();
@@ -48,57 +50,63 @@ test.serial('if getStats will return all stats if no profileName is passed', (t)
     calls: stats.statsCache.profiles.foo.calls + stats.statsCache.profiles.bar.calls,
     hits: stats.statsCache.profiles.foo.hits + stats.statsCache.profiles.bar.hits,
     profiles: {
-      foo: {
-        ...stats.statsCache.profiles.foo,
-        usage: '50.0000%'
-      },
       bar: {
         ...stats.statsCache.profiles.bar,
-        usage: '66.6667%'
-      }
+        usage: '66.6667%',
+      },
+      foo: {
+        ...stats.statsCache.profiles.foo,
+        usage: '50.0000%',
+      },
     },
-    usage: '60.0000%'
+    usage: '60.0000%',
   });
 
   Object.assign(stats.statsCache, statsCache);
 });
 
 test.serial('if getStats will return specific stats if a profileName is passed', (t) => {
-  const statsCache = {...stats.statsCache, profiles: {...stats.statsCache.profiles}};
+  const statsCache = {
+    ...stats.statsCache,
+    profiles: {...stats.statsCache.profiles},
+  };
 
   stats.statsCache.profiles = {
-    foo: {
-      calls: 2,
-      hits: 1
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 2,
+      hits: 1,
+    },
   };
 
   const result = stats.getStats('foo');
 
   t.deepEqual(result, {
     ...stats.statsCache.profiles.foo,
-    usage: '50.0000%'
+    usage: '50.0000%',
   });
 
   Object.assign(stats.statsCache, statsCache);
 });
 
 test.serial('if getStats will return empty stats if a profileName is passed but does not exist', (t) => {
-  const statsCache = {...stats.statsCache, profiles: {...stats.statsCache.profiles}};
+  const statsCache = {
+    ...stats.statsCache,
+    profiles: {...stats.statsCache.profiles},
+  };
 
   stats.statsCache.profiles = {
-    foo: {
-      calls: 2,
-      hits: 1
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 2,
+      hits: 1,
+    },
   };
 
   const result = stats.getStats('baz');
@@ -106,41 +114,44 @@ test.serial('if getStats will return empty stats if a profileName is passed but 
   t.deepEqual(result, {
     calls: 0,
     hits: 0,
-    usage: '0%'
+    usage: '0%',
   });
 
   Object.assign(stats.statsCache, statsCache);
 });
 
 test.serial('if onCacheAddIncrementCalls will increment calls for the specific profile', (t) => {
-  const statsCache = {...stats.statsCache, profiles: {...stats.statsCache.profiles}};
+  const statsCache = {
+    ...stats.statsCache,
+    profiles: {...stats.statsCache.profiles},
+  };
 
   const options = {
-    profileName: 'foo'
+    profileName: 'foo',
   };
 
   stats.statsCache.profiles = {
-    foo: {
-      calls: 2,
-      hits: 1
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 2,
+      hits: 1,
+    },
   };
 
   stats.createOnCacheAddIncrementCalls(options)();
 
   t.deepEqual(stats.statsCache.profiles, {
-    foo: {
-      calls: 3,
-      hits: 1
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 3,
+      hits: 1,
+    },
   });
 
   Object.assign(stats.statsCache, statsCache);
@@ -149,38 +160,41 @@ test.serial('if onCacheAddIncrementCalls will increment calls for the specific p
 test.serial(
   'if onCacheAddIncrementCalls will increment calls for the specific profile that did not previously exist',
   (t) => {
-    const statsCache = {...stats.statsCache, profiles: {...stats.statsCache.profiles}};
+    const statsCache = {
+      ...stats.statsCache,
+      profiles: {...stats.statsCache.profiles},
+    };
 
     const options = {
-      profileName: 'baz'
+      profileName: 'baz',
     };
 
     stats.statsCache.profiles = {
-      foo: {
-        calls: 2,
-        hits: 1
-      },
       bar: {
         calls: 3,
-        hits: 2
-      }
+        hits: 2,
+      },
+      foo: {
+        calls: 2,
+        hits: 1,
+      },
     };
 
     stats.createOnCacheAddIncrementCalls(options)();
 
     t.deepEqual(stats.statsCache.profiles, {
-      foo: {
-        calls: 2,
-        hits: 1
-      },
       bar: {
         calls: 3,
-        hits: 2
+        hits: 2,
       },
       baz: {
         calls: 1,
-        hits: 0
-      }
+        hits: 0,
+      },
+      foo: {
+        calls: 2,
+        hits: 1,
+      },
     });
 
     Object.assign(stats.statsCache, statsCache);
@@ -188,34 +202,37 @@ test.serial(
 );
 
 test.serial('if onCacheHitIncrementCallsAndHits will increment calls and hits for the specific profile', (t) => {
-  const statsCache = {...stats.statsCache, profiles: {...stats.statsCache.profiles}};
+  const statsCache = {
+    ...stats.statsCache,
+    profiles: {...stats.statsCache.profiles},
+  };
 
   const options = {
-    profileName: 'foo'
+    profileName: 'foo',
   };
 
   stats.statsCache.profiles = {
-    foo: {
-      calls: 2,
-      hits: 1
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 2,
+      hits: 1,
+    },
   };
 
   stats.createOnCacheHitIncrementCallsAndHits(options)();
 
   t.deepEqual(stats.statsCache.profiles, {
-    foo: {
-      calls: 3,
-      hits: 2
-    },
     bar: {
       calls: 3,
-      hits: 2
-    }
+      hits: 2,
+    },
+    foo: {
+      calls: 3,
+      hits: 2,
+    },
   });
 
   Object.assign(stats.statsCache, statsCache);
@@ -361,7 +378,7 @@ test.serial('if getStatsOptions will return the statsCache methods when collecti
 
   const options = {
     onCacheAdd() {},
-    onCacheHit() {}
+    onCacheHit() {},
   };
 
   const result = stats.getStatsOptions(options);
@@ -379,7 +396,7 @@ test.serial('if getStatsOptions will return the an empty object when not collect
 
   const options = {
     onCacheAdd() {},
-    onCacheHit() {}
+    onCacheHit() {},
   };
 
   const result = stats.getStatsOptions(options);

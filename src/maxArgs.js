@@ -1,6 +1,6 @@
 // @flow
 
-export const createGetInitialArgs = (size: number) => {
+export const createGetInitialArgs = (size: number) =>
   /**
    * @private
    *
@@ -12,7 +12,7 @@ export const createGetInitialArgs = (size: number) => {
    * @param {Array<any>} args the args to take from
    * @returns {Array<any>} the shortened list of args as an array
    */
-  return (args: Array<any>): Array<any> => {
+  (args: Array<any>): Array<any> => {
     if (size >= args.length) {
       return args;
     }
@@ -39,4 +39,3 @@ export const createGetInitialArgs = (size: number) => {
 
     return Array.prototype.slice.call(args, 0, size);
   };
-};

@@ -13,16 +13,35 @@ import {augmentMoizeInstance} from './instance';
 import {getMaxAgeOptions} from './maxAge';
 
 // options
-import {createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey} from './options';
+import {
+  createOnCacheOperation,
+  getIsEqual,
+  getIsMatchingKey,
+  getTransformKey
+} from './options';
 
 // stats
-import {collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache} from './stats';
+import {
+  collectStats,
+  getDefaultProfileName,
+  getStats,
+  getStatsOptions,
+  statsCache
+} from './stats';
 
 // types
-import type {Expiration, MicroMemoizeOptions, Options} from './types';
+import type {
+  Expiration,
+  MicroMemoizeOptions,
+  Options
+} from './types';
 
 // utils
-import {combine, compose, mergeOptions} from './utils';
+import {
+  combine,
+  compose,
+  mergeOptions
+} from './utils';
 
 /**
  * @module moize
@@ -62,17 +81,18 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
   }
 
   if (typeof fn === 'object') {
-    return (curriedFn: Function | Options, curriedOptions: Options = {}) => {
-      return typeof curriedFn === 'function'
+    return (curriedFn: Function | Options, curriedOptions: Options = {}) =>
+      /* eslint-disable operator-linebreak */
+      typeof curriedFn === 'function'
         ? // $FlowIgnore fn is actually an object of options
         moize(curriedFn, mergeOptions(fn, curriedOptions))
         : // $FlowIgnore fn is actually an object of options
         moize(mergeOptions(fn, curriedFn));
-    };
+    /* eslint-enable */
   }
 
   const coalescedOptions: Options = Object.assign({}, DEFAULT_OPTIONS, options, {
-    profileName: options.profileName || getDefaultProfileName(fn)
+    profileName: options.profileName || getDefaultProfileName(fn),
   });
   const expirations: Array<Expiration> = [];
 
@@ -112,13 +132,13 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
     onCacheAdd: createOnCacheOperation(combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd)),
     onCacheChange: createOnCacheOperation(onCacheChange),
     onCacheHit: createOnCacheOperation(combine(onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit)),
-    transformKey
+    transformKey,
   });
 
   return augmentMoizeInstance(memoize(fn, microMemoizeOptions), {
     expirations,
     options: coalescedOptions,
-    originalFunction: fn
+    originalFunction: fn,
   });
 }
 
@@ -146,6 +166,7 @@ moize.collectStats = collectStats;
  * @returns {function(...Array<*>): *} the composed function
  */
 moize.compose = function(): Function {
+  // eslint-disable-next-line prefer-rest-params
   return compose.apply(null, arguments) || moize;
 };
 
@@ -267,7 +288,7 @@ moize.maxSize = function maxSize(maxSize: number): Function {
  */
 moize.promise = moize({
   isPromise: true,
-  updateExpire: true
+  updateExpire: true,
 });
 
 /**
@@ -294,7 +315,10 @@ moize.react = moize({isReact: true});
  *
  * @returns {function} the moizer function
  */
-moize.reactSimple = moize({isReact: true, maxSize: 1});
+moize.reactSimple = moize({
+  isReact: true,
+  maxSize: 1,
+});
 
 /**
  * @function

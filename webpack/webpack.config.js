@@ -17,12 +17,12 @@ module.exports = {
     inline: true,
     lazy: false,
     noInfo: false,
-    quiet: false,
     port: PORT,
+    quiet: false,
     stats: {
       colors: true,
-      progress: true
-    }
+      progress: true,
+    },
   },
 
   devtool: '#source-map',
@@ -42,20 +42,20 @@ module.exports = {
           failOnError: true,
           failOnWarning: false,
           fix: true,
-          formatter: require('eslint-friendly-formatter')
+          formatter: require('eslint-friendly-formatter'),
         },
-        test: /\.js$/
+        test: /\.js$/,
       },
       {
         include: [path.resolve(ROOT, 'src'), path.resolve(ROOT, 'DEV_ONLY')],
+        loader: 'babel-loader',
         options: {
           cacheDirectory: true,
-          presets: ['react']
+          presets: ['react'],
         },
         test: /\.js$/,
-        loader: 'babel-loader'
-      }
-    ]
+      },
+    ],
   },
 
   output: {
@@ -64,8 +64,8 @@ module.exports = {
     libraryTarget: 'umd',
     path: path.resolve(ROOT, 'dist'),
     publicPath: `http://localhost:${PORT}/`,
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
 
-  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV']), new HtmlWebpackPlugin(), new FlowBabelWebpackPlugin()]
+  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV']), new HtmlWebpackPlugin(), new FlowBabelWebpackPlugin()],
 };

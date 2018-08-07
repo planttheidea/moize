@@ -1,5 +1,11 @@
 # moize CHANGELOG
 
+## 5.3.2
+
+**BUGFIXES**
+
+- Bump `micro-memoize` dependency to fix recursive race condition issue
+
 ## 5.3.1
 
 **BUGFIXES**

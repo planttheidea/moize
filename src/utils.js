@@ -4,7 +4,10 @@
 import {DEFAULT_OPTIONS} from './constants';
 
 // types
-import type {Expiration, Options} from './types';
+import type {
+  Expiration,
+  Options
+} from './types';
 
 /**
  * @private
@@ -19,17 +22,22 @@ import type {Expiration, Options} from './types';
  */
 export const combine = (...functions: Array<any>): ?Function => {
   if (functions.length) {
-    // $FlowIgnore return value is always a function
-    return functions.reduce((f: Function, g: any): Function => {
-      return typeof f === 'function'
-        ? typeof g === 'function'
-          ? function(): any {
-            g.apply(this, arguments);
-            f.apply(this, arguments);
-          }
-          : f
-        : typeof g === 'function' ? g : undefined;
-    });
+    return functions.reduce(
+      // $FlowIgnore return value is always a function
+      (f: Function, g: any): Function =>
+        typeof f === 'function'
+          ? typeof g === 'function'
+            ? function(): any {
+              // eslint-disable-next-line prefer-rest-params
+              g.apply(this, arguments);
+              // eslint-disable-next-line prefer-rest-params
+              f.apply(this, arguments);
+            }
+            : f
+          : typeof g === 'function'
+            ? g
+            : undefined
+    );
   }
 };
 
@@ -46,16 +54,20 @@ export const combine = (...functions: Array<any>): ?Function => {
  */
 export const compose = (...functions: Array<any>): ?Function => {
   if (functions.length) {
-    // $FlowIgnore return value is always a function
-    return functions.reduce((f: Function, g: any): Function => {
-      return typeof f === 'function'
-        ? typeof g === 'function'
-          ? function(): any {
-            return f(g.apply(this, arguments));
-          }
-          : f
-        : typeof g === 'function' ? g : undefined;
-    });
+    return functions.reduce(
+      // $FlowIgnore return value is always a function
+      (f: Function, g: any): Function =>
+        typeof f === 'function'
+          ? typeof g === 'function'
+            ? function(): any {
+              // eslint-disable-next-line prefer-rest-params
+              return f(g.apply(this, arguments));
+            }
+            : f
+          : typeof g === 'function'
+            ? g
+            : undefined
+    );
   }
 };
 
@@ -131,9 +143,7 @@ export const createFindKeyIndex = (isEqual: Function, isMatchingKey: ?Function) 
  * @param {any} key the transformed key
  * @returns {Array<any>} the key as an array
  */
-export const getArrayKey = (key: any): Array<any> => {
-  return Array.isArray(key) ? key : [key];
-};
+export const getArrayKey = (key: any): Array<any> => (Array.isArray(key) ? key : [key]);
 
 /**
  * @private
@@ -147,8 +157,8 @@ export const getArrayKey = (key: any): Array<any> => {
  * @param {Options} newOptions the new options to merge
  * @returns {Options} the merged options
  */
-export const mergeOptions = (originalOptions: Options, newOptions: Options): Options => {
-  return newOptions === DEFAULT_OPTIONS
+export const mergeOptions = (originalOptions: Options, newOptions: Options): Options =>
+  newOptions === DEFAULT_OPTIONS
     ? originalOptions
     : Object.assign({}, originalOptions, newOptions, {
       // $FlowIgnore undefined value is ok
@@ -158,6 +168,8 @@ export const mergeOptions = (originalOptions: Options, newOptions: Options): Opt
       // $FlowIgnore undefined value is ok
       onCacheHit: combine(originalOptions.onCacheHit, newOptions.onCacheHit),
       // $FlowIgnore undefined value is ok
-      transformArgs: compose(originalOptions.transformArgs, newOptions.transformArgs)
+      transformArgs: compose(
+        originalOptions.transformArgs,
+        newOptions.transformArgs
+      ),
     });
-};

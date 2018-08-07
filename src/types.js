@@ -10,7 +10,7 @@
  */
 export type Cache = {
   keys: Array<any>,
-  values: Array<any>
+  values: Array<any>,
 };
 
 /**
@@ -23,7 +23,7 @@ export type Cache = {
 export type Expiration = {
   expirationMethod: Function,
   key: Array<any>,
-  timeoutId: TimeoutID
+  timeoutId: TimeoutID,
 };
 
 /**
@@ -46,7 +46,7 @@ export type MicroMemoizeOptions = {
   onCacheAdd: ?Function,
   onCacheChange: ?Function,
   onCacheHit: ?Function,
-  transformKey: ?Function
+  transformKey: ?Function,
 };
 
 /**
@@ -86,7 +86,7 @@ export type Options = {
   serializer?: Function,
   shouldSerializeFunctions?: boolean,
   transformArgs?: Function,
-  updateExpire?: boolean
+  updateExpire?: boolean,
 };
 
 /**
@@ -97,7 +97,7 @@ export type Options = {
  */
 export type StatsProfile = {
   calls: number,
-  hits: number
+  hits: number,
 };
 
 /**
@@ -112,9 +112,9 @@ export type StatsObject = {
   calls: number,
   hits: number,
   profiles?: {
-    [key: string]: StatsProfile
+    [key: string]: StatsProfile,
   },
-  usage: string
+  usage: string,
 };
 
 /**
@@ -128,8 +128,8 @@ export type StatsCache = {
   anonymousProfileNameCounter: number,
   isCollectingStats: boolean,
   profiles: {
-    [key: string]: StatsProfile
-  }
+    [key: string]: StatsProfile,
+  },
 };
 
 /* eslint-enable */

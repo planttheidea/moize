@@ -7,7 +7,6 @@ import * as maxArgs from 'src/maxArgs';
 
 test('if getInitialArgs will return the args themselves when the size is larger than the length', (t) => {
   const args = ['foo'];
-  const size = 2;
 
   const result = maxArgs.createGetInitialArgs(2)(args);
 

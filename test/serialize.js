@@ -21,7 +21,7 @@ test('if customReplacer will return the value as-is if it is not a function', (t
   const number = 123;
   const boolean = true;
   const object = {
-    foo: 'bar'
+    foo: 'bar',
   };
 
   t.is(serialize.customReplacer(key, string), string);
@@ -60,12 +60,12 @@ test('if stringify will call JSON.stringify with the value and replacer passed',
 
 test.serial('if stringify will call stringifySafe on the object when it cannot be handled by JSON.stringify', (t) => {
   const standard = {
-    foo: 'bar'
+    foo: 'bar',
   };
   const circular = {
     foo: {
-      bar: 'baz'
-    }
+      bar: 'baz',
+    },
   };
 
   circular.foo.baz = circular.foo;
@@ -84,7 +84,7 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
   const number = 123;
   const boolean = true;
   const object = {
-    foo: 'bar'
+    foo: 'bar',
   };
 
   t.is(serialize.getStringifiedArgument(string), string);
@@ -122,7 +122,7 @@ test('if getStringifiedArgument will return the arg directly if it is not a comp
 
 test('if createArgumentSerializer will create a method that serializes the args passed without the functions', (t) => {
   const options = {
-    shouldSerializeFunctions: false
+    shouldSerializeFunctions: false,
   };
 
   const argumentSerializer = serialize.createArgumentSerializer(options);
@@ -138,7 +138,7 @@ test('if createArgumentSerializer will create a method that serializes the args 
 
 test('if createArgumentSerializer will create a method that serializes the args passed using the custom serializer', (t) => {
   const options = {
-    shouldSerializeFunctions: true
+    shouldSerializeFunctions: true,
   };
 
   const argumentSerializer = serialize.createArgumentSerializer(options);
@@ -154,7 +154,7 @@ test('if createArgumentSerializer will create a method that serializes the args 
 
 test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
   const options = {
-    serializer: null
+    serializer: null,
   };
   const serializeArguments = serialize.getSerializerFunction(options);
 
@@ -163,8 +163,8 @@ test('if getSerializerFunction returns a function that produces a stringified ve
   const boolean = true;
   const fn = () => {};
   const object = {
+    bar: 'baz',
     foo() {},
-    bar: 'baz'
   };
   const args = [string, number, boolean, fn, object];
 
@@ -177,7 +177,7 @@ test('if getSerializerFunction uses the serializer passed when it is a function'
   const options = {
     serializer(value) {
       return `KEY: ${JSON.stringify(value)}`;
-    }
+    },
   };
   const serializeArguments = serialize.getSerializerFunction(options);
 
@@ -186,8 +186,8 @@ test('if getSerializerFunction uses the serializer passed when it is a function'
   const boolean = true;
   const fn = () => {};
   const object = {
+    bar: 'baz',
     foo() {},
-    bar: 'baz'
   };
   const args = [string, number, boolean, fn, object];
 
