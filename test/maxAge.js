@@ -7,7 +7,12 @@ import * as maxAge from 'src/maxAge';
 
 test('if clearExpiration will clear the expiration if it exists', (t) => {
   const key = ['foo'];
-  const expirations = [{key, timeoutId: 123}];
+  const expirations = [
+    {
+      key,
+      timeoutId: 123,
+    },
+  ];
 
   const stub = sinon.stub(global, 'clearTimeout');
 
@@ -21,7 +26,12 @@ test('if clearExpiration will clear the expiration if it exists', (t) => {
 
 test('if clearExpiration will clear the expiration if it exists and remove it if requested', (t) => {
   const key = ['foo'];
-  const expirations = [{key, timeoutId: 123}];
+  const expirations = [
+    {
+      key,
+      timeoutId: 123,
+    },
+  ];
 
   const stub = sinon.stub(global, 'clearTimeout');
 
@@ -35,7 +45,12 @@ test('if clearExpiration will clear the expiration if it exists and remove it if
 
 test('if clearExpiration will do nothing if the expiration is not found', (t) => {
   const key = ['foo'];
-  const expirations = [{key: ['bar'], timeoutId: 123}];
+  const expirations = [
+    {
+      key: ['bar'],
+      timeoutId: 123,
+    },
+  ];
 
   const stub = sinon.stub(global, 'clearTimeout');
 
@@ -48,21 +63,25 @@ test('if clearExpiration will do nothing if the expiration is not found', (t) =>
 });
 
 test('if onCacheAddSetExpiration will do nothing if an existing expiration is found', (t) => {
-  const originalExpirations = [{expirationMethod() {}, key: 'key', timeoutId: 123}];
+  const originalExpirations = [
+    {
+      expirationMethod() {},
+      key: 'key',
+      timeoutId: 123,
+    },
+  ];
 
-  const expirations = originalExpirations.map((expiration) => {
-    return {...expiration};
-  });
+  const expirations = originalExpirations.map((expiration) => ({...expiration}));
   const options = {
     maxAge: 100,
-    updateExpire: true
+    updateExpire: true,
   };
   const isEqual = () => {};
 
   const result = maxAge.createOnCacheAddSetExpiration(expirations, options, isEqual);
 
   const cache = {
-    keys: ['key']
+    keys: ['key'],
   };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
@@ -79,17 +98,15 @@ test('if onCacheAddSetExpiration will do nothing if an existing expiration is fo
 test('if onCacheAddSetExpiration will add the new expiration when options are passed', (t) => {
   const expirations = [];
   const options = {
-    maxAge: 100
+    maxAge: 100,
   };
-  const isEqual = (object1, object2) => {
-    return object1 === object2;
-  };
+  const isEqual = (object1, object2) => object1 === object2;
 
   const result = maxAge.createOnCacheAddSetExpiration(expirations, options, isEqual);
 
   const cache = {
     keys: ['key'],
-    values: ['value']
+    values: ['value'],
   };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
@@ -121,17 +138,15 @@ test('if onCacheAddSetExpiration will add the new expiration when options are pa
 test('if onCacheAddSetExpiration will not remove the key / value combo when they no longer exist', (t) => {
   const expirations = [];
   const options = {
-    maxAge: 100
+    maxAge: 100,
   };
-  const isEqual = (object1, object2) => {
-    return object1 === object2;
-  };
+  const isEqual = (object1, object2) => object1 === object2;
 
   const result = maxAge.createOnCacheAddSetExpiration(expirations, options, isEqual);
 
   const cache = {
     keys: ['key'],
-    values: ['value']
+    values: ['value'],
   };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
@@ -153,17 +168,15 @@ test('if onCacheAddSetExpiration will not remove the key / value combo when they
 test('if onCacheAddSetExpiration will not remove the expiration when it no longer exists', (t) => {
   const expirations = [];
   const options = {
-    maxAge: 100
+    maxAge: 100,
   };
-  const isEqual = (object1, object2) => {
-    return object1 === object2;
-  };
+  const isEqual = (object1, object2) => object1 === object2;
 
   const result = maxAge.createOnCacheAddSetExpiration(expirations, options, isEqual);
 
   const cache = {
     keys: ['key'],
-    values: ['value']
+    values: ['value'],
   };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
@@ -184,18 +197,16 @@ test('if onCacheAddSetExpiration will not remove the expiration when it no longe
 test('if onCacheAddSetExpiration will return the expired key and value and create a new expiration if onExpire returns false', (t) => {
   const expirations = [];
   const options = {
+    maxAge: 100,
     onExpire: sinon.stub().returns(false),
-    maxAge: 100
   };
-  const isEqual = (object1, object2) => {
-    return object1 === object2;
-  };
+  const isEqual = (object1, object2) => object1 === object2;
 
   const result = maxAge.createOnCacheAddSetExpiration(expirations, options, isEqual);
 
   const cache = {
     keys: ['key'],
-    values: ['value']
+    values: ['value'],
   };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
@@ -231,21 +242,19 @@ test('if onCacheAddSetExpiration will return the expired key and value and creat
 test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) => {
   const expirations = [];
   const options = {
+    maxAge: 100,
     onCacheChange: sinon.spy(),
     onExpire: sinon.stub().returns(false),
-    maxAge: 100
   };
   const moized = () => {};
 
-  const isEqual = (object1, object2) => {
-    return object1 === object2;
-  };
+  const isEqual = (object1, object2) => object1 === object2;
 
   const result = maxAge.createOnCacheAddSetExpiration(expirations, options, isEqual);
 
   const cache = {
     keys: ['key'],
-    values: ['value']
+    values: ['value'],
   };
 
   const setTimeoutStub = sinon.stub(global, 'setTimeout').returns(234);
@@ -284,17 +293,15 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
 test('if onCacheHitResetExpiration will do nothing when the expiration does not exist', (t) => {
   const originalExpirations = [];
 
-  const expirations = originalExpirations.map((expiration) => {
-    return {...expiration};
-  });
+  const expirations = originalExpirations.map((expiration) => ({...expiration}));
   const options = {
-    updateExpire: true
+    updateExpire: true,
   };
 
   const result = maxAge.createOnCacheHitResetExpiration(expirations, options);
 
   const cache = {
-    keys: ['key']
+    keys: ['key'],
   };
 
   result(cache);
@@ -303,20 +310,24 @@ test('if onCacheHitResetExpiration will do nothing when the expiration does not 
 });
 
 test('if onCacheHitResetExpiration will update the expiration when found', (t) => {
-  const originalExpirations = [{expirationMethod() {}, key: 'key', timeoutId: 123}];
+  const originalExpirations = [
+    {
+      expirationMethod() {},
+      key: 'key',
+      timeoutId: 123,
+    },
+  ];
 
-  const expirations = originalExpirations.map((expiration) => {
-    return {...expiration};
-  });
+  const expirations = originalExpirations.map((expiration) => ({...expiration}));
   const options = {
     maxAge: 100,
-    updateExpire: true
+    updateExpire: true,
   };
 
   const result = maxAge.createOnCacheHitResetExpiration(expirations, options);
 
   const cache = {
-    keys: ['key']
+    keys: ['key'],
   };
 
   const clearTimeoutStub = sinon.stub(global, 'clearTimeout');
@@ -334,7 +345,12 @@ test('if onCacheHitResetExpiration will update the expiration when found', (t) =
 
   setTimeoutStub.restore();
 
-  t.deepEqual(expirations, [{...originalExpirations[0], timeoutId: 234}]);
+  t.deepEqual(expirations, [
+    {
+      ...originalExpirations[0],
+      timeoutId: 234,
+    },
+  ]);
 });
 
 test('if getMaxAgeOptions will return the combined onCacheAdd and onCacheHit methods', (t) => {
@@ -343,7 +359,7 @@ test('if getMaxAgeOptions will return the combined onCacheAdd and onCacheHit met
     maxAge: 100,
     onCacheAdd() {},
     onCacheHit() {},
-    updateExpire: true
+    updateExpire: true,
   };
 
   const result = maxAge.getMaxAgeOptions(expirations, options);
@@ -359,7 +375,7 @@ test('if getMaxAgeOptions will return undefined for onCacheHit if updateExpire i
     maxAge: 100,
     onCacheAdd() {},
     onCacheHit() {},
-    updateExpire: false
+    updateExpire: false,
   };
 
   const result = maxAge.getMaxAgeOptions(expirations, options);
@@ -375,7 +391,7 @@ test('if getMaxAgeOptions will return undefined for onCacheHit if onCacheAdd is 
     maxAge: undefined,
     onCacheAdd() {},
     onCacheHit() {},
-    updateExpire: false
+    updateExpire: false,
   };
 
   const result = maxAge.getMaxAgeOptions(expirations, options);

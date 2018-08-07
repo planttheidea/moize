@@ -1,10 +1,17 @@
 // @flow
 
 // types
-import type {Cache, Expiration, Options} from './types';
+import type {
+  Cache,
+  Expiration,
+  Options
+} from './types';
 
 // utils
-import {createFindKeyIndex, findExpirationIndex} from './utils';
+import {
+  createFindKeyIndex,
+  findExpirationIndex
+} from './utils';
 
 /**
  * @private
@@ -90,7 +97,7 @@ export const createOnCacheAddSetExpiration: Function = (
         expirationMethod,
         key,
         // $FlowIgnore maxAge is an number
-        timeoutId: setTimeout(expirationMethod, maxAge)
+        timeoutId: setTimeout(expirationMethod, maxAge),
       });
     }
   };
@@ -156,6 +163,6 @@ export const getMaxAgeOptions = (
 
   return {
     onCacheAdd,
-    onCacheHit: onCacheAdd && updateExpire ? createOnCacheHitResetExpiration(expirations, options) : undefined
+    onCacheHit: onCacheAdd && updateExpire ? createOnCacheHitResetExpiration(expirations, options) : undefined,
   };
 };

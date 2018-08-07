@@ -1,26 +1,39 @@
 // @flow
 
 // external dependencies
-import {deepEqual, sameValueZeroEqual, shallowEqual} from 'fast-equals';
+import {
+  deepEqual,
+  sameValueZeroEqual,
+  shallowEqual
+} from 'fast-equals';
 
 // max args
 import {createGetInitialArgs} from './maxArgs';
 
 // serialize
-import {getIsSerializedKeyEqual, getSerializerFunction} from './serialize';
+import {
+  getIsSerializedKeyEqual,
+  getSerializerFunction
+} from './serialize';
 
 // types
-import type {Cache, MicroMemoizeOptions, Options} from './types';
+import type {
+  Cache,
+  MicroMemoizeOptions,
+  Options
+} from './types';
 
 // utils
-import {compose, getArrayKey} from './utils';
+import {
+  compose,
+  getArrayKey
+} from './utils';
 
 export const createOnCacheOperation = (fn: ?Function): ?Function => {
   if (typeof fn === 'function') {
-    return (cache: Cache, _microMemoizeOptions: MicroMemoizeOptions, memoized: Function): void => {
+    return (cache: Cache, _microMemoizeOptions: MicroMemoizeOptions, memoized: Function): void =>
       // $FlowIgnore fn is a function if this is hit
-      return fn(memoized.cache, memoized.options, memoized);
-    };
+      fn(memoized.cache, memoized.options, memoized);
   }
 };
 
@@ -35,9 +48,8 @@ export const createOnCacheOperation = (fn: ?Function): ?Function => {
  * @param {Options} options the options passed to the moizer
  * @returns {function} the isEqual method to apply
  */
-export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function => {
-  return equals || (isDeepEqual && deepEqual) || (isReact && shallowEqual) || sameValueZeroEqual;
-};
+export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function =>
+  equals || (isDeepEqual && deepEqual) || (isReact && shallowEqual) || sameValueZeroEqual;
 
 /**
  * @private
@@ -50,9 +62,8 @@ export const getIsEqual = ({equals, isDeepEqual, isReact}: Options): Function =>
  * @param {Options} options the options passed to the moizer
  * @returns {function} the isEqual method to apply
  */
-export const getIsMatchingKey = ({isSerialized, matchesKey}: Options): ?Function => {
-  return matchesKey || (isSerialized && getIsSerializedKeyEqual) || undefined;
-};
+export const getIsMatchingKey = ({isSerialized, matchesKey}: Options): ?Function =>
+  matchesKey || (isSerialized && getIsSerializedKeyEqual) || undefined;
 
 /**
  * @private
@@ -70,7 +81,11 @@ export const getTransformKey = (options: Options): ?Function => {
 
   return compose(
     isSerialized && getSerializerFunction(options),
-    typeof transformArgs === 'function' && compose(getArrayKey, transformArgs),
+    typeof transformArgs === 'function'
+      && compose(
+        getArrayKey,
+        transformArgs
+      ),
     isReact && createGetInitialArgs(2),
     typeof maxArgs === 'number' && createGetInitialArgs(maxArgs)
   );

@@ -1,6 +1,10 @@
 // test
 import test from 'ava';
-import {deepEqual, sameValueZeroEqual, shallowEqual} from 'fast-equals';
+import {
+  deepEqual,
+  sameValueZeroEqual,
+  shallowEqual
+} from 'fast-equals';
 import {onCacheOperation} from 'micro-memoize/lib/utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -15,7 +19,6 @@ import * as optionsUtils from 'src/options';
 import * as serialize from 'src/serialize';
 import * as stats from 'src/stats';
 import * as utils from 'src/utils';
-import {createOnCacheAddIncrementCalls} from '../src/stats';
 
 const moize = index.default;
 
@@ -24,7 +27,7 @@ const isMoizedFunction = (t, fn) => {
   t.deepEqual(fn.cache, {
     keys: [],
     size: 0,
-    values: []
+    values: [],
   });
 
   t.true(fn.hasOwnProperty('expirations'));
@@ -47,7 +50,7 @@ test('if moize will handle the standard use-case', (t) => {
 
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -58,7 +61,7 @@ test('if moize will handle the standard use-case', (t) => {
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -80,7 +83,7 @@ test('if moize will handle a custom equals function correctly', (t) => {
   const options = {
     equals(a, b) {
       return a === b;
-    }
+    },
   };
 
   const moized = moize(fn, options);
@@ -90,7 +93,7 @@ test('if moize will handle a custom equals function correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     equals: options.equals,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -101,7 +104,7 @@ test('if moize will handle a custom equals function correctly', (t) => {
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -121,7 +124,7 @@ test('if moize will handle a custom equals function correctly', (t) => {
 test('if moize will handle deep equals correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    isDeepEqual: true
+    isDeepEqual: true,
   };
 
   const moized = moize(fn, options);
@@ -131,7 +134,7 @@ test('if moize will handle deep equals correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -142,7 +145,7 @@ test('if moize will handle deep equals correctly', (t) => {
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const fnArg = () => {};
@@ -164,7 +167,7 @@ test('if moize will handle deep equals correctly', (t) => {
 test('if moize will handle promises correctly', (t) => {
   const fn = sinon.stub().resolves('done');
   const options = {
-    isPromise: true
+    isPromise: true,
   };
 
   const moized = moize(fn, options);
@@ -174,7 +177,7 @@ test('if moize will handle promises correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isPromise: true,
-    profileName: 'stub'
+    profileName: 'stub',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -185,7 +188,7 @@ test('if moize will handle promises correctly', (t) => {
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -205,9 +208,7 @@ test('if moize will handle promises correctly', (t) => {
 test.serial('if moize will handle React components correctly', (t) => {
   const jsdom = require('jsdom-global')();
 
-  const Fn = sinon.stub().callsFake((props) => {
-    return <div />;
-  });
+  const Fn = sinon.stub().callsFake((props) => <div />);
 
   Fn.contextTypes = {};
   Fn.displayName = 'Custom';
@@ -215,7 +216,7 @@ test.serial('if moize will handle React components correctly', (t) => {
   Fn.propTypes = {};
 
   const options = {
-    isReact: true
+    isReact: true,
   };
 
   const Moized = moize(Fn, options);
@@ -225,7 +226,7 @@ test.serial('if moize will handle React components correctly', (t) => {
   t.deepEqual(Moized.options, {
     ...DEFAULT_OPTIONS,
     isReact: true,
-    profileName: 'Custom'
+    profileName: 'Custom',
   });
 
   const {transformKey, ..._microMemoizeOptions} = Moized._microMemoizeOptions;
@@ -237,7 +238,7 @@ test.serial('if moize will handle React components correctly', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
@@ -265,7 +266,7 @@ test.serial('if moize will handle React components correctly', (t) => {
 test('if moize will handle serialization of keys correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    isSerialized: true
+    isSerialized: true,
   };
 
   const moized = moize(fn, options);
@@ -275,7 +276,7 @@ test('if moize will handle serialization of keys correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isSerialized: true,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -287,7 +288,7 @@ test('if moize will handle serialization of keys correctly', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -316,7 +317,7 @@ test('if moize will handle serialization of keys correctly when functions should
   const fn = sinon.spy();
   const options = {
     isSerialized: true,
-    shouldSerializeFunctions: true
+    shouldSerializeFunctions: true,
   };
 
   const moized = moize(fn, options);
@@ -327,7 +328,7 @@ test('if moize will handle serialization of keys correctly when functions should
     ...DEFAULT_OPTIONS,
     isSerialized: true,
     profileName: 'spy',
-    shouldSerializeFunctions: true
+    shouldSerializeFunctions: true,
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -339,7 +340,7 @@ test('if moize will handle serialization of keys correctly when functions should
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -368,7 +369,7 @@ test('if moize will handle serialization of keys correctly when a custom seriali
   const fn = sinon.spy();
   const options = {
     isSerialized: true,
-    serializer: sinon.stub().callsFake(JSON.stringify)
+    serializer: sinon.stub().callsFake(JSON.stringify),
   };
 
   const moized = moize(fn, options);
@@ -379,7 +380,7 @@ test('if moize will handle serialization of keys correctly when a custom seriali
     ...DEFAULT_OPTIONS,
     isSerialized: true,
     profileName: 'spy',
-    serializer: options.serializer
+    serializer: options.serializer,
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -391,7 +392,7 @@ test('if moize will handle serialization of keys correctly when a custom seriali
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -422,7 +423,7 @@ test('if moize will handle serialization of keys correctly when a custom seriali
 test('if moize will handle expiration of items in cache via maxAge correctly', async (t) => {
   const fn = sinon.spy();
   const options = {
-    maxAge: 100
+    maxAge: 100,
   };
 
   const moized = moize(fn, options);
@@ -432,7 +433,7 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     maxAge: options.maxAge,
-    profileName: 'spy at new Promise (<anonymous>)'
+    profileName: 'spy at new Promise (<anonymous>)',
   });
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -444,7 +445,7 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -481,7 +482,7 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
 test('if moize will handle limiting of arguments via maxArgs passed correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    maxArgs: 1
+    maxArgs: 1,
   };
 
   const moized = moize(fn, options);
@@ -491,7 +492,7 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     maxArgs: 1,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -503,7 +504,7 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -526,7 +527,7 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
 test('if moize will handle limiting of cache size via maxSize correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    maxSize: 1
+    maxSize: 1,
   };
 
   const moized = moize(fn, options);
@@ -536,7 +537,7 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     maxSize: 1,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -547,7 +548,7 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -565,7 +566,7 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
 test('if moize will handle an onCacheAdd method correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    onCacheAdd: sinon.spy()
+    onCacheAdd: sinon.spy(),
   };
 
   const moized = moize(fn, options);
@@ -575,7 +576,7 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     onCacheAdd: options.onCacheAdd,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {onCacheAdd: onCacheAddIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -587,7 +588,7 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -610,7 +611,7 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
 test('if moize will handle an onCacheChange method correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    onCacheChange: sinon.spy()
+    onCacheChange: sinon.spy(),
   };
 
   const moized = moize(fn, options);
@@ -620,7 +621,7 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     onCacheChange: options.onCacheChange,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {onCacheChange: onCacheChangeIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -632,7 +633,7 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -655,7 +656,7 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
 test('if moize will handle an onCacheHit method correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    onCacheHit: sinon.spy()
+    onCacheHit: sinon.spy(),
   };
 
   const moized = moize(fn, options);
@@ -665,7 +666,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     onCacheHit: options.onCacheHit,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {onCacheHit: onCacheHitIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -677,7 +678,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -697,7 +698,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
 
   const expectedArg = {
     keys: moized.cache.keys,
-    values: moized.cache.values
+    values: moized.cache.values,
   };
 
   t.deepEqual(options.onCacheHit.args, [
@@ -706,7 +707,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
     [moized.cache, moized.options, moized],
     [moized.cache, moized.options, moized],
     [moized.cache, moized.options, moized],
-    [moized.cache, moized.options, moized]
+    [moized.cache, moized.options, moized],
   ]);
 });
 
@@ -714,7 +715,7 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
   const fn = sinon.spy();
   const options = {
     maxAge: 100,
-    onExpire: sinon.spy()
+    onExpire: sinon.spy(),
   };
 
   const moized = moize(fn, options);
@@ -725,7 +726,7 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
     ...DEFAULT_OPTIONS,
     maxAge: options.maxAge,
     onExpire: options.onExpire,
-    profileName: 'spy at new Promise (<anonymous>)'
+    profileName: 'spy at new Promise (<anonymous>)',
   });
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -737,7 +738,7 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -776,7 +777,7 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
 test('if moize will handle a custom profileName for stats collection correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    profileName: 'custom'
+    profileName: 'custom',
   };
 
   const moized = moize(fn, options);
@@ -785,7 +786,7 @@ test('if moize will handle a custom profileName for stats collection correctly',
 
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
-    profileName: options.profileName
+    profileName: options.profileName,
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -796,7 +797,7 @@ test('if moize will handle a custom profileName for stats collection correctly',
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 });
 
@@ -805,7 +806,7 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
   const options = {
     transformArgs(args) {
       return [...args].reverse();
-    }
+    },
   };
 
   const moized = moize(fn, options);
@@ -815,7 +816,7 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     profileName: 'spy',
-    transformArgs: options.transformArgs
+    transformArgs: options.transformArgs,
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -827,7 +828,7 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -843,15 +844,29 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
   t.true(fn.calledOnce);
   t.true(fn.calledWith(...args));
 
-  t.is(transformKey.toString(), utils.compose(utils.getArrayKey, options.transformArgs).toString());
-  t.deepEqual(transformKey(args), utils.compose(utils.getArrayKey, options.transformArgs)(args));
+  t.is(
+    transformKey.toString(),
+    utils
+      .compose(
+        utils.getArrayKey,
+        options.transformArgs
+      )
+      .toString()
+  );
+  t.deepEqual(
+    transformKey(args),
+    utils.compose(
+      utils.getArrayKey,
+      options.transformArgs
+    )(args)
+  );
 });
 
 test('if moize will handle an updateExpire method for cache expiration correctly', async (t) => {
   const fn = sinon.spy();
   const options = {
     maxAge: 100,
-    updateExpire: true
+    updateExpire: true,
   };
 
   const moized = moize(fn, options);
@@ -862,7 +877,7 @@ test('if moize will handle an updateExpire method for cache expiration correctly
     ...DEFAULT_OPTIONS,
     maxAge: options.maxAge,
     profileName: 'spy at new Promise (<anonymous>)',
-    updateExpire: options.updateExpire
+    updateExpire: options.updateExpire,
   });
 
   const {onCacheAdd, onCacheHit, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -873,7 +888,7 @@ test('if moize will handle an updateExpire method for cache expiration correctly
     isPromise: false,
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -920,7 +935,7 @@ test('if moize will handle an updateExpire method for cache expiration correctly
 test('if moize will handle additional custom options correctly', (t) => {
   const fn = sinon.spy();
   const options = {
-    customOption: 'value'
+    customOption: 'value',
   };
 
   const moized = moize(fn, options);
@@ -930,7 +945,7 @@ test('if moize will handle additional custom options correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     customOption: 'value',
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -942,7 +957,7 @@ test('if moize will handle additional custom options correctly', (t) => {
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -962,12 +977,12 @@ test('if moize will handle additional custom options correctly', (t) => {
 test('if moize will handle a curried options implementation correctly', (t) => {
   const fn = sinon.spy();
   const firstOptions = {
-    isDeepEqual: true
+    isDeepEqual: true,
   };
   const secondOptions = {
     transformArgs(args) {
       return [...args].reverse();
-    }
+    },
   };
 
   const moized = moize(firstOptions)(secondOptions)(fn);
@@ -981,7 +996,7 @@ test('if moize will handle a curried options implementation correctly', (t) => {
     onCacheChange: undefined,
     onCacheHit: undefined,
     profileName: 'spy',
-    transformArgs: secondOptions.transformArgs
+    transformArgs: secondOptions.transformArgs,
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -993,7 +1008,7 @@ test('if moize will handle a curried options implementation correctly', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -1009,19 +1024,33 @@ test('if moize will handle a curried options implementation correctly', (t) => {
   t.true(fn.calledOnce);
   t.true(fn.calledWith(...args));
 
-  t.is(transformKey.toString(), utils.compose(utils.getArrayKey, secondOptions.transformArgs).toString());
-  t.deepEqual(transformKey(args), utils.compose(utils.getArrayKey, secondOptions.transformArgs)(args));
+  t.is(
+    transformKey.toString(),
+    utils
+      .compose(
+        utils.getArrayKey,
+        secondOptions.transformArgs
+      )
+      .toString()
+  );
+  t.deepEqual(
+    transformKey(args),
+    utils.compose(
+      utils.getArrayKey,
+      secondOptions.transformArgs
+    )(args)
+  );
 });
 
 test('if moize will handle a curried options implementation correctly when the final call has options', (t) => {
   const fn = sinon.spy();
   const firstOptions = {
-    isDeepEqual: true
+    isDeepEqual: true,
   };
   const secondOptions = {
     transformArgs(args) {
       return [...args].reverse();
-    }
+    },
   };
 
   const moized = moize(firstOptions)(fn, secondOptions);
@@ -1035,7 +1064,7 @@ test('if moize will handle a curried options implementation correctly when the f
     onCacheChange: undefined,
     onCacheHit: undefined,
     profileName: 'spy',
-    transformArgs: secondOptions.transformArgs
+    transformArgs: secondOptions.transformArgs,
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1047,7 +1076,7 @@ test('if moize will handle a curried options implementation correctly when the f
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -1063,14 +1092,28 @@ test('if moize will handle a curried options implementation correctly when the f
   t.true(fn.calledOnce);
   t.true(fn.calledWith(...args));
 
-  t.is(transformKey.toString(), utils.compose(utils.getArrayKey, secondOptions.transformArgs).toString());
-  t.deepEqual(transformKey(args), utils.compose(utils.getArrayKey, secondOptions.transformArgs)(args));
+  t.is(
+    transformKey.toString(),
+    utils
+      .compose(
+        utils.getArrayKey,
+        secondOptions.transformArgs
+      )
+      .toString()
+  );
+  t.deepEqual(
+    transformKey(args),
+    utils.compose(
+      utils.getArrayKey,
+      secondOptions.transformArgs
+    )(args)
+  );
 });
 
 test('if moize will handle moizing a previously-moized function correctly', (t) => {
   const fn = sinon.spy();
   const firstOptions = {
-    isDeepEqual: true
+    isDeepEqual: true,
   };
 
   const firstMoized = moize(fn, firstOptions);
@@ -1078,7 +1121,7 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
   const secondOptions = {
     transformArgs(args) {
       return [...args].reverse();
-    }
+    },
   };
 
   const secondMoized = moize(firstMoized, secondOptions);
@@ -1092,7 +1135,7 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
     onCacheChange: undefined,
     onCacheHit: undefined,
     profileName: 'spy',
-    transformArgs: secondOptions.transformArgs
+    transformArgs: secondOptions.transformArgs,
   });
 
   const {transformKey, ..._microMemoizeOptions} = secondMoized._microMemoizeOptions;
@@ -1104,7 +1147,7 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -1120,8 +1163,22 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
   t.true(fn.calledOnce);
   t.true(fn.calledWith(...args));
 
-  t.is(transformKey.toString(), utils.compose(utils.getArrayKey, secondOptions.transformArgs).toString());
-  t.deepEqual(transformKey(args), utils.compose(utils.getArrayKey, secondOptions.transformArgs)(args));
+  t.is(
+    transformKey.toString(),
+    utils
+      .compose(
+        utils.getArrayKey,
+        secondOptions.transformArgs
+      )
+      .toString()
+  );
+  t.deepEqual(
+    transformKey(args),
+    utils.compose(
+      utils.getArrayKey,
+      secondOptions.transformArgs
+    )(args)
+  );
 });
 
 test('if moize.compose calls the internal compose and returns the composed function', (t) => {
@@ -1152,7 +1209,7 @@ test('if moize.compose calls the internal compose and returns moize itself when 
 test('if moize.deep will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    isDeepEqual: true
+    isDeepEqual: true,
   };
 
   const moized = moize.deep(fn);
@@ -1164,7 +1221,7 @@ test('if moize.deep will produce the correct moized function options', (t) => {
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1173,7 +1230,7 @@ test('if moize.deep will produce the correct moized function options', (t) => {
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -1184,7 +1241,7 @@ test('if moize.deep will produce the correct moized function options', (t) => {
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 });
 
@@ -1219,7 +1276,7 @@ test('if moize.isMoized returns true if the object passed is a moized function',
 test('if moize.maxAge will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    maxAge: 1000
+    maxAge: 1000,
   };
 
   const moized = moize.maxAge(options.maxAge)(fn);
@@ -1231,7 +1288,7 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1240,7 +1297,7 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1252,7 +1309,7 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
     maxSize: Infinity,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 
   t.is(
@@ -1268,7 +1325,7 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
 test('if moize.maxArgs will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    maxArgs: 1
+    maxArgs: 1,
   };
 
   const moized = moize.maxArgs(options.maxArgs)(fn);
@@ -1280,7 +1337,7 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1289,7 +1346,7 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1301,7 +1358,7 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(options.maxArgs).toString());
@@ -1310,7 +1367,7 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
 test('if moize.maxSize will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    maxSize: 1
+    maxSize: 1,
   };
 
   const moized = moize.maxSize(options.maxSize)(fn);
@@ -1322,7 +1379,7 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1331,7 +1388,7 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -1342,14 +1399,14 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 });
 
 test('if moize.promise will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    isPromise: true
+    isPromise: true,
   };
 
   const moized = moize.promise(fn);
@@ -1362,7 +1419,7 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    updateExpire: true
+    updateExpire: true,
   });
 
   t.deepEqual(moized.options, {
@@ -1372,7 +1429,7 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     onCacheChange: undefined,
     onCacheHit: undefined,
     profileName: 'spy',
-    updateExpire: true
+    updateExpire: true,
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -1383,14 +1440,14 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 });
 
 test('if moize.react will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    isReact: true
+    isReact: true,
   };
 
   const moized = moize.react(fn);
@@ -1402,7 +1459,7 @@ test('if moize.react will produce the correct moized function options', (t) => {
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1411,7 +1468,7 @@ test('if moize.react will produce the correct moized function options', (t) => {
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1423,7 +1480,7 @@ test('if moize.react will produce the correct moized function options', (t) => {
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
@@ -1433,7 +1490,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
   const fn = sinon.spy();
   const options = {
     isReact: true,
-    maxSize: 1
+    maxSize: 1,
   };
 
   const moized = moize.reactSimple(fn);
@@ -1445,7 +1502,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1455,7 +1512,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1467,7 +1524,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
     maxSize: options.maxSize,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
@@ -1476,7 +1533,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
 test('if moize.serialize will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    isSerialized: true
+    isSerialized: true,
   };
 
   const moized = moize.serialize(fn);
@@ -1488,7 +1545,7 @@ test('if moize.serialize will produce the correct moized function options', (t) 
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1497,7 +1554,7 @@ test('if moize.serialize will produce the correct moized function options', (t) 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1509,7 +1566,7 @@ test('if moize.serialize will produce the correct moized function options', (t) 
     maxSize: Infinity,
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation
+    onCacheHit: onCacheOperation,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -1518,7 +1575,7 @@ test('if moize.serialize will produce the correct moized function options', (t) 
 test('if moize.simple will produce the correct moized function options', (t) => {
   const fn = sinon.spy();
   const options = {
-    maxSize: 1
+    maxSize: 1,
   };
 
   const moized = moize.simple(fn);
@@ -1530,7 +1587,7 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
-    onCacheHit: undefined
+    onCacheHit: undefined,
   });
 
   t.deepEqual(moized.options, {
@@ -1539,7 +1596,7 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy'
+    profileName: 'spy',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -1550,7 +1607,7 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     onCacheAdd: onCacheOperation,
     onCacheChange: onCacheOperation,
     onCacheHit: onCacheOperation,
-    transformKey: undefined
+    transformKey: undefined,
   });
 });
 
@@ -1558,7 +1615,7 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
   const fn = sinon.spy();
   const options = {
     maxAge: 500,
-    onExpire: sinon.spy()
+    onExpire: sinon.spy(),
   };
 
   const moized = moize(fn, options);
@@ -1569,7 +1626,7 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
 
   t.is(moized.cache.keys.length, 1);
 
-  moized.remove(args); 
+  moized.remove(args);
 
   t.is(moized.cache.keys.length, 0);
 
@@ -1577,7 +1634,7 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
 
   t.is(moized.cache.keys.length, 1);
 
-  await new Promise((resolve) => { 
+  await new Promise((resolve) => {
     setTimeout(resolve, options.maxAge * 2);
   });
 

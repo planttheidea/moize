@@ -42,19 +42,17 @@ test('if combine handles when no functions are passed', (t) => {
 });
 
 test('if compose will fire the methods passed composed in the correct order', (t) => {
-  const a = sinon.stub().callsFake(({args}) => {
-    return [...args].reverse();
-  });
-  const b = sinon.stub().callsFake((args) => {
-    return {
-      args
-    };
-  });
-  const c = sinon.stub().callsFake((args) => {
-    return args.slice(0, 2);
-  });
+  const a = sinon.stub().callsFake(({args}) => [...args].reverse());
+  const b = sinon.stub().callsFake((args) => ({
+    args,
+  }));
+  const c = sinon.stub().callsFake((args) => args.slice(0, 2));
 
-  const result = utils.compose(a, b, c);
+  const result = utils.compose(
+    a,
+    b,
+    c
+  );
 
   const args = ['foo', 'bar', 'baz'];
 
@@ -63,7 +61,7 @@ test('if compose will fire the methods passed composed in the correct order', (t
   t.true(a.calledOnce);
   t.true(
     a.calledWith({
-      args: args.slice(0, 2)
+      args: args.slice(0, 2),
     })
   );
 
@@ -78,15 +76,16 @@ test('if compose will fire the methods passed composed in the correct order', (t
 
 test('if compose will handle only functions passed', (t) => {
   const a = null;
-  const b = sinon.stub().callsFake((args) => {
-    return [...args].reverse();
-  });
+  const b = sinon.stub().callsFake((args) => [...args].reverse());
   const c = null;
-  const d = sinon.stub().callsFake((args) => {
-    return args.slice(0, 2);
-  });
+  const d = sinon.stub().callsFake((args) => args.slice(0, 2));
 
-  const result = utils.compose(a, b, c, d);
+  const result = utils.compose(
+    a,
+    b,
+    c,
+    d
+  );
 
   const args = ['foo', 'bar', 'baz'];
 
@@ -106,7 +105,11 @@ test('if compose will handle no valid functions are passed', (t) => {
   const b = null;
   const c = false;
 
-  const result = utils.compose(a, b, c);
+  const result = utils.compose(
+    a,
+    b,
+    c
+  );
 
   t.is(result, undefined);
 });
@@ -136,9 +139,7 @@ test('if findExpirationIndex will return the default if it cannot find the expir
 });
 
 test('if findKeyIndex will return the matching key in keys', (t) => {
-  const isEqual = (a, b) => {
-    return a === b;
-  };
+  const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
   const key = ['key'];
@@ -150,9 +151,7 @@ test('if findKeyIndex will return the matching key in keys', (t) => {
 });
 
 test('if findKeyIndex will return the matching key in keys', (t) => {
-  const isEqual = (a, b) => {
-    return a === b;
-  };
+  const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
   const key = ['key'];
@@ -164,9 +163,7 @@ test('if findKeyIndex will return the matching key in keys', (t) => {
 });
 
 test('if findKeyIndex will return the default when not able to match key in keys based on value', (t) => {
-  const isEqual = (a, b) => {
-    return a === b;
-  };
+  const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
   const key = ['key'];
@@ -178,9 +175,7 @@ test('if findKeyIndex will return the default when not able to match key in keys
 });
 
 test('if findKeyIndex will return the default when not able to match key in keys based on length', (t) => {
-  const isEqual = (a, b) => {
-    return a === b;
-  };
+  const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
   const key = ['key'];
@@ -192,12 +187,8 @@ test('if findKeyIndex will return the default when not able to match key in keys
 });
 
 test('if findKeyIndex will return the matching key in keys based on isMatchingKey', (t) => {
-  const isEqual = (a, b) => {
-    return a === b;
-  };
-  const isMatchingKey = (a, b) => {
-    return a[0] === b[0];
-  };
+  const isEqual = (a, b) => a === b;
+  const isMatchingKey = (a, b) => a[0] === b[0];
 
   const key = ['key'];
   const keys = [['not key'], ['key'], ['also not key']];
@@ -226,7 +217,7 @@ test('if getArrayKey returns the key if an array', (t) => {
 
 test('if mergeOptions will return the original options if newOptions are the default', (t) => {
   const originalOptions = {
-    original: 'options'
+    original: 'options',
   };
   const newOptions = DEFAULT_OPTIONS;
 
@@ -237,10 +228,10 @@ test('if mergeOptions will return the original options if newOptions are the def
 
 test('if mergeOptions will return the merged options when newOptions is not the default', (t) => {
   const originalOptions = {
-    original: 'options'
+    original: 'options',
   };
   const newOptions = {
-    better: 'options'
+    better: 'options',
   };
 
   const result = utils.mergeOptions(originalOptions, newOptions);
@@ -249,8 +240,8 @@ test('if mergeOptions will return the merged options when newOptions is not the 
     ...originalOptions,
     ...newOptions,
     onCacheAdd: undefined,
-    onCacheHit: undefined,
     onCacheChange: undefined,
-    transformArgs: undefined
+    onCacheHit: undefined,
+    transformArgs: undefined,
   });
 });

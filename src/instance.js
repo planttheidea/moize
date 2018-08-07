@@ -7,10 +7,16 @@ import {orderByLru} from 'micro-memoize/es/utils';
 import {clearExpiration} from './maxAge';
 
 // stats
-import {getStats, statsCache} from './stats';
+import {
+  getStats,
+  statsCache
+} from './stats';
 
 // types
-import type {MicroMemoizeOptions, StatsProfile} from './types';
+import type {
+  MicroMemoizeOptions,
+  StatsProfile
+} from './types';
 
 // utils
 import {createFindKeyIndex} from './utils';
@@ -69,13 +75,9 @@ export const addInstanceMethods = (moized: Function, {expirations}: Object): voi
     return getStats(profileName);
   };
 
-  moized.has = (key: Array<any>): boolean => {
-    return !!~findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
-  };
+  moized.has = (key: Array<any>): boolean => !!~findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
 
-  moized.keys = (): Array<Array<any>> => {
-    return moized.cacheSnapshot.keys;
-  };
+  moized.keys = (): Array<Array<any>> => moized.cacheSnapshot.keys;
 
   moized.remove = (key: Array<any>): void => {
     const keyIndex: number = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
@@ -105,9 +107,7 @@ export const addInstanceMethods = (moized: Function, {expirations}: Object): voi
     }
   };
 
-  moized.values = (): Array<Array<any>> => {
-    return moized.cacheSnapshot.values;
-  };
+  moized.values = (): Array<Array<any>> => moized.cacheSnapshot.values;
 };
 
 /**
@@ -139,44 +139,44 @@ export const addInstanceProperties = (
         configurable: true,
         get() {
           return microMemoizeOptions;
-        }
+        },
       },
       expirations: {
         configurable: true,
         get() {
           return expirations;
-        }
+        },
       },
       expirationsSnapshot: {
         configurable: true,
         get() {
           return expirations.slice(0);
-        }
+        },
       },
       isCollectingStats: {
         configurable: true,
         get() {
           return statsCache.isCollectingStats;
-        }
+        },
       },
       isMoized: {
         configurable: true,
         get() {
           return true;
-        }
+        },
       },
       options: {
         configurable: true,
         get() {
           return moizeOptions;
-        }
+        },
       },
       originalFunction: {
         configurable: true,
         get() {
           return originalFunction;
-        }
-      }
+        },
+      },
     }: Object)
   );
 

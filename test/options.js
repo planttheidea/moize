@@ -1,7 +1,11 @@
 // test
 import test from 'ava';
 import sinon from 'sinon';
-import {deepEqual, shallowEqual, sameValueZeroEqual} from 'fast-equals';
+import {
+  deepEqual,
+  shallowEqual,
+  sameValueZeroEqual
+} from 'fast-equals';
 
 // src
 import * as options from 'src/options';
@@ -11,7 +15,7 @@ test('if getIsEqual will return equals if passed in options', (t) => {
   const moizeOptions = {
     equals: sinon.spy(),
     isDeepEqual: true,
-    isReact: true
+    isReact: true,
   };
 
   const result = options.getIsEqual(moizeOptions);
@@ -23,7 +27,7 @@ test('if getIsEqual will return deepEqual if isDeepEqual is true', (t) => {
   const moizeOptions = {
     equals: undefined,
     isDeepEqual: true,
-    isReact: true
+    isReact: true,
   };
 
   const result = options.getIsEqual(moizeOptions);
@@ -35,7 +39,7 @@ test('if getIsEqual will return shallowEqual if isReact is true', (t) => {
   const moizeOptions = {
     equals: undefined,
     isDeepEqual: false,
-    isReact: true
+    isReact: true,
   };
 
   const result = options.getIsEqual(moizeOptions);
@@ -45,8 +49,8 @@ test('if getIsEqual will return shallowEqual if isReact is true', (t) => {
 
 test('if getIsMatchingKey will return the matchesKey function if passed', (t) => {
   const moizeOptions = {
+    isSerialized: true,
     matchesKey: sinon.spy(),
-    isSerialized: true
   };
 
   const result = options.getIsMatchingKey(moizeOptions);
@@ -56,8 +60,8 @@ test('if getIsMatchingKey will return the matchesKey function if passed', (t) =>
 
 test('if getIsMatchingKey will return the default is serialized key equal method when no matchesKey is passed', (t) => {
   const moizeOptions = {
+    isSerialized: true,
     matchesKey: null,
-    isSerialized: true
   };
 
   const result = options.getIsMatchingKey(moizeOptions);
@@ -69,7 +73,7 @@ test('if getIsEqual will return sameValueZeroEqual as an ultimate fallback', (t)
   const moizeOptions = {
     equals: undefined,
     isDeepEqual: false,
-    isReact: false
+    isReact: false,
   };
 
   const result = options.getIsEqual(moizeOptions);
@@ -79,10 +83,10 @@ test('if getIsEqual will return sameValueZeroEqual as an ultimate fallback', (t)
 
 test('if getTransformKey will not return a function when not required', (t) => {
   const moizeOptions = {
-    maxArgs: undefined,
     isReact: false,
     isSerialized: false,
-    transformArgs: undefined
+    maxArgs: undefined,
+    transformArgs: undefined,
   };
 
   const result = options.getTransformKey(moizeOptions);
@@ -92,10 +96,10 @@ test('if getTransformKey will not return a function when not required', (t) => {
 
 test('if getTransformKey will get the initial args if maxArgs is a number', (t) => {
   const moizeOptions = {
-    maxArgs: 1,
     isReact: false,
     isSerialized: false,
-    transformArgs: undefined
+    maxArgs: 1,
+    transformArgs: undefined,
   };
 
   const result = options.getTransformKey(moizeOptions);
@@ -109,10 +113,10 @@ test('if getTransformKey will get the initial args if maxArgs is a number', (t) 
 
 test('if getTransformKey will get the first two args if isReact is true', (t) => {
   const moizeOptions = {
-    maxArgs: undefined,
     isReact: true,
     isSerialized: false,
-    transformArgs: undefined
+    maxArgs: undefined,
+    transformArgs: undefined,
   };
 
   const result = options.getTransformKey(moizeOptions);
@@ -126,10 +130,10 @@ test('if getTransformKey will get the first two args if isReact is true', (t) =>
 
 test('if getTransformKey will serialize the args if isSerialized is true', (t) => {
   const moizeOptions = {
-    maxArgs: undefined,
     isReact: false,
     isSerialized: true,
-    transformArgs: undefined
+    maxArgs: undefined,
+    transformArgs: undefined,
   };
 
   const result = options.getTransformKey(moizeOptions);
@@ -143,12 +147,12 @@ test('if getTransformKey will serialize the args if isSerialized is true', (t) =
 
 test('if getTransformKey will call transformArgs if passed', (t) => {
   const moizeOptions = {
-    maxArgs: undefined,
     isReact: false,
     isSerialized: false,
+    maxArgs: undefined,
     transformArgs(args) {
       return [...args].reverse();
-    }
+    },
   };
 
   const result = options.getTransformKey(moizeOptions);
@@ -162,17 +166,17 @@ test('if getTransformKey will call transformArgs if passed', (t) => {
 
 test('if getTransformKey will compose all transforms in the correct order', (t) => {
   const moizeOptions = {
-    maxArgs: 1,
     isReact: true,
     isSerialized: true,
+    maxArgs: 1,
     transformArgs(args) {
       return [
         args[0]
           .split('')
           .reverse()
-          .join('')
+          .join(''),
       ];
-    }
+    },
   };
 
   const result = options.getTransformKey(moizeOptions);

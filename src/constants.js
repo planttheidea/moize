@@ -23,5 +23,5 @@ export const DEFAULT_OPTIONS: Options = {
   serializer: undefined,
   shouldSerializeFunctions: false,
   transformArgs: undefined,
-  updateExpire: false
+  updateExpire: false,
 };

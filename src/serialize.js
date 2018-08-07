@@ -7,7 +7,10 @@ import stringifySafe from 'fast-stringify';
 import type {Options} from './types';
 
 // utils
-import {compose, getArrayKey} from './utils';
+import {
+  compose,
+  getArrayKey
+} from './utils';
 
 /**
  * @private
@@ -21,9 +24,7 @@ import {compose, getArrayKey} from './utils';
  * @param {*} value value in json object
  * @returns {*} if function then toString of it, else the value itself
  */
-export const customReplacer = (key: string, value: any): any => {
-  return typeof value === 'function' ? `${value}` : value;
-};
+export const customReplacer = (key: string, value: any): any => (typeof value === 'function' ? `${value}` : value);
 
 /**
  * @private
@@ -101,15 +102,16 @@ export const createArgumentSerializer = (options: Options): Function => {
  * @param {Options} options the options passed to the moized function
  * @returns {function} the function to use in serializing the arguments
  */
-export const getSerializerFunction = (options: Options): Function => {
-  return typeof options.serializer === 'function'
+export const getSerializerFunction = (options: Options): Function =>
+  /* eslint-disable operator-linebreak */
+  typeof options.serializer === 'function'
     ? // $FlowIgnore serializer is a function
     compose(
       getArrayKey,
       options.serializer
     )
     : createArgumentSerializer(options);
-};
+/* eslint-enable */
 
 /**
  * @private
@@ -123,6 +125,4 @@ export const getSerializerFunction = (options: Options): Function => {
  * @param {*} key the key to test
  * @returns {boolean} are the keys equal
  */
-export const getIsSerializedKeyEqual = (cacheKey: Array<string>, key: Array<string>): boolean => {
-  return cacheKey[0] === key[0];
-};
+export const getIsSerializedKeyEqual = (cacheKey: Array<string>, key: Array<string>): boolean => cacheKey[0] === key[0];
