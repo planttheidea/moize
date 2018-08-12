@@ -65,6 +65,10 @@
               "replace": "micro-memoize/mjs/utils"
             },
             {
+              "search": "micro-memoize",
+              "replace": "micro-memoize/mjs"
+            },
+            {
               "search": "fast-equals",
               "replace": "fast-equals/mjs"
             },
