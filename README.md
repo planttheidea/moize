@@ -71,13 +71,13 @@ $ npm i moize --save
 
 ## Importing
 
-ES syntax in browsers:
+ESM syntax in browsers:
 
 ```javascript
 import moize from "moize";
 ```
 
-ES syntax in NodeJS:
+ESM syntax in NodeJS:
 
 ```javascript
 import moize from "moize/mjs";
