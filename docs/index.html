@@ -70,7 +70,7 @@
 
 
 
-    <h3>moize 5.3.2</h3>
+    <h3>moize 5.4.0</h3>
 
 
 
@@ -96,6 +96,7 @@
 <h2 id="table-of-contents">Table of contents</h2>
 <ul>
 <li><a href="#installation">Installation</a></li>
+<li><a href="#importing">Importing</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#configuration-options">Configuration options</a><ul>
 <li><a href="#equals">equals</a></li>
@@ -158,7 +159,11 @@
 <li><a href="#development">Development</a></li>
 </ul>
 <h2 id="installation">Installation</h2>
-<pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h2 id="usage">Usage</h2>
+<pre class="prettyprint source"><code>$ npm i moize --save</code></pre><h2 id="importing">Importing</h2>
+<p>ESM syntax in browsers:</p>
+<pre class="prettyprint source lang-javascript"><code>import moize from &quot;moize&quot;;</code></pre><p>ESM syntax in NodeJS:</p>
+<pre class="prettyprint source lang-javascript"><code>import moize from &quot;moize/mjs&quot;;</code></pre><p>CommonJS:</p>
+<pre class="prettyprint source lang-javascript"><code>const moize = require(&quot;moize&quot;).default;</code></pre><h2 id="usage">Usage</h2>
 <pre class="prettyprint source lang-javascript"><code>import moize from &quot;moize&quot;;
 
 const method = (a, b) => {
