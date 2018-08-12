@@ -30,14 +30,17 @@
     },
     "lib": {
       "plugins": [
-        "syntax-flow", 
+        "syntax-flow",
         "transform-flow-strip-types",
-        ["search-and-replace", [
-          {
-            "search": "micro-memoize/es/utils",
-            "replace": "micro-memoize/lib/utils"
-          }
-        ]]
+        [
+          "search-and-replace",
+          [
+            {
+              "search": "micro-memoize/es/utils",
+              "replace": "micro-memoize/lib/utils"
+            }
+          ]
+        ]
       ],
       "presets": [
         [
@@ -45,6 +48,44 @@
           {
             "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
+          }
+        ],
+        "stage-2"
+      ]
+    },
+    "mjs": {
+      "plugins": [
+        "syntax-flow",
+        "transform-flow-strip-types",
+        [
+          "search-and-replace",
+          [
+            {
+              "search": "micro-memoize/es/utils",
+              "replace": "micro-memoize/mjs/utils"
+            },
+            {
+              "search": "micro-memoize",
+              "replace": "micro-memoize/mjs"
+            },
+            {
+              "search": "fast-equals",
+              "replace": "fast-equals/mjs"
+            },
+            {
+              "search": "fast-stringify",
+              "replace": "fast-stringify/mjs"
+            }
+          ]
+        ]
+      ],
+      "presets": [
+        [
+          "env",
+          {
+            "exclude": ["transform-es2015-typeof-symbol"],
+            "loose": true,
+            "modules": false
           }
         ],
         "stage-2"
@@ -66,14 +107,17 @@
     },
     "test": {
       "plugins": [
-        "syntax-flow", 
+        "syntax-flow",
         "transform-flow-strip-types",
-        ["search-and-replace", [
-          {
-            "search": "micro-memoize/es/utils",
-            "replace": "micro-memoize/lib/utils"
-          }
-        ]]
+        [
+          "search-and-replace",
+          [
+            {
+              "search": "micro-memoize/es/utils",
+              "replace": "micro-memoize/lib/utils"
+            }
+          ]
+        ]
       ],
       "presets": [
         [

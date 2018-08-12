@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.4.0
+
+- Add ESM support for NodeJS with separate [`.mjs` extension](https://nodejs.org/api/esm.html) exports
+
 ## 5.3.2
 
 **BUGFIXES**

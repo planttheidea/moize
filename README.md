@@ -9,6 +9,7 @@
 ## Table of contents
 
 - [Installation](#installation)
+- [Importing](#importing)
 - [Usage](#usage)
 - [Configuration options](#configuration-options)
   - [equals](#equals)
@@ -66,6 +67,26 @@
 
 ```
 $ npm i moize --save
+```
+
+## Importing
+
+ESM syntax in browsers:
+
+```javascript
+import moize from "moize";
+```
+
+ESM syntax in NodeJS:
+
+```javascript
+import moize from "moize/mjs";
+```
+
+CommonJS:
+
+```javascript
+const moize = require("moize").default;
 ```
 
 ## Usage
