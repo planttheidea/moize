@@ -31,9 +31,9 @@
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
-				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
 				<ul class="dropdown-menu inline">
-					<li><a href="module-moize.html">moize</a></li>
+					<li><a href="global.html#moize">moize</a></li>
 				</ul>
 			</li>
 			
@@ -89,7 +89,7 @@ import {
   createOnCacheOperation,
   getIsEqual,
   getIsMatchingKey,
-  getTransformKey
+  getTransformKey,
 } from './options';
 
 // stats
@@ -98,21 +98,21 @@ import {
   getDefaultProfileName,
   getStats,
   getStatsOptions,
-  statsCache
+  statsCache,
 } from './stats';
 
 // types
 import type {
   Expiration,
   MicroMemoizeOptions,
-  Options
+  Options,
 } from './types';
 
 // utils
 import {
   combine,
   compose,
-  mergeOptions
+  mergeOptions,
 } from './utils';
 
 /**

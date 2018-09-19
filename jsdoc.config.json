@@ -1,15 +1,22 @@
 {
   "babel": {
-    "plugins": ["syntax-flow", "transform-flow-strip-types"],
+    "plugins": [
+      "@babel/plugin-syntax-flow",
+      "@babel/plugin-transform-flow-strip-types",
+      [
+        "./plugins/search-and-replace.js",
+        {
+          "micro-memoize/es/utils": "micro-memoize/lib/utils"
+        }
+      ]
+    ],
     "presets": [
       [
-        "env",
+        "@babel/preset-env",
         {
-          "exclude": ["transform-es2015-typeof-symbol"],
           "loose": true
         }
-      ],
-      "stage-2"
+      ]
     ]
   },
   "configHelpUrl": "http://usejsdoc.org/about-configuring-jsdoc.html",
