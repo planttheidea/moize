@@ -4,13 +4,13 @@
 import type {
   Cache,
   Expiration,
-  Options
+  Options,
 } from './types';
 
 // utils
 import {
   createFindKeyIndex,
-  findExpirationIndex
+  findExpirationIndex,
 } from './utils';
 
 /**

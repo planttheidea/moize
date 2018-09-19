@@ -9,13 +9,13 @@ import {clearExpiration} from './maxAge';
 // stats
 import {
   getStats,
-  statsCache
+  statsCache,
 } from './stats';
 
 // types
 import type {
   MicroMemoizeOptions,
-  StatsProfile
+  StatsProfile,
 } from './types';
 
 // utils

@@ -50,7 +50,7 @@ test('if moize will handle the standard use-case', (t) => {
 
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -93,7 +93,7 @@ test('if moize will handle a custom equals function correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     equals: options.equals,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -134,7 +134,7 @@ test('if moize will handle deep equals correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -177,7 +177,7 @@ test('if moize will handle promises correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isPromise: true,
-    profileName: 'stub',
+    profileName: 'stub at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -226,7 +226,7 @@ test.serial('if moize will handle React components correctly', (t) => {
   t.deepEqual(Moized.options, {
     ...DEFAULT_OPTIONS,
     isReact: true,
-    profileName: 'Custom',
+    profileName: 'Custom at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = Moized._microMemoizeOptions;
@@ -276,7 +276,7 @@ test('if moize will handle serialization of keys correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isSerialized: true,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -327,7 +327,7 @@ test('if moize will handle serialization of keys correctly when functions should
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isSerialized: true,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     shouldSerializeFunctions: true,
   });
 
@@ -379,7 +379,7 @@ test('if moize will handle serialization of keys correctly when a custom seriali
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     isSerialized: true,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     serializer: options.serializer,
   });
 
@@ -492,7 +492,7 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     maxArgs: 1,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -537,7 +537,7 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     maxSize: 1,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -576,7 +576,7 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     onCacheAdd: options.onCacheAdd,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {onCacheAdd: onCacheAddIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -621,7 +621,7 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     onCacheChange: options.onCacheChange,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {onCacheChange: onCacheChangeIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -666,7 +666,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     onCacheHit: options.onCacheHit,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {onCacheHit: onCacheHitIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -815,7 +815,7 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
 
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     transformArgs: options.transformArgs,
   });
 
@@ -945,7 +945,7 @@ test('if moize will handle additional custom options correctly', (t) => {
   t.deepEqual(moized.options, {
     ...DEFAULT_OPTIONS,
     customOption: 'value',
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -995,7 +995,7 @@ test('if moize will handle a curried options implementation correctly', (t) => {
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     transformArgs: secondOptions.transformArgs,
   });
 
@@ -1063,7 +1063,7 @@ test('if moize will handle a curried options implementation correctly when the f
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     transformArgs: secondOptions.transformArgs,
   });
 
@@ -1134,7 +1134,7 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     transformArgs: secondOptions.transformArgs,
   });
 
@@ -1230,7 +1230,7 @@ test('if moize.deep will produce the correct moized function options', (t) => {
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -1297,7 +1297,7 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1346,7 +1346,7 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1388,7 +1388,7 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {
@@ -1428,7 +1428,7 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
     updateExpire: true,
   });
 
@@ -1468,7 +1468,7 @@ test('if moize.react will produce the correct moized function options', (t) => {
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1512,7 +1512,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1554,7 +1554,7 @@ test('if moize.serialize will produce the correct moized function options', (t) 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
@@ -1596,7 +1596,7 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
-    profileName: 'spy',
+    profileName: 'spy at <anonymous>',
   });
 
   t.deepEqual(moized._microMemoizeOptions, {

@@ -9,7 +9,7 @@ import type {Options} from './types';
 // utils
 import {
   compose,
-  getArrayKey
+  getArrayKey,
 } from './utils';
 
 /**

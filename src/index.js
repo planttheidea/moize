@@ -17,7 +17,7 @@ import {
   createOnCacheOperation,
   getIsEqual,
   getIsMatchingKey,
-  getTransformKey
+  getTransformKey,
 } from './options';
 
 // stats
@@ -26,21 +26,21 @@ import {
   getDefaultProfileName,
   getStats,
   getStatsOptions,
-  statsCache
+  statsCache,
 } from './stats';
 
 // types
 import type {
   Expiration,
   MicroMemoizeOptions,
-  Options
+  Options,
 } from './types';
 
 // utils
 import {
   combine,
   compose,
-  mergeOptions
+  mergeOptions,
 } from './utils';
 
 /**
