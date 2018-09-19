@@ -146,5 +146,5 @@
     "transpile:mjs": "npm run clean:mjs && BABEL_ENV=mjs babel src --out-dir mjs"
   },
   "types": "./index.d.ts",
-  "version": "5.4.0"
+  "version": "5.4.1"
 }
