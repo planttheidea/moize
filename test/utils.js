@@ -150,18 +150,6 @@ test('if findKeyIndex will return the matching key in keys', (t) => {
   t.is(result, 1);
 });
 
-test('if findKeyIndex will return the matching key in keys', (t) => {
-  const isEqual = (a, b) => a === b;
-  const isMatchingKey = undefined;
-
-  const key = ['key'];
-  const keys = [['not key'], ['key'], ['also not key']];
-
-  const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
-
-  t.is(result, 1);
-});
-
 test('if findKeyIndex will return the default when not able to match key in keys based on value', (t) => {
   const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
@@ -206,7 +194,7 @@ test('if getArrayKey returns the key if an array', (t) => {
   t.is(result, key);
 });
 
-test('if getArrayKey returns the key if an array', (t) => {
+test('if getArrayKey returns the key if a string', (t) => {
   const key = 'key';
 
   const result = utils.getArrayKey(key);

@@ -4,7 +4,7 @@
 import {
   deepEqual,
   sameValueZeroEqual,
-  shallowEqual
+  shallowEqual,
 } from 'fast-equals';
 
 // max args
@@ -13,20 +13,20 @@ import {createGetInitialArgs} from './maxArgs';
 // serialize
 import {
   getIsSerializedKeyEqual,
-  getSerializerFunction
+  getSerializerFunction,
 } from './serialize';
 
 // types
 import type {
   Cache,
   MicroMemoizeOptions,
-  Options
+  Options,
 } from './types';
 
 // utils
 import {
   compose,
-  getArrayKey
+  getArrayKey,
 } from './utils';
 
 export const createOnCacheOperation = (fn: ?Function): ?Function => {
