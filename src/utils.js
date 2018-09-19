@@ -6,7 +6,7 @@ import {DEFAULT_OPTIONS} from './constants';
 // types
 import type {
   Expiration,
-  Options
+  Options,
 } from './types';
 
 /**

@@ -5,7 +5,7 @@ import type {
   Options,
   StatsCache,
   StatsObject,
-  StatsProfile
+  StatsProfile,
 } from './types';
 
 /**

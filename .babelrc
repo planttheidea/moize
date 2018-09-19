@@ -1,133 +1,113 @@
 {
   "env": {
     "development": {
-      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "plugins": [
+        "@babel/plugin-syntax-flow",
+        "@babel/plugin-transform-flow-strip-types"
+      ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
+        ]
       ]
     },
     "es": {
-      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "plugins": [
+        "@babel/plugin-syntax-flow",
+        "@babel/plugin-transform-flow-strip-types"
+      ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
+        ]
       ]
     },
     "lib": {
       "plugins": [
-        "syntax-flow",
-        "transform-flow-strip-types",
+        "@babel/plugin-syntax-flow",
+        "@babel/plugin-transform-flow-strip-types",
         [
-          "search-and-replace",
-          [
-            {
-              "search": "micro-memoize/es/utils",
-              "replace": "micro-memoize/lib/utils"
-            }
-          ]
+          "./plugins/search-and-replace.js",
+          {
+            "micro-memoize/es/utils": "micro-memoize/lib/utils"
+          }
         ]
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
           }
-        ],
-        "stage-2"
+        ]
       ]
     },
     "mjs": {
       "plugins": [
-        "syntax-flow",
-        "transform-flow-strip-types",
+        "@babel/plugin-syntax-flow",
+        "@babel/plugin-transform-flow-strip-types",
         [
-          "search-and-replace",
-          [
-            {
-              "search": "micro-memoize/es/utils",
-              "replace": "micro-memoize/mjs/utils"
-            },
-            {
-              "search": "micro-memoize",
-              "replace": "micro-memoize/mjs"
-            },
-            {
-              "search": "fast-equals",
-              "replace": "fast-equals/mjs"
-            },
-            {
-              "search": "fast-stringify",
-              "replace": "fast-stringify/mjs"
-            }
-          ]
+          "./plugins/search-and-replace.js",
+          {
+            "micro-memoize/es/utils": "micro-memoize/mjs/utils",
+            "micro-memoize": "micro-memoize/mjs",
+            "fast-equals": "fast-equals/mjs",
+            "fast-stringify": "fast-stringify/mjs"
+          }
         ]
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
+        ]
       ]
     },
     "production": {
-      "plugins": ["syntax-flow", "transform-flow-strip-types"],
+      "plugins": [
+        "@babel/plugin-syntax-flow",
+        "@babel/plugin-transform-flow-strip-types"
+      ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
+        ]
       ]
     },
     "test": {
       "plugins": [
-        "syntax-flow",
-        "transform-flow-strip-types",
+        "@babel/plugin-syntax-flow",
+        "@babel/plugin-transform-flow-strip-types",
         [
-          "search-and-replace",
-          [
-            {
-              "search": "micro-memoize/es/utils",
-              "replace": "micro-memoize/lib/utils"
-            }
-          ]
+          "./plugins/search-and-replace.js",
+          {
+            "micro-memoize/es/utils": "micro-memoize/lib/utils"
+          }
         ]
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
           }
         ],
-        "stage-2"
+        "@babel/preset-react"
       ]
     }
   }
