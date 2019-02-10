@@ -1,33 +1,28 @@
-'use strict';
-
-const FlowBabelWebpackPlugin = require('flow-babel-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
 const ROOT = path.resolve(__dirname, '..');
-const PORT = 3000;
 
 module.exports = {
-  cache: true,
-
   devServer: {
-    contentBase: path.join(ROOT, 'dist'),
-    host: 'localhost',
+    contentBase: './dist',
     inline: true,
-    lazy: false,
-    noInfo: false,
-    port: PORT,
-    quiet: false,
+    port: 3000,
     stats: {
+      assets: false,
+      chunkModules: false,
+      chunks: true,
       colors: true,
-      progress: true,
+      hash: false,
+      timings: true,
+      version: false,
     },
   },
 
   devtool: '#source-map',
 
-  entry: [path.resolve(ROOT, 'DEV_ONLY', 'App.js')],
+  entry: path.join(ROOT, 'DEV_ONLY', 'index.tsx'),
 
   mode: 'development',
 
@@ -37,25 +32,18 @@ module.exports = {
         enforce: 'pre',
         include: [path.resolve(ROOT, 'src')],
         loader: 'eslint-loader',
-        options: {
-          configFile: '.eslintrc',
-          failOnError: true,
-          failOnWarning: false,
-          fix: true,
-          formatter: require('eslint-friendly-formatter'),
-        },
-        test: /\.js$/,
+        test: /\.ts$/,
       },
       {
-        include: [path.resolve(ROOT, 'src'), path.resolve(ROOT, 'DEV_ONLY')],
-        loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-          presets: ['react'],
-        },
-        test: /\.js$/,
+        include: [path.resolve(ROOT, 'src'), /DEV_ONLY/],
+        loader: 'ts-loader',
+        test: /\.tsx?$/,
       },
     ],
+  },
+
+  node: {
+    fs: 'empty',
   },
 
   output: {
@@ -63,9 +51,12 @@ module.exports = {
     library: 'moize',
     libraryTarget: 'umd',
     path: path.resolve(ROOT, 'dist'),
-    publicPath: `http://localhost:${PORT}/`,
     umdNamedDefine: true,
   },
 
-  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV']), new HtmlWebpackPlugin(), new FlowBabelWebpackPlugin()],
+  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV']), new HtmlWebpackPlugin()],
+
+  resolve: {
+    extensions: ['.ts', '.js', '.tsx', '.jsx'],
+  },
 };

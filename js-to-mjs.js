@@ -1,13 +1,21 @@
-const fs = require('fs-extra');
+const fs = require('fs');
 const path = require('path');
 
-const MJS_DIRECTORY = path.join(__dirname, 'mjs');
+const pkg = require('./package.json');
 
-fs.readdirSync(MJS_DIRECTORY).forEach((file) => {
-  const fullPathJsFilename = path.resolve(MJS_DIRECTORY, file);
-  const fullPathMjsFilename = path.resolve(MJS_DIRECTORY, `${file.slice(0, -3)}.mjs`);
+const SOURCE = path.join(__dirname, pkg.module);
+const DESTINATION = path.join(__dirname, pkg.module.replace('esm', 'mjs'));
 
-  fs.moveSync(fullPathJsFilename, fullPathMjsFilename);
+const getFileName = (filename) => {
+  const split = filename.split('/');
 
-  console.log(`mjs/${file} -> mjs/${file.slice(0, -3)}.mjs`);
+  return split[split.length - 1];
+};
+
+fs.copyFile(SOURCE, DESTINATION, (error) => {
+  if (error) {
+    throw error;
+  }
+
+  console.log(`Copied ${getFileName(SOURCE)} to ${getFileName(DESTINATION)}`);
 });
