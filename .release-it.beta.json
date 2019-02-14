@@ -1,0 +1,12 @@
+{
+  "github": {
+    "release": true
+  },
+  "npm": {
+    "tag": "next"
+  },
+  "preReleaseId": "beta",
+  "scripts": {
+    "beforeStart": "npm run prepublish:compile"
+  }
+}
