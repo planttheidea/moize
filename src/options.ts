@@ -5,7 +5,7 @@ import {
   shallowEqual,
 } from 'fast-equals';
 // eslint-disable-next-line no-unused-vars
-import * as MicroMemoize from 'micro-memoize';
+import { MicroMemoize } from 'micro-memoize';
 
 // constants
 import { DEFAULT_OPTIONS_KEYS } from './constants';

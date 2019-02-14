@@ -59,8 +59,6 @@ export function createOnCacheAddIncrementCalls({ profileName }: Moize.Options) {
 }
 
 export function createOnCacheHitIncrementCallsAndHits({ profileName }: Moize.Options) {
-  console.log(profileName);
-
   const { profiles } = statsCache;
 
   /**

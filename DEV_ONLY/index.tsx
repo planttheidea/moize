@@ -10,7 +10,7 @@ import { render } from 'react-dom';
 import memoizee from 'memoizee';
 // import memoize from 'micro-memoize';
 
-import moize, { collectStats } from '../src';
+import moize from '../src';
 
 document.body.style.margin = '0px';
 document.body.style.padding = '0px';
@@ -27,7 +27,7 @@ div.style.width = '100vw';
 
 document.body.appendChild(div);
 
-collectStats();
+moize.collectStats();
 
 console.group('standard');
 
@@ -121,15 +121,10 @@ const withDefault = (foo: string, bar = 'default') => {
   return `${foo} ${bar}`;
 };
 const moizedWithDefault = moize(withDefault);
-const memoizeedWithDefault = memoizee(withDefault);
 
 console.log(moizedWithDefault(foo));
 console.log(moizedWithDefault(foo, bar));
 console.log(moizedWithDefault(foo));
-
-console.log(memoizeedWithDefault(bar));
-console.log(memoizeedWithDefault(bar, baz));
-console.log(memoizeedWithDefault(bar));
 
 console.groupEnd();
 

@@ -1,3 +1,7 @@
+// external dependencies
+// eslint-disable-next-line no-unused-vars
+import { MicroMemoize } from 'micro-memoize';
+
 // constants
 import { DEFAULT_OPTIONS } from './constants';
 
@@ -151,4 +155,41 @@ export function mergeOptions(originalOptions: Moize.Options, newOptions: Moize.O
       newOptions.transformArgs,
     ),
   });
+}
+
+/**
+ * @function orderByLru
+ *
+ * @description
+ * order the array based on a Least-Recently-Used basis
+ *
+ * @param keys the keys to order
+ * @param newKey the new key to move to the front
+ * @param values the values to order
+ * @param newValue the new value to move to the front
+ * @param startingIndex the index of the item to move to the front
+ */
+export function orderByLru(
+  cache: MicroMemoize.Cache,
+  newKey: MicroMemoize.Key,
+  newValue: any,
+  startingIndex: number,
+  maxSize: number,
+) {
+  let index = startingIndex;
+
+  /* eslint-disable no-param-reassign */
+  while (index--) {
+    cache.keys[index + 1] = cache.keys[index];
+    cache.values[index + 1] = cache.values[index];
+  }
+
+  cache.keys[0] = newKey;
+  cache.values[0] = newValue;
+
+  if (startingIndex >= maxSize) {
+    cache.keys.length = maxSize;
+    cache.values.length = maxSize;
+  }
+  /* eslint-enable */
 }

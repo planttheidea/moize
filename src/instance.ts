@@ -1,8 +1,6 @@
 // external dependencies
-// @ts-ignore
-import { orderByLru } from 'micro-memoize/es/utils';
 // eslint-disable-next-line no-unused-vars
-import * as MicroMemoize from 'micro-memoize';
+import { MicroMemoize } from 'micro-memoize';
 
 // maxAge
 import { clearExpiration } from './maxAge';
@@ -14,12 +12,7 @@ import {
 } from './stats';
 
 // utils
-import { createFindKeyIndex } from './utils';
-
-type PropTypes = {
-  [key: string]: Function;
-  [index: number]: Function;
-};
+import { createFindKeyIndex, orderByLru } from './utils';
 
 export interface ExtendedMemoized extends MicroMemoize.Memoized {
   add: (key: any[], value: any) => boolean;
@@ -52,7 +45,7 @@ export function addInstanceMethods(
   { expirations, options }: Moize.AugmentationOptions,
 ) {
   const {
-    isEqual, isMatchingKey, onCacheAdd, onCacheChange, transformKey,
+    isEqual, isMatchingKey, maxSize, onCacheAdd, onCacheChange, transformKey,
   } = memoized.options;
 
   const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
@@ -72,8 +65,13 @@ export function addInstanceMethods(
       memoized.cache.keys.unshift(savedKey);
       memoized.cache.values.unshift(value);
 
-      onCacheAdd(memoized.cache, memoized.options, memoized);
-      onCacheChange(memoized.cache, memoized.options, memoized);
+      if (onCacheAdd) {
+        onCacheAdd(memoized.cache, memoized.options, memoized);
+      }
+
+      if (onCacheChange) {
+        onCacheChange(memoized.cache, memoized.options, memoized);
+      }
     }
 
     return !~keyIndex;
@@ -83,7 +81,9 @@ export function addInstanceMethods(
     memoized.cache.keys.length = 0;
     memoized.cache.values.length = 0;
 
-    onCacheChange(memoized.cache, memoized.options, memoized);
+    if (onCacheChange) {
+      onCacheChange(memoized.cache, memoized.options, memoized);
+    }
   };
 
   memoized.get = function get(key: any[]) {
@@ -123,7 +123,9 @@ export function addInstanceMethods(
       memoized.cache.keys.splice(keyIndex, 1);
       memoized.cache.values.splice(keyIndex, 1);
 
-      onCacheChange(memoized.cache, memoized.options, memoized);
+      if (onCacheChange) {
+        onCacheChange(memoized.cache, memoized.options, memoized);
+      }
 
       clearExpiration(expirations, existingKey, true);
     }
@@ -137,10 +139,11 @@ export function addInstanceMethods(
     if (~keyIndex) {
       const existingKey: any[] = memoized.cache.keys[keyIndex];
 
-      orderByLru(memoized.cache.keys, existingKey, keyIndex);
-      orderByLru(memoized.cache.values, value, keyIndex);
+      orderByLru(memoized.cache, existingKey, value, keyIndex, maxSize);
 
-      onCacheChange(memoized.cache, memoized.options, memoized);
+      if (onCacheChange) {
+        onCacheChange(memoized.cache, memoized.options, memoized);
+      }
     }
 
     return !!~keyIndex;

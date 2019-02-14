@@ -1,8 +1,6 @@
 // external dependencies
-// eslint-disable-next-line import/no-duplicates
-import memoize from 'micro-memoize';
 // eslint-disable-next-line no-unused-vars,import/no-duplicates
-import * as MicroMemoize from 'micro-memoize';
+import memoize, { MicroMemoize } from 'micro-memoize';
 // eslint-disable-next-line no-unused-vars,import/no-duplicates,import/no-extraneous-dependencies
 import * as React from 'react';
 
@@ -31,10 +29,14 @@ import {
 } from './utils';
 
 function moize<T extends Function>(
-  fn: T | Moize.Options | React.ComponentClass,
+  fn: T | Moize.Options | React.ComponentClass | Moize.Moized,
   options: Moize.Options = DEFAULT_OPTIONS,
 ): Moize.Moized {
   if (typeof fn !== 'function') {
+    if (!fn || typeof fn !== 'object') {
+      throw new TypeError('Only functions or options objects can be passed to moize()');
+    }
+
     // @ts-ignore
     return function curriedMoize(curriedFn: T | Moize.Options, curriedOptions: Moize.Options) {
       if (typeof curriedFn === 'function') {
@@ -43,6 +45,12 @@ function moize<T extends Function>(
 
       return moize(mergeOptions(fn, curriedFn));
     };
+  }
+
+  // @ts-ignore if it has a property isMoized, its a previously-moized function
+  if (fn.isMoized) {
+    // @ts-ignore so just return it directly, no need to re-moize it
+    return fn;
   }
 
   const coalescedOptions = assign({}, DEFAULT_OPTIONS, options, {
