@@ -4,10 +4,7 @@
 import stringifySafe from 'fast-stringify';
 
 // utils
-import {
-  compose,
-  getArrayKey,
-} from './utils';
+import { compose, getArrayKey } from './utils';
 
 /**
  * @private
@@ -60,7 +57,9 @@ export function stringify(value: any, replacer: any) {
 export function getStringifiedArgument(arg: any, replacer?: Function) {
   const type = typeof arg;
 
-  return arg && (type === 'object' || type === 'function') ? stringify(arg, replacer) : arg;
+  return arg && (type === 'object' || type === 'function')
+    ? stringify(arg, replacer)
+    : arg;
 }
 
 /**

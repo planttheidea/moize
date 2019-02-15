@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* globals describe,expect,jest,it */
 
 // src
 import {

@@ -1,8 +1,5 @@
 // utils
-import {
-  createFindKeyIndex,
-  findExpirationIndex,
-} from './utils';
+import { createFindKeyIndex, findExpirationIndex } from './utils';
 
 /**
  * @private
@@ -16,7 +13,11 @@ import {
  * @param {any} key the key to clear
  * @param {boolean} [shouldRemove] should the expiration be removed from the list
  */
-export function clearExpiration(expirations: Moize.Expiration[], key: any, shouldRemove: boolean) {
+export function clearExpiration(
+  expirations: Moize.Expiration[],
+  key: any,
+  shouldRemove: boolean,
+) {
   const expirationIndex = findExpirationIndex(expirations, key);
 
   if (~expirationIndex) {
@@ -41,7 +42,7 @@ export function createOnCacheAddSetExpiration(
   /**
    * @private
    *
-   * @function onCacheAdd
+   * @function onCacheAddSetExpiration
    *
    * @description
    * when an item is added to the cache, add an expiration for it
@@ -52,7 +53,11 @@ export function createOnCacheAddSetExpiration(
    * @param moizedOptions the options passed to the memoized function
    * @param moized the memoized function
    */
-  return function onCacheAdd(cache: Moize.Cache, moizedOptions: Moize.Options, moized: Function) {
+  return function onCacheAddSetExpiration(
+    cache: Moize.Cache,
+    moizedOptions: Moize.Options,
+    moized: Function,
+  ) {
     const key: any = cache.keys[0];
 
     if (!~findExpirationIndex(expirations, key)) {
@@ -105,7 +110,7 @@ export function createOnCacheHitResetExpiration(
   /**
    * @private
    *
-   * @function onCacheHit
+   * @function onCacheHitResetExpiration
    *
    * @description
    * when a cache item is hit, reset the expiration
@@ -115,7 +120,7 @@ export function createOnCacheHitResetExpiration(
    * @param {Cache} cache the cache of the memoized function
    * @returns {void}
    */
-  return function onCacheHit(cache: Moize.Cache) {
+  return function onCacheHitResetExpiration(cache: Moize.Cache) {
     const key: any = cache.keys[0];
     const expirationIndex: number = findExpirationIndex(expirations, key);
 
@@ -158,13 +163,17 @@ export function getMaxAgeOptions(
 
   // eslint-disable-next-line no-restricted-globals
   if (typeof maxAge === 'number' && isFinite(maxAge)) {
-    onCacheAdd = createOnCacheAddSetExpiration(expirations, options, isEqual, isMatchingKey);
+    onCacheAdd = createOnCacheAddSetExpiration(
+      expirations,
+      options,
+      isEqual,
+      isMatchingKey,
+    );
   }
 
   if (onCacheAdd && updateExpire) {
     onCacheHit = createOnCacheHitResetExpiration(expirations, options);
   }
-
 
   return {
     onCacheAdd,

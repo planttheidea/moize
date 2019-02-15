@@ -1,3 +1,5 @@
+/* globals describe,expect,it */
+
 // src
 import { createGetInitialArgs } from '../src/maxArgs';
 

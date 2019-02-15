@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* globals afterEach,describe,expect,jest,it */
 
 // src
 import {
@@ -24,18 +24,21 @@ describe('collectStats', () => {
 
 describe('getStats', () => {
   it('should warn in the console when not collecting statistics', () => {
-    const isCollectingStats = statsCache.isCollectingStats;
+    const { isCollectingStats } = statsCache;
 
     statsCache.isCollectingStats = false;
 
-    const warn = console.warn;
+    const { warn } = console;
 
+    // eslint-disable-next-line no-console
     console.warn = jest.fn();
 
     getStats();
 
+    // eslint-disable-next-line no-console
     expect(console.warn).toHaveBeenCalledTimes(1);
 
+    // eslint-disable-next-line no-console
     console.warn = warn;
 
     statsCache.isCollectingStats = isCollectingStats;
@@ -264,8 +267,6 @@ describe('getDefaultProfileName', () => {
   it('should return the function name with the location when a stack is provided', () => {
     const fn = function foo() {};
 
-    const currentError = global.Error;
-
     function FakeError() {
       this.stack = 'foo\nbar\nbaz\n/moize/\n (native)\n Function.foo\nquz';
 
@@ -285,8 +286,6 @@ describe('getDefaultProfileName', () => {
   it('should return the function name by itself when no location can be found', () => {
     const fn = function foo() {};
 
-    const currentError = global.Error;
-
     function FakeError() {
       this.stack = 'foo\nbar\nbaz\n/moize/\n (native)\n Function.foo';
 
@@ -305,8 +304,6 @@ describe('getDefaultProfileName', () => {
 
   it('should return the function name by itself when no stack can be found', () => {
     const fn = function foo() {};
-
-    const currentError = global.Error;
 
     function FakeError() {
       this.stack = null;
@@ -329,8 +326,6 @@ describe('getDefaultProfileName', () => {
 
     fn.displayName = 'foo';
 
-    const currentError = global.Error;
-
     function FakeError() {
       this.stack = null;
 
@@ -352,8 +347,6 @@ describe('getDefaultProfileName', () => {
 
     // @ts-ignore
     delete fn.name;
-
-    const currentError = global.Error;
 
     function FakeError() {
       this.stack = null;
