@@ -1,20 +1,19 @@
 // test
-import test from 'ava';
 import sinon from 'sinon';
 
 // src
 import * as serialize from 'src/serialize';
 
-test('if customReplacer will convert the value to string if it is a function', (t) => {
+test('if customReplacer will convert the value to string if it is a function', () => {
   const key = 'foo';
   const value = function bar() {};
 
   const result = serialize.customReplacer(key, value);
 
-  t.is(result, value.toString());
+  expect(result).toBe(value.toString());
 });
 
-test('if customReplacer will return the value as-is if it is not a function', (t) => {
+test('if customReplacer will return the value as-is if it is not a function', () => {
   const key = 'foo';
 
   const string = 'foo';
@@ -24,13 +23,13 @@ test('if customReplacer will return the value as-is if it is not a function', (t
     foo: 'bar',
   };
 
-  t.is(serialize.customReplacer(key, string), string);
-  t.is(serialize.customReplacer(key, number), number);
-  t.is(serialize.customReplacer(key, boolean), boolean);
-  t.is(serialize.customReplacer(key, object), object);
+  expect(serialize.customReplacer(key, string)).toBe(string);
+  expect(serialize.customReplacer(key, number)).toBe(number);
+  expect(serialize.customReplacer(key, boolean)).toBe(boolean);
+  expect(serialize.customReplacer(key, object)).toBe(object);
 });
 
-test('if stringify will call JSON.stringify with the value passed', (t) => {
+test('if stringify will call JSON.stringify with the value passed', () => {
   const value = {foo: 'bar'};
   const replacer = null;
 
@@ -38,13 +37,13 @@ test('if stringify will call JSON.stringify with the value passed', (t) => {
 
   serialize.stringify(value, replacer);
 
-  t.true(spy.calledOnce);
-  t.true(spy.calledWith(value, replacer));
+  expect(spy.calledOnce).toBe(true);
+  expect(spy.calledWith(value, replacer)).toBe(true);
 
   spy.restore();
 });
 
-test('if stringify will call JSON.stringify with the value and replacer passed', (t) => {
+test('if stringify will call JSON.stringify with the value and replacer passed', () => {
   const value = {foo: 'bar'};
   const replacer = serialize.customReplacer;
 
@@ -52,34 +51,37 @@ test('if stringify will call JSON.stringify with the value and replacer passed',
 
   serialize.stringify(value, replacer);
 
-  t.true(spy.calledOnce);
-  t.true(spy.calledWith(value, replacer));
+  expect(spy.calledOnce).toBe(true);
+  expect(spy.calledWith(value, replacer)).toBe(true);
 
   spy.restore();
 });
 
-test.serial('if stringify will call stringifySafe on the object when it cannot be handled by JSON.stringify', (t) => {
-  const standard = {
-    foo: 'bar',
-  };
-  const circular = {
-    foo: {
-      bar: 'baz',
-    },
-  };
+test(
+  'if stringify will call stringifySafe on the object when it cannot be handled by JSON.stringify',
+  () => {
+    const standard = {
+      foo: 'bar',
+    };
+    const circular = {
+      foo: {
+        bar: 'baz',
+      },
+    };
 
-  circular.foo.baz = circular.foo;
+    circular.foo.baz = circular.foo;
 
-  const standardResult = serialize.stringify(standard, undefined);
+    const standardResult = serialize.stringify(standard, undefined);
 
-  t.is(standardResult, '{"foo":"bar"}');
+    expect(standardResult).toBe('{"foo":"bar"}');
 
-  const circularResult = serialize.stringify(circular, undefined);
+    const circularResult = serialize.stringify(circular, undefined);
 
-  t.is(circularResult, '{"foo":{"bar":"baz","baz":"[ref-1]"}}');
-});
+    expect(circularResult).toBe('{"foo":{"bar":"baz","baz":"[ref-1]"}}');
+  }
+);
 
-test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', (t) => {
+test('if getStringifiedArgument returns the argument if primitive, else returns a JSON.stringified version of it', () => {
   const string = 'foo';
   const number = 123;
   const boolean = true;
@@ -87,72 +89,72 @@ test('if getStringifiedArgument returns the argument if primitive, else returns 
     foo: 'bar',
   };
 
-  t.is(serialize.getStringifiedArgument(string), string);
-  t.is(serialize.getStringifiedArgument(number), number);
-  t.is(serialize.getStringifiedArgument(boolean), boolean);
-  t.is(serialize.getStringifiedArgument(object), JSON.stringify(object));
+  expect(serialize.getStringifiedArgument(string)).toBe(string);
+  expect(serialize.getStringifiedArgument(number)).toBe(number);
+  expect(serialize.getStringifiedArgument(boolean)).toBe(boolean);
+  expect(serialize.getStringifiedArgument(object)).toBe(JSON.stringify(object));
 });
 
-test('if getStringifiedArgument will stringify the object when it is a complex object', (t) => {
+test('if getStringifiedArgument will stringify the object when it is a complex object', () => {
   const arg = {};
   const replacer = null;
 
   const result = serialize.getStringifiedArgument(arg, replacer);
 
-  t.is(result, '{}');
+  expect(result).toBe('{}');
 });
 
-test('if getStringifiedArgument will stringify the object when it is a function', (t) => {
+test('if getStringifiedArgument will stringify the object when it is a function', () => {
   const arg = () => {};
   const replacer = null;
 
   const result = serialize.getStringifiedArgument(arg, replacer);
 
-  t.is(result, undefined);
+  expect(result).toBe(undefined);
 });
 
-test('if getStringifiedArgument will return the arg directly if it is not a complex object', (t) => {
+test('if getStringifiedArgument will return the arg directly if it is not a complex object', () => {
   const arg = 123;
   const replacer = null;
 
   const result = serialize.getStringifiedArgument(arg, replacer);
 
-  t.is(result, arg);
+  expect(result).toBe(arg);
 });
 
-test('if createArgumentSerializer will create a method that serializes the args passed without the functions', (t) => {
+test('if createArgumentSerializer will create a method that serializes the args passed without the functions', () => {
   const options = {
     shouldSerializeFunctions: false,
   };
 
   const argumentSerializer = serialize.createArgumentSerializer(options);
 
-  t.is(typeof argumentSerializer, 'function');
+  expect(typeof argumentSerializer).toBe('function');
 
   const args = ['foo', ['bar'], {baz: 'baz'}, () => {}];
 
   const result = argumentSerializer(args);
 
-  t.deepEqual(result, ['|foo|["bar"]|{"baz":"baz"}|undefined|']);
+  expect(result).toEqual(['|foo|["bar"]|{"baz":"baz"}|undefined|']);
 });
 
-test('if createArgumentSerializer will create a method that serializes the args passed using the custom serializer', (t) => {
+test('if createArgumentSerializer will create a method that serializes the args passed using the custom serializer', () => {
   const options = {
     shouldSerializeFunctions: true,
   };
 
   const argumentSerializer = serialize.createArgumentSerializer(options);
 
-  t.is(typeof argumentSerializer, 'function');
+  expect(typeof argumentSerializer).toBe('function');
 
   const args = ['foo', ['bar'], {baz: 'baz'}, () => {}];
 
   const result = argumentSerializer(args);
 
-  t.deepEqual(result, ['|foo|["bar"]|{"baz":"baz"}|"function () {}"|']);
+  expect(result).toEqual(['|foo|["bar"]|{"baz":"baz"}|"function () {}"|']);
 });
 
-test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', (t) => {
+test('if getSerializerFunction returns a function that produces a stringified version of the arguments with a separator', () => {
   const options = {
     serializer: null,
   };
@@ -170,10 +172,10 @@ test('if getSerializerFunction returns a function that produces a stringified ve
 
   const result = serializeArguments(args);
 
-  t.deepEqual(result, [`|${string}|${number}|${boolean}|undefined|{"bar":"baz"}|`]);
+  expect(result).toEqual([`|${string}|${number}|${boolean}|undefined|{"bar":"baz"}|`]);
 });
 
-test('if getSerializerFunction uses the serializer passed when it is a function', (t) => {
+test('if getSerializerFunction uses the serializer passed when it is a function', () => {
   const options = {
     serializer(value) {
       return `KEY: ${JSON.stringify(value)}`;
@@ -193,10 +195,10 @@ test('if getSerializerFunction uses the serializer passed when it is a function'
 
   const result = serializeArguments(args);
 
-  t.deepEqual(result, [`KEY: ${JSON.stringify(args)}`]);
+  expect(result).toEqual([`KEY: ${JSON.stringify(args)}`]);
 });
 
-test('if getIsSerializedKeyEqual will return correctly when the values match', (t) => {
-  t.true(serialize.getIsSerializedKeyEqual(['key'], ['key']));
-  t.false(serialize.getIsSerializedKeyEqual(['key'], ['not key']));
+test('if getIsSerializedKeyEqual will return correctly when the values match', () => {
+  expect(serialize.getIsSerializedKeyEqual(['key'], ['key'])).toBe(true);
+  expect(serialize.getIsSerializedKeyEqual(['key'], ['not key'])).toBe(false);
 });

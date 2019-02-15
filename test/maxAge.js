@@ -1,11 +1,10 @@
 // test
-import test from 'ava';
 import sinon from 'sinon';
 
 // src
 import * as maxAge from 'src/maxAge';
 
-test('if clearExpiration will clear the expiration if it exists', (t) => {
+test('if clearExpiration will clear the expiration if it exists', () => {
   const key = ['foo'];
   const expirations = [
     {
@@ -18,13 +17,13 @@ test('if clearExpiration will clear the expiration if it exists', (t) => {
 
   maxAge.clearExpiration(expirations, key);
 
-  t.true(stub.calledOnce);
-  t.is(expirations.length, 1);
+  expect(stub.calledOnce).toBe(true);
+  expect(expirations.length).toBe(1);
 
   stub.restore();
 });
 
-test('if clearExpiration will clear the expiration if it exists and remove it if requested', (t) => {
+test('if clearExpiration will clear the expiration if it exists and remove it if requested', () => {
   const key = ['foo'];
   const expirations = [
     {
@@ -37,13 +36,13 @@ test('if clearExpiration will clear the expiration if it exists and remove it if
 
   maxAge.clearExpiration(expirations, key, true);
 
-  t.true(stub.calledOnce);
-  t.is(expirations.length, 0);
+  expect(stub.calledOnce).toBe(true);
+  expect(expirations.length).toBe(0);
 
   stub.restore();
 });
 
-test('if clearExpiration will do nothing if the expiration is not found', (t) => {
+test('if clearExpiration will do nothing if the expiration is not found', () => {
   const key = ['foo'];
   const expirations = [
     {
@@ -56,13 +55,13 @@ test('if clearExpiration will do nothing if the expiration is not found', (t) =>
 
   maxAge.clearExpiration(expirations, key, true);
 
-  t.true(stub.notCalled);
-  t.is(expirations.length, 1);
+  expect(stub.notCalled).toBe(true);
+  expect(expirations.length).toBe(1);
 
   stub.restore();
 });
 
-test('if onCacheAddSetExpiration will do nothing if an existing expiration is found', (t) => {
+test('if onCacheAddSetExpiration will do nothing if an existing expiration is found', () => {
   const originalExpirations = [
     {
       expirationMethod() {},
@@ -88,14 +87,14 @@ test('if onCacheAddSetExpiration will do nothing if an existing expiration is fo
 
   result(cache);
 
-  t.true(setTimeoutStub.notCalled);
+  expect(setTimeoutStub.notCalled).toBe(true);
 
-  t.deepEqual(expirations, originalExpirations);
+  expect(expirations).toEqual(originalExpirations);
 
   setTimeoutStub.restore();
 });
 
-test('if onCacheAddSetExpiration will add the new expiration when options are passed', (t) => {
+test('if onCacheAddSetExpiration will add the new expiration when options are passed', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -113,29 +112,29 @@ test('if onCacheAddSetExpiration will add the new expiration when options are pa
 
   result(cache);
 
-  t.true(setTimeoutStub.calledOnce);
+  expect(setTimeoutStub.calledOnce).toBe(true);
 
-  t.is(expirations.length, 1);
+  expect(expirations.length).toBe(1);
 
   const {expirationMethod, key, timeoutId} = expirations[0];
 
-  t.true(setTimeoutStub.calledWith(expirationMethod, options.maxAge));
+  expect(setTimeoutStub.calledWith(expirationMethod, options.maxAge)).toBe(true);
 
   setTimeoutStub.restore();
 
-  t.is(key, cache.keys[0]);
-  t.is(timeoutId, 234);
+  expect(key).toBe(cache.keys[0]);
+  expect(timeoutId).toBe(234);
 
-  t.is(cache.keys.length, 1);
-  t.is(cache.values.length, 1);
+  expect(cache.keys.length).toBe(1);
+  expect(cache.values.length).toBe(1);
 
   expirationMethod();
 
-  t.is(cache.keys.length, 0);
-  t.is(cache.values.length, 0);
+  expect(cache.keys.length).toBe(0);
+  expect(cache.values.length).toBe(0);
 });
 
-test('if onCacheAddSetExpiration will not remove the key / value combo when they no longer exist', (t) => {
+test('if onCacheAddSetExpiration will not remove the key / value combo when they no longer exist', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -160,12 +159,12 @@ test('if onCacheAddSetExpiration will not remove the key / value combo when they
   cache.keys.length = 0;
   cache.values.length = 0;
 
-  t.notThrows(() => {
+  expect(() => {
     expirationMethod();
-  });
+  }).not.toThrow();
 });
 
-test('if onCacheAddSetExpiration will not remove the expiration when it no longer exists', (t) => {
+test('if onCacheAddSetExpiration will not remove the expiration when it no longer exists', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -189,12 +188,12 @@ test('if onCacheAddSetExpiration will not remove the expiration when it no longe
 
   expirations.length = 0;
 
-  t.notThrows(() => {
+  expect(() => {
     expirationMethod();
-  });
+  }).not.toThrow();
 });
 
-test('if onCacheAddSetExpiration will return the expired key and value and create a new expiration if onExpire returns false', (t) => {
+test('if onCacheAddSetExpiration will return the expired key and value and create a new expiration if onExpire returns false', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -213,33 +212,33 @@ test('if onCacheAddSetExpiration will return the expired key and value and creat
 
   result(cache);
 
-  t.true(setTimeoutStub.calledOnce);
+  expect(setTimeoutStub.calledOnce).toBe(true);
 
   setTimeoutStub.restore();
 
-  t.is(expirations.length, 1);
+  expect(expirations.length).toBe(1);
 
   const {expirationMethod, key, timeoutId} = expirations[0];
 
-  t.is(key, cache.keys[0]);
-  t.is(timeoutId, 234);
+  expect(key).toBe(cache.keys[0]);
+  expect(timeoutId).toBe(234);
 
-  t.is(cache.keys.length, 1);
-  t.is(cache.values.length, 1);
+  expect(cache.keys.length).toBe(1);
+  expect(cache.values.length).toBe(1);
 
   const currentKeys = [...cache.keys];
   const currentValues = [...cache.values];
 
   expirationMethod();
 
-  t.is(cache.keys.length, 1);
-  t.deepEqual(cache.keys, currentKeys);
+  expect(cache.keys.length).toBe(1);
+  expect(cache.keys).toEqual(currentKeys);
 
-  t.is(cache.values.length, 1);
-  t.deepEqual(cache.values, currentValues);
+  expect(cache.values.length).toBe(1);
+  expect(cache.values).toEqual(currentValues);
 });
 
-test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) => {
+test('if onCacheAddSetExpiration will fire onCacheChange when it exists', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -261,36 +260,36 @@ test('if onCacheAddSetExpiration will fire onCacheChange when it exists', (t) =>
 
   result(cache, options, moized);
 
-  t.true(setTimeoutStub.calledOnce);
+  expect(setTimeoutStub.calledOnce).toBe(true);
 
   setTimeoutStub.restore();
 
-  t.is(expirations.length, 1);
+  expect(expirations.length).toBe(1);
 
   const {expirationMethod, key, timeoutId} = expirations[0];
 
-  t.is(key, cache.keys[0]);
-  t.is(timeoutId, 234);
+  expect(key).toBe(cache.keys[0]);
+  expect(timeoutId).toBe(234);
 
-  t.is(cache.keys.length, 1);
-  t.is(cache.values.length, 1);
+  expect(cache.keys.length).toBe(1);
+  expect(cache.values.length).toBe(1);
 
   const currentKeys = [...cache.keys];
   const currentValues = [...cache.values];
 
   expirationMethod();
 
-  t.true(options.onCacheChange.calledTwice);
-  t.deepEqual(options.onCacheChange.args, [[cache, options, moized], [cache, options, moized]]);
+  expect(options.onCacheChange.calledTwice).toBe(true);
+  expect(options.onCacheChange.args).toEqual([[cache, options, moized], [cache, options, moized]]);
 
-  t.is(cache.keys.length, 1);
-  t.deepEqual(cache.keys, currentKeys);
+  expect(cache.keys.length).toBe(1);
+  expect(cache.keys).toEqual(currentKeys);
 
-  t.is(cache.values.length, 1);
-  t.deepEqual(cache.values, currentValues);
+  expect(cache.values.length).toBe(1);
+  expect(cache.values).toEqual(currentValues);
 });
 
-test('if onCacheHitResetExpiration will do nothing when the expiration does not exist', (t) => {
+test('if onCacheHitResetExpiration will do nothing when the expiration does not exist', () => {
   const originalExpirations = [];
 
   const expirations = originalExpirations.map((expiration) => ({...expiration}));
@@ -306,10 +305,10 @@ test('if onCacheHitResetExpiration will do nothing when the expiration does not 
 
   result(cache);
 
-  t.deepEqual(expirations, []);
+  expect(expirations).toEqual([]);
 });
 
-test('if onCacheHitResetExpiration will update the expiration when found', (t) => {
+test('if onCacheHitResetExpiration will update the expiration when found', () => {
   const originalExpirations = [
     {
       expirationMethod() {},
@@ -335,17 +334,19 @@ test('if onCacheHitResetExpiration will update the expiration when found', (t) =
 
   result(cache);
 
-  t.true(clearTimeoutStub.calledOnce);
-  t.true(clearTimeoutStub.calledWith(originalExpirations[0].timeoutId));
+  expect(clearTimeoutStub.calledOnce).toBe(true);
+  expect(clearTimeoutStub.calledWith(originalExpirations[0].timeoutId)).toBe(true);
 
   clearTimeoutStub.restore();
 
-  t.true(setTimeoutStub.calledOnce);
-  t.true(setTimeoutStub.calledWith(originalExpirations[0].expirationMethod, options.maxAge));
+  expect(setTimeoutStub.calledOnce).toBe(true);
+  expect(
+    setTimeoutStub.calledWith(originalExpirations[0].expirationMethod, options.maxAge)
+  ).toBe(true);
 
   setTimeoutStub.restore();
 
-  t.deepEqual(expirations, [
+  expect(expirations).toEqual([
     {
       ...originalExpirations[0],
       timeoutId: 234,
@@ -353,7 +354,7 @@ test('if onCacheHitResetExpiration will update the expiration when found', (t) =
   ]);
 });
 
-test('if getMaxAgeOptions will return the combined onCacheAdd and onCacheHit methods', (t) => {
+test('if getMaxAgeOptions will return the combined onCacheAdd and onCacheHit methods', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -364,12 +365,12 @@ test('if getMaxAgeOptions will return the combined onCacheAdd and onCacheHit met
 
   const result = maxAge.getMaxAgeOptions(expirations, options);
 
-  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
-  t.is(typeof result.onCacheAdd, 'function');
-  t.is(typeof result.onCacheHit, 'function');
+  expect(Object.keys(result)).toEqual(['onCacheAdd', 'onCacheHit']);
+  expect(typeof result.onCacheAdd).toBe('function');
+  expect(typeof result.onCacheHit).toBe('function');
 });
 
-test('if getMaxAgeOptions will return undefined for onCacheHit if updateExpire is false', (t) => {
+test('if getMaxAgeOptions will return undefined for onCacheHit if updateExpire is false', () => {
   const expirations = [];
   const options = {
     maxAge: 100,
@@ -380,12 +381,12 @@ test('if getMaxAgeOptions will return undefined for onCacheHit if updateExpire i
 
   const result = maxAge.getMaxAgeOptions(expirations, options);
 
-  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
-  t.is(typeof result.onCacheAdd, 'function');
-  t.is(result.onCacheHit, undefined);
+  expect(Object.keys(result)).toEqual(['onCacheAdd', 'onCacheHit']);
+  expect(typeof result.onCacheAdd).toBe('function');
+  expect(result.onCacheHit).toBe(undefined);
 });
 
-test('if getMaxAgeOptions will return undefined for onCacheHit if onCacheAdd is not a function', (t) => {
+test('if getMaxAgeOptions will return undefined for onCacheHit if onCacheAdd is not a function', () => {
   const expirations = [];
   const options = {
     maxAge: undefined,
@@ -396,7 +397,7 @@ test('if getMaxAgeOptions will return undefined for onCacheHit if onCacheAdd is 
 
   const result = maxAge.getMaxAgeOptions(expirations, options);
 
-  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
-  t.is(result.onCacheAdd, undefined);
-  t.is(result.onCacheHit, undefined);
+  expect(Object.keys(result)).toEqual(['onCacheAdd', 'onCacheHit']);
+  expect(result.onCacheAdd).toBe(undefined);
+  expect(result.onCacheHit).toBe(undefined);
 });

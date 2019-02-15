@@ -11,5 +11,7 @@
     "outDir": "./dist",
     "sourceMap": true,
     "target": "es5"
-  }
+  },
+  "exclude": ["node_modules"],
+  "include": ["src/*", "__tests__/*"]
 }

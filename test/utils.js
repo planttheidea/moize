@@ -1,12 +1,11 @@
 // test
-import test from 'ava';
 import sinon from 'sinon';
 
 // src
 import * as utils from 'src/utils';
 import {DEFAULT_OPTIONS} from 'src/constants';
 
-test('if combine fires all functions passed', (t) => {
+test('if combine fires all functions passed', () => {
   const a = null;
   const b = sinon.spy();
   const c = null;
@@ -18,30 +17,30 @@ test('if combine fires all functions passed', (t) => {
 
   result(...args);
 
-  t.true(b.calledOnce);
-  t.true(b.calledWith(...args));
+  expect(b.calledOnce).toBe(true);
+  expect(b.calledWith(...args)).toBe(true);
 
-  t.true(d.calledOnce);
-  t.true(d.calledWith(...args));
+  expect(d.calledOnce).toBe(true);
+  expect(d.calledWith(...args)).toBe(true);
 });
 
-test('if combine handles when no valid functions are passed', (t) => {
+test('if combine handles when no valid functions are passed', () => {
   const a = undefined;
   const b = null;
   const c = false;
 
   const result = utils.combine(a, b, c);
 
-  t.is(result, undefined);
+  expect(result).toBe(undefined);
 });
 
-test('if combine handles when no functions are passed', (t) => {
+test('if combine handles when no functions are passed', () => {
   const result = utils.combine();
 
-  t.is(result, undefined);
+  expect(result).toBe(undefined);
 });
 
-test('if compose will fire the methods passed composed in the correct order', (t) => {
+test('if compose will fire the methods passed composed in the correct order', () => {
   const a = sinon.stub().callsFake(({args}) => [...args].reverse());
   const b = sinon.stub().callsFake((args) => ({
     args,
@@ -58,23 +57,21 @@ test('if compose will fire the methods passed composed in the correct order', (t
 
   const value = result(args);
 
-  t.true(a.calledOnce);
-  t.true(
-    a.calledWith({
-      args: args.slice(0, 2),
-    })
-  );
+  expect(a.calledOnce).toBe(true);
+  expect(a.calledWith({
+    args: args.slice(0, 2),
+  })).toBe(true);
 
-  t.true(b.calledOnce);
-  t.true(b.calledWith(args.slice(0, 2)));
+  expect(b.calledOnce).toBe(true);
+  expect(b.calledWith(args.slice(0, 2))).toBe(true);
 
-  t.true(c.calledOnce);
-  t.true(c.calledWith(args));
+  expect(c.calledOnce).toBe(true);
+  expect(c.calledWith(args)).toBe(true);
 
-  t.deepEqual(value, args.slice(0, 2).reverse());
+  expect(value).toEqual(args.slice(0, 2).reverse());
 });
 
-test('if compose will handle only functions passed', (t) => {
+test('if compose will handle only functions passed', () => {
   const a = null;
   const b = sinon.stub().callsFake((args) => [...args].reverse());
   const c = null;
@@ -91,16 +88,16 @@ test('if compose will handle only functions passed', (t) => {
 
   const value = result(args);
 
-  t.true(b.calledOnce);
-  t.true(b.calledWith(args.slice(0, 2)));
+  expect(b.calledOnce).toBe(true);
+  expect(b.calledWith(args.slice(0, 2))).toBe(true);
 
-  t.true(d.calledOnce);
-  t.true(d.calledWith(args));
+  expect(d.calledOnce).toBe(true);
+  expect(d.calledWith(args)).toBe(true);
 
-  t.deepEqual(value, args.slice(0, 2).reverse());
+  expect(value).toEqual(args.slice(0, 2).reverse());
 });
 
-test('if compose will handle no valid functions are passed', (t) => {
+test('if compose will handle no valid functions are passed', () => {
   const a = undefined;
   const b = null;
   const c = false;
@@ -111,34 +108,34 @@ test('if compose will handle no valid functions are passed', (t) => {
     c
   );
 
-  t.is(result, undefined);
+  expect(result).toBe(undefined);
 });
 
-test('if compose will handle no functions are passed', (t) => {
+test('if compose will handle no functions are passed', () => {
   const result = utils.compose();
 
-  t.is(result, undefined);
+  expect(result).toBe(undefined);
 });
 
-test('if findExpirationIndex will find the expiration based on the key', (t) => {
+test('if findExpirationIndex will find the expiration based on the key', () => {
   const key = ['key'];
   const expirations = [{key: 'not key'}, {key}];
 
   const result = utils.findExpirationIndex(expirations, key);
 
-  t.is(result, 1);
+  expect(result).toBe(1);
 });
 
-test('if findExpirationIndex will return the default if it cannot find the expiration based on the key', (t) => {
+test('if findExpirationIndex will return the default if it cannot find the expiration based on the key', () => {
   const key = ['key'];
   const expirations = [{key: 'not key'}];
 
   const result = utils.findExpirationIndex(expirations, key);
 
-  t.is(result, -1);
+  expect(result).toBe(-1);
 });
 
-test('if findKeyIndex will return the matching key in keys', (t) => {
+test('if findKeyIndex will return the matching key in keys', () => {
   const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
@@ -147,10 +144,10 @@ test('if findKeyIndex will return the matching key in keys', (t) => {
 
   const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
-  t.is(result, 1);
+  expect(result).toBe(1);
 });
 
-test('if findKeyIndex will return the default when not able to match key in keys based on value', (t) => {
+test('if findKeyIndex will return the default when not able to match key in keys based on value', () => {
   const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
@@ -159,10 +156,10 @@ test('if findKeyIndex will return the default when not able to match key in keys
 
   const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
-  t.is(result, -1);
+  expect(result).toBe(-1);
 });
 
-test('if findKeyIndex will return the default when not able to match key in keys based on length', (t) => {
+test('if findKeyIndex will return the default when not able to match key in keys based on length', () => {
   const isEqual = (a, b) => a === b;
   const isMatchingKey = undefined;
 
@@ -171,10 +168,10 @@ test('if findKeyIndex will return the default when not able to match key in keys
 
   const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
-  t.is(result, -1);
+  expect(result).toBe(-1);
 });
 
-test('if findKeyIndex will return the matching key in keys based on isMatchingKey', (t) => {
+test('if findKeyIndex will return the matching key in keys based on isMatchingKey', () => {
   const isEqual = (a, b) => a === b;
   const isMatchingKey = (a, b) => a[0] === b[0];
 
@@ -183,27 +180,27 @@ test('if findKeyIndex will return the matching key in keys based on isMatchingKe
 
   const result = utils.createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
 
-  t.is(result, 1);
+  expect(result).toBe(1);
 });
 
-test('if getArrayKey returns the key if an array', (t) => {
+test('if getArrayKey returns the key if an array', () => {
   const key = ['key'];
 
   const result = utils.getArrayKey(key);
 
-  t.is(result, key);
+  expect(result).toBe(key);
 });
 
-test('if getArrayKey returns the key if a string', (t) => {
+test('if getArrayKey returns the key if a string', () => {
   const key = 'key';
 
   const result = utils.getArrayKey(key);
 
-  t.not(result, key);
-  t.deepEqual(result, [key]);
+  expect(result).not.toBe(key);
+  expect(result).toEqual([key]);
 });
 
-test('if mergeOptions will return the original options if newOptions are the default', (t) => {
+test('if mergeOptions will return the original options if newOptions are the default', () => {
   const originalOptions = {
     original: 'options',
   };
@@ -211,10 +208,10 @@ test('if mergeOptions will return the original options if newOptions are the def
 
   const result = utils.mergeOptions(originalOptions, newOptions);
 
-  t.is(result, originalOptions);
+  expect(result).toBe(originalOptions);
 });
 
-test('if mergeOptions will return the merged options when newOptions is not the default', (t) => {
+test('if mergeOptions will return the merged options when newOptions is not the default', () => {
   const originalOptions = {
     original: 'options',
   };
@@ -224,7 +221,7 @@ test('if mergeOptions will return the merged options when newOptions is not the 
 
   const result = utils.mergeOptions(originalOptions, newOptions);
 
-  t.deepEqual(result, {
+  expect(result).toEqual({
     ...originalOptions,
     ...newOptions,
     onCacheAdd: undefined,

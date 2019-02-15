@@ -1,5 +1,4 @@
 // test
-import test from 'ava';
 import memoize from 'micro-memoize';
 import sinon from 'sinon';
 
@@ -8,7 +7,7 @@ import * as instance from 'src/instance';
 import * as options from 'src/options';
 import * as stats from 'src/stats';
 
-test('if addInstanceMethods will add functions to the moized object', (t) => {
+test('if addInstanceMethods will add functions to the moized object', () => {
   const moized = () => {};
 
   moized.options = {
@@ -24,17 +23,17 @@ test('if addInstanceMethods will add functions to the moized object', (t) => {
 
   instance.addInstanceMethods(moized, configuration);
 
-  t.is(typeof moized.add, 'function');
-  t.is(typeof moized.clear, 'function');
-  t.is(typeof moized.get, 'function');
-  t.is(typeof moized.getStats, 'function');
-  t.is(typeof moized.has, 'function');
-  t.is(typeof moized.keys, 'function');
-  t.is(typeof moized.remove, 'function');
-  t.is(typeof moized.values, 'function');
+  expect(typeof moized.add).toBe('function');
+  expect(typeof moized.clear).toBe('function');
+  expect(typeof moized.get).toBe('function');
+  expect(typeof moized.getStats).toBe('function');
+  expect(typeof moized.has).toBe('function');
+  expect(typeof moized.keys).toBe('function');
+  expect(typeof moized.remove).toBe('function');
+  expect(typeof moized.values).toBe('function');
 });
 
-test('if moized.add will add the item to the cache if it does not already exist', (t) => {
+test('if moized.add will add the item to the cache if it does not already exist', () => {
   const moized = () => {};
 
   moized.cache = {
@@ -63,17 +62,17 @@ test('if moized.add will add the item to the cache if it does not already exist'
 
   moized.add(key, value);
 
-  t.deepEqual(moized.cache.keys, [key]);
-  t.deepEqual(moized.cache.values, [value]);
+  expect(moized.cache.keys).toEqual([key]);
+  expect(moized.cache.values).toEqual([value]);
 
-  t.true(moized.options.onCacheAdd.calledOnce);
-  t.true(moized.options.onCacheAdd.calledWith(moized.cache));
+  expect(moized.options.onCacheAdd.calledOnce).toBe(true);
+  expect(moized.options.onCacheAdd.calledWith(moized.cache)).toBe(true);
 
-  t.true(moized.options.onCacheChange.calledOnce);
-  t.true(moized.options.onCacheChange.calledWith(moized.cache));
+  expect(moized.options.onCacheChange.calledOnce).toBe(true);
+  expect(moized.options.onCacheChange.calledWith(moized.cache)).toBe(true);
 });
 
-test('if moized.add will add the item to the cache if it does not already exist with a transformed key', (t) => {
+test('if moized.add will add the item to the cache if it does not already exist with a transformed key', () => {
   const moized = () => {};
 
   moized.cache = {
@@ -108,7 +107,7 @@ test('if moized.add will add the item to the cache if it does not already exist 
 
   moized.add(key, value);
 
-  t.deepEqual(moized.cache.keys, [
+  expect(moized.cache.keys).toEqual([
     [
       key[0]
         .split('')
@@ -116,16 +115,16 @@ test('if moized.add will add the item to the cache if it does not already exist 
         .join(''),
     ],
   ]);
-  t.deepEqual(moized.cache.values, [value]);
+  expect(moized.cache.values).toEqual([value]);
 
-  t.true(moized.options.onCacheAdd.calledOnce);
-  t.true(moized.options.onCacheAdd.calledWith(moized.cache));
+  expect(moized.options.onCacheAdd.calledOnce).toBe(true);
+  expect(moized.options.onCacheAdd.calledWith(moized.cache)).toBe(true);
 
-  t.true(moized.options.onCacheChange.calledOnce);
-  t.true(moized.options.onCacheChange.calledWith(moized.cache));
+  expect(moized.options.onCacheChange.calledOnce).toBe(true);
+  expect(moized.options.onCacheChange.calledWith(moized.cache)).toBe(true);
 });
 
-test('if moized.add will add the item to the cache if it does not already exist with a transformed key that is an array', (t) => {
+test('if moized.add will add the item to the cache if it does not already exist with a transformed key that is an array', () => {
   const moized = () => {};
 
   moized.cache = {
@@ -154,17 +153,17 @@ test('if moized.add will add the item to the cache if it does not already exist 
 
   moized.add(key, value);
 
-  t.deepEqual(moized.cache.keys, [['foo', key[0]]]);
-  t.deepEqual(moized.cache.values, [value]);
+  expect(moized.cache.keys).toEqual([['foo', key[0]]]);
+  expect(moized.cache.values).toEqual([value]);
 
-  t.true(moized.options.onCacheAdd.calledOnce);
-  t.true(moized.options.onCacheAdd.calledWith(moized.cache));
+  expect(moized.options.onCacheAdd.calledOnce).toBe(true);
+  expect(moized.options.onCacheAdd.calledWith(moized.cache)).toBe(true);
 
-  t.true(moized.options.onCacheChange.calledOnce);
-  t.true(moized.options.onCacheChange.calledWith(moized.cache));
+  expect(moized.options.onCacheChange.calledOnce).toBe(true);
+  expect(moized.options.onCacheChange.calledWith(moized.cache)).toBe(true);
 });
 
-test('if moized.add will remove the oldest item from cache if the maxSize is exceeded', (t) => {
+test('if moized.add will remove the oldest item from cache if the maxSize is exceeded', () => {
   const moized = () => {};
 
   moized.cache = {
@@ -194,17 +193,17 @@ test('if moized.add will remove the oldest item from cache if the maxSize is exc
 
   moized.add(key, value);
 
-  t.deepEqual(moized.cache.keys, [key]);
-  t.deepEqual(moized.cache.values, [value]);
+  expect(moized.cache.keys).toEqual([key]);
+  expect(moized.cache.values).toEqual([value]);
 
-  t.true(moized.options.onCacheAdd.calledOnce);
-  t.true(moized.options.onCacheAdd.calledWith(moized.cache));
+  expect(moized.options.onCacheAdd.calledOnce).toBe(true);
+  expect(moized.options.onCacheAdd.calledWith(moized.cache)).toBe(true);
 
-  t.true(moized.options.onCacheChange.calledOnce);
-  t.true(moized.options.onCacheChange.calledWith(moized.cache));
+  expect(moized.options.onCacheChange.calledOnce).toBe(true);
+  expect(moized.options.onCacheChange.calledWith(moized.cache)).toBe(true);
 });
 
-test('if moized.add will do nothing if the item already exists in cache', (t) => {
+test('if moized.add will do nothing if the item already exists in cache', () => {
   const moized = () => {};
 
   const key = ['key'];
@@ -233,15 +232,15 @@ test('if moized.add will do nothing if the item already exists in cache', (t) =>
 
   moized.add(key, value);
 
-  t.deepEqual(moized.cache.keys, [key]);
-  t.deepEqual(moized.cache.values, [value]);
+  expect(moized.cache.keys).toEqual([key]);
+  expect(moized.cache.values).toEqual([value]);
 
-  t.true(moized.options.onCacheAdd.notCalled);
+  expect(moized.options.onCacheAdd.notCalled).toBe(true);
 
-  t.true(moized.options.onCacheChange.notCalled);
+  expect(moized.options.onCacheChange.notCalled).toBe(true);
 });
 
-test('if moized.clear will clear the items in cache', (t) => {
+test('if moized.clear will clear the items in cache', () => {
   const moized = () => {};
 
   const key = ['key'];
@@ -267,11 +266,11 @@ test('if moized.clear will clear the items in cache', (t) => {
 
   moized.clear();
 
-  t.deepEqual(moized.cache.keys, []);
-  t.deepEqual(moized.cache.values, []);
+  expect(moized.cache.keys).toEqual([]);
+  expect(moized.cache.values).toEqual([]);
 });
 
-test('if moized.get will get the item from cache if the key exists', (t) => {
+test('if moized.get will get the item from cache if the key exists', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -299,13 +298,13 @@ test('if moized.get will get the item from cache if the key exists', (t) => {
 
   const result = moized.get(key);
 
-  t.true(moized.calledOnce);
-  t.true(moized.calledWith(...key));
+  expect(moized.calledOnce).toBe(true);
+  expect(moized.calledWith(...key)).toBe(true);
 
-  t.is(result, value);
+  expect(result).toBe(value);
 });
 
-test('if moized.get will not get the item from cache if the key does not exist', (t) => {
+test('if moized.get will not get the item from cache if the key does not exist', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -333,12 +332,12 @@ test('if moized.get will not get the item from cache if the key does not exist',
 
   const result = moized.get(key);
 
-  t.true(moized.notCalled);
+  expect(moized.notCalled).toBe(true);
 
-  t.is(result, undefined);
+  expect(result).toBe(undefined);
 });
 
-test('if moized.get will get the item from cache if the transformed key exists', (t) => {
+test('if moized.get will get the item from cache if the transformed key exists', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -368,13 +367,13 @@ test('if moized.get will get the item from cache if the transformed key exists',
 
   const result = moized.get(key);
 
-  t.true(moized.calledOnce);
-  t.true(moized.calledWith(...key));
+  expect(moized.calledOnce).toBe(true);
+  expect(moized.calledWith(...key)).toBe(true);
 
-  t.is(result, value);
+  expect(result).toBe(value);
 });
 
-test('if moize.getStats will call getStats with the profileName in options', (t) => {
+test('if moize.getStats will call getStats with the profileName in options', () => {
   const moized = () => {};
 
   moized.options = {
@@ -391,13 +390,13 @@ test('if moize.getStats will call getStats with the profileName in options', (t)
 
   const result = moized.getStats();
 
-  t.true(stub.calledOnce);
-  t.true(stub.calledWith(moized.options.profileName));
+  expect(stub.calledOnce).toBe(true);
+  expect(stub.calledWith(moized.options.profileName)).toBe(true);
 
-  t.is(result, moized.options.profileName);
+  expect(result).toBe(moized.options.profileName);
 });
 
-test('if moized.has will return true if the key exists', (t) => {
+test('if moized.has will return true if the key exists', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -423,10 +422,10 @@ test('if moized.has will return true if the key exists', (t) => {
 
   instance.addInstanceMethods(moized, configuration);
 
-  t.true(moized.has(key));
+  expect(moized.has(key)).toBe(true);
 });
 
-test('if moized.has will return false if the key does not exist', (t) => {
+test('if moized.has will return false if the key does not exist', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -452,10 +451,10 @@ test('if moized.has will return false if the key does not exist', (t) => {
 
   instance.addInstanceMethods(moized, configuration);
 
-  t.false(moized.has(key));
+  expect(moized.has(key)).toBe(false);
 });
 
-test('if moized.has will return true if the transformed key exists in cache', (t) => {
+test('if moized.has will return true if the transformed key exists in cache', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -483,10 +482,10 @@ test('if moized.has will return true if the transformed key exists in cache', (t
 
   instance.addInstanceMethods(moized, configuration);
 
-  t.true(moized.has(key));
+  expect(moized.has(key)).toBe(true);
 });
 
-test('if moized.keys will return a shallow clone of the keys', (t) => {
+test('if moized.keys will return a shallow clone of the keys', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -525,11 +524,11 @@ test('if moized.keys will return a shallow clone of the keys', (t) => {
 
   const keys = moized.keys();
 
-  t.deepEqual(keys, moized.cache.keys);
-  t.not(keys, moized.cache.keys);
+  expect(keys).toEqual(moized.cache.keys);
+  expect(keys).not.toBe(moized.cache.keys);
 });
 
-test('if moized.remove will remove the existing key from cache', (t) => {
+test('if moized.remove will remove the existing key from cache', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -557,11 +556,11 @@ test('if moized.remove will remove the existing key from cache', (t) => {
 
   moized.remove(key);
 
-  t.deepEqual(moized.cache.keys, []);
-  t.deepEqual(moized.cache.values, []);
+  expect(moized.cache.keys).toEqual([]);
+  expect(moized.cache.values).toEqual([]);
 });
 
-test('if moized.remove will do nothing if the key is not found in cache', (t) => {
+test('if moized.remove will do nothing if the key is not found in cache', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -589,11 +588,11 @@ test('if moized.remove will do nothing if the key is not found in cache', (t) =>
 
   moized.remove(key);
 
-  t.deepEqual(moized.cache.keys, [['foo']]);
-  t.deepEqual(moized.cache.values, ['bar']);
+  expect(moized.cache.keys).toEqual([['foo']]);
+  expect(moized.cache.values).toEqual(['bar']);
 });
 
-test('if moized.remove will remove the existing key from cache with a custom transformKey', (t) => {
+test('if moized.remove will remove the existing key from cache with a custom transformKey', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -623,11 +622,11 @@ test('if moized.remove will remove the existing key from cache with a custom tra
 
   moized.remove(key);
 
-  t.deepEqual(moized.cache.keys, []);
-  t.deepEqual(moized.cache.values, []);
+  expect(moized.cache.keys).toEqual([]);
+  expect(moized.cache.values).toEqual([]);
 });
 
-test('if moized.update will set the new value in cache for the moized item', (t) => {
+test('if moized.update will set the new value in cache for the moized item', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -660,11 +659,11 @@ test('if moized.update will set the new value in cache for the moized item', (t)
 
   moized.update(key, newValue);
 
-  t.deepEqual(moized.cache.keys, [key, ...keys.slice(0, keys.length - 1)]);
-  t.deepEqual(moized.cache.values, [newValue, ...values.slice(0, values.length - 1)]);
+  expect(moized.cache.keys).toEqual([key, ...keys.slice(0, keys.length - 1)]);
+  expect(moized.cache.values).toEqual([newValue, ...values.slice(0, values.length - 1)]);
 });
 
-test('if moized.update will do nothing if the key does not exist in keys', (t) => {
+test('if moized.update will do nothing if the key does not exist in keys', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -694,11 +693,11 @@ test('if moized.update will do nothing if the key does not exist in keys', (t) =
 
   moized.update('other key', newValue);
 
-  t.deepEqual(moized.cache.keys, [key]);
-  t.deepEqual(moized.cache.values, [value]);
+  expect(moized.cache.keys).toEqual([key]);
+  expect(moized.cache.values).toEqual([value]);
 });
 
-test('if moize will not call onExpire for removed cache items', async (t) => {
+test('if moize will not call onExpire for removed cache items', async () => {
   const key = ['key'];
   const value = 'value';
 
@@ -745,10 +744,10 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
     setTimeout(resolve, moized.options.maxAge);
   });
 
-  t.true(expirationMethod.notCalled);
+  expect(expirationMethod.notCalled).toBe(true);
 });
 
-test('if moized.values will return a shallow clone of the values', (t) => {
+test('if moized.values will return a shallow clone of the values', () => {
   const key = ['key'];
   const value = 'value';
 
@@ -787,11 +786,11 @@ test('if moized.values will return a shallow clone of the values', (t) => {
 
   const values = moized.values();
 
-  t.deepEqual(values, moized.cache.values);
-  t.not(values, moized.cache.values);
+  expect(values).toEqual(moized.cache.values);
+  expect(values).not.toBe(moized.cache.values);
 });
 
-test('if addInstanceProperties will add the correct properties to the moized method', (t) => {
+test('if addInstanceProperties will add the correct properties to the moized method', () => {
   const moized = () => {};
   const options = {
     expirations: [],
@@ -815,23 +814,23 @@ test('if addInstanceProperties will add the correct properties to the moized met
 
   instance.addInstanceProperties(moized, options);
 
-  t.is(moized._microMemoizeOptions, _microMemoizeOptions);
-  t.deepEqual(moized.cache, cache);
-  t.is(moized.expirations, options.expirations);
-  t.not(moized.expirationsSnapshot, options.expirations);
-  t.deepEqual(moized.expirationsSnapshot, options.expirations);
-  t.is(moized.isCollectingStats, stats.statsCache.isCollectingStats);
-  t.true(moized.isMoized);
-  t.is(moized.options, options.options);
-  t.is(moized.originalFunction, options.originalFunction);
+  expect(moized._microMemoizeOptions).toBe(_microMemoizeOptions);
+  expect(moized.cache).toEqual(cache);
+  expect(moized.expirations).toBe(options.expirations);
+  expect(moized.expirationsSnapshot).not.toBe(options.expirations);
+  expect(moized.expirationsSnapshot).toEqual(options.expirations);
+  expect(moized.isCollectingStats).toBe(stats.statsCache.isCollectingStats);
+  expect(moized.isMoized).toBe(true);
+  expect(moized.options).toBe(options.options);
+  expect(moized.originalFunction).toBe(options.originalFunction);
 
-  t.false(moized.hasOwnProperty('displayName'));
-  t.false(moized.hasOwnProperty('contextTypes'));
-  t.false(moized.hasOwnProperty('defaultProps'));
-  t.false(moized.hasOwnProperty('propTypes'));
+  expect(moized.hasOwnProperty('displayName')).toBe(false);
+  expect(moized.hasOwnProperty('contextTypes')).toBe(false);
+  expect(moized.hasOwnProperty('defaultProps')).toBe(false);
+  expect(moized.hasOwnProperty('propTypes')).toBe(false);
 });
 
-test('if addInstanceProperties will add the correct properties to the moized React method', (t) => {
+test('if addInstanceProperties will add the correct properties to the moized React method', () => {
   const moized = () => {};
   const options = {
     expirations: [],
@@ -861,30 +860,30 @@ test('if addInstanceProperties will add the correct properties to the moized Rea
 
   instance.addInstanceProperties(moized, options);
 
-  t.is(moized._microMemoizeOptions, _microMemoizeOptions);
-  t.deepEqual(moized.cache, cache);
-  t.is(moized.expirations, options.expirations);
-  t.not(moized.expirationsSnapshot, options.expirations);
-  t.deepEqual(moized.expirationsSnapshot, options.expirations);
-  t.is(moized.isCollectingStats, stats.statsCache.isCollectingStats);
-  t.true(moized.isMoized);
-  t.is(moized.options, options.options);
-  t.is(moized.originalFunction, options.originalFunction);
+  expect(moized._microMemoizeOptions).toBe(_microMemoizeOptions);
+  expect(moized.cache).toEqual(cache);
+  expect(moized.expirations).toBe(options.expirations);
+  expect(moized.expirationsSnapshot).not.toBe(options.expirations);
+  expect(moized.expirationsSnapshot).toEqual(options.expirations);
+  expect(moized.isCollectingStats).toBe(stats.statsCache.isCollectingStats);
+  expect(moized.isMoized).toBe(true);
+  expect(moized.options).toBe(options.options);
+  expect(moized.originalFunction).toBe(options.originalFunction);
 
-  t.true(moized.hasOwnProperty('contextTypes'));
-  t.is(moized.contextTypes, options.originalFunction.contextTypes);
+  expect(moized.hasOwnProperty('contextTypes')).toBe(true);
+  expect(moized.contextTypes).toBe(options.originalFunction.contextTypes);
 
-  t.true(moized.hasOwnProperty('defaultProps'));
-  t.is(moized.defaultProps, options.originalFunction.defaultProps);
+  expect(moized.hasOwnProperty('defaultProps')).toBe(true);
+  expect(moized.defaultProps).toBe(options.originalFunction.defaultProps);
 
-  t.true(moized.hasOwnProperty('displayName'));
-  t.is(moized.displayName, `Moized(${options.originalFunction.displayName})`);
+  expect(moized.hasOwnProperty('displayName')).toBe(true);
+  expect(moized.displayName).toBe(`Moized(${options.originalFunction.displayName})`);
 
-  t.true(moized.hasOwnProperty('propTypes'));
-  t.is(moized.propTypes, options.originalFunction.propTypes);
+  expect(moized.hasOwnProperty('propTypes')).toBe(true);
+  expect(moized.propTypes).toBe(options.originalFunction.propTypes);
 });
 
-test('if addInstanceProperties will add the correct displayName when none is provided', (t) => {
+test('if addInstanceProperties will add the correct displayName when none is provided', () => {
   const moized = () => {};
   const options = {
     expirations: [],
@@ -908,11 +907,11 @@ test('if addInstanceProperties will add the correct displayName when none is pro
 
   instance.addInstanceProperties(moized, options);
 
-  t.true(moized.hasOwnProperty('displayName'));
-  t.is(moized.displayName, `Moized(${options.originalFunction.name})`);
+  expect(moized.hasOwnProperty('displayName')).toBe(true);
+  expect(moized.displayName).toBe(`Moized(${options.originalFunction.name})`);
 });
 
-test('if addInstanceProperties will add the correct displayName when the function is anonymous', (t) => {
+test('if addInstanceProperties will add the correct displayName when the function is anonymous', () => {
   const moized = () => {};
   const options = {
     expirations: [],
@@ -937,11 +936,11 @@ test('if addInstanceProperties will add the correct displayName when the functio
 
   instance.addInstanceProperties(moized, options);
 
-  t.true(moized.hasOwnProperty('displayName'));
-  t.is(moized.displayName, 'Moized(Component)');
+  expect(moized.hasOwnProperty('displayName')).toBe(true);
+  expect(moized.displayName).toBe('Moized(Component)');
 });
 
-test('if augmentMoizeInstance will add the methods and properties to the moized method', (t) => {
+test('if augmentMoizeInstance will add the methods and properties to the moized method', () => {
   const moized = memoize(() => {});
   const configuration = {
     expirations: [],
@@ -958,24 +957,24 @@ test('if augmentMoizeInstance will add the methods and properties to the moized 
 
   const result = instance.augmentMoizeInstance(moized, configuration);
 
-  t.is(result, moized);
+  expect(result).toBe(moized);
 
-  t.true(moized.hasOwnProperty('add'));
-  t.true(moized.hasOwnProperty('clear'));
-  t.true(moized.hasOwnProperty('get'));
-  t.true(moized.hasOwnProperty('getStats'));
-  t.true(moized.hasOwnProperty('has'));
-  t.true(moized.hasOwnProperty('keys'));
-  t.true(moized.hasOwnProperty('remove'));
-  t.true(moized.hasOwnProperty('values'));
+  expect(moized.hasOwnProperty('add')).toBe(true);
+  expect(moized.hasOwnProperty('clear')).toBe(true);
+  expect(moized.hasOwnProperty('get')).toBe(true);
+  expect(moized.hasOwnProperty('getStats')).toBe(true);
+  expect(moized.hasOwnProperty('has')).toBe(true);
+  expect(moized.hasOwnProperty('keys')).toBe(true);
+  expect(moized.hasOwnProperty('remove')).toBe(true);
+  expect(moized.hasOwnProperty('values')).toBe(true);
 
-  t.true(moized.hasOwnProperty('_microMemoizeOptions'));
-  t.true(moized.hasOwnProperty('cache'));
-  t.true(moized.hasOwnProperty('cacheSnapshot'));
-  t.true(moized.hasOwnProperty('expirations'));
-  t.true(moized.hasOwnProperty('expirationsSnapshot'));
-  t.true(moized.hasOwnProperty('isCollectingStats'));
-  t.true(moized.hasOwnProperty('isMoized'));
-  t.true(moized.hasOwnProperty('options'));
-  t.true(moized.hasOwnProperty('originalFunction'));
+  expect(moized.hasOwnProperty('_microMemoizeOptions')).toBe(true);
+  expect(moized.hasOwnProperty('cache')).toBe(true);
+  expect(moized.hasOwnProperty('cacheSnapshot')).toBe(true);
+  expect(moized.hasOwnProperty('expirations')).toBe(true);
+  expect(moized.hasOwnProperty('expirationsSnapshot')).toBe(true);
+  expect(moized.hasOwnProperty('isCollectingStats')).toBe(true);
+  expect(moized.hasOwnProperty('isMoized')).toBe(true);
+  expect(moized.hasOwnProperty('options')).toBe(true);
+  expect(moized.hasOwnProperty('originalFunction')).toBe(true);
 });

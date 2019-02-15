@@ -15,7 +15,7 @@ type MicroMemoizeOptions = {
   onCacheChange?: (cache: Cache, options: Object, memoized: Function) => void;
   onCacheHit?: (cache: Cache, options: Object, memoized: Function) => void;
   transformKey?: (args: any[]) => any;
-}
+};
 
 declare namespace Moize {
   export type Cache = {
@@ -29,7 +29,7 @@ declare namespace Moize {
     key: any[];
     timeoutId: number | NodeJS.Timer;
   };
-  
+
   export type Options = {
     equals?: (cacheKeyArgument: any, keyArgument: any) => boolean; // custom equality comparator comparing a specific key argument
     isDeepEqual?: boolean; // is key comparison done via deep equality
@@ -57,14 +57,14 @@ declare namespace Moize {
   };
 
   export type StatsObject = StatsProfile & {
-    profiles?: {[key: string]: StatsProfile};
+    profiles?: { [key: string]: StatsProfile };
     usage: string;
   };
 
   export type StatsCache = {
     anonymousProfileNameCounter: number;
     isCollectingStats: boolean;
-    profiles: {[key: string]: StatsProfile};
+    profiles: { [key: string]: StatsProfile };
   };
 
   export interface ProfileFunction extends Function {
@@ -77,7 +77,10 @@ declare namespace Moize {
     originalFunction: ReactComponent;
   };
 
-  export type Moizer<T extends Function> = (fn: T | Options, options?: Options) => T | Moizer<T>;
+  export type Moizer<T extends Function> = (
+    fn: T | Options,
+    options?: Options,
+  ) => T | Moizer<T>;
 
   export interface Moized extends Function {
     _microMemoizeOptions: MicroMemoizeOptions;

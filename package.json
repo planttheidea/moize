@@ -15,6 +15,7 @@
   "dependencies": {
     "fast-equals": "^1.6.2",
     "fast-stringify": "^1.1.0",
+    "jest-codemods": "^0.19.1",
     "micro-memoize": "^3.0.0"
   },
   "description": "Blazing fast memoization based on all parameters passed",
@@ -110,9 +111,9 @@
     "release:dry": "release-it --dry-run",
     "rename:mjs": "node ./js-to-mjs.js",
     "start": "npm run dev",
-    "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
-    "test:coverage": "nyc npm test",
-    "test:watch": "NODE_PATH=. NODE_ENV=test ava --watch"
+    "test": "NODE_PATH=. jest",
+    "test:coverage": "npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch"
   },
   "sideEffects": false,
   "types": "./index.d.ts",

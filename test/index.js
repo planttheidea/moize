@@ -1,10 +1,5 @@
 // test
-import test from 'ava';
-import {
-  deepEqual,
-  sameValueZeroEqual,
-  shallowEqual
-} from 'fast-equals';
+import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
 import {onCacheOperation} from 'micro-memoize/lib/utils';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -22,38 +17,38 @@ import * as utils from 'src/utils';
 
 const moize = index.default;
 
-const isMoizedFunction = (t, fn) => {
-  t.true(fn.hasOwnProperty('cache'));
-  t.deepEqual(fn.cache, {
+const isMoizedFunction = (fn) => {
+  expect(fn.hasOwnProperty('cache')).toBe(true);
+  expect(fn.cache).toEqual({
     keys: [],
     size: 0,
     values: [],
   });
 
-  t.true(fn.hasOwnProperty('expirations'));
-  t.deepEqual(fn.expirations, []);
+  expect(fn.hasOwnProperty('expirations')).toBe(true);
+  expect(fn.expirations).toEqual([]);
 
-  t.true(fn.hasOwnProperty('options'));
-  t.true(fn.hasOwnProperty('_microMemoizeOptions'));
+  expect(fn.hasOwnProperty('options')).toBe(true);
+  expect(fn.hasOwnProperty('_microMemoizeOptions')).toBe(true);
 };
 
-test('if collectStats exists as a named export', (t) => {
-  t.is(index.collectStats, stats.collectStats);
+test('if collectStats exists as a named export', () => {
+  expect(index.collectStats).toBe(stats.collectStats);
 });
 
-test('if moize will handle the standard use-case', (t) => {
+test('if moize will handle the standard use-case', () => {
   const fn = sinon.spy();
 
   const moized = moize(fn);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -74,11 +69,11 @@ test('if moize will handle the standard use-case', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 });
 
-test('if moize will handle a custom equals function correctly', (t) => {
+test('if moize will handle a custom equals function correctly', () => {
   const fn = sinon.spy();
   const options = {
     equals(a, b) {
@@ -88,15 +83,15 @@ test('if moize will handle a custom equals function correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     equals: options.equals,
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: options.equals,
     isMatchingKey: undefined,
     isPromise: false,
@@ -117,11 +112,11 @@ test('if moize will handle a custom equals function correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 });
 
-test('if moize will handle deep equals correctly', (t) => {
+test('if moize will handle deep equals correctly', () => {
   const fn = sinon.spy();
   const options = {
     isDeepEqual: true,
@@ -129,15 +124,15 @@ test('if moize will handle deep equals correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: deepEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -160,11 +155,11 @@ test('if moize will handle deep equals correctly', (t) => {
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 });
 
-test('if moize will handle promises correctly', (t) => {
+test('if moize will handle promises correctly', () => {
   const fn = sinon.stub().resolves('done');
   const options = {
     isPromise: true,
@@ -172,15 +167,15 @@ test('if moize will handle promises correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isPromise: true,
     profileName: 'stub at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: true,
@@ -201,11 +196,11 @@ test('if moize will handle promises correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 });
 
-test.serial('if moize will handle React components correctly', (t) => {
+test('if moize will handle React components correctly', () => {
   const jsdom = require('jsdom-global')();
 
   const Fn = sinon.stub().callsFake((props) => <div />);
@@ -221,9 +216,9 @@ test.serial('if moize will handle React components correctly', (t) => {
 
   const Moized = moize(Fn, options);
 
-  isMoizedFunction(t, Moized);
+  isMoizedFunction(Moized);
 
-  t.deepEqual(Moized.options, {
+  expect(Moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isReact: true,
     profileName: 'Custom at <anonymous>',
@@ -231,7 +226,7 @@ test.serial('if moize will handle React components correctly', (t) => {
 
   const {transformKey, ..._microMemoizeOptions} = Moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: shallowEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -241,11 +236,11 @@ test.serial('if moize will handle React components correctly', (t) => {
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
+  expect(transformKey.toString()).toBe(maxArgs.createGetInitialArgs(2).toString());
 
   const args = [{foo: 'bar'}, {bar: 'baz'}, 'trimmed', 'also trimmed'];
 
-  t.deepEqual(transformKey(args), maxArgs.createGetInitialArgs(2)(args));
+  expect(transformKey(args)).toEqual(maxArgs.createGetInitialArgs(2)(args));
 
   const div = document.createElement('div');
 
@@ -257,13 +252,13 @@ test.serial('if moize will handle React components correctly', (t) => {
   ReactDOM.render(<Moized {...args[0]} />, div);
   ReactDOM.render(<Moized {...args[0]} />, div);
 
-  t.true(Fn.calledOnce);
-  t.true(Fn.calledWith(args[0], {}));
+  expect(Fn.calledOnce).toBe(true);
+  expect(Fn.calledWith(args[0], {})).toBe(true);
 
   jsdom();
 });
 
-test('if moize will handle serialization of keys correctly', (t) => {
+test('if moize will handle serialization of keys correctly', () => {
   const fn = sinon.spy();
   const options = {
     isSerialized: true,
@@ -271,9 +266,9 @@ test('if moize will handle serialization of keys correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isSerialized: true,
     profileName: 'spy at <anonymous>',
@@ -281,7 +276,7 @@ test('if moize will handle serialization of keys correctly', (t) => {
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
@@ -291,13 +286,13 @@ test('if moize will handle serialization of keys correctly', (t) => {
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
+  expect(transformKey.toString()).toBe(serialize.getSerializerFunction(options).toString());
 
   const fnArg = () => {};
 
   const args = [{foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg];
 
-  t.deepEqual(transformKey(args), serialize.getSerializerFunction(options)(args));
+  expect(transformKey(args)).toEqual(serialize.getSerializerFunction(options)(args));
 
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
@@ -307,13 +302,13 @@ test('if moize will handle serialization of keys correctly', (t) => {
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.deepEqual(moized.cache.keys, [['|{"foo":"foo"}|{"bar":"bar"}|{"baz":"baz"}|undefined|']]);
+  expect(moized.cache.keys).toEqual([['|{"foo":"foo"}|{"bar":"bar"}|{"baz":"baz"}|undefined|']]);
 });
 
-test('if moize will handle serialization of keys correctly when functions should be serialized', (t) => {
+test('if moize will handle serialization of keys correctly when functions should be serialized', () => {
   const fn = sinon.spy();
   const options = {
     isSerialized: true,
@@ -322,9 +317,9 @@ test('if moize will handle serialization of keys correctly when functions should
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isSerialized: true,
     profileName: 'spy at <anonymous>',
@@ -333,7 +328,7 @@ test('if moize will handle serialization of keys correctly when functions should
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
@@ -343,13 +338,13 @@ test('if moize will handle serialization of keys correctly when functions should
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
+  expect(transformKey.toString()).toBe(serialize.getSerializerFunction(options).toString());
 
   const fnArg = () => {};
 
   const args = [{foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg];
 
-  t.deepEqual(transformKey(args), serialize.getSerializerFunction(options)(args));
+  expect(transformKey(args)).toEqual(serialize.getSerializerFunction(options)(args));
 
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
@@ -359,13 +354,13 @@ test('if moize will handle serialization of keys correctly when functions should
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.deepEqual(moized.cache.keys, [[`|{"foo":"foo"}|{"bar":"bar"}|{"baz":"baz"}|"${fnArg.toString()}"|`]]);
+  expect(moized.cache.keys).toEqual([[`|{"foo":"foo"}|{"bar":"bar"}|{"baz":"baz"}|"${fnArg.toString()}"|`]]);
 });
 
-test('if moize will handle serialization of keys correctly when a custom serializer is used', (t) => {
+test('if moize will handle serialization of keys correctly when a custom serializer is used', () => {
   const fn = sinon.spy();
   const options = {
     isSerialized: true,
@@ -374,9 +369,9 @@ test('if moize will handle serialization of keys correctly when a custom seriali
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isSerialized: true,
     profileName: 'spy at <anonymous>',
@@ -385,7 +380,7 @@ test('if moize will handle serialization of keys correctly when a custom seriali
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
@@ -395,13 +390,13 @@ test('if moize will handle serialization of keys correctly when a custom seriali
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
+  expect(transformKey.toString()).toBe(serialize.getSerializerFunction(options).toString());
 
   const fnArg = () => {};
 
   const args = [{foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg];
 
-  t.deepEqual(transformKey(args), serialize.getSerializerFunction(options)(args));
+  expect(transformKey(args)).toEqual(serialize.getSerializerFunction(options)(args));
 
   options.serializer.resetHistory();
 
@@ -411,16 +406,16 @@ test('if moize will handle serialization of keys correctly when a custom seriali
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
   moized({foo: 'foo'}, {bar: 'bar'}, {baz: 'baz'}, fnArg);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(options.serializer.callCount, 5);
-  t.true(options.serializer.calledWith(args));
+  expect(options.serializer.callCount).toBe(5);
+  expect(options.serializer.calledWith(args)).toBe(true);
 
-  t.deepEqual(moized.cache.keys, [['[{"foo":"foo"},{"bar":"bar"},{"baz":"baz"},null]']]);
+  expect(moized.cache.keys).toEqual([['[{"foo":"foo"},{"bar":"bar"},{"baz":"baz"},null]']]);
 });
 
-test('if moize will handle expiration of items in cache via maxAge correctly', async (t) => {
+test('if moize will handle expiration of items in cache via maxAge correctly', async () => {
   const fn = sinon.spy();
   const options = {
     maxAge: 100,
@@ -428,9 +423,9 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxAge: options.maxAge,
     profileName: 'spy at new Promise (<anonymous>)',
@@ -438,7 +433,7 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -458,28 +453,25 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    onCacheAdd.toString(),
-    optionsUtils
-      .createOnCacheOperation(
-        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
-      )
-      .toString()
-  );
+  expect(onCacheAdd.toString()).toBe(optionsUtils
+    .createOnCacheOperation(
+      maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+    )
+    .toString());
 
-  t.is(moized.cache.keys.length, 1);
+  expect(moized.cache.keys.length).toBe(1);
 
   await new Promise((resolve) => {
     setTimeout(resolve, options.maxAge + 50);
   });
 
-  t.is(moized.cache.keys.length, 0);
+  expect(moized.cache.keys.length).toBe(0);
 });
 
-test('if moize will handle limiting of arguments via maxArgs passed correctly', (t) => {
+test('if moize will handle limiting of arguments via maxArgs passed correctly', () => {
   const fn = sinon.spy();
   const options = {
     maxArgs: 1,
@@ -487,9 +479,9 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxArgs: 1,
     profileName: 'spy at <anonymous>',
@@ -497,7 +489,7 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -517,14 +509,14 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(transformKey.toString(), maxArgs.createGetInitialArgs(options.maxArgs).toString());
-  t.deepEqual(transformKey(args), maxArgs.createGetInitialArgs(options.maxArgs)(args));
+  expect(transformKey.toString()).toBe(maxArgs.createGetInitialArgs(options.maxArgs).toString());
+  expect(transformKey(args)).toEqual(maxArgs.createGetInitialArgs(options.maxArgs)(args));
 });
 
-test('if moize will handle limiting of cache size via maxSize correctly', (t) => {
+test('if moize will handle limiting of cache size via maxSize correctly', () => {
   const fn = sinon.spy();
   const options = {
     maxSize: 1,
@@ -532,15 +524,15 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxSize: 1,
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -557,13 +549,13 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
   moized(...args);
   moized(...reverseArgs);
 
-  t.true(fn.calledTwice);
-  t.deepEqual(fn.args, [args, reverseArgs]);
+  expect(fn.calledTwice).toBe(true);
+  expect(fn.args).toEqual([args, reverseArgs]);
 
-  t.deepEqual(moized.cacheSnapshot.keys, [reverseArgs]);
+  expect(moized.cacheSnapshot.keys).toEqual([reverseArgs]);
 });
 
-test('if moize will handle an onCacheAdd method correctly', (t) => {
+test('if moize will handle an onCacheAdd method correctly', () => {
   const fn = sinon.spy();
   const options = {
     onCacheAdd: sinon.spy(),
@@ -571,9 +563,9 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     onCacheAdd: options.onCacheAdd,
     profileName: 'spy at <anonymous>',
@@ -581,7 +573,7 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
 
   const {onCacheAdd: onCacheAddIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -601,14 +593,14 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.true(options.onCacheAdd.calledOnce);
-  t.true(options.onCacheAdd.calledWith(moized.cache, moized.options, moized));
+  expect(options.onCacheAdd.calledOnce).toBe(true);
+  expect(options.onCacheAdd.calledWith(moized.cache, moized.options, moized)).toBe(true);
 });
 
-test('if moize will handle an onCacheChange method correctly', (t) => {
+test('if moize will handle an onCacheChange method correctly', () => {
   const fn = sinon.spy();
   const options = {
     onCacheChange: sinon.spy(),
@@ -616,9 +608,9 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     onCacheChange: options.onCacheChange,
     profileName: 'spy at <anonymous>',
@@ -626,7 +618,7 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
 
   const {onCacheChange: onCacheChangeIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -646,14 +638,14 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.true(options.onCacheChange.calledOnce);
-  t.true(options.onCacheChange.calledWith(moized.cache, moized.options, moized));
+  expect(options.onCacheChange.calledOnce).toBe(true);
+  expect(options.onCacheChange.calledWith(moized.cache, moized.options, moized)).toBe(true);
 });
 
-test('if moize will handle an onCacheHit method correctly', (t) => {
+test('if moize will handle an onCacheHit method correctly', () => {
   const fn = sinon.spy();
   const options = {
     onCacheHit: sinon.spy(),
@@ -661,9 +653,9 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     onCacheHit: options.onCacheHit,
     profileName: 'spy at <anonymous>',
@@ -671,7 +663,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
 
   const {onCacheHit: onCacheHitIgnored, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -691,17 +683,17 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(options.onCacheHit.callCount, 6);
+  expect(options.onCacheHit.callCount).toBe(6);
 
   const expectedArg = {
     keys: moized.cache.keys,
     values: moized.cache.values,
   };
 
-  t.deepEqual(options.onCacheHit.args, [
+  expect(options.onCacheHit.args).toEqual([
     [moized.cache, moized.options, moized],
     [moized.cache, moized.options, moized],
     [moized.cache, moized.options, moized],
@@ -711,7 +703,7 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   ]);
 });
 
-test('if moize will handle an onExpire method for cache expiration correctly', async (t) => {
+test('if moize will handle an onExpire method for cache expiration correctly', async () => {
   const fn = sinon.spy();
   const options = {
     maxAge: 100,
@@ -720,9 +712,9 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxAge: options.maxAge,
     onExpire: options.onExpire,
@@ -731,7 +723,7 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -751,30 +743,27 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    onCacheAdd.toString(),
-    optionsUtils
-      .createOnCacheOperation(
-        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
-      )
-      .toString()
-  );
+  expect(onCacheAdd.toString()).toBe(optionsUtils
+    .createOnCacheOperation(
+      maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+    )
+    .toString());
 
-  t.is(moized.cache.keys.length, 1);
+  expect(moized.cache.keys.length).toBe(1);
 
   await new Promise((resolve) => {
     setTimeout(resolve, options.maxAge + 50);
   });
 
-  t.is(moized.cache.keys.length, 0);
+  expect(moized.cache.keys.length).toBe(0);
 
-  t.true(options.onExpire.calledOnce);
+  expect(options.onExpire.calledOnce).toBe(true);
 });
 
-test('if moize will handle a custom profileName for stats collection correctly', (t) => {
+test('if moize will handle a custom profileName for stats collection correctly', () => {
   const fn = sinon.spy();
   const options = {
     profileName: 'custom',
@@ -782,14 +771,14 @@ test('if moize will handle a custom profileName for stats collection correctly',
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     profileName: options.profileName,
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -801,7 +790,7 @@ test('if moize will handle a custom profileName for stats collection correctly',
   });
 });
 
-test('if moize will handle a custom transformArgs method correctly', (t) => {
+test('if moize will handle a custom transformArgs method correctly', () => {
   const fn = sinon.spy();
   const options = {
     transformArgs(args) {
@@ -811,9 +800,9 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     profileName: 'spy at <anonymous>',
     transformArgs: options.transformArgs,
@@ -821,7 +810,7 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -841,28 +830,22 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    transformKey.toString(),
-    utils
-      .compose(
-        utils.getArrayKey,
-        options.transformArgs
-      )
-      .toString()
-  );
-  t.deepEqual(
-    transformKey(args),
-    utils.compose(
+  expect(transformKey.toString()).toBe(utils
+    .compose(
       utils.getArrayKey,
       options.transformArgs
-    )(args)
-  );
+    )
+    .toString());
+  expect(transformKey(args)).toEqual(utils.compose(
+    utils.getArrayKey,
+    options.transformArgs
+  )(args));
 });
 
-test('if moize will handle an updateExpire method for cache expiration correctly', async (t) => {
+test('if moize will handle an updateExpire method for cache expiration correctly', async () => {
   const fn = sinon.spy();
   const options = {
     maxAge: 100,
@@ -871,9 +854,9 @@ test('if moize will handle an updateExpire method for cache expiration correctly
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxAge: options.maxAge,
     profileName: 'spy at new Promise (<anonymous>)',
@@ -882,7 +865,7 @@ test('if moize will handle an updateExpire method for cache expiration correctly
 
   const {onCacheAdd, onCacheHit, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -903,25 +886,21 @@ test('if moize will handle an updateExpire method for cache expiration correctly
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    onCacheAdd.toString(),
-    optionsUtils
-      .createOnCacheOperation(
-        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
-      )
-      .toString()
-  );
-  t.is(
-    onCacheHit.toString(),
+  expect(onCacheAdd.toString()).toBe(optionsUtils
+    .createOnCacheOperation(
+      maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+    )
+    .toString());
+  expect(onCacheHit.toString()).toBe(
     optionsUtils.createOnCacheOperation(maxAge.createOnCacheHitResetExpiration(moized.expirations, options)).toString()
   );
 
-  t.is(moized.cache.keys.length, 1);
+  expect(moized.cache.keys.length).toBe(1);
 
-  t.is(clearTimeoutSpy.callCount, 6);
+  expect(clearTimeoutSpy.callCount).toBe(6);
 
   clearTimeoutSpy.restore();
 
@@ -929,10 +908,10 @@ test('if moize will handle an updateExpire method for cache expiration correctly
     setTimeout(resolve, options.maxAge + 50);
   });
 
-  t.is(moized.cache.keys.length, 0);
+  expect(moized.cache.keys.length).toBe(0);
 });
 
-test('if moize will handle additional custom options correctly', (t) => {
+test('if moize will handle additional custom options correctly', () => {
   const fn = sinon.spy();
   const options = {
     customOption: 'value',
@@ -940,15 +919,15 @@ test('if moize will handle additional custom options correctly', (t) => {
 
   const moized = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     customOption: 'value',
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     customOption: 'value',
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
@@ -970,11 +949,11 @@ test('if moize will handle additional custom options correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 });
 
-test('if moize will handle a curried options implementation correctly', (t) => {
+test('if moize will handle a curried options implementation correctly', () => {
   const fn = sinon.spy();
   const firstOptions = {
     isDeepEqual: true,
@@ -987,9 +966,9 @@ test('if moize will handle a curried options implementation correctly', (t) => {
 
   const moized = moize(firstOptions)(secondOptions)(fn);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
     onCacheAdd: undefined,
@@ -1001,7 +980,7 @@ test('if moize will handle a curried options implementation correctly', (t) => {
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: deepEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1021,28 +1000,22 @@ test('if moize will handle a curried options implementation correctly', (t) => {
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    transformKey.toString(),
-    utils
-      .compose(
-        utils.getArrayKey,
-        secondOptions.transformArgs
-      )
-      .toString()
-  );
-  t.deepEqual(
-    transformKey(args),
-    utils.compose(
+  expect(transformKey.toString()).toBe(utils
+    .compose(
       utils.getArrayKey,
       secondOptions.transformArgs
-    )(args)
-  );
+    )
+    .toString());
+  expect(transformKey(args)).toEqual(utils.compose(
+    utils.getArrayKey,
+    secondOptions.transformArgs
+  )(args));
 });
 
-test('if moize will handle a curried options implementation correctly when the final call has options', (t) => {
+test('if moize will handle a curried options implementation correctly when the final call has options', () => {
   const fn = sinon.spy();
   const firstOptions = {
     isDeepEqual: true,
@@ -1055,9 +1028,9 @@ test('if moize will handle a curried options implementation correctly when the f
 
   const moized = moize(firstOptions)(fn, secondOptions);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
     onCacheAdd: undefined,
@@ -1069,7 +1042,7 @@ test('if moize will handle a curried options implementation correctly when the f
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: deepEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1089,28 +1062,22 @@ test('if moize will handle a curried options implementation correctly when the f
   moized(...args);
   moized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    transformKey.toString(),
-    utils
-      .compose(
-        utils.getArrayKey,
-        secondOptions.transformArgs
-      )
-      .toString()
-  );
-  t.deepEqual(
-    transformKey(args),
-    utils.compose(
+  expect(transformKey.toString()).toBe(utils
+    .compose(
       utils.getArrayKey,
       secondOptions.transformArgs
-    )(args)
-  );
+    )
+    .toString());
+  expect(transformKey(args)).toEqual(utils.compose(
+    utils.getArrayKey,
+    secondOptions.transformArgs
+  )(args));
 });
 
-test('if moize will handle moizing a previously-moized function correctly', (t) => {
+test('if moize will handle moizing a previously-moized function correctly', () => {
   const fn = sinon.spy();
   const firstOptions = {
     isDeepEqual: true,
@@ -1126,9 +1093,9 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
 
   const secondMoized = moize(firstMoized, secondOptions);
 
-  isMoizedFunction(t, secondMoized);
+  isMoizedFunction(secondMoized);
 
-  t.deepEqual(secondMoized.options, {
+  expect(secondMoized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
     onCacheAdd: undefined,
@@ -1140,7 +1107,7 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
 
   const {transformKey, ..._microMemoizeOptions} = secondMoized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: deepEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1160,53 +1127,47 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
   secondMoized(...args);
   secondMoized(...args);
 
-  t.true(fn.calledOnce);
-  t.true(fn.calledWith(...args));
+  expect(fn.calledOnce).toBe(true);
+  expect(fn.calledWith(...args)).toBe(true);
 
-  t.is(
-    transformKey.toString(),
-    utils
-      .compose(
-        utils.getArrayKey,
-        secondOptions.transformArgs
-      )
-      .toString()
-  );
-  t.deepEqual(
-    transformKey(args),
-    utils.compose(
+  expect(transformKey.toString()).toBe(utils
+    .compose(
       utils.getArrayKey,
       secondOptions.transformArgs
-    )(args)
-  );
+    )
+    .toString());
+  expect(transformKey(args)).toEqual(utils.compose(
+    utils.getArrayKey,
+    secondOptions.transformArgs
+  )(args));
 });
 
-test('if moize.compose calls the internal compose and returns the composed function', (t) => {
+test('if moize.compose calls the internal compose and returns the composed function', () => {
   const functions = [sinon.stub().returnsArg(0), sinon.stub().returnsArg(0)];
 
   const result = moize.compose(...functions);
 
-  t.is(typeof result, 'function');
+  expect(typeof result).toBe('function');
 
   const arg = {};
 
   result(arg);
 
   functions.forEach((fn) => {
-    t.true(fn.calledOnce);
-    t.true(fn.calledWith(arg));
+    expect(fn.calledOnce).toBe(true);
+    expect(fn.calledWith(arg)).toBe(true);
   });
 });
 
-test('if moize.compose calls the internal compose and returns moize itself when undefined', (t) => {
+test('if moize.compose calls the internal compose and returns moize itself when undefined', () => {
   const functions = [null, false];
 
   const result = moize.compose(...functions);
 
-  t.is(result, moize);
+  expect(result).toBe(moize);
 });
 
-test('if moize.deep will produce the correct moized function options', (t) => {
+test('if moize.deep will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     isDeepEqual: true,
@@ -1215,16 +1176,16 @@ test('if moize.deep will produce the correct moized function options', (t) => {
   const moized = moize.deep(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isDeepEqual: true,
     onCacheAdd: undefined,
@@ -1233,7 +1194,7 @@ test('if moize.deep will produce the correct moized function options', (t) => {
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: deepEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1245,35 +1206,35 @@ test('if moize.deep will produce the correct moized function options', (t) => {
   });
 });
 
-test('if moize.getStats is the getStats method in stats', (t) => {
-  t.is(moize.getStats, stats.getStats);
+test('if moize.getStats is the getStats method in stats', () => {
+  expect(moize.getStats).toBe(stats.getStats);
 });
 
-test('if moize.isCollectingStats returns isCollectingStats in the statsCache', (t) => {
+test('if moize.isCollectingStats returns isCollectingStats in the statsCache', () => {
   const result = moize.isCollectingStats();
 
-  t.is(result, stats.statsCache.isCollectingStats);
+  expect(result).toBe(stats.statsCache.isCollectingStats);
 });
 
-test('if moize.isMoized returns false if the object passed is not a function', (t) => {
+test('if moize.isMoized returns false if the object passed is not a function', () => {
   const object = 'foo';
 
-  t.false(moize.isMoized(object));
+  expect(moize.isMoized(object)).toBe(false);
 });
 
-test('if moize.isMoized returns false if the object passed is not a moized function', (t) => {
+test('if moize.isMoized returns false if the object passed is not a moized function', () => {
   const object = () => {};
 
-  t.false(moize.isMoized(object));
+  expect(moize.isMoized(object)).toBe(false);
 });
 
-test('if moize.isMoized returns true if the object passed is a moized function', (t) => {
+test('if moize.isMoized returns true if the object passed is a moized function', () => {
   const object = moize(() => {});
 
-  t.true(moize.isMoized(object));
+  expect(moize.isMoized(object)).toBe(true);
 });
 
-test('if moize.maxAge will produce the correct moized function options', (t) => {
+test('if moize.maxAge will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     maxAge: 1000,
@@ -1282,16 +1243,16 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
   const moized = moize.maxAge(options.maxAge)(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxAge: 1000,
     onCacheAdd: undefined,
@@ -1302,7 +1263,7 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
 
   const {onCacheAdd, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1312,17 +1273,14 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
     transformKey: undefined,
   });
 
-  t.is(
-    onCacheAdd.toString(),
-    optionsUtils
-      .createOnCacheOperation(
-        maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
-      )
-      .toString()
-  );
+  expect(onCacheAdd.toString()).toBe(optionsUtils
+    .createOnCacheOperation(
+      maxAge.createOnCacheAddSetExpiration(moized.expirations, options, _microMemoizeOptions.isEqual)
+    )
+    .toString());
 });
 
-test('if moize.maxArgs will produce the correct moized function options', (t) => {
+test('if moize.maxArgs will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     maxArgs: 1,
@@ -1331,16 +1289,16 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
   const moized = moize.maxArgs(options.maxArgs)(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxArgs: options.maxArgs,
     onCacheAdd: undefined,
@@ -1351,7 +1309,7 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1361,10 +1319,10 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), maxArgs.createGetInitialArgs(options.maxArgs).toString());
+  expect(transformKey.toString()).toBe(maxArgs.createGetInitialArgs(options.maxArgs).toString());
 });
 
-test('if moize.maxSize will produce the correct moized function options', (t) => {
+test('if moize.maxSize will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     maxSize: 1,
@@ -1373,16 +1331,16 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
   const moized = moize.maxSize(options.maxSize)(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxSize: options.maxSize,
     onCacheAdd: undefined,
@@ -1391,7 +1349,7 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1403,7 +1361,7 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
   });
 });
 
-test('if moize.promise will produce the correct moized function options', (t) => {
+test('if moize.promise will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     isPromise: true,
@@ -1412,9 +1370,9 @@ test('if moize.promise will produce the correct moized function options', (t) =>
   const moized = moize.promise(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
@@ -1422,7 +1380,7 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     updateExpire: true,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isPromise: options.isPromise,
     onCacheAdd: undefined,
@@ -1432,7 +1390,7 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     updateExpire: true,
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: options.isPromise,
@@ -1444,7 +1402,7 @@ test('if moize.promise will produce the correct moized function options', (t) =>
   });
 });
 
-test('if moize.react will produce the correct moized function options', (t) => {
+test('if moize.react will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     isReact: true,
@@ -1453,16 +1411,16 @@ test('if moize.react will produce the correct moized function options', (t) => {
   const moized = moize.react(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isReact: options.isReact,
     onCacheAdd: undefined,
@@ -1473,7 +1431,7 @@ test('if moize.react will produce the correct moized function options', (t) => {
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: shallowEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1483,10 +1441,10 @@ test('if moize.react will produce the correct moized function options', (t) => {
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
+  expect(transformKey.toString()).toBe(maxArgs.createGetInitialArgs(2).toString());
 });
 
-test('if moize.reactSimple will produce the correct moized function options', (t) => {
+test('if moize.reactSimple will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     isReact: true,
@@ -1496,16 +1454,16 @@ test('if moize.reactSimple will produce the correct moized function options', (t
   const moized = moize.reactSimple(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isReact: options.isReact,
     maxSize: options.maxSize,
@@ -1517,7 +1475,7 @@ test('if moize.reactSimple will produce the correct moized function options', (t
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: shallowEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1527,10 +1485,10 @@ test('if moize.reactSimple will produce the correct moized function options', (t
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
+  expect(transformKey.toString()).toBe(maxArgs.createGetInitialArgs(2).toString());
 });
 
-test('if moize.serialize will produce the correct moized function options', (t) => {
+test('if moize.serialize will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     isSerialized: true,
@@ -1539,16 +1497,16 @@ test('if moize.serialize will produce the correct moized function options', (t) 
   const moized = moize.serialize(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     isSerialized: options.isSerialized,
     onCacheAdd: undefined,
@@ -1559,7 +1517,7 @@ test('if moize.serialize will produce the correct moized function options', (t) 
 
   const {transformKey, ..._microMemoizeOptions} = moized._microMemoizeOptions;
 
-  t.deepEqual(_microMemoizeOptions, {
+  expect(_microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
@@ -1569,10 +1527,10 @@ test('if moize.serialize will produce the correct moized function options', (t) 
     onCacheHit: onCacheOperation,
   });
 
-  t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
+  expect(transformKey.toString()).toBe(serialize.getSerializerFunction(options).toString());
 });
 
-test('if moize.simple will produce the correct moized function options', (t) => {
+test('if moize.simple will produce the correct moized function options', () => {
   const fn = sinon.spy();
   const options = {
     maxSize: 1,
@@ -1581,16 +1539,16 @@ test('if moize.simple will produce the correct moized function options', (t) => 
   const moized = moize.simple(fn);
   const moizedStandard = moize(fn, options);
 
-  isMoizedFunction(t, moized);
+  isMoizedFunction(moized);
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...moizedStandard.options,
     onCacheAdd: undefined,
     onCacheChange: undefined,
     onCacheHit: undefined,
   });
 
-  t.deepEqual(moized.options, {
+  expect(moized.options).toEqual({
     ...DEFAULT_OPTIONS,
     maxSize: options.maxSize,
     onCacheAdd: undefined,
@@ -1599,7 +1557,7 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     profileName: 'spy at <anonymous>',
   });
 
-  t.deepEqual(moized._microMemoizeOptions, {
+  expect(moized._microMemoizeOptions).toEqual({
     isEqual: sameValueZeroEqual,
     isMatchingKey: undefined,
     isPromise: false,
@@ -1611,7 +1569,7 @@ test('if moize.simple will produce the correct moized function options', (t) => 
   });
 });
 
-test('if moize will not call onExpire for removed cache items', async (t) => {
+test('if moize will not call onExpire for removed cache items', async () => {
   const fn = sinon.spy();
   const options = {
     maxAge: 500,
@@ -1624,19 +1582,19 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
 
   moized(...args);
 
-  t.is(moized.cache.keys.length, 1);
+  expect(moized.cache.keys.length).toBe(1);
 
   moized.remove(args);
 
-  t.is(moized.cache.keys.length, 0);
+  expect(moized.cache.keys.length).toBe(0);
 
   moized(...args);
 
-  t.is(moized.cache.keys.length, 1);
+  expect(moized.cache.keys.length).toBe(1);
 
   await new Promise((resolve) => {
     setTimeout(resolve, options.maxAge * 2);
   });
 
-  t.is(options.onExpire.callCount, 1);
+  expect(options.onExpire.callCount).toBe(1);
 });

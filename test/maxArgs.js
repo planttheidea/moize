@@ -1,27 +1,26 @@
 // test
-import test from 'ava';
 import sinon from 'sinon';
 
 // src
 import * as maxArgs from 'src/maxArgs';
 
-test('if getInitialArgs will return the args themselves when the size is larger than the length', (t) => {
+test('if getInitialArgs will return the args themselves when the size is larger than the length', () => {
   const args = ['foo'];
 
   const result = maxArgs.createGetInitialArgs(2)(args);
 
-  t.is(result, args);
+  expect(result).toBe(args);
 });
 
-test('if a new array is produced appropriately for standard sizes', (t) => {
+test('if a new array is produced appropriately for standard sizes', () => {
   const args = [1, 2, 3, 4, 5, 6, 7];
 
   for (let index = 0; index < 6; index++) {
-    t.deepEqual(maxArgs.createGetInitialArgs(index)(args), args.slice(0, index));
+    expect(maxArgs.createGetInitialArgs(index)(args)).toEqual(args.slice(0, index));
   }
 });
 
-test('if slice is called for all non-standard sizes', (t) => {
+test('if slice is called for all non-standard sizes', () => {
   const args = [1, 2, 3, 4, 5, 6, 7];
   const size = 6;
 
@@ -29,10 +28,10 @@ test('if slice is called for all non-standard sizes', (t) => {
 
   const result = maxArgs.createGetInitialArgs(size)(args);
 
-  t.true(slice.calledOnce);
-  t.true(slice.calledWith(0, size));
+  expect(slice.calledOnce).toBe(true);
+  expect(slice.calledWith(0, size)).toBe(true);
 
   slice.restore();
 
-  t.deepEqual(result, args.slice(0, size));
+  expect(result).toEqual(args.slice(0, size));
 });

@@ -33,11 +33,11 @@ export function assignFallback(target: any) {
   /* eslint-enable */
 }
 
-export const assign = typeof Object.assign === 'function' ? Object.assign : assignFallback;
+export const assign =  typeof Object.assign === 'function' ? Object.assign : assignFallback;
 
 export function combine(...functions: (Function | void)[]): Function | void {
   if (functions.length) {
-    return functions.reduce((f: (Function | void), g: (Function | void)) => {
+    return functions.reduce((f: Function | void, g: Function | void) => {
       if (typeof f === 'function') {
         return typeof g === 'function'
           ? function combined(): void {
@@ -58,7 +58,7 @@ export function combine(...functions: (Function | void)[]): Function | void {
 
 export function compose(...functions: (Function | void)[]): Function | void {
   if (functions.length) {
-    return functions.reduce((f: (Function | void), g: (Function | void)) => {
+    return functions.reduce((f: Function | void, g: Function | void) => {
       if (typeof f === 'function') {
         return typeof g === 'function'
           ? function composed() {
@@ -87,7 +87,10 @@ export function compose(...functions: (Function | void)[]): Function | void {
  * @param {Array<any>} key the key to match
  * @returns {number} the index of the expiration
  */
-export function findExpirationIndex(expirations: Moize.Expiration[], key: any[]): number {
+export function findExpirationIndex(
+  expirations: Moize.Expiration[],
+  key: any[],
+): number {
   const { length } = expirations;
 
   for (let index: number = 0; index < length; index++) {
@@ -99,18 +102,21 @@ export function findExpirationIndex(expirations: Moize.Expiration[], key: any[])
   return -1;
 }
 
-export function createFindKeyIndex(isEqual: Function, isMatchingKey?: Function) {
-  const areKeysEqual = typeof isMatchingKey === 'function'
-    ? isMatchingKey
-    : function areKeysEqual(cacheKey: any[], key: any[]) {
-      for (let index = 0; index < key.length; index++) {
-        if (!isEqual(cacheKey[index], key[index])) {
-          return false;
+export function createFindKeyIndex(
+  isEqual: Function,
+  isMatchingKey?: Function,
+) {
+  const areKeysEqual =    typeof isMatchingKey === 'function'
+      ? isMatchingKey
+      : function areKeysEqual(cacheKey: any[], key: any[]) {
+        for (let index = 0; index < key.length; index++) {
+          if (!isEqual(cacheKey[index], key[index])) {
+            return false;
+          }
         }
-      }
 
-      return true;
-    };
+        return true;
+      };
 
   return function findKeyIndex(keys: (any[])[], key: any[]): number {
     const keysLength = keys.length;
@@ -126,7 +132,7 @@ export function createFindKeyIndex(isEqual: Function, isMatchingKey?: Function) 
 }
 
 export function getArrayKey(key: any) {
-  return isArray(key) ? key : [];
+  return isArray(key) ? key : [key];
 }
 
 /**
@@ -141,14 +147,20 @@ export function getArrayKey(key: any) {
  * @param {Options} newOptions the new options to merge
  * @returns {Options} the merged options
  */
-export function mergeOptions(originalOptions: Moize.Options, newOptions: Moize.Options) {
+export function mergeOptions(
+  originalOptions: Moize.Options,
+  newOptions: Moize.Options,
+) {
   if (newOptions === DEFAULT_OPTIONS) {
     return originalOptions;
   }
 
   return assign({}, originalOptions, newOptions, {
     onCacheAdd: combine(originalOptions.onCacheAdd, newOptions.onCacheAdd),
-    onCacheChange: combine(originalOptions.onCacheChange, newOptions.onCacheChange),
+    onCacheChange: combine(
+      originalOptions.onCacheChange,
+      newOptions.onCacheChange,
+    ),
     onCacheHit: combine(originalOptions.onCacheHit, newOptions.onCacheHit),
     transformArgs: compose(
       originalOptions.transformArgs,

@@ -1,33 +1,35 @@
 // test
-import test from 'ava';
 import sinon from 'sinon';
 
 // src
 import * as stats from 'src/stats';
 
-test.serial('if getStats will warn in the console when not collecting statistics', (t) => {
-  if (stats.statsCache.isCollectingStats || stats.hasWarningDisplayed) {
-    t.fail();
+test(
+  'if getStats will warn in the console when not collecting statistics',
+  done => {
+    if (stats.statsCache.isCollectingStats || stats.hasWarningDisplayed) {
+      done.fail();
+    }
+
+    const stub = sinon.stub(console, 'warn');
+
+    stats.getStats();
+
+    expect(stub.calledOnce).toBe(true);
+
+    stub.restore();
   }
+);
 
-  const stub = sinon.stub(console, 'warn');
-
-  stats.getStats();
-
-  t.true(stub.calledOnce);
-
-  stub.restore();
-});
-
-test.serial('if collectStats will set isCollectingStats to true', (t) => {
-  t.false(stats.statsCache.isCollectingStats);
+test('if collectStats will set isCollectingStats to true', () => {
+  expect(stats.statsCache.isCollectingStats).toBe(false);
 
   stats.collectStats();
 
-  t.true(stats.statsCache.isCollectingStats);
+  expect(stats.statsCache.isCollectingStats).toBe(true);
 });
 
-test.serial('if getStats will return all stats if no profileName is passed', (t) => {
+test('if getStats will return all stats if no profileName is passed', () => {
   const statsCache = {
     ...stats.statsCache,
     profiles: {...stats.statsCache.profiles},
@@ -46,7 +48,7 @@ test.serial('if getStats will return all stats if no profileName is passed', (t)
 
   const result = stats.getStats();
 
-  t.deepEqual(result, {
+  expect(result).toEqual({
     calls: stats.statsCache.profiles.foo.calls + stats.statsCache.profiles.bar.calls,
     hits: stats.statsCache.profiles.foo.hits + stats.statsCache.profiles.bar.hits,
     profiles: {
@@ -65,101 +67,110 @@ test.serial('if getStats will return all stats if no profileName is passed', (t)
   Object.assign(stats.statsCache, statsCache);
 });
 
-test.serial('if getStats will return specific stats if a profileName is passed', (t) => {
-  const statsCache = {
-    ...stats.statsCache,
-    profiles: {...stats.statsCache.profiles},
-  };
+test(
+  'if getStats will return specific stats if a profileName is passed',
+  () => {
+    const statsCache = {
+      ...stats.statsCache,
+      profiles: {...stats.statsCache.profiles},
+    };
 
-  stats.statsCache.profiles = {
-    bar: {
-      calls: 3,
-      hits: 2,
-    },
-    foo: {
-      calls: 2,
-      hits: 1,
-    },
-  };
+    stats.statsCache.profiles = {
+      bar: {
+        calls: 3,
+        hits: 2,
+      },
+      foo: {
+        calls: 2,
+        hits: 1,
+      },
+    };
 
-  const result = stats.getStats('foo');
+    const result = stats.getStats('foo');
 
-  t.deepEqual(result, {
-    ...stats.statsCache.profiles.foo,
-    usage: '50.0000%',
-  });
+    expect(result).toEqual({
+      ...stats.statsCache.profiles.foo,
+      usage: '50.0000%',
+    });
 
-  Object.assign(stats.statsCache, statsCache);
-});
+    Object.assign(stats.statsCache, statsCache);
+  }
+);
 
-test.serial('if getStats will return empty stats if a profileName is passed but does not exist', (t) => {
-  const statsCache = {
-    ...stats.statsCache,
-    profiles: {...stats.statsCache.profiles},
-  };
+test(
+  'if getStats will return empty stats if a profileName is passed but does not exist',
+  () => {
+    const statsCache = {
+      ...stats.statsCache,
+      profiles: {...stats.statsCache.profiles},
+    };
 
-  stats.statsCache.profiles = {
-    bar: {
-      calls: 3,
-      hits: 2,
-    },
-    foo: {
-      calls: 2,
-      hits: 1,
-    },
-  };
+    stats.statsCache.profiles = {
+      bar: {
+        calls: 3,
+        hits: 2,
+      },
+      foo: {
+        calls: 2,
+        hits: 1,
+      },
+    };
 
-  const result = stats.getStats('baz');
+    const result = stats.getStats('baz');
 
-  t.deepEqual(result, {
-    calls: 0,
-    hits: 0,
-    usage: '0%',
-  });
+    expect(result).toEqual({
+      calls: 0,
+      hits: 0,
+      usage: '0%',
+    });
 
-  Object.assign(stats.statsCache, statsCache);
-});
+    Object.assign(stats.statsCache, statsCache);
+  }
+);
 
-test.serial('if onCacheAddIncrementCalls will increment calls for the specific profile', (t) => {
-  const statsCache = {
-    ...stats.statsCache,
-    profiles: {...stats.statsCache.profiles},
-  };
+test(
+  'if onCacheAddIncrementCalls will increment calls for the specific profile',
+  () => {
+    const statsCache = {
+      ...stats.statsCache,
+      profiles: {...stats.statsCache.profiles},
+    };
 
-  const options = {
-    profileName: 'foo',
-  };
+    const options = {
+      profileName: 'foo',
+    };
 
-  stats.statsCache.profiles = {
-    bar: {
-      calls: 3,
-      hits: 2,
-    },
-    foo: {
-      calls: 2,
-      hits: 1,
-    },
-  };
+    stats.statsCache.profiles = {
+      bar: {
+        calls: 3,
+        hits: 2,
+      },
+      foo: {
+        calls: 2,
+        hits: 1,
+      },
+    };
 
-  stats.createOnCacheAddIncrementCalls(options)();
+    stats.createOnCacheAddIncrementCalls(options)();
 
-  t.deepEqual(stats.statsCache.profiles, {
-    bar: {
-      calls: 3,
-      hits: 2,
-    },
-    foo: {
-      calls: 3,
-      hits: 1,
-    },
-  });
+    expect(stats.statsCache.profiles).toEqual({
+      bar: {
+        calls: 3,
+        hits: 2,
+      },
+      foo: {
+        calls: 3,
+        hits: 1,
+      },
+    });
 
-  Object.assign(stats.statsCache, statsCache);
-});
+    Object.assign(stats.statsCache, statsCache);
+  }
+);
 
-test.serial(
+test(
   'if onCacheAddIncrementCalls will increment calls for the specific profile that did not previously exist',
-  (t) => {
+  () => {
     const statsCache = {
       ...stats.statsCache,
       profiles: {...stats.statsCache.profiles},
@@ -182,7 +193,7 @@ test.serial(
 
     stats.createOnCacheAddIncrementCalls(options)();
 
-    t.deepEqual(stats.statsCache.profiles, {
+    expect(stats.statsCache.profiles).toEqual({
       bar: {
         calls: 3,
         hits: 2,
@@ -201,46 +212,49 @@ test.serial(
   }
 );
 
-test.serial('if onCacheHitIncrementCallsAndHits will increment calls and hits for the specific profile', (t) => {
-  const statsCache = {
-    ...stats.statsCache,
-    profiles: {...stats.statsCache.profiles},
-  };
+test(
+  'if onCacheHitIncrementCallsAndHits will increment calls and hits for the specific profile',
+  () => {
+    const statsCache = {
+      ...stats.statsCache,
+      profiles: {...stats.statsCache.profiles},
+    };
 
-  const options = {
-    profileName: 'foo',
-  };
+    const options = {
+      profileName: 'foo',
+    };
 
-  stats.statsCache.profiles = {
-    bar: {
-      calls: 3,
-      hits: 2,
-    },
-    foo: {
-      calls: 2,
-      hits: 1,
-    },
-  };
+    stats.statsCache.profiles = {
+      bar: {
+        calls: 3,
+        hits: 2,
+      },
+      foo: {
+        calls: 2,
+        hits: 1,
+      },
+    };
 
-  stats.createOnCacheHitIncrementCallsAndHits(options)();
+    stats.createOnCacheHitIncrementCallsAndHits(options)();
 
-  t.deepEqual(stats.statsCache.profiles, {
-    bar: {
-      calls: 3,
-      hits: 2,
-    },
-    foo: {
-      calls: 3,
-      hits: 2,
-    },
-  });
+    expect(stats.statsCache.profiles).toEqual({
+      bar: {
+        calls: 3,
+        hits: 2,
+      },
+      foo: {
+        calls: 3,
+        hits: 2,
+      },
+    });
 
-  Object.assign(stats.statsCache, statsCache);
-});
+    Object.assign(stats.statsCache, statsCache);
+  }
+);
 
-test.serial(
+test(
   'if getDefaultProfileName will return the function name with the location when a stack is provided',
-  (t) => {
+  () => {
     const fn = function foo() {};
 
     const currentError = global.Error;
@@ -257,149 +271,167 @@ test.serial(
 
     const result = stats.getDefaultProfileName(fn);
 
-    t.is(result, `${fn.name} quz`);
+    expect(result).toBe(`${fn.name} quz`);
 
     global.Error = currentError;
   }
 );
 
-test.serial('if getDefaultProfileName will return the function name by itself when no location can be found', (t) => {
-  const fn = function foo() {};
+test(
+  'if getDefaultProfileName will return the function name by itself when no location can be found',
+  () => {
+    const fn = function foo() {};
 
-  const currentError = global.Error;
+    const currentError = global.Error;
 
-  function FakeError() {
-    this.stack = 'foo\nbar\nbaz\n/moize/\n (native)\n Function.foo';
+    function FakeError() {
+      this.stack = 'foo\nbar\nbaz\n/moize/\n (native)\n Function.foo';
 
-    return this;
+      return this;
+    }
+
+    FakeError.captureStackTrace = () => {};
+
+    global.Error = FakeError;
+
+    const result = stats.getDefaultProfileName(fn);
+
+    expect(result).toBe(fn.name);
+
+    global.Error = currentError;
   }
+);
 
-  FakeError.captureStackTrace = () => {};
+test(
+  'if getDefaultProfileName will return the function name by itself when no stack can be found',
+  () => {
+    const fn = function foo() {};
 
-  global.Error = FakeError;
+    const currentError = global.Error;
 
-  const result = stats.getDefaultProfileName(fn);
+    function FakeError() {
+      this.stack = null;
 
-  t.is(result, fn.name);
+      return this;
+    }
 
-  global.Error = currentError;
-});
+    FakeError.captureStackTrace = () => {};
 
-test.serial('if getDefaultProfileName will return the function name by itself when no stack can be found', (t) => {
-  const fn = function foo() {};
+    global.Error = FakeError;
 
-  const currentError = global.Error;
+    const result = stats.getDefaultProfileName(fn);
 
-  function FakeError() {
-    this.stack = null;
+    expect(result).toBe(fn.name);
 
-    return this;
+    global.Error = currentError;
   }
+);
 
-  FakeError.captureStackTrace = () => {};
+test(
+  'if getDefaultProfileName will return the displayName when it exists',
+  () => {
+    const fn = function foo() {};
 
-  global.Error = FakeError;
+    fn.displayName = 'foo';
 
-  const result = stats.getDefaultProfileName(fn);
+    const currentError = global.Error;
 
-  t.is(result, fn.name);
+    function FakeError() {
+      this.stack = null;
 
-  global.Error = currentError;
-});
+      return this;
+    }
 
-test.serial('if getDefaultProfileName will return the displayName when it exists', (t) => {
-  const fn = function foo() {};
+    FakeError.captureStackTrace = () => {};
 
-  fn.displayName = 'foo';
+    global.Error = FakeError;
 
-  const currentError = global.Error;
+    const result = stats.getDefaultProfileName(fn);
 
-  function FakeError() {
-    this.stack = null;
+    expect(result).toBe(fn.displayName);
 
-    return this;
+    global.Error = currentError;
   }
+);
 
-  FakeError.captureStackTrace = () => {};
+test(
+  'if getDefaultProfileName will return a fallback name when a name cannot be discovered',
+  () => {
+    const fn = () => {};
 
-  global.Error = FakeError;
+    delete fn.name;
 
-  const result = stats.getDefaultProfileName(fn);
+    const currentError = global.Error;
 
-  t.is(result, fn.displayName);
+    function FakeError() {
+      this.stack = null;
 
-  global.Error = currentError;
-});
+      return this;
+    }
 
-test.serial('if getDefaultProfileName will return a fallback name when a name cannot be discovered', (t) => {
-  const fn = () => {};
+    FakeError.captureStackTrace = () => {};
 
-  delete fn.name;
+    global.Error = FakeError;
 
-  const currentError = global.Error;
+    const result = stats.getDefaultProfileName(fn);
 
-  function FakeError() {
-    this.stack = null;
+    expect(result).toBe(`Anonymous ${stats.statsCache.anonymousProfileNameCounter - 1}`);
 
-    return this;
+    global.Error = currentError;
   }
+);
 
-  FakeError.captureStackTrace = () => {};
-
-  global.Error = FakeError;
-
-  const result = stats.getDefaultProfileName(fn);
-
-  t.is(result, `Anonymous ${stats.statsCache.anonymousProfileNameCounter - 1}`);
-
-  global.Error = currentError;
-});
-
-test('if getUsagePercentage will return the correct percentage when calls is non-zero', (t) => {
+test('if getUsagePercentage will return the correct percentage when calls is non-zero', () => {
   const calls = 4;
   const hits = 3;
 
   const result = stats.getUsagePercentage(calls, hits);
 
-  t.is(result, '75.0000%');
+  expect(result).toBe('75.0000%');
 });
 
-test('if getUsagePercentage will return the correct percentage when calls is zero', (t) => {
+test('if getUsagePercentage will return the correct percentage when calls is zero', () => {
   const calls = 0;
   const hits = 0;
 
   const result = stats.getUsagePercentage(calls, hits);
 
-  t.is(result, '0%');
+  expect(result).toBe('0%');
 });
 
-test.serial('if getStatsOptions will return the statsCache methods when collecting stats', (t) => {
-  stats.statsCache.isCollectingStats = true;
+test(
+  'if getStatsOptions will return the statsCache methods when collecting stats',
+  () => {
+    stats.statsCache.isCollectingStats = true;
 
-  const options = {
-    onCacheAdd() {},
-    onCacheHit() {},
-  };
+    const options = {
+      onCacheAdd() {},
+      onCacheHit() {},
+    };
 
-  const result = stats.getStatsOptions(options);
+    const result = stats.getStatsOptions(options);
 
-  t.deepEqual(Object.keys(result), ['onCacheAdd', 'onCacheHit']);
-  t.is(typeof result.onCacheAdd, 'function');
-  t.is(typeof result.onCacheHit, 'function');
+    expect(Object.keys(result)).toEqual(['onCacheAdd', 'onCacheHit']);
+    expect(typeof result.onCacheAdd).toBe('function');
+    expect(typeof result.onCacheHit).toBe('function');
 
-  t.is(result.onCacheAdd.toString(), stats.createOnCacheAddIncrementCalls(options).toString());
-  t.is(result.onCacheHit.toString(), stats.createOnCacheHitIncrementCallsAndHits(options).toString());
-});
+    expect(result.onCacheAdd.toString()).toBe(stats.createOnCacheAddIncrementCalls(options).toString());
+    expect(result.onCacheHit.toString()).toBe(stats.createOnCacheHitIncrementCallsAndHits(options).toString());
+  }
+);
 
-test.serial('if getStatsOptions will return the an empty object when not collecting stats', (t) => {
-  stats.statsCache.isCollectingStats = false;
+test(
+  'if getStatsOptions will return the an empty object when not collecting stats',
+  () => {
+    stats.statsCache.isCollectingStats = false;
 
-  const options = {
-    onCacheAdd() {},
-    onCacheHit() {},
-  };
+    const options = {
+      onCacheAdd() {},
+      onCacheHit() {},
+    };
 
-  const result = stats.getStatsOptions(options);
+    const result = stats.getStatsOptions(options);
 
-  t.deepEqual(result, {});
-});
+    expect(result).toEqual({});
+  }
+);
