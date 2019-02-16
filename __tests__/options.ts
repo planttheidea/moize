@@ -1,11 +1,74 @@
 /* globals describe,expect,it,jest */
 
-// test
+// external dependencies
 import { deepEqual, shallowEqual, sameValueZeroEqual } from 'fast-equals';
+// eslint-disable-next-line no-unused-vars
+import { MicroMemoize } from 'micro-memoize';
 
 // src
-import { getIsEqual, getIsMatchingKey, getTransformKey } from '../src/options';
+import {
+  createOnCacheOperation,
+  getCustomOptions,
+  getIsEqual,
+  getIsMatchingKey,
+  getTransformKey,
+} from '../src/options';
 import { getIsSerializedKeyEqual } from '../src/serialize';
+
+describe('createOnCacheOperation', () => {
+  it('should return undefined when fn is not a function', () => {
+    const fn: void = undefined;
+
+    const result = createOnCacheOperation(fn);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should call the fn passed with the cache, options, and memoized function', () => {
+    const _cache: MicroMemoize.Cache = {
+      keys: [],
+      size: 0,
+      values: [],
+    };
+    const _microMemoizeOptions: MicroMemoize.Options = {};
+    // @ts-ignore
+    const fn: Moize.Moized = jest.fn();
+
+    fn.cache = {
+      keys: [],
+      size: 0,
+      values: [],
+    };
+
+    fn.options = {
+      equals: getIsEqual({}),
+    };
+
+    const onCacheOperation = createOnCacheOperation(fn);
+
+    if (typeof onCacheOperation !== 'function') {
+      throw new TypeError('should be a function');
+    }
+
+    onCacheOperation(_cache, _microMemoizeOptions, fn);
+
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(fn.cache, fn.options, fn);
+  });
+});
+
+describe('getCustomOptions', () => {
+  it('should return an object of only the custom options', () => {
+    const options: Moize.Options = {
+      isReact: true,
+      foo: 'bar',
+    };
+
+    const result = getCustomOptions(options);
+
+    expect(result).toEqual({ foo: 'bar' });
+  });
+});
 
 describe('getIsEqual', () => {
   it('should return equals if passed in options', () => {

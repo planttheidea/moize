@@ -6,10 +6,7 @@ import { MicroMemoize } from 'micro-memoize';
 import { clearExpiration } from './maxAge';
 
 // stats
-import {
-  getStats as _getStats,
-  statsCache,
-} from './stats';
+import { getStats as _getStats, statsCache } from './stats';
 
 // utils
 import { createFindKeyIndex, orderByLru } from './utils';
@@ -45,7 +42,12 @@ export function addInstanceMethods(
   { expirations, options }: Moize.AugmentationOptions,
 ) {
   const {
-    isEqual, isMatchingKey, maxSize, onCacheAdd, onCacheChange, transformKey,
+    isEqual,
+    isMatchingKey,
+    maxSize,
+    onCacheAdd,
+    onCacheChange,
+    transformKey,
   } = memoized.options;
 
   const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
@@ -104,7 +106,10 @@ export function addInstanceMethods(
   };
 
   memoized.has = function has(key: any[]) {
-    return !!~findKeyIndex(memoized.cache.keys, transformKey ? transformKey(key) : key);
+    return !!~findKeyIndex(
+      memoized.cache.keys,
+      transformKey ? transformKey(key) : key,
+    );
   };
 
   memoized.keys = function keys(): (any[])[] {
@@ -134,7 +139,10 @@ export function addInstanceMethods(
   };
 
   memoized.update = function update(key: any[], value: any) {
-    const keyIndex = findKeyIndex(memoized.cache.keys, transformKey ? transformKey(key) : key);
+    const keyIndex = findKeyIndex(
+      memoized.cache.keys,
+      transformKey ? transformKey(key) : key,
+    );
 
     if (~keyIndex) {
       const existingKey: any[] = memoized.cache.keys[keyIndex];
@@ -177,59 +185,58 @@ export function addInstanceProperties(
 ) {
   const { options: microMemoizeOptions } = memoized;
 
-  Object.defineProperties(
-    memoized,
-    ({
-      _microMemoizeOptions: {
-        configurable: true,
-        get() {
-          return microMemoizeOptions;
-        },
+  Object.defineProperties(memoized, {
+    _microMemoizeOptions: {
+      configurable: true,
+      get() {
+        return microMemoizeOptions;
       },
-      expirations: {
-        configurable: true,
-        get() {
-          return expirations;
-        },
+    },
+    expirations: {
+      configurable: true,
+      get() {
+        return expirations;
       },
-      expirationsSnapshot: {
-        configurable: true,
-        get() {
-          return expirations.slice(0);
-        },
+    },
+    expirationsSnapshot: {
+      configurable: true,
+      get() {
+        return expirations.slice(0);
       },
-      isCollectingStats: {
-        configurable: true,
-        get() {
-          return statsCache.isCollectingStats;
-        },
+    },
+    isCollectingStats: {
+      configurable: true,
+      get() {
+        return statsCache.isCollectingStats;
       },
-      isMoized: {
-        configurable: true,
-        get() {
-          return true;
-        },
+    },
+    isMoized: {
+      configurable: true,
+      get() {
+        return true;
       },
-      options: {
-        configurable: true,
-        get() {
-          return options;
-        },
+    },
+    options: {
+      configurable: true,
+      get() {
+        return options;
       },
-      originalFunction: {
-        configurable: true,
-        get() {
-          return originalFunction;
-        },
+    },
+    originalFunction: {
+      configurable: true,
+      get() {
+        return originalFunction;
       },
-    }),
-  );
+    },
+  });
 
   if (options.isReact) {
     /* eslint-disable no-param-reassign */
     memoized.contextTypes = originalFunction.contextTypes;
     memoized.defaultProps = originalFunction.defaultProps;
-    memoized.displayName = `Moized(${originalFunction.displayName || originalFunction.name || 'Component'})`;
+    memoized.displayName = `Moized(${originalFunction.displayName
+      || originalFunction.name
+      || 'Component'})`;
     memoized.propTypes = originalFunction.propTypes;
     /* eslint-enable */
   }
@@ -254,5 +261,5 @@ export function augmentInstance(
   addInstanceMethods(memoized, augmentationOptions);
   addInstanceProperties(memoized, augmentationOptions);
 
-  return memoized as unknown as Moize.Moized;
+  return (memoized as unknown) as Moize.Moized;
 }

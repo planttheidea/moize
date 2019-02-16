@@ -81,7 +81,7 @@ export function createArgumentSerializer(options: Moize.Options) {
     const { length } = args;
 
     if (!length) {
-      return '';
+      return [''];
     }
 
     let key = '|';

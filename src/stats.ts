@@ -58,7 +58,9 @@ export function createOnCacheAddIncrementCalls({ profileName }: Moize.Options) {
   };
 }
 
-export function createOnCacheHitIncrementCallsAndHits({ profileName }: Moize.Options) {
+export function createOnCacheHitIncrementCallsAndHits({
+  profileName,
+}: Moize.Options) {
   const { profiles } = statsCache;
 
   /**
@@ -94,7 +96,9 @@ interface ProfiledFunction extends Function {
  */
 export function getDefaultProfileName(fn: ProfiledFunction) {
   const { stack } = new Error();
-  const fnName = fn.displayName || fn.name || `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
+  const fnName =    fn.displayName
+    || fn.name
+    || `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
 
   if (!stack) {
     return fnName;
@@ -108,7 +112,11 @@ export function getDefaultProfileName(fn: ProfiledFunction) {
   for (let index = 0, line; index < length; index++) {
     line = lines[index];
 
-    if (!~line.indexOf('/moize/') && !~line.indexOf(' (native)') && !~line.indexOf(' Function.')) {
+    if (
+      !~line.indexOf('/moize/')
+      && !~line.indexOf(' (native)')
+      && !~line.indexOf(' Function.')
+    ) {
       profileNameLocation = line.replace(/\n/g, '\\n').trim();
       break;
     }
@@ -146,28 +154,30 @@ export function getUsagePercentage(calls: number, hits: number) {
  */
 export function getStats(profileName?: string): Moize.StatsObject {
   if (!statsCache.isCollectingStats && !hasWarningDisplayed) {
-    console.warn('Stats are not currently being collected, please run "collectStats" to enable them.'); // eslint-disable-line no-console
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Stats are not currently being collected, please run "collectStats" to enable them.',
+    );
 
     hasWarningDisplayed = true;
   }
 
   if (profileName) {
     if (!statsCache.profiles[profileName]) {
-      return {
-        calls: 0,
-        hits: 0,
-        usage: '0%',
-      };
+      statsCache.profiles[profileName] = { ...INITIAL_STATS_PROFILE };
     }
 
     const profile = statsCache.profiles[profileName];
 
-    return Object.assign({}, profile, {
+    return assign({}, profile, {
       usage: getUsagePercentage(profile.calls, profile.hits),
     });
   }
 
-  const completeStats: Moize.StatsObject = assign({}, INITIAL_STATS_PROFILE, { profiles: {}, usage: '' });
+  const completeStats: Moize.StatsObject = assign({}, INITIAL_STATS_PROFILE, {
+    profiles: {},
+    usage: '',
+  });
 
   let profile;
 
@@ -183,7 +193,10 @@ export function getStats(profileName?: string): Moize.StatsObject {
     completeStats.profiles[name] = getStats(name);
   }
 
-  completeStats.usage = getUsagePercentage(completeStats.calls, completeStats.hits);
+  completeStats.usage = getUsagePercentage(
+    completeStats.calls,
+    completeStats.hits,
+  );
 
   return completeStats;
 }

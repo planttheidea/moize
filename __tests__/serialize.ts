@@ -159,6 +159,22 @@ describe('createArgumentSerializer', () => {
     expect(result).toEqual(['|foo|["bar"]|{"baz":"baz"}|undefined|']);
   });
 
+  it('should return an empty string when there are no arguments to serialize', () => {
+    const options = {
+      shouldSerializeFunctions: false,
+    };
+
+    const argumentSerializer = createArgumentSerializer(options);
+
+    expect(typeof argumentSerializer).toBe('function');
+
+    const args: any[] = [];
+
+    const result = argumentSerializer(args);
+
+    expect(result).toEqual(['']);
+  });
+
   it('should create a method that serializes the args passed using the custom serializer', () => {
     const options = {
       shouldSerializeFunctions: true,

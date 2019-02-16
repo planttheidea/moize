@@ -31,6 +31,8 @@ declare namespace Moize {
   };
 
   export type Options = {
+    [key: string]: any;
+    [index: number]: any;
     equals?: (cacheKeyArgument: any, keyArgument: any) => boolean; // custom equality comparator comparing a specific key argument
     isDeepEqual?: boolean; // is key comparison done via deep equality
     isPromise?: boolean; // is the result a promise
@@ -86,6 +88,7 @@ declare namespace Moize {
     _microMemoizeOptions: MicroMemoizeOptions;
     add: (key: any[], value: any) => boolean;
     cache: Cache;
+    cacheSnapshot: Cache;
     clear: () => void;
     contextTypes?: Object;
     defaultProps?: Object;
