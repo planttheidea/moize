@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.4.2
+
+- Ignore when `maxArgs` or `maxSize` arguments are negative
+
 ## 5.4.1
 
 - Upgrade to `babel@7`
