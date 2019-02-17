@@ -57,7 +57,7 @@
     "react-dom": "^16.8.2",
     "react-virtualized": "^9.21.0",
     "remeasure": "^3.1.1",
-    "rollup": "^1.2.0",
+    "rollup": "^1.2.1",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript": "^1.0.0",
