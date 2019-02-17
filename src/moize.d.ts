@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 interface ReactComponent extends Function {
   contextTypes?: Object;
   defaultProps?: Object;
@@ -19,9 +20,9 @@ type MicroMemoizeOptions = {
 
 declare namespace Moize {
   export type Cache = {
-    keys: Array<Array<any>>;
+    keys: (any[])[];
     size: number;
-    values: Array<any>;
+    values: any[];
   };
 
   export type Expiration = {
@@ -33,24 +34,60 @@ declare namespace Moize {
   export type Options = {
     [key: string]: any;
     [index: number]: any;
-    equals?: (cacheKeyArgument: any, keyArgument: any) => boolean; // custom equality comparator comparing a specific key argument
-    isDeepEqual?: boolean; // is key comparison done via deep equality
-    isPromise?: boolean; // is the result a promise
-    isReact?: boolean; // is the method a functional React component
-    isSerialized?: boolean; // should the parameters be serialized instead of directly referenced
-    matchesKey?: (cacheKey: any[], key: any[]) => boolean; // custom equality comparator comparing the entire key
-    maxAge?: number; // amount of time in milliseconds before the cache will expire
-    maxArgs?: number; // maximum number of arguments to use as key for caching
-    maxSize?: number; // maximum size of cache for this method
-    onCacheAdd?: (cache: Cache, options: Options, moized: Function) => void; // a callback when a new cache item is added
-    onCacheChange?: (cache: Cache, options: Options, moized: Function) => void; // a callback when the cache changes
-    onCacheHit?: (cache: Cache, options: Options, moized: Function) => void; // a callback when an existing cache item is retrieved
-    onExpire?: (key: any) => boolean | void; // a callback when a cache item expires
-    profileName?: string; // a custom name to associate stats for the method to
-    serializer?: (...args: any[]) => any; // provide a serializer and override default,
-    shouldSerializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
-    transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
-    updateExpire?: boolean; // should the expiration be updated when cache is hit
+
+    // custom equality comparator comparing a specific key argument
+    equals?: (cacheKeyArgument: any, keyArgument: any) => boolean;
+
+    // is key comparison done via deep equality
+    isDeepEqual?: boolean;
+
+    // is the result a promise
+    isPromise?: boolean;
+
+    // is the method a functional React component
+    isReact?: boolean;
+
+    // should the parameters be serialized instead of directly referenced
+    isSerialized?: boolean;
+
+    // custom equality comparator comparing the entire key
+    matchesKey?: (cacheKey: any[], key: any[]) => boolean;
+
+    // amount of time in milliseconds before the cache will expire
+    maxAge?: number;
+
+    // maximum number of arguments to use as key for caching
+    maxArgs?: number;
+
+    // maximum size of cache for this method
+    maxSize?: number;
+
+    // a callback when a new cache item is added
+    onCacheAdd?: (cache: Cache, options: Options, moized: Function) => void;
+
+    // a callback when the cache changes
+    onCacheChange?: (cache: Cache, options: Options, moized: Function) => void;
+
+    // a callback when an existing cache item is retrieved
+    onCacheHit?: (cache: Cache, options: Options, moized: Function) => void;
+
+    // a callback when a cache item expires
+    onExpire?: (key: any) => boolean | void;
+
+    // a custom name to associate stats for the method to
+    profileName?: string;
+
+    // provide a serializer and override default,
+    serializer?: (args: any[]) => any[];
+
+    // should functions be included in the serialization of multiple parameters
+    shouldSerializeFunctions?: boolean;
+
+    // transform the args prior to storage as key
+    transformArgs?: (args: any[]) => any[];
+
+    // should the expiration be updated when cache is hit
+    updateExpire?: boolean;
   };
 
   export type StatsProfile = {

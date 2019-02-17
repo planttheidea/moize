@@ -222,8 +222,8 @@ describe('getSerializerFunction', () => {
 
   it('should uses the serializer passed when it is a function', () => {
     const options = {
-      serializer(value: any) {
-        return `KEY: ${JSON.stringify(value)}`;
+      serializer(value: any[]) {
+        return [`KEY: ${JSON.stringify(value)}`];
       },
     };
     const serializeArguments = getSerializerFunction(options);

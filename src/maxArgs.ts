@@ -1,6 +1,21 @@
 const { slice } = Array.prototype;
 
 export function createGetInitialArgs(size: number) {
+  if (size < 0) {
+    throw new Error('option.size must be a positive number');
+  }
+
+  /**
+   * @private
+   *
+   * @function getInitialArgs
+   *
+   * @description
+   * limit the args passed based on the maxSize
+   *
+   * @param args the arguments to limit
+   * @returns the arguments limited to the size requested
+   */
   return function getInitialArgs(args: any[]) {
     if (size >= args.length) {
       return args;

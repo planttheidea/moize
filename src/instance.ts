@@ -11,6 +11,8 @@ import { getStats as _getStats, statsCache } from './stats';
 // utils
 import { createFindKeyIndex, orderByLru } from './utils';
 
+const { isArray } = Array;
+
 export interface ExtendedMemoized extends MicroMemoize.Memoized {
   add: (key: any[], value: any) => boolean;
   clear: () => void;
@@ -55,6 +57,10 @@ export function addInstanceMethods(
   /* eslint-disable no-param-reassign */
 
   memoized.add = function add(key: any[], value: any) {
+    if (!isArray(key)) {
+      throw new TypeError('The key passed needs to be an array.');
+    }
+
     const savedKey = transformKey ? transformKey(key) : key;
     const keyIndex = findKeyIndex(memoized.cache.keys, savedKey);
 
@@ -234,9 +240,9 @@ export function addInstanceProperties(
     /* eslint-disable no-param-reassign */
     memoized.contextTypes = originalFunction.contextTypes;
     memoized.defaultProps = originalFunction.defaultProps;
-    memoized.displayName = `Moized(${originalFunction.displayName
-      || originalFunction.name
-      || 'Component'})`;
+    memoized.displayName = `Moized(${originalFunction.displayName ||
+      originalFunction.name ||
+      'Component'})`;
     memoized.propTypes = originalFunction.propTypes;
     /* eslint-enable */
   }

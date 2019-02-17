@@ -1,23 +1,8 @@
 {
   "babel": {
-    "plugins": [
-      "@babel/plugin-syntax-flow",
-      "@babel/plugin-transform-flow-strip-types",
-      [
-        "./plugins/search-and-replace.js",
-        {
-          "micro-memoize/es/utils": "micro-memoize/lib/utils"
-        }
-      ]
-    ],
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "loose": true
-        }
-      ]
-    ]
+    "babelrc": false,
+    "extensions": ["js", "jsx", "ts", "tsx"],
+    "presets": ["@babel/preset-typescript"]
   },
   "configHelpUrl": "http://usejsdoc.org/about-configuring-jsdoc.html",
   "markdown": {
@@ -32,11 +17,11 @@
     "template": "./node_modules/ink-docstrap/template",
     "verbose": true
   },
-  "plugins": ["node_modules/jsdoc-babel", "plugins/markdown"],
+  "plugins": ["node_modules/jsdoc-babel"],
   "source": {
     "include": ["src"],
     "exclude": [],
-    "includePattern": ".js$",
+    "includePattern": ".+\\.(j|t)s(doc|x)?$",
     "excludePattern": "(node_modules/|docs)"
   },
   "tags": {
@@ -53,5 +38,8 @@
     "syntaxTheme": "dark",
     "systemName": "moize",
     "theme": "paper"
+  },
+  "typescript": {
+    "moduleRoot": "src"
   }
 }

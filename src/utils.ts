@@ -8,6 +8,20 @@ import { DEFAULT_OPTIONS } from './constants';
 const { isArray } = Array;
 const { hasOwnProperty } = Object.prototype;
 
+const DEV = !!(process && process.env && process.env.NODE_ENV !== 'production');
+
+/**
+ * @private
+ *
+ * @function assignFallback
+ *
+ * @description
+ * fallback to the built-in Object.assign when not available
+ *
+ * @param target the target object
+ * @param sources the sources to assign to the target
+ * @returns the assigned target
+ */
 export function assignFallback(target: any, ...sources: any[]) {
   return sources.length
     ? sources.reduce((assigned, source) => {
@@ -25,9 +39,26 @@ export function assignFallback(target: any, ...sources: any[]) {
     : target;
 }
 
+/**
+ * @private
+ *
+ * @constant assign the method to assign sources into a target
+ */
 export const assign =
   typeof Object.assign === 'function' ? Object.assign : assignFallback;
 
+/**
+ * @private
+ *
+ * @function combine
+ *
+ * @description
+ * combine all functions that are functions into a single function that calls
+ * all functions in the order passed
+ *
+ * @param functions the functions to combine
+ * @returns the combined function
+ */
 export function combine(...functions: (Function | void)[]): Function | void {
   if (functions.length) {
     return functions.reduce((f: Function | void, g: Function | void) => {
@@ -49,6 +80,17 @@ export function combine(...functions: (Function | void)[]): Function | void {
   }
 }
 
+/**
+ * @private
+ *
+ * @function compose
+ *
+ * @description
+ * combine all functions that are functions into a single function pipeline
+ *
+ * @param functions the functions to compose
+ * @returns the composed function
+ */
 export function compose(...functions: (Function | void)[]): Function | void {
   if (functions.length) {
     return functions.reduce((f: Function | void, g: Function | void) => {
@@ -76,9 +118,9 @@ export function compose(...functions: (Function | void)[]): Function | void {
  * @description
  * find the index of the expiration based on the key
  *
- * @param {Array<Expiration>} expirations the list of expirations
- * @param {Array<any>} key the key to match
- * @returns {number} the index of the expiration
+ * @param expirations the list of expirations
+ * @param key the key to match
+ * @returns the index of the expiration
  */
 export function findExpirationIndex(
   expirations: Moize.Expiration[],
@@ -95,6 +137,18 @@ export function findExpirationIndex(
   return -1;
 }
 
+/**
+ * @private
+ *
+ * @function createFindKeyIndex
+ *
+ * @description
+ * create the method that will find the matching key index
+ *
+ * @param isEqual the key argument equality validator
+ * @param isMatchingKey the complete key equality validator
+ * @returns the function to find the key's index
+ */
 export function createFindKeyIndex(
   isEqual: Function,
   isMatchingKey?: Function,
@@ -125,8 +179,30 @@ export function createFindKeyIndex(
   };
 }
 
+/**
+ * @private
+ *
+ * @function getArrayKey
+ *
+ * @description
+ * get the key as an array if not already
+ *
+ * @param key the key to array-ify
+ * @returns the array-ified key
+ */
 export function getArrayKey(key: any) {
-  return isArray(key) ? key : [key];
+  if (isArray(key)) {
+    return key;
+  }
+
+  if (DEV && console) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'Use of a non-array key is deprecated, please modify your transformer to return an array.',
+    );
+  }
+
+  return [key];
 }
 
 /**
@@ -137,9 +213,9 @@ export function getArrayKey(key: any) {
  * @description
  * merge two options objects, combining or composing functions as necessary
  *
- * @param {Options} originalOptions the options that already exist on the method
- * @param {Options} newOptions the new options to merge
- * @returns {Options} the merged options
+ * @param originalOptions the options that already exist on the method
+ * @param newOptions the new options to merge
+ * @returns the merged options
  */
 export function mergeOptions(
   originalOptions: Moize.Options,
@@ -164,6 +240,8 @@ export function mergeOptions(
 }
 
 /**
+ * @private
+ *
  * @function orderByLru
  *
  * @description

@@ -9,9 +9,9 @@ import { createFindKeyIndex, findExpirationIndex } from './utils';
  * @description
  * clear an active expiration and remove it from the list if applicable
  *
- * @param {Array<Expiration>} expirations the list of expirations
- * @param {any} key the key to clear
- * @param {boolean} [shouldRemove] should the expiration be removed from the list
+ * @param expirations the list of expirations
+ * @param key the key to clear
+ * @param shouldRemove should the expiration be removed from the list
  */
 export function clearExpiration(
   expirations: Moize.Expiration[],
@@ -117,8 +117,7 @@ export function createOnCacheHitResetExpiration(
    *
    * @modifies {expirations}
    *
-   * @param {Cache} cache the cache of the memoized function
-   * @returns {void}
+   * @param cache the cache of the memoized function
    */
   return function onCacheHitResetExpiration(cache: Moize.Cache) {
     const key: any = cache.keys[0];
@@ -144,11 +143,11 @@ export function createOnCacheHitResetExpiration(
  * @description
  * get the micro-memoize options specific to the maxAge option
  *
- * @param {Array<Expiration>} expirations the expirations for the memoized function
- * @param {Options} options the options passed to the moizer
- * @param {function} isEqual the function to test equality of the key on a per-argument basis
- * @param {function} isMatchingKey the function to test equality of the whole key
- * @returns {Object} the object of options based on the entries passed
+ * @param expirations the expirations for the memoized function
+ * @param options the options passed to the moizer
+ * @param isEqual the function to test equality of the key on a per-argument basis
+ * @param isMatchingKey the function to test equality of the whole key
+ * @returns the object of options based on the entries passed
  */
 export function getMaxAgeOptions(
   expirations: Moize.Expiration[],

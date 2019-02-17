@@ -254,7 +254,15 @@ describe('getArrayKey', () => {
   it('should return the key if a string', () => {
     const key = 'key';
 
+    const _warn = console.warn;
+
+    console.warn = jest.fn();
+
     const result = getArrayKey(key);
+
+    expect(console.warn).toHaveBeenCalledTimes(1);
+
+    console.warn = _warn;
 
     expect(result).not.toBe(key);
     expect(result).toEqual([key]);

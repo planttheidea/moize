@@ -7,7 +7,9 @@ describe('getInitialArgs', () => {
   it('should return the args themselves when the size is larger than the length', () => {
     const args = ['foo'];
 
-    const result = createGetInitialArgs(2)(args);
+    const getInitialArgs = createGetInitialArgs(2);
+
+    const result = getInitialArgs(args);
 
     expect(result).toBe(args);
   });
@@ -16,7 +18,9 @@ describe('getInitialArgs', () => {
     const args = [1, 2, 3, 4, 5, 6, 7];
 
     for (let index = 0; index < 6; index++) {
-      expect(createGetInitialArgs(index)(args)).toEqual(args.slice(0, index));
+      const getInitialArgs = createGetInitialArgs(index);
+
+      expect(getInitialArgs(args)).toEqual(args.slice(0, index));
     }
   });
 
@@ -24,9 +28,15 @@ describe('getInitialArgs', () => {
     const args = [1, 2, 3, 4, 5, 6, 7];
     const size = 6;
 
-    const result = createGetInitialArgs(size)(args);
+    const getInitialArgs = createGetInitialArgs(size);
+
+    const result = getInitialArgs(args);
 
     expect(result).not.toBe(args);
     expect(result).toEqual(args.slice(0, size));
+  });
+
+  it('should throw if a negative number is passed', () => {
+    expect(() => createGetInitialArgs(-1)).toThrow();
   });
 });

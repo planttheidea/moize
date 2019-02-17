@@ -40,6 +40,10 @@ import {
   mergeOptions,
 } from './utils';
 
+/**
+ * @module moize
+ */
+
 function moize<T extends Function>(
   fn: T | Moize.Options | React.ComponentClass | Moize.Moized,
   options: Moize.Options = DEFAULT_OPTIONS,

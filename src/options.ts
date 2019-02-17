@@ -22,6 +22,20 @@ interface MemoizedFunction extends Function {
 
 export function createOnCacheOperation(fn: Function | void): Function | void {
   if (typeof fn === 'function') {
+    /**
+     * @private
+     *
+     * @function onCacheOperation
+     *
+     * @description
+     * when the cache is modified in some way, call the method with the memoized
+     * cache, options, and function
+     *
+     * @param _cache the micro-memoize cache (ignored)
+     * @param _microMemoizeOptions the micro-memoize options (ignored)
+     * @param memoized the memoized method
+     * @returns the result of the cache modified operation
+     */
     return function onCacheOperation(
       _cache: Cache,
       _microMemoizeOptions: MicroMemoize.Options,
@@ -32,6 +46,17 @@ export function createOnCacheOperation(fn: Function | void): Function | void {
   }
 }
 
+/**
+ * @private
+ *
+ * @function getCustomOptions
+ *
+ * @description
+ * get the custom options passed with the rest of the options
+ *
+ * @param options the options to get the custom values from
+ * @returns the custom options passed
+ */
 export function getCustomOptions(options: Moize.Options) {
   const customOptions: { [key: string]: any } = {};
 
@@ -45,6 +70,19 @@ export function getCustomOptions(options: Moize.Options) {
   return customOptions;
 }
 
+/**
+ * @private
+ *
+ * @function getIsEqual
+ *
+ * @description
+ * get the method to use for the isEqual option passed to micro-memoize
+ *
+ * @param equals the key item equality validator
+ * @param isDeepEqual is deep equality used for key comparison
+ * @param isReact is the function a React component
+ * @returns the isEqual method
+ */
 export function getIsEqual({ equals, isDeepEqual, isReact }: Moize.Options) {
   if (equals) {
     return equals;
@@ -61,6 +99,18 @@ export function getIsEqual({ equals, isDeepEqual, isReact }: Moize.Options) {
   return sameValueZeroEqual;
 }
 
+/**
+ * @private
+ *
+ * @function getIsMatchingKey
+ *
+ * @description
+ * get the method to use for the isMatchingKey option passed to micro-memoize
+ *
+ * @param isSerialized is serialization used for the key
+ * @param matchesKey the key equality validator
+ * @returns the isMatchingKey method
+ */
 export function getIsMatchingKey({ isSerialized, matchesKey }: Moize.Options) {
   if (matchesKey) {
     return matchesKey;
@@ -71,6 +121,17 @@ export function getIsMatchingKey({ isSerialized, matchesKey }: Moize.Options) {
   }
 }
 
+/**
+ * @private
+ *
+ * @function getTransformKey
+ *
+ * @description
+ * get the transformKey method passed to micro-memoize
+ *
+ * @param options the moize options passed
+ * @returns the transformKey method
+ */
 export function getTransformKey(options: Moize.Options) {
   return compose(
     options.isSerialized && getSerializerFunction(options),

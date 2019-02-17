@@ -15,7 +15,7 @@ let hasWarningDisplayed = false;
 /**
  * @private
  *
- * @constant {StatsCache} statsCache
+ * @constant statsCache the cache of statistics
  */
 export const statsCache: Moize.StatsCache = {
   anonymousProfileNameCounter: 1,

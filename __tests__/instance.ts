@@ -540,6 +540,38 @@ describe('moized.add', () => {
 
     expect(moized.options.onCacheChange).toHaveBeenCalledTimes(0);
   });
+
+  it('should throw if the key is not an array', () => {
+    // @ts-ignore
+    const moized: Moize.Moized = () => {};
+
+    const key = 'key';
+    const value = 'value';
+
+    moized.cache = {
+      keys: [],
+      size: 0,
+      values: [],
+    };
+
+    moized.options = {
+      isEqual: isStrictEqual,
+      onCacheAdd: jest.fn(),
+      onCacheChange: jest.fn(),
+      transformKey: undefined,
+    };
+
+    const configuration: Moize.AugmentationOptions = {
+      expirations: [],
+      options: {},
+      originalFunction() {},
+    };
+
+    addInstanceMethods(moized, configuration);
+
+    // @ts-ignore
+    expect(() => moized.add(key, value)).toThrow();
+  });
 });
 
 describe('moized.clear', () => {
