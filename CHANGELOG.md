@@ -15,6 +15,10 @@
 - Targeted builds for all environments (`module`, `cjs` and `umd`)
 - More accurate benchmarks with `benchee`
 
+## 5.4.2
+
+- Ignore when `maxArgs` or `maxSize` arguments are negative
+
 ## 5.4.1
 
 - Upgrade to `babel@7`
