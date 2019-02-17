@@ -105,7 +105,7 @@
     "copy:mjs": "node ./es-to-mjs.js",
     "dev": "NODE_ENV=development webpack-dev-server --colors --progress --config=webpack/webpack.config.js",
     "dist": "npm run clean:dist && npm run build",
-    "docs": "npm run clean:docs && jsdoc -c ./jsdoc.config.json && cp img/*.png docs/img",
+    "docs": "npm run clean:docs && jsdoc -c ./jsdoc.config.json",
     "lint": "NODE_ENV=test eslint src/*.ts",
     "lint:fix": "NODE_ENV=test eslint src --fix",
     "postpublish": "npm run docs && git add . && git commit -m \"Update docs\" && git push",

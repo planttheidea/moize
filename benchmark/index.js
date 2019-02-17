@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 const _ = require('lodash');
 // const fs = require("fs");
 const React = require('react');
@@ -5,6 +7,7 @@ const React = require('react');
 const { createSuite } = require('benchee');
 const Table = require('cli-table2');
 
+/* eslint-disable prefer-rest-params */
 const resolveArguments = function resolveArguments() {
   if (arguments.length > 1) {
     return JSON.stringify(arguments);
@@ -12,6 +15,7 @@ const resolveArguments = function resolveArguments() {
 
   return typeof arguments[0] === 'object' ? JSON.stringify(arguments[0]) : arguments[0];
 };
+/* eslint-enable */
 
 const getResults = (results) => {
   const table = new Table({
@@ -38,13 +42,10 @@ const underscore = require('underscore').memoize;
 const moize = require('../dist/moize.cjs');
 const addyOsmani = require('./addy-osmani');
 
-const deepEqualFastEquals = require('fast-equals').deepEqual;
-
-const deepEqualLodash = _.isEqual;
-
 /** *********** tests ************ */
 
-const fibonacciSinglePrimitive = number => (number < 2 ? number : fibonacciSinglePrimitive(number - 1) + fibonacciSinglePrimitive(number - 2));
+// eslint-disable-next-line
+const fibonacciSinglePrimitive = number => number < 2 ? number : fibonacciSinglePrimitive(number - 1) + fibonacciSinglePrimitive(number - 2);
 
 const fibonacciSingleArray = array => (array[0] < 2
   ? array[0]
@@ -52,8 +53,8 @@ const fibonacciSingleArray = array => (array[0] < 2
 
 const fibonacciSingleObject = object => (object.number < 2
   ? object.number
-  : fibonacciSingleObject({ number: object.number - 1 })
-      + fibonacciSingleObject({ number: object.number - 2 }));
+  : fibonacciSingleObject({ number: object.number - 1 }) +
+      fibonacciSingleObject({ number: object.number - 2 }));
 
 const fibonacciMultiplePrimitive = (number, isComplete) => {
   if (isComplete) {
@@ -64,8 +65,8 @@ const fibonacciMultiplePrimitive = (number, isComplete) => {
   const secondValue = number - 2;
 
   return (
-    fibonacciMultiplePrimitive(firstValue, firstValue < 2)
-    + fibonacciMultiplePrimitive(secondValue, secondValue < 2)
+    fibonacciMultiplePrimitive(firstValue, firstValue < 2) +
+    fibonacciMultiplePrimitive(secondValue, secondValue < 2)
   );
 };
 
@@ -78,8 +79,8 @@ const fibonacciMultipleArray = (array, check) => {
   const secondValue = array[0] - 2;
 
   return (
-    fibonacciMultipleArray([firstValue], [firstValue < 2])
-    + fibonacciMultipleArray([secondValue], [secondValue < 2])
+    fibonacciMultipleArray([firstValue], [firstValue < 2]) +
+    fibonacciMultipleArray([secondValue], [secondValue < 2])
   );
 };
 
@@ -92,12 +93,12 @@ const fibonacciMultipleObject = (object, check) => {
   const secondValue = object.number - 2;
 
   return (
-    fibonacciMultipleObject({ number: firstValue }, { isComplete: firstValue < 2 })
-    + fibonacciMultipleObject({ number: secondValue }, { isComplete: secondValue < 2 })
+    fibonacciMultipleObject({ number: firstValue }, { isComplete: firstValue < 2 }) +
+    fibonacciMultipleObject({ number: secondValue }, { isComplete: secondValue < 2 })
   );
 };
 
-/** *********** benchmarks ************ */
+/** *********** main benchmarks ************ */
 
 const singularPrimitive = {
   'addy osmani': addyOsmani(fibonacciSinglePrimitive),
@@ -185,7 +186,7 @@ const isComplete = false;
 const arrayIsComplete = [isComplete];
 const objectIsComplete = { isComplete };
 
-const suite = createSuite({
+const mainSuite = createSuite({
   minTime: 1000,
   onComplete(results) {
     const combinedResults = Object.keys(results)
@@ -221,7 +222,7 @@ const suite = createSuite({
         name,
         stats: {
           ...stats,
-          ops: stats.iterations / stats.elapsed,
+          ops: ~~((stats.iterations / stats.elapsed) * 1000),
         },
       }))
       .sort((a, b) => {
@@ -262,7 +263,7 @@ const suite = createSuite({
 Object.keys(singularPrimitive).forEach((name) => {
   const fn = singularPrimitive[name];
 
-  suite.add(name, 'singular primitive', () => {
+  mainSuite.add(name, 'singular primitive', () => {
     fn(number);
   });
 });
@@ -270,7 +271,7 @@ Object.keys(singularPrimitive).forEach((name) => {
 Object.keys(singularArray).forEach((name) => {
   const fn = singularArray[name];
 
-  suite.add(name, 'singular array', () => {
+  mainSuite.add(name, 'singular array', () => {
     fn(arrayNumber);
   });
 });
@@ -278,7 +279,7 @@ Object.keys(singularArray).forEach((name) => {
 Object.keys(singularObject).forEach((name) => {
   const fn = singularObject[name];
 
-  suite.add(name, 'singular object', () => {
+  mainSuite.add(name, 'singular object', () => {
     fn(objectNumber);
   });
 });
@@ -286,7 +287,7 @@ Object.keys(singularObject).forEach((name) => {
 Object.keys(multiplePrimitive).forEach((name) => {
   const fn = multiplePrimitive[name];
 
-  suite.add(name, 'multiple primitive', () => {
+  mainSuite.add(name, 'multiple primitive', () => {
     fn(number, isComplete);
   });
 });
@@ -294,7 +295,7 @@ Object.keys(multiplePrimitive).forEach((name) => {
 Object.keys(multipleArray).forEach((name) => {
   const fn = multipleArray[name];
 
-  suite.add(name, 'multiple array', () => {
+  mainSuite.add(name, 'multiple array', () => {
     fn(arrayNumber, arrayIsComplete);
   });
 });
@@ -302,9 +303,231 @@ Object.keys(multipleArray).forEach((name) => {
 Object.keys(multipleObject).forEach((name) => {
   const fn = multipleObject[name];
 
-  suite.add(name, 'multiple object', () => {
+  mainSuite.add(name, 'multiple object', () => {
     fn(objectNumber, objectIsComplete);
   });
 });
 
-suite.run();
+/** *********** alternative benchmarks ************ */
+
+const deepEqualLodash = _.isEqual;
+
+const alternativeSuite = createSuite({
+  minTime: 1000,
+  onComplete(results) {
+    const combinedResults = Object.keys(results)
+      .reduce((combined, group) => {
+        const groupResults = results[group];
+
+        return groupResults.map(({ name, stats }) => {
+          const existingRowIndex = combined.findIndex(({ name: rowName }) => name === rowName);
+
+          if (~existingRowIndex) {
+            // eslint-disable-next-line no-return-assign
+            return {
+              ...combined[existingRowIndex],
+              stats: {
+                // eslint-disable-next-line no-param-reassign
+                elapsed: (combined[existingRowIndex].stats.elapsed += stats.elapsed),
+                // eslint-disable-next-line no-param-reassign
+                iterations: (combined[existingRowIndex].stats.iterations += stats.iterations),
+              },
+            };
+          }
+
+          return {
+            name,
+            stats: {
+              elapsed: stats.elapsed,
+              iterations: stats.iterations,
+            },
+          };
+        });
+      }, [])
+      .map(({ name, stats }) => ({
+        name,
+        stats: {
+          ...stats,
+          ops: ~~((stats.iterations / stats.elapsed) * 1000),
+        },
+      }))
+      .sort((a, b) => {
+        if (a.stats.ops > b.stats.ops) {
+          return -1;
+        }
+
+        if (a.stats.ops < b.stats.ops) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+    console.log('');
+    console.log('Benchmark results complete, overall averages:');
+    console.log('');
+    console.log(getResults(combinedResults));
+    console.log('');
+  },
+  onGroupComplete({ group }) {
+    console.log('');
+    console.log(`...finished group ${group}.`);
+    console.log('');
+  },
+  onGroupStart(group) {
+    console.log('');
+    console.log(`Starting benchmarks for group ${group}...`);
+    console.log('');
+  },
+  onResult({ error, name, stats }) {
+    if (error) {
+      console.error(error);
+    }
+
+    console.log(`Benchmark completed for ${name}: ${stats.ops.toLocaleString()} ops/sec`);
+  },
+});
+
+const fibonacciMultipleDeepEqual = ({ number: _number }) => (_number < 2
+  ? _number
+  : fibonacciMultipleDeepEqual({ number: _number - 1 }) +
+      fibonacciMultipleDeepEqual({ number: _number - 2 }));
+
+const props = {
+  foo: {
+    foo: {
+      foo: 'foo',
+    },
+  },
+  bar: {
+    bar: {
+      bar: 'bar',
+    },
+  },
+};
+const context = {};
+
+const mMoizeDeep = moize(fibonacciMultipleDeepEqual, {
+  isDeepEqual: true,
+});
+
+const mMoizeLodashDeep = moize(fibonacciMultipleDeepEqual, {
+  equals: deepEqualLodash,
+});
+const mMoizeSerialize = moize.serialize(fibonacciMultipleDeepEqual);
+
+const Foo = _props => React.createElement('div', null, JSON.stringify(_props));
+
+const mMoizeReact = moize.react(Foo);
+const mMoizeReactDeep = moize.react(Foo, {
+  isDeepEqual: true,
+});
+const mMoizeReactLodashDeep = moize.react(Foo, {
+  equals: deepEqualLodash,
+});
+const mMoizeReactOld = moize(Foo, {
+  isSerialized: true,
+  maxArgs: 2,
+  shouldSerializeFunctions: true,
+});
+
+const chooseSpecificArgs = (foo, bar, baz) => [foo, baz];
+
+const mMoizeSpecificArgs = moize(chooseSpecificArgs, {
+  transformArgs(args) {
+    let index = args.length;
+    const newKey = [];
+
+    while (--index) {
+      newKey[index - 1] = args[index];
+    }
+
+    return newKey;
+  },
+});
+const mMoizeMaxArgs = moize.maxArgs(2)((one, two, three) => [one, two, three]);
+
+const object1 = { foo: 'bar' };
+const object2 = ['foo'];
+
+const alternative = 'alternative moize uses';
+
+alternativeSuite.add('moize.serialized', alternative, () => {
+  mMoizeSerialize({ number: 35 });
+});
+
+alternativeSuite.add('moize.deep', alternative, () => {
+  mMoizeDeep({ number: 35 });
+});
+
+alternativeSuite.add('moize (lodash isEqual)', alternative, () => {
+  mMoizeLodashDeep({ number: 35 });
+});
+
+alternativeSuite.add('moize.react', alternative, () => {
+  mMoizeReact(props, context);
+});
+
+alternativeSuite.add('moize.react (serialized)', alternative, () => {
+  mMoizeReactOld(
+    {
+      foo: {
+        foo: {
+          foo: 'foo',
+        },
+      },
+      bar: {
+        bar: {
+          bar: 'bar',
+        },
+      },
+    },
+    context,
+  );
+});
+
+alternativeSuite.add('moize.react (isDeepEqual)', alternative, () => {
+  mMoizeReactDeep(
+    {
+      foo: {
+        foo: {
+          foo: 'foo',
+        },
+      },
+      bar: {
+        bar: {
+          bar: 'bar',
+        },
+      },
+    },
+    context,
+  );
+});
+
+alternativeSuite.add('moize.deep (lodash isEqual)', alternative, () => {
+  mMoizeReactLodashDeep(
+    {
+      foo: {
+        foo: {
+          foo: 'foo',
+        },
+      },
+      bar: {
+        bar: {
+          bar: 'bar',
+        },
+      },
+    },
+    context,
+  );
+});
+
+alternativeSuite.add('moize (transformArgs)', alternative, () => {
+  mMoizeSpecificArgs('foo', object1, object2);
+});
+
+alternativeSuite.add('moize.maxArgs', alternative, () => {
+  mMoizeMaxArgs('foo', object1, object2);
+});
+
+mainSuite.run().then(() => alternativeSuite.run());
