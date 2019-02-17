@@ -1,52 +1,152 @@
-interface Cache {
-  keys: Array<Array<any>>;
-  size: number;
-  values: Array<any>;
-}
+/* eslint-disable */
 
-interface Options {
-  equals?: (cacheKeyArgument: any, keyArgument: any) => boolean; // custom equality comparator comparing a specific key argument
-  isDeepEqual?: boolean; // is key comparison done via deep equality
-  isPromise?: boolean; // is the result a promise
-  isReact?: boolean; // is the method a functional React component
-  isSerialized?: boolean; // should the parameters be serialized instead of directly referenced
-  matchesKey?: (cacheKey: Array<any>, key: Array<any>) => boolean; // custom equality comparator comparing the entire key
-  maxAge?: number; // amount of time in milliseconds before the cache will expire
-  maxArgs?: number; // maximum number of arguments to use as key for caching
-  maxSize?: number; // maximum size of cache for this method
-  onCacheAdd?: (cache: Cache) => void; // a callback when a new cache item is added
-  onCacheChange?: (cache: Cache) => void; // a callback when the cache changes
-  onCacheHit?: (cache: Cache) => void; // a callback when an existing cache item is retrieved
-  onExpire?: (key: any) => void; // a callback when a cache item expires
-  profileName?: string; // a custom name to associate stats for the method to
-  serializer?: (...args: any[]) => any; // provide a serializer and override default,
-  shouldSerializeFunctions?: boolean; // should functions be included in the serialization of multiple parameters
-  transformArgs?: (args: any[]) => any[]; // transform the args prior to storage as key
-  updateExpire?: boolean; // should the expiration be updated when cache is hit
-}
-
-type Fn = (...args: any[]) => any;
-
-type Moizer<T extends Fn> = (t: T) => T;
-
-declare function moize<T extends Fn>(o: Options): ((t: T) => T);
+declare function moize<T extends Fn>(o: Options): (t: T) => T;
 declare function moize<T extends Fn>(t: T, o?: Options): T;
 
-declare namespace moize {
-  function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
+declare namespace Moize {
+  export type Cache = {
+    keys: (any[])[];
+    size: number;
+    values: any[];
+  };
 
-  function deep<T extends Fn>(t: T, o?: Options): T;
-  function isMoized<T extends Fn>(t: T): boolean;
-  function maxAge<T extends Fn>(a: number): (t: T, o?: Options) => T;
-  function maxArgs<T extends Fn>(a: number): (t: T, o?: Options) => T;
-  function maxSize<T extends Fn>(a: number): (t: T, o?: Options) => T;
-  function promise<T extends Fn>(t: T, o?: Options): T;
-  function react<T extends Fn>(t: T, o?: Options): T;
-  function reactSimple<T extends Fn>(t: T, o?: Options): T;
-  function serialize<T extends Fn>(t: T, o?: Options): T;
-  function simple<T extends Fn>(t: T, o?: Options): T;
+  export type Expiration = {
+    expirationMethod: () => void;
+    key: any[];
+    timeoutId: number | NodeJS.Timer;
+  };
+
+  export type Options = {
+    [key: string]: any;
+    [index: number]: any;
+
+    // custom equality comparator comparing a specific key argument
+    equals?: (cacheKeyArgument: any, keyArgument: any) => boolean;
+
+    // is key comparison done via deep equality
+    isDeepEqual?: boolean;
+
+    // is the result a promise
+    isPromise?: boolean;
+
+    // is the method a functional React component
+    isReact?: boolean;
+
+    // should the parameters be serialized instead of directly referenced
+    isSerialized?: boolean;
+
+    // custom equality comparator comparing the entire key
+    matchesKey?: (cacheKey: any[], key: any[]) => boolean;
+
+    // amount of time in milliseconds before the cache will expire
+    maxAge?: number;
+
+    // maximum number of arguments to use as key for caching
+    maxArgs?: number;
+
+    // maximum size of cache for this method
+    maxSize?: number;
+
+    // a callback when a new cache item is added
+    onCacheAdd?: (cache: Cache, options: Options, moized: Function) => void;
+
+    // a callback when the cache changes
+    onCacheChange?: (cache: Cache, options: Options, moized: Function) => void;
+
+    // a callback when an existing cache item is retrieved
+    onCacheHit?: (cache: Cache, options: Options, moized: Function) => void;
+
+    // a callback when a cache item expires
+    onExpire?: (key: any) => boolean | void;
+
+    // a custom name to associate stats for the method to
+    profileName?: string;
+
+    // provide a serializer and override default,
+    serializer?: (args: any[]) => any[];
+
+    // should functions be included in the serialization of multiple parameters
+    shouldSerializeFunctions?: boolean;
+
+    // transform the args prior to storage as key
+    transformArgs?: (args: any[]) => any[];
+
+    // should the expiration be updated when cache is hit
+    updateExpire?: boolean;
+  };
+
+  export type StatsProfile = {
+    calls: number;
+    hits: number;
+  };
+
+  export type StatsObject = StatsProfile & {
+    profiles?: { [key: string]: StatsProfile };
+    usage: string;
+  };
+
+  export type StatsCache = {
+    anonymousProfileNameCounter: number;
+    isCollectingStats: boolean;
+    profiles: { [key: string]: StatsProfile };
+  };
+
+  export interface ProfileFunction extends Function {
+    displayName: string;
+  }
+
+  export type AugmentationOptions = {
+    expirations: Expiration[];
+    options: Options;
+    originalFunction: ReactComponent;
+  };
+
+  export type Moizer<T extends Function> = (
+    fn: T | Options,
+    options?: Options,
+  ) => T | Moizer<T>;
+
+  export interface Moized extends Function {
+    _microMemoizeOptions: MicroMemoizeOptions;
+    add: (key: any[], value: any) => boolean;
+    cache: Cache;
+    cacheSnapshot: Cache;
+    clear: () => void;
+    contextTypes?: Object;
+    defaultProps?: Object;
+    displayName?: string;
+    expirations: Expiration[];
+    expirationsSnapshot: Expiration[];
+    get: (key: any[]) => any;
+    getStats: () => Moize.StatsObject;
+    has: (key: any[]) => boolean;
+    isCollectingStats: boolean;
+    isMoized: boolean;
+    keys: () => any[];
+    options: Options;
+    originalFunction: Function;
+    propTypes?: Object;
+    remove: (key: any[]) => boolean;
+    update: (key: any[], value: any) => boolean;
+    values: () => any[];
+  }
 }
 
-export function collectStats<T extends Fn>(): void;
+interface moize extends Function {
+  collectStats: () => void;
+  compose: (...args: Function[]) => Function;
+  deep: Moize.Moizer<Function>;
+  getStats: () => Moize.StatsObject;
+  isCollectingStats: () => boolean;
+  isMoized: (fn: Function | Moize.Moized) => boolean;
+  maxAge: (age: number) => Moize.Moizer<Function>;
+  maxArgs: (args: number) => Moize.Moizer<Function>;
+  maxSize: (size: number) => Moize.Moizer<Function>;
+  promise: Moize.Moizer<Function>;
+  react: Moize.Moizer<Function>;
+  reactSimple: Moize.Moizer<Function>;
+  serialize: Moize.Moizer<Function>;
+  simple: Moize.Moizer<Function>;
+}
 
 export default moize;

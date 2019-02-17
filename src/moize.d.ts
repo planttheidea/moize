@@ -150,10 +150,16 @@ declare namespace Moize {
 interface moize extends Function {
   collectStats: () => void;
   compose: (...args: Function[]) => Function;
+  deep: Moize.Moizer<Function>;
   getStats: () => Moize.StatsObject;
   isCollectingStats: () => boolean;
   isMoized: (fn: Function | Moize.Moized) => boolean;
   maxAge: (age: number) => Moize.Moizer<Function>;
   maxArgs: (args: number) => Moize.Moizer<Function>;
   maxSize: (size: number) => Moize.Moizer<Function>;
+  promise: Moize.Moizer<Function>;
+  react: Moize.Moizer<Function>;
+  reactSimple: Moize.Moizer<Function>;
+  serialize: Moize.Moizer<Function>;
+  simple: Moize.Moizer<Function>;
 }
