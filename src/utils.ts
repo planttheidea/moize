@@ -8,32 +8,25 @@ import { DEFAULT_OPTIONS } from './constants';
 const { isArray } = Array;
 const { hasOwnProperty } = Object.prototype;
 
-export function assignFallback(target: any) {
-  /* eslint-disable prefer-rest-params */
-  if (arguments.length < 2) {
-    return target;
-  }
-
-  const { length } = arguments;
-
-  for (let index = 1, source; index < length; index++) {
-    source = arguments[index];
-
-    if (source && typeof source === 'object') {
-      for (const key in source) {
-        if (hasOwnProperty.call(source, key)) {
-          // eslint-disable-next-line no-param-reassign
-          target[key] = source[key];
+export function assignFallback(target: any, ...sources: any[]) {
+  return sources.length
+    ? sources.reduce((assigned, source) => {
+      if (source && typeof source === 'object') {
+        for (const key in source) {
+          if (hasOwnProperty.call(source, key)) {
+            // eslint-disable-next-line no-param-reassign
+            assigned[key] = source[key];
+          }
         }
       }
-    }
-  }
 
-  return target;
-  /* eslint-enable */
+      return assigned;
+    }, target)
+    : target;
 }
 
-export const assign =  typeof Object.assign === 'function' ? Object.assign : assignFallback;
+export const assign =
+  typeof Object.assign === 'function' ? Object.assign : assignFallback;
 
 export function combine(...functions: (Function | void)[]): Function | void {
   if (functions.length) {
@@ -106,7 +99,8 @@ export function createFindKeyIndex(
   isEqual: Function,
   isMatchingKey?: Function,
 ) {
-  const areKeysEqual =    typeof isMatchingKey === 'function'
+  const areKeysEqual =
+    typeof isMatchingKey === 'function'
       ? isMatchingKey
       : function areKeysEqual(cacheKey: any[], key: any[]) {
         for (let index = 0; index < key.length; index++) {

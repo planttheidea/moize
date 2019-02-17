@@ -15,17 +15,29 @@ import { getMaxAgeOptions } from './maxAge';
 
 // options
 import {
-  createOnCacheOperation, getCustomOptions, getIsEqual, getIsMatchingKey, getTransformKey,
+  createOnCacheOperation,
+  getCustomOptions,
+  getIsEqual,
+  getIsMatchingKey,
+  getTransformKey,
 } from './options';
 
 // stats
 import {
-  collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache,
+  collectStats,
+  getDefaultProfileName,
+  getStats,
+  getStatsOptions,
+  statsCache,
 } from './stats';
 
 // utils
 import {
-  assign, combine, compose as _compose, mergeOptions,
+  // prettier workaround
+  assign,
+  combine,
+  compose as _compose,
+  mergeOptions,
 } from './utils';
 
 function moize<T extends Function>(
@@ -34,11 +46,16 @@ function moize<T extends Function>(
 ): Moize.Moized {
   if (typeof fn !== 'function') {
     if (!fn || typeof fn !== 'object') {
-      throw new TypeError('Only functions or options objects can be passed to moize()');
+      throw new TypeError(
+        'Only functions or options objects can be passed to moize()',
+      );
     }
 
     // @ts-ignore
-    return function curriedMoize(curriedFn: T | Moize.Options, curriedOptions: Moize.Options) {
+    return function curriedMoize(
+      curriedFn: T | Moize.Options,
+      curriedOptions: Moize.Options,
+    ) {
       if (typeof curriedFn === 'function') {
         return moize(curriedFn, mergeOptions(fn, curriedOptions || {}));
       }
@@ -50,7 +67,7 @@ function moize<T extends Function>(
   // @ts-ignore if it has a property isMoized, its a previously-moized function
   if (fn.isMoized) {
     // @ts-ignore so just return it directly, no need to re-moize it
-    return fn;
+    return moize(fn.originalFunction, assign({}, fn.options, options));
   }
 
   const coalescedOptions = assign({}, DEFAULT_OPTIONS, options, {
@@ -69,14 +86,23 @@ function moize<T extends Function>(
 
   const isEqual = getIsEqual(coalescedOptions);
   const isMatchingKey = getIsMatchingKey(coalescedOptions);
-  const maxAgeOptions = getMaxAgeOptions(expirations, coalescedOptions, isEqual, isMatchingKey);
+  const maxAgeOptions = getMaxAgeOptions(
+    expirations,
+    coalescedOptions,
+    isEqual,
+    isMatchingKey,
+  );
   const statsOptions = getStatsOptions(coalescedOptions);
 
-  const microMemoizeOptions: MicroMemoize.Options = assign({}, getCustomOptions(options), {
-    isEqual,
-    isPromise,
-    maxSize,
-  });
+  const microMemoizeOptions: MicroMemoize.Options = assign(
+    {},
+    getCustomOptions(options),
+    {
+      isEqual,
+      isPromise,
+      maxSize,
+    },
+  );
 
   assign(microMemoizeOptions, {
     isMatchingKey,
@@ -119,9 +145,8 @@ moize.isCollectingStats = function isCollectingStats() {
   return statsCache.isCollectingStats;
 };
 
-moize.isMoized = function isMoized(fn: Function | Moize.Moized) {
-  // @ts-ignore
-  return typeof fn === 'function' && fn.isMoized;
+moize.isMoized = function isMoized(fn: any) {
+  return typeof fn === 'function' && !!fn.isMoized;
 };
 
 moize.maxAge = function maxAge(_maxAge: number) {
@@ -143,5 +168,7 @@ moize.react = moize({ isReact: true });
 moize.reactSimple = moize({ isReact: true, maxSize: 1 });
 
 moize.serialize = moize({ isSerialized: true });
+
+moize.simple = moize({ maxSize: 1 });
 
 export default moize;

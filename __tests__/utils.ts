@@ -13,7 +13,52 @@ import {
 } from '../src/utils';
 import { DEFAULT_OPTIONS } from '../src/constants';
 
-describe('assignFallback', () => {});
+describe('assignFallback', () => {
+  it('should shallowly merge sources into target if objects', () => {
+    const o1 = { foo: 'bar' };
+    const o2: null = null;
+    const o3: void = undefined;
+    const o4 = { bar: 'baz' };
+
+    const target = {};
+
+    const result = assignFallback(target, o1, o2, o3, o4);
+
+    expect(result).toBe(target);
+
+    const targetClone = { ...target };
+
+    expect(result).toEqual(Object.assign(targetClone, o1, o2, o3, o4));
+  });
+
+  it('should only merge own properties', () => {
+    const o1 = Object.create({
+      bar: 'baz',
+    });
+
+    o1.foo = 'bar';
+
+    const target = {};
+
+    const result = assignFallback(target, o1);
+
+    expect(result).toBe(target);
+
+    expect(result).toEqual({ foo: 'bar' });
+
+    const targetClone = { ...target };
+
+    expect(result).toEqual(Object.assign(targetClone, o1));
+  });
+
+  it('should return the target if there are no sources', () => {
+    const target = {};
+
+    const result = assignFallback(target);
+
+    expect(result).toBe(target);
+  });
+});
 
 describe('combine', () => {
   it('should fire all functions passed', () => {
@@ -250,4 +295,84 @@ describe('mergeOptions', () => {
   });
 });
 
-describe('orderByLru', () => {});
+describe('orderByLru', () => {
+  it('will do nothing if the itemIndex is 0', () => {
+    const cache = {
+      keys: [['first'], ['second'], ['third']],
+      size: 3,
+      values: ['first', 'second', 'third'],
+    };
+    const itemIndex = 0;
+    const key = cache.keys[itemIndex];
+    const value = cache.values[itemIndex];
+    const maxSize = 3;
+
+    orderByLru(cache, key, value, itemIndex, maxSize);
+
+    expect(cache).toEqual({
+      ...cache,
+      keys: [['first'], ['second'], ['third']],
+      values: ['first', 'second', 'third'],
+    });
+  });
+
+  it('will place the itemIndex first in order when non-zero', () => {
+    const cache = {
+      keys: [['first'], ['second'], ['third']],
+      size: 3,
+      values: ['first', 'second', 'third'],
+    };
+    const itemIndex = 1;
+    const key = cache.keys[itemIndex];
+    const value = cache.values[itemIndex];
+    const maxSize = 3;
+
+    orderByLru(cache, key, value, itemIndex, maxSize);
+
+    expect(cache).toEqual({
+      ...cache,
+      keys: [['second'], ['first'], ['third']],
+      values: ['second', 'first', 'third'],
+    });
+  });
+
+  it('will add the new item to the array when the itemIndex is the array length', () => {
+    const cache = {
+      keys: [['first'], ['second'], ['third']],
+      size: 3,
+      values: ['first', 'second', 'third'],
+    };
+    const itemIndex = cache.keys.length;
+    const key = ['key'];
+    const value = 'new';
+    const maxSize = 4;
+
+    orderByLru(cache, key, value, itemIndex, maxSize);
+
+    expect(cache).toEqual({
+      ...cache,
+      keys: [key, ['first'], ['second'], ['third']],
+      values: [value, 'first', 'second', 'third'],
+    });
+  });
+
+  it('will reduce the size of the array if too long', () => {
+    const cache = {
+      keys: [['first'], ['second'], ['third']],
+      size: 3,
+      values: ['first', 'second', 'third'],
+    };
+    const itemIndex = cache.keys.length;
+    const key = ['key'];
+    const value = 'new';
+    const maxSize = 3;
+
+    orderByLru(cache, key, value, itemIndex, maxSize);
+
+    expect(cache).toEqual({
+      ...cache,
+      keys: [key, ['first'], ['second']],
+      values: [value, 'first', 'second'],
+    });
+  });
+});

@@ -96,9 +96,10 @@ interface ProfiledFunction extends Function {
  */
 export function getDefaultProfileName(fn: ProfiledFunction) {
   const { stack } = new Error();
-  const fnName =    fn.displayName
-    || fn.name
-    || `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
+  const fnName =
+    fn.displayName ||
+    fn.name ||
+    `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
 
   if (!stack) {
     return fnName;
@@ -113,9 +114,9 @@ export function getDefaultProfileName(fn: ProfiledFunction) {
     line = lines[index];
 
     if (
-      !~line.indexOf('/moize/')
-      && !~line.indexOf(' (native)')
-      && !~line.indexOf(' Function.')
+      !~line.indexOf('/moize/') &&
+      !~line.indexOf(' (native)') &&
+      !~line.indexOf(' Function.')
     ) {
       profileNameLocation = line.replace(/\n/g, '\\n').trim();
       break;

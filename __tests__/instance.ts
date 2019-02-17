@@ -997,9 +997,7 @@ describe('moized.update', () => {
 
     moized.options = {
       isEqual: isStrictEqual,
-      onCacheAdd() {},
-      onCacheChange() {},
-      transformKey: undefined,
+      onCacheChange: jest.fn(),
     };
 
     const configuration: Moize.AugmentationOptions = {
@@ -1015,6 +1013,65 @@ describe('moized.update', () => {
     moized.update(key, newValue);
 
     expect(moized.cache.keys).toEqual([key, ...keys.slice(0, keys.length - 1)]);
+    expect(moized.cache.values).toEqual([
+      newValue,
+      ...values.slice(0, values.length - 1),
+    ]);
+
+    expect(moized.options.onCacheChange).toHaveBeenCalledTimes(1);
+    expect(moized.options.onCacheChange).toHaveBeenCalledWith(
+      moized.cache,
+      moized.options,
+      moized,
+    );
+  });
+
+  it('should set the new value in cache for the moized item based on a transformed key', () => {
+    const key = ['key'];
+
+    const transformedKey = ['yek'];
+    const value = 'value';
+
+    // @ts-ignore
+    const moized: Moize.Moized = jest.fn(() => value);
+
+    const keys = [['foo'], [{ bar: 'baz' }], transformedKey];
+    const values = ['bar', ['quz'], value];
+
+    moized.cache = {
+      keys: [...keys],
+      size: keys.length,
+      values: [...values],
+    };
+
+    moized.options = {
+      isEqual: isStrictEqual,
+      transformKey(_key: any[]) {
+        return [
+          _key[0]
+            .split('')
+            .reverse()
+            .join(''),
+        ];
+      },
+    };
+
+    const configuration: Moize.AugmentationOptions = {
+      expirations: [],
+      options: {},
+      originalFunction() {},
+    };
+
+    addInstanceMethods(moized, configuration);
+
+    const newValue = 'new value';
+
+    moized.update(key, newValue);
+
+    expect(moized.cache.keys).toEqual([
+      transformedKey,
+      ...keys.slice(0, keys.length - 1),
+    ]);
     expect(moized.cache.values).toEqual([
       newValue,
       ...values.slice(0, values.length - 1),
@@ -1036,9 +1093,6 @@ describe('moized.update', () => {
 
     moized.options = {
       isEqual: isStrictEqual,
-      onCacheAdd() {},
-      onCacheChange() {},
-      transformKey: undefined,
     };
 
     const configuration: Moize.AugmentationOptions = {

@@ -1,9 +1,5 @@
 // external dependencies
-import {
-  deepEqual,
-  sameValueZeroEqual,
-  shallowEqual,
-} from 'fast-equals';
+import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
 // eslint-disable-next-line no-unused-vars
 import { MicroMemoize } from 'micro-memoize';
 
@@ -21,12 +17,12 @@ import { compose, getArrayKey } from './utils';
 
 interface MemoizedFunction extends Function {
   cache: MicroMemoize.Cache;
-  options: MicroMemoize.Options
+  options: MicroMemoize.Options;
 }
 
-export function createOnCacheOperation(fn: (Function | void)): (Function | void) {
+export function createOnCacheOperation(fn: Function | void): Function | void {
   if (typeof fn === 'function') {
-    return function onCacheChange(
+    return function onCacheOperation(
       _cache: Cache,
       _microMemoizeOptions: MicroMemoize.Options,
       memoized: MemoizedFunction,
@@ -37,7 +33,7 @@ export function createOnCacheOperation(fn: (Function | void)): (Function | void)
 }
 
 export function getCustomOptions(options: Moize.Options) {
-  const customOptions: {[key: string]: any} = {};
+  const customOptions: { [key: string]: any } = {};
 
   for (const key in options) {
     if (!DEFAULT_OPTIONS_KEYS[key]) {
@@ -78,11 +74,13 @@ export function getIsMatchingKey({ isSerialized, matchesKey }: Moize.Options) {
 export function getTransformKey(options: Moize.Options) {
   return compose(
     options.isSerialized && getSerializerFunction(options),
-    typeof options.transformArgs === 'function' && compose(
-      getArrayKey,
-      options.transformArgs,
-    ),
+    typeof options.transformArgs === 'function' &&
+      compose(
+        getArrayKey,
+        options.transformArgs,
+      ),
     options.isReact && createGetInitialArgs(2),
-    typeof options.maxArgs === 'number' && createGetInitialArgs(options.maxArgs),
+    typeof options.maxArgs === 'number' &&
+      createGetInitialArgs(options.maxArgs),
   );
 }
