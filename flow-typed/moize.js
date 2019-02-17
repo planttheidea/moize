@@ -139,6 +139,8 @@ declare module 'moize' {
     values: () => any[];
   }
 
+  declare type Fn = (...args: any[]) => any;
+
   declare export default {
     (options: Options): Fn,
     (fn: Fn, options?: Options): Fn,
