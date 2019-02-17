@@ -4,6 +4,13 @@ declare function moize<T extends Fn>(o: Options): (t: T) => T;
 declare function moize<T extends Fn>(t: T, o?: Options): T;
 
 declare namespace Moize {
+  interface ReactComponent extends Function {
+    contextTypes?: Object;
+    defaultProps?: Object;
+    displayName?: string;
+    propTypes?: Object;
+  }
+
   export type Cache = {
     keys: (any[])[];
     size: number;
@@ -102,7 +109,7 @@ declare namespace Moize {
   };
 
   export type Moizer<T extends Function> = (
-    fn: T | Options,
+    fn: T | Options | ReactComponent | Moizer,
     options?: Options,
   ) => T | Moizer<T>;
 

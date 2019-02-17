@@ -117,7 +117,7 @@ declare namespace Moize {
   };
 
   export type Moizer<T extends Function> = (
-    fn: T | Options,
+    fn: T | Options | ReactComponent | Moizer<T>,
     options?: Options,
   ) => T | Moizer<T>;
 

@@ -1,6 +1,11 @@
-// @flow
-
 declare module 'moize' {
+  type ReactComponent = Function & {
+    contextTypes?: Object;
+    defaultProps?: Object;
+    displayName?: string;
+    propTypes?: Object;
+  }
+
   declare type Cache = {
     keys: any[][],
     size: number,
@@ -105,7 +110,7 @@ declare module 'moize' {
   };
 
   declare type Moizer = (
-    fn: T | Options,
+    fn: T | Options | ReactComponent | Moizer,
     options?: Options,
   ) => T | Moizer<T>;
 
