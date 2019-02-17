@@ -1,5 +1,20 @@
 # moize CHANGELOG
 
+## 6.0.0
+
+- Rewrite using TypeScript
+
+#### BREAKING CHANGES
+
+- `collectStats` is no longer a named export (use `moize.collectStats`)
+- CommonJS `require`s no longer require `.default`
+- Types contract is much stricter
+
+#### ENHANCEMENTS
+
+- Targeted builds for all environments (`module`, `cjs` and `umd`)
+- More accurate benchmarks with `benchee`
+
 ## 5.4.1
 
 - Upgrade to `babel@7`

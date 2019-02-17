@@ -14,6 +14,10 @@ const getFileName = (filename) => {
   return split[split.length - 1];
 };
 
+function replaceString(contents, regexp, replacement) {
+  return contents.replace(regexp, (match, value) => match.replace(value, replacement));
+}
+
 try {
   if (!fs.existsSync(path.join(__dirname, 'mjs'))) {
     fs.mkdirSync(path.join(__dirname, 'mjs'));
@@ -21,9 +25,10 @@ try {
 
   fs.copyFileSync(SOURCE, DESTINATION);
 
-  const contents = fs
-    .readFileSync(DESTINATION, { encoding: 'utf8' })
-    .replace(/\/\/# sourceMappingURL=(.*)/, (match, value) => match.replace(value, 'index.mjs.map'));
+  let contents = fs.readFileSync(DESTINATION, { encoding: 'utf8' });
+
+  contents = replaceString(contents, /\/\/# sourceMappingURL=(.*)/, 'index.mjs.map');
+  contents = replaceString(contents, /from '(.*)'/g, '$&/mjs');
 
   fs.writeFileSync(DESTINATION, contents, { encoding: 'utf8' });
 
