@@ -92,6 +92,8 @@ function moize(fn: Function | Options, options: Options = DEFAULT_OPTIONS): Func
   }
 
   const coalescedOptions: Options = Object.assign({}, DEFAULT_OPTIONS, options, {
+    maxArgs: options.maxArgs >= 0 ? options.maxArgs : DEFAULT_OPTIONS.maxArgs,
+    maxSize: options.maxSize >= 0 ? options.maxSize : DEFAULT_OPTIONS.maxSize,
     profileName: options.profileName || getDefaultProfileName(fn),
   });
   const expirations: Array<Expiration> = [];

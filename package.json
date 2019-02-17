@@ -135,6 +135,8 @@
     "postpublish": "npm run docs && git add . && git commit -m \"Update docs\" && git push",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
     "prepublish:compile": "npm run lint && npm run flow && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run transpile:mjs && npm run rename:mjs && npm run dist",
+    "release": "release-it",
+    "release:beta": "release-it --config=.release-it.beta.json",
     "rename:mjs": "node ./js-to-mjs.js",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
