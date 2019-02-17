@@ -1435,6 +1435,18 @@ describe('moize.maxAge', () => {
 
     expect(onCacheAdd.toString()).toBe(fakeOnCacheOperation.toString());
   });
+
+  it('should throw if maxAge is a negative number', () => {
+    expect(() => moize(() => {}, { maxAge: -1 })).toThrow();
+  });
+
+  it('should throw if maxAge is a NaN', () => {
+    expect(() => moize(() => {}, { maxAge: NaN })).toThrow();
+  });
+
+  it('should throw if maxAge is a decimal', () => {
+    expect(() => moize(() => {}, { maxAge: 1.23 })).toThrow();
+  });
 });
 
 describe('moize.maxArgs', () => {
@@ -1479,6 +1491,18 @@ describe('moize.maxArgs', () => {
       createGetInitialArgs(options.maxArgs).toString(),
     );
   });
+
+  it('should throw if maxArgs is a negative number', () => {
+    expect(() => moize(() => {}, { maxArgs: -1 })).toThrow();
+  });
+
+  it('should throw if maxArgs is a NaN', () => {
+    expect(() => moize(() => {}, { maxArgs: NaN })).toThrow();
+  });
+
+  it('should throw if maxArgs is a decimal', () => {
+    expect(() => moize(() => {}, { maxArgs: 1.23 })).toThrow();
+  });
 });
 
 describe('moize.maxSize', () => {
@@ -1513,6 +1537,18 @@ describe('moize.maxSize', () => {
       onCacheHit: undefined,
       transformKey: undefined,
     });
+  });
+
+  it('should throw if maxSize is a negative number', () => {
+    expect(() => moize(() => {}, { maxSize: -1 })).toThrow();
+  });
+
+  it('should throw if maxSize is a NaN', () => {
+    expect(() => moize(() => {}, { maxSize: NaN })).toThrow();
+  });
+
+  it('should throw if maxSize is a decimal', () => {
+    expect(() => moize(() => {}, { maxSize: 1.23 })).toThrow();
   });
 });
 

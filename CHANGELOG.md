@@ -6,6 +6,7 @@
 
 #### BREAKING CHANGES
 
+- `moize` will now throw if `maxAge`, `maxArgs`, or `maxSize` is not a positive integer or infinity
 - `collectStats` is no longer a named export (use `moize.collectStats`)
 - CommonJS `require`s no longer require `.default`
 - Types contract is much stricter

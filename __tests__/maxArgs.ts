@@ -35,8 +35,4 @@ describe('getInitialArgs', () => {
     expect(result).not.toBe(args);
     expect(result).toEqual(args.slice(0, size));
   });
-
-  it('should throw if a negative number is passed', () => {
-    expect(() => createGetInitialArgs(-1)).toThrow();
-  });
 });

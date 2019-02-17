@@ -38,6 +38,7 @@ import {
   combine,
   compose as _compose,
   mergeOptions,
+  throwIfNotInteger,
 } from './utils';
 
 /**
@@ -73,6 +74,10 @@ function moize<T extends Function>(
     // @ts-ignore so just return it directly, no need to re-moize it
     return moize(fn.originalFunction, assign({}, fn.options, options));
   }
+
+  throwIfNotInteger(options.maxAge, 'maxAge');
+  throwIfNotInteger(options.maxArgs, 'maxArgs');
+  throwIfNotInteger(options.maxSize, 'maxSize');
 
   const coalescedOptions = assign({}, DEFAULT_OPTIONS, options, {
     profileName: options.profileName || getDefaultProfileName(fn),

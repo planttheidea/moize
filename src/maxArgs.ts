@@ -1,10 +1,6 @@
 const { slice } = Array.prototype;
 
 export function createGetInitialArgs(size: number) {
-  if (size < 0) {
-    throw new Error('option.size must be a positive number');
-  }
-
   /**
    * @private
    *

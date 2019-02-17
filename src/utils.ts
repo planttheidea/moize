@@ -277,3 +277,31 @@ export function orderByLru(
   }
   /* eslint-enable */
 }
+
+/**
+ * @private
+ *
+ * @function throwIfNotInteger
+ *
+ * @description
+ * throw an error if the value passed is a number but not a positive integer
+ *
+ * @throws
+ *
+ * @param value the value to test
+ * @param name the name of the value
+ */
+export function throwIfNotInteger(value: number | void, name: string) {
+  if (typeof value !== 'number' || value === DEFAULT_OPTIONS[name]) {
+    return;
+  }
+
+  if (
+    value < 0 ||
+    // eslint-disable-next-line no-self-compare
+    value !== value ||
+    value !== ~~value
+  ) {
+    throw new TypeError(`${name} must be a positive integer`);
+  }
+}
