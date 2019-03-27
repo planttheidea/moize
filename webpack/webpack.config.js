@@ -51,7 +51,7 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           cacheDirectory: true,
-          presets: ['react'],
+          presets: ['@babel/react'],
         },
         test: /\.js$/,
       },
