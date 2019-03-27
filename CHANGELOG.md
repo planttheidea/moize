@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.4.3
+
+- Improve typings for TypeScript ([#103](https://github.com/planttheidea/moize/pull/103))
+
 ## 5.4.2
 
 - Ignore when `maxArgs` or `maxSize` arguments are negative
