@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.4.4
+
+- Fix export in TypeScript declarations([#105](https://github.com/planttheidea/moize/pull/105))
+
 ## 5.4.3
 
 - Improve typings for TypeScript ([#103](https://github.com/planttheidea/moize/pull/103))

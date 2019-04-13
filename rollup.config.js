@@ -8,47 +8,43 @@ export default [
     input: 'src/index.js',
     output: {
       exports: 'named',
-      name: 'moize',
       file: 'dist/moize.js',
       format: 'umd',
-      sourcemap: true
+      name: 'moize',
+      sourcemap: true,
     },
     plugins: [
       resolve({
-        jsnext: true,
-        main: true,
-        module: true
+        mainFields: ['module', 'jsnext:main', 'main'],
       }),
       commonjs({
-        include: 'node_modules/micro-memoize/**'
+        include: 'node_modules/micro-memoize/**',
       }),
       babel({
-        exclude: 'node_modules/**'
-      })
-    ]
+        exclude: 'node_modules/**',
+      }),
+    ],
   },
   {
     input: 'src/index.js',
     output: {
       exports: 'named',
-      name: 'moize',
       file: 'dist/moize.min.js',
-      format: 'umd'
+      format: 'umd',
+      name: 'moize',
     },
     plugins: [
       resolve({
-        jsnext: true,
-        main: true,
-        module: true
+        mainFields: ['module', 'jsnext:main', 'main'],
       }),
       commonjs({
         include: 'node_modules/micro-memoize/**',
-        sourceMap: false
+        sourceMap: false,
       }),
       babel({
-        exclude: 'node_modules/**'
+        exclude: 'node_modules/**',
       }),
-      uglify()
-    ]
-  }
+      uglify(),
+    ],
+  },
 ];
