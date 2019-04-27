@@ -107,13 +107,6 @@ memoized(2, 4); // 6, pulled from cache
 
 All parameter types are supported, including circular objects, functions, etc. There are also a number of [shortcut methods](#usage-with-shortcut-methods) to memoize for unique use-cases.
 
-**NOTE**: This is very similar to [`useCallback`](https://reactjs.org/docs/hooks-reference.html#usecallback) built-in hook, with two main differences:
-
-- There is a third parameter passed (the [`options`](#configuration-options) passed to `moize`)
-- The second argument array is the list of arguments passed to the memoized function
-
-In both `useCallback` and `useMemo`, the array is a list of _dependencies_ which determine whether the funciton is called. These can be different than the arguments, although in general practice they are equivalent. The decision to use them directly was both for this common use-case reasons, but also because the implementation complexity would have increased substantially if not.
-
 ## Configuration options
 
 `moize` optionally accepts an object of options as either the second parameter or as the first step in a curried function:
@@ -757,6 +750,13 @@ function MyComponent({ first, second, object }) {
 ```
 
 Naturally you can tweak as needed for your project (default options, option-specific hooks, etc).
+
+**NOTE**: This is very similar to [`useCallback`](https://reactjs.org/docs/hooks-reference.html#usecallback) built-in hook, with two main differences:
+
+- There is a third parameter passed (the [`options`](#configuration-options) passed to `moize`)
+- The second argument array is the list of arguments passed to the memoized function
+
+In both `useCallback` and `useMemo`, the array is a list of _dependencies_ which determine whether the funciton is called. These can be different than the arguments, although in general practice they are equivalent. The decision to use them directly was both for this common use-case reasons, but also because the implementation complexity would have increased substantially if not.
 
 ## Composition
 
