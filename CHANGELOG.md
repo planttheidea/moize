@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.4.5
+
+- Add documentation for how to build [`useMoize` hook](README.md#usemoize-hook)
+
 ## 5.4.4
 
 - Fix export in TypeScript declarations([#105](https://github.com/planttheidea/moize/pull/105))

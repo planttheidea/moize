@@ -3,10 +3,10 @@ import test from 'ava';
 import {
   deepEqual,
   sameValueZeroEqual,
-  shallowEqual
+  shallowEqual,
 } from 'fast-equals';
 import {onCacheOperation} from 'micro-memoize/lib/utils';
-import React from 'react';
+import React, {useRef} from 'react';
 import ReactDOM from 'react-dom';
 import sinon from 'sinon';
 
@@ -1717,4 +1717,65 @@ test('if moize will not call onExpire for removed cache items', async (t) => {
   });
 
   t.is(options.onExpire.callCount, 1);
+});
+
+test('if a custom hook can be used', (t) => {
+  const jsdom = require('jsdom-global')();
+
+  function useMoize(fn, args, options) {
+    const moizedFn = useRef(moize(fn, options));
+
+    return moizedFn.current(...args);
+  }
+
+  const getSum = sinon.stub().callsFake((a, b) => a + b);
+  const getDeepSum = sinon.stub().callsFake((obj) => obj.a + obj.b);
+
+  function App({first, second, object}) {
+    const sum = useMoize(getSum, [first, second]);
+    const deepSum = useMoize(getDeepSum, [object], {isDeepEqual: true});
+
+    return (
+      <div>
+        <span>Sum: {sum}</span>
+        <span>Deep Sum: {deepSum}</span>
+      </div>
+    );
+  }
+
+  const div = document.createElement('div');
+
+  // functions are called once, for initial calculation
+  ReactDOM.render(
+    <App
+      first={1}
+      second={2}
+      object={{
+        a: 1,
+        b: 2,
+      }}
+    />,
+    div
+  );
+
+  t.true(getSum.calledOnce);
+  t.true(getDeepSum.calledOnce);
+
+  // with equivalent props, functions are not called again
+  ReactDOM.render(
+    <App
+      first={1}
+      second={2}
+      object={{
+        a: 1,
+        b: 2,
+      }}
+    />,
+    div
+  );
+
+  t.true(getSum.calledOnce);
+  t.true(getDeepSum.calledOnce);
+
+  jsdom();
 });
