@@ -2,7 +2,6 @@ import '@babel/polyfill';
 
 import Bluebird from 'bluebird';
 import {
-  cloneDeep,
   get,
   set,
   union,
@@ -12,18 +11,11 @@ import {
   isEmpty,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import React, {
-  Component,
-  useRef,
-  useState,
-} from 'react';
+import React, {useRef} from 'react';
 import {render} from 'react-dom';
 import memoizee from 'memoizee';
-import memoize from 'micro-memoize';
 
 import moize, {collectStats} from '../src';
-
-import {shallowEqual} from 'fast-equals';
 
 const div = document.createElement('div');
 
