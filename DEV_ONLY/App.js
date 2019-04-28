@@ -2,7 +2,6 @@ import '@babel/polyfill';
 
 import Bluebird from 'bluebird';
 import {
-  cloneDeep,
   get,
   set,
   union,
@@ -12,10 +11,9 @@ import {
   isEmpty,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, {useRef} from 'react';
 import {render} from 'react-dom';
 import memoizee from 'memoizee';
-import memoize from 'micro-memoize';
 
 import moize, {collectStats} from '../src';
 
@@ -42,6 +40,12 @@ const AGG_TYPE = {
 };
 
 const {INCLUSIVE, SUM, AVG, COUNT} = AGG_TYPE;
+
+function useMoize(fn, nextArgs, options) {
+  const moizedFn = useRef(moize(fn, options));
+
+  return moizedFn.current(...nextArgs);
+}
 
 export const getFieldValue = (item, field) => {
   let value = typeof field === 'string' ? item[field] : get(item, field);
@@ -352,14 +356,42 @@ const deepEqualMethod = ({one, two}) => {
 
 const deepEqualMemoized = moize.deep(deepEqualMethod);
 
-deepEqualMemoized({one: 1, two: 2});
-deepEqualMemoized({one: 2, two: 1});
-deepEqualMemoized({one: 1, two: 2});
-deepEqualMemoized({one: 1, two: 2});
+deepEqualMemoized({
+  one: 1,
+  two: 2,
+});
+deepEqualMemoized({
+  one: 2,
+  two: 1,
+});
+deepEqualMemoized({
+  one: 1,
+  two: 2,
+});
+deepEqualMemoized({
+  one: 1,
+  two: 2,
+});
 
 console.log(deepEqualMemoized.cache);
-console.log('has deep true', deepEqualMemoized.has([{one: 1, two: 2}]));
-console.log('has deep false', deepEqualMemoized.has([{one: 1, two: 3}]));
+console.log(
+  'has deep true',
+  deepEqualMemoized.has([
+    {
+      one: 1,
+      two: 2,
+    },
+  ])
+);
+console.log(
+  'has deep false',
+  deepEqualMemoized.has([
+    {
+      one: 1,
+      two: 3,
+    },
+  ])
+);
 
 console.groupEnd('deep equals');
 
@@ -373,16 +405,44 @@ const serializeMethod = ({one, two}) => {
 
 const serializeMemoized = moize.serialize(serializeMethod);
 
-serializeMemoized({one: 1, two: 2});
-serializeMemoized({one: 2, two: 1});
-serializeMemoized({one: 1, two: 2});
-serializeMemoized({one: 1, two: 2});
+serializeMemoized({
+  one: 1,
+  two: 2,
+});
+serializeMemoized({
+  one: 2,
+  two: 1,
+});
+serializeMemoized({
+  one: 1,
+  two: 2,
+});
+serializeMemoized({
+  one: 1,
+  two: 2,
+});
 
 console.log(serializeMemoized.cache);
 console.log(serializeMemoized.options);
 console.log(serializeMemoized._microMemoizeOptions);
-console.log('has serialized true', serializeMemoized.has([{one: 1, two: 2}]));
-console.log('has serialized false', serializeMemoized.has([{one: 1, two: 3}]));
+console.log(
+  'has serialized true',
+  serializeMemoized.has([
+    {
+      one: 1,
+      two: 2,
+    },
+  ])
+);
+console.log(
+  'has serialized false',
+  serializeMemoized.has([
+    {
+      one: 1,
+      two: 3,
+    },
+  ])
+);
 
 console.groupEnd('serialize');
 
@@ -407,9 +467,12 @@ const promiseMethodRejected = (number) => {
 };
 
 const memoizedPromise = moize(promiseMethod, {
-  isPromise: true
+  isPromise: true,
 });
-const memoizedPromiseRejected = moize({isPromise: true, profileName: 'rejected promise'})(promiseMethodRejected);
+const memoizedPromiseRejected = moize({
+  isPromise: true,
+  profileName: 'rejected promise',
+})(promiseMethodRejected);
 
 console.log('curried options', memoizedPromiseRejected.options);
 console.log('curried options under the hood', memoizedPromiseRejected._microMemoizeOptions);
@@ -459,13 +522,12 @@ memoizedPromise(2, 2).then((value) => {
 
 console.log(memoizedPromise.keys());
 
-const otherPromiseMethod = (number) => {
-  return new Promise((resolve) => {
+const otherPromiseMethod = (number) =>
+  new Promise((resolve) => {
     setTimeout(() => {
       resolve(number * 2);
     }, 1000);
   });
-};
 
 const memoizedOtherPromise = moize.promise(otherPromiseMethod, {
   maxAge: 1500,
@@ -474,7 +536,7 @@ const memoizedOtherPromise = moize.promise(otherPromiseMethod, {
   },
   onExpire() {
     console.log('updated promise expired');
-  }
+  },
 });
 
 memoizedOtherPromise(4).then((number) => {
@@ -521,7 +583,7 @@ const moizedLastTwo = moize(onlyLastTwo, {
     }
 
     return newKey;
-  }
+  },
 });
 
 console.log(moizedLastTwo(foo, bar, baz));
@@ -548,11 +610,11 @@ Foo.propTypes = {
   bar: PropTypes.string.isRequired,
   fn: PropTypes.func.isRequired,
   object: PropTypes.object.isRequired,
-  value: PropTypes.string.isRequired
+  value: PropTypes.string.isRequired,
 };
 
 Foo.defaultProps = {
-  bar: 'default'
+  bar: 'default',
 };
 
 const MemoizedFoo = moize.react(Foo, {isDeepEqual: true});
@@ -565,7 +627,23 @@ console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options, LimitedMemoizedFoo
 
 console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
-const array = [{fn() {}, object: {}, value: foo}, {fn() {}, object: {}, value: bar}, {fn() {}, object: {}, value: baz}];
+const array = [
+  {
+    fn() {},
+    object: {},
+    value: foo,
+  },
+  {
+    fn() {},
+    object: {},
+    value: bar,
+  },
+  {
+    fn() {},
+    object: {},
+    value: baz,
+  },
+];
 
 console.groupEnd('react');
 
@@ -598,7 +676,7 @@ const expiringMemoized = moize(method, {
       return false;
     };
   })(),
-  updateExpire: true
+  updateExpire: true,
 });
 
 expiringMemoized(foo, bar);
@@ -616,43 +694,67 @@ console.groupEnd('expiration');
 console.log(moize.getStats());
 
 const HEADER_STYLE = {
-  margin: 0
+  margin: 0,
 };
 
-class App extends Component {
-  render() {
-    return (
+function App({first, second}) {
+  console.log('rendered');
+
+  const sum = useMoize(
+    (a, b) => {
+      console.log('memoized called');
+
+      return a + b;
+    },
+    [first, second]
+  );
+  const deepSum = useMoize(
+    (object) => {
+      console.log('deep memoized called');
+
+      return object.a + object.b;
+    },
+    [
+      {
+        a: first,
+        b: second,
+      },
+    ],
+    {isDeepEqual: true}
+  );
+
+  console.log('sum', sum);
+  console.log('deepSum', deepSum);
+
+  return (
+    <div>
+      <h1 style={HEADER_STYLE}>App</h1>
+
       <div>
-        <h1 style={HEADER_STYLE}>App</h1>
+        <h3>Uncached values (first time running)</h3>
 
-        <div>
-          <h3>Uncached values (first time running)</h3>
+        {array.map((values) => (
+          // prettier
+          <MemoizedFoo key={`called-${values.value}`} {...values} />
+        ))}
 
-          {array.map((values) => {
-            return (
-              // prettier
-              <MemoizedFoo
-                key={`called-${values.value}`}
-                {...values}
-              />
-            );
-          })}
+        <h3>Cached values</h3>
 
-          <h3>Cached values</h3>
-
-          {array.map((values) => {
-            return (
-              // prettier
-              <MemoizedFoo
-                key={`memoized-${values.value}`}
-                {...values}
-              />
-            );
-          })}
-        </div>
+        {array.map((values) => (
+          // prettier
+          <MemoizedFoo key={`memoized-${values.value}`} {...values} />
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-render(<App />, div);
+render(<App first={1} second={2} />, div);
+
+let count = 0;
+
+setInterval(() => {
+  render(<App first={1} second={count > 2 ? 3 : 2} />, div);
+
+  count++;
+}, 5000);
