@@ -1,14 +1,32 @@
-// external dependencies
-// eslint-disable-next-line no-unused-vars
-import { MicroMemoize } from 'micro-memoize';
+import { Handler, Moized, Options } from './types';
 
-// constants
-import { DEFAULT_OPTIONS } from './constants';
+/**
+ * @private
+ *
+ * @constant DEFAULT_OPTIONS
+ */
+export const DEFAULT_OPTIONS: Options = {
+  equals: undefined,
+  isDeepEqual: false,
+  isPromise: false,
+  isReact: false,
+  isSerialized: false,
+  matchesKey: undefined,
+  maxAge: undefined,
+  maxArgs: undefined,
+  maxSize: 1,
+  onCacheAdd: undefined,
+  onCacheChange: undefined,
+  onCacheHit: undefined,
+  onExpire: undefined,
+  profileName: undefined,
+  serializer: undefined,
+  shouldSerializeFunctions: false,
+  transformArgs: undefined,
+  updateExpire: false,
+};
 
-const { isArray } = Array;
-const { hasOwnProperty } = Object.prototype;
-
-const DEV = !!(process && process.env && process.env.NODE_ENV !== 'production');
+export const MERGED_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
 
 /**
  * @private
@@ -23,20 +41,26 @@ const DEV = !!(process && process.env && process.env.NODE_ENV !== 'production');
  * @returns the assigned target
  */
 export function assignFallback(target: any, ...sources: any[]) {
-  return sources.length
-    ? sources.reduce((assigned, source) => {
-      if (source && typeof source === 'object') {
-        for (const key in source) {
-          if (hasOwnProperty.call(source, key)) {
-            // eslint-disable-next-line no-param-reassign
-            assigned[key] = source[key];
-          }
+  if (!sources.length) {
+    return target;
+  }
+
+  let source;
+
+  for (let index = 0; index < sources.length; index++) {
+    source = sources[index];
+
+    if (source && typeof source === 'object') {
+      for (const key in source) {
+        if (hasOwnProperty(source, key)) {
+          // eslint-disable-next-line no-param-reassign
+          target[key] = source[key];
         }
       }
+    }
+  }
 
-      return assigned;
-    }, target)
-    : target;
+  return target;
 }
 
 /**
@@ -44,8 +68,7 @@ export function assignFallback(target: any, ...sources: any[]) {
  *
  * @constant assign the method to assign sources into a target
  */
-export const assign =
-  typeof Object.assign === 'function' ? Object.assign : assignFallback;
+export const assign = typeof Object.assign === 'function' ? Object.assign : assignFallback;
 
 /**
  * @private
@@ -59,25 +82,21 @@ export const assign =
  * @param functions the functions to combine
  * @returns the combined function
  */
-export function combine(...functions: (Function | void)[]): Function | void {
-  if (functions.length) {
-    return functions.reduce((f: Function | void, g: Function | void) => {
-      if (typeof f === 'function') {
-        return typeof g === 'function'
-          ? function combined(): void {
-            /* eslint-disable prefer-rest-params */
-            g.apply(this, arguments);
-            f.apply(this, arguments);
-            /* eslint-enable */
-          }
-          : f;
-      }
+export function combine(...args: any[]): Handler | void {
+  const handlers = getValidHandlers(args);
 
-      if (typeof g === 'function') {
-        return g;
-      }
-    });
+  if (!handlers.length) {
+    return;
   }
+
+  return handlers.reduceRight(function combined(f: Handler, g: Handler) {
+    return function () {
+      /* eslint-disable prefer-rest-params */
+      f.apply(this, arguments);
+      g.apply(this, arguments);
+      /* eslint-enable */
+    };
+  });
 }
 
 /**
@@ -91,192 +110,64 @@ export function combine(...functions: (Function | void)[]): Function | void {
  * @param functions the functions to compose
  * @returns the composed function
  */
-export function compose(...functions: (Function | void)[]): Function | void {
-  if (functions.length) {
-    return functions.reduce((f: Function | void, g: Function | void) => {
-      if (typeof f === 'function') {
-        return typeof g === 'function'
-          ? function composed() {
-            // eslint-disable-next-line prefer-rest-params
-            return f(g.apply(this, arguments));
-          }
-          : f;
-      }
+export function compose(...args: any[]): Handler | void {
+  const handlers = getValidHandlers(args);
 
-      if (typeof g === 'function') {
-        return g;
-      }
-    });
-  }
-}
-
-/**
- * @private
- *
- * @function findExpirationIndex
- *
- * @description
- * find the index of the expiration based on the key
- *
- * @param expirations the list of expirations
- * @param key the key to match
- * @returns the index of the expiration
- */
-export function findExpirationIndex(
-  expirations: Moize.Expiration[],
-  key: any[],
-): number {
-  const { length } = expirations;
-
-  for (let index: number = 0; index < length; index++) {
-    if (expirations[index].key === key) {
-      return index;
-    }
+  if (!handlers.length) {
+    return;
   }
 
-  return -1;
-}
-
-/**
- * @private
- *
- * @function createFindKeyIndex
- *
- * @description
- * create the method that will find the matching key index
- *
- * @param isEqual the key argument equality validator
- * @param isMatchingKey the complete key equality validator
- * @returns the function to find the key's index
- */
-export function createFindKeyIndex(
-  isEqual: Function,
-  isMatchingKey?: Function,
-) {
-  const areKeysEqual =
-    typeof isMatchingKey === 'function'
-      ? isMatchingKey
-      : function areKeysEqual(cacheKey: any[], key: any[]) {
-        for (let index = 0; index < key.length; index++) {
-          if (!isEqual(cacheKey[index], key[index])) {
-            return false;
-          }
-        }
-
-        return true;
-      };
-
-  return function findKeyIndex(keys: (any[])[], key: any[]): number {
-    const keysLength = keys.length;
-
-    for (let index = 0; index < keysLength; index++) {
-      if (keys[index].length === key.length && areKeysEqual(keys[index], key)) {
-        return index;
-      }
-    }
-
-    return -1;
-  };
-}
-
-/**
- * @private
- *
- * @function getArrayKey
- *
- * @description
- * get the key as an array if not already
- *
- * @param key the key to array-ify
- * @returns the array-ified key
- */
-export function getArrayKey(key: any) {
-  if (isArray(key)) {
-    return key;
-  }
-
-  if (DEV && console) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Use of a non-array key is deprecated, please modify your transformer to return an array.',
-    );
-  }
-
-  return [key];
-}
-
-/**
- * @private
- *
- * @function mergeOptions
- *
- * @description
- * merge two options objects, combining or composing functions as necessary
- *
- * @param originalOptions the options that already exist on the method
- * @param newOptions the new options to merge
- * @returns the merged options
- */
-export function mergeOptions(
-  originalOptions: Moize.Options,
-  newOptions: Moize.Options,
-) {
-  if (newOptions === DEFAULT_OPTIONS) {
-    return originalOptions;
-  }
-
-  return assign({}, originalOptions, newOptions, {
-    onCacheAdd: combine(originalOptions.onCacheAdd, newOptions.onCacheAdd),
-    onCacheChange: combine(
-      originalOptions.onCacheChange,
-      newOptions.onCacheChange,
-    ),
-    onCacheHit: combine(originalOptions.onCacheHit, newOptions.onCacheHit),
-    transformArgs: compose(
-      originalOptions.transformArgs,
-      newOptions.transformArgs,
-    ),
+  return handlers.reduceRight(function reduced(f: Handler, g: Handler) {
+    return function () {
+      // eslint-disable-next-line prefer-rest-params
+      return g(f.apply(this, arguments));
+    };
   });
 }
 
-/**
- * @private
- *
- * @function orderByLru
- *
- * @description
- * order the array based on a Least-Recently-Used basis
- *
- * @param keys the keys to order
- * @param newKey the new key to move to the front
- * @param values the values to order
- * @param newValue the new value to move to the front
- * @param startingIndex the index of the item to move to the front
- */
-export function orderByLru(
-  cache: MicroMemoize.Cache,
-  newKey: MicroMemoize.Key,
-  newValue: any,
-  startingIndex: number,
-  maxSize: number,
-) {
-  let index = startingIndex;
+export function getValidHandlers(args: any[]) {
+  const handlers: Handler[] = [];
 
-  /* eslint-disable no-param-reassign */
-  while (index--) {
-    cache.keys[index + 1] = cache.keys[index];
-    cache.values[index + 1] = cache.values[index];
+  let arg;
+
+  for (let index = 0; index < args.length; index++) {
+    arg = args[index];
+
+    if (typeof arg === 'function') {
+      handlers.push(arg);
+    }
   }
 
-  cache.keys[0] = newKey;
-  cache.values[0] = newValue;
-
-  if (startingIndex >= maxSize) {
-    cache.keys.length = maxSize;
-    cache.values.length = maxSize;
-  }
-  /* eslint-enable */
+  return handlers;
 }
+
+export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
+
+export function isOptions(value: any): value is Options {
+  return !!value && typeof value === 'object';
+}
+
+export function isMemoized<Fn extends Function>(value: any): value is Moized<Fn> {
+  return typeof value === 'function' && value.isMemoized === true;
+}
+
+export function makeCallable(method: (...args: any[]) => any) {
+  return Function.prototype.bind.call(Function.prototype.call, method);
+}
+
+export function mergeOptions(originalOptions: Options, newOptions: Options): Options {
+  const mergedOptions = assign({}, originalOptions, newOptions);
+
+  return MERGED_OPTIONS.reduce((_mergedOptions: Options, option: keyof Options) => {
+    const handlers = getValidHandlers([originalOptions[option], newOptions[option]]);
+
+    _mergedOptions[option] = handlers.length ? handlers : undefined;
+
+    return _mergedOptions;
+  }, mergedOptions);
+}
+
+export const slice = makeCallable(Array.prototype.slice);
 
 /**
  * @private
@@ -292,7 +183,7 @@ export function orderByLru(
  * @param name the name of the value
  */
 export function throwIfNotInteger(value: number | void, name: string) {
-  if (typeof value !== 'number' || value === DEFAULT_OPTIONS[name]) {
+  if (value == null || value === DEFAULT_OPTIONS[name]) {
     return;
   }
 

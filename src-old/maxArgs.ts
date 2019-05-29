@@ -1,4 +1,4 @@
-import { slice } from './utils';
+const { slice } = Array.prototype;
 
 export function createGetInitialArgs(size: number) {
   /**
@@ -33,6 +33,6 @@ export function createGetInitialArgs(size: number) {
       return [args[0], args[1], args[2]];
     }
 
-    return slice(args, 0, size);
+    return slice.call(args, 0, size);
   };
 }

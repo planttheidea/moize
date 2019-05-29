@@ -32,6 +32,7 @@ declare namespace Moize {
   };
 
   export type Options = {
+    _baseOptions: MicroMemoizeOptions;
     [key: string]: any;
     [index: number]: any;
 
@@ -118,7 +119,7 @@ declare namespace Moize {
 
   export type Moizer<T extends Function> = (
     fn: T | Options | ReactComponent | Moizer<T>,
-    options?: Options,
+    options?: Options
   ) => T | Moizer<T>;
 
   export interface Moized extends Function {

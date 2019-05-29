@@ -1,5 +1,6 @@
-// utils
-import { createFindKeyIndex, findExpirationIndex } from './utils';
+import { MicroMemoize } from 'micro-memoize';
+
+import { Cache, Options } from './types';
 
 /**
  * @private
@@ -13,169 +14,114 @@ import { createFindKeyIndex, findExpirationIndex } from './utils';
  * @param key the key to clear
  * @param shouldRemove should the expiration be removed from the list
  */
-export function clearExpiration(
-  expirations: Moize.Expiration[],
-  key: any,
-  shouldRemove: boolean,
-) {
-  const expirationIndex = findExpirationIndex(expirations, key);
+export function clearExpiration(cache: Cache, key: any, shouldRemove: boolean) {
+  const index = findExpirationIndex(cache, key);
 
-  if (~expirationIndex) {
-    clearTimeout(expirations[expirationIndex].timeoutId as number);
+  if (~index) {
+    const { expirations } = cache;
+
+    clearTimeout(expirations[index].timeoutId as number);
 
     if (shouldRemove) {
-      expirations.splice(expirationIndex, 1);
+      expirations.splice(index, 1);
     }
   }
-}
-
-export function createOnCacheAddSetExpiration(
-  expirations: Moize.Expiration[],
-  options: Moize.Options,
-  isEqual: Function,
-  isMatchingKey?: Function,
-) {
-  const { maxAge, onCacheChange, onExpire } = options;
-
-  const findKeyIndex = createFindKeyIndex(isEqual, isMatchingKey);
-
-  /**
-   * @private
-   *
-   * @function onCacheAddSetExpiration
-   *
-   * @description
-   * when an item is added to the cache, add an expiration for it
-   *
-   * @modifies {expirations}
-   *
-   * @param cache the cache of the memoized function
-   * @param moizedOptions the options passed to the memoized function
-   * @param moized the memoized function
-   */
-  return function onCacheAddSetExpiration(
-    cache: Moize.Cache,
-    moizedOptions: Moize.Options,
-    moized: Function,
-  ) {
-    const key: any = cache.keys[0];
-
-    if (!~findExpirationIndex(expirations, key)) {
-      const expirationMethod = () => {
-        const keyIndex: number = findKeyIndex(cache.keys, key);
-        const value: any = cache.values[keyIndex];
-
-        if (~keyIndex) {
-          cache.keys.splice(keyIndex, 1);
-          cache.values.splice(keyIndex, 1);
-
-          if (typeof onCacheChange === 'function') {
-            onCacheChange(cache, moizedOptions, moized);
-          }
-        }
-
-        clearExpiration(expirations, key, true);
-
-        if (typeof onExpire === 'function' && onExpire(key) === false) {
-          cache.keys.unshift(key);
-          cache.values.unshift(value);
-
-          createOnCacheAddSetExpiration(expirations, options, isEqual)(
-            cache,
-            moizedOptions,
-            moized,
-          );
-
-          if (typeof onCacheChange === 'function') {
-            onCacheChange(cache, moizedOptions, moized);
-          }
-        }
-      };
-
-      expirations.push({
-        expirationMethod,
-        key,
-        timeoutId: setTimeout(expirationMethod, maxAge),
-      });
-    }
-  };
-}
-
-export function createOnCacheHitResetExpiration(
-  expirations: Moize.Expiration[],
-  options: Moize.Options,
-) {
-  const { maxAge } = options;
-
-  /**
-   * @private
-   *
-   * @function onCacheHitResetExpiration
-   *
-   * @description
-   * when a cache item is hit, reset the expiration
-   *
-   * @modifies {expirations}
-   *
-   * @param cache the cache of the memoized function
-   */
-  return function onCacheHitResetExpiration(cache: Moize.Cache) {
-    const key: any = cache.keys[0];
-    const expirationIndex: number = findExpirationIndex(expirations, key);
-
-    if (~expirationIndex) {
-      clearExpiration(expirations, key, false);
-
-      // eslint-disable-next-line no-param-reassign
-      expirations[expirationIndex].timeoutId = setTimeout(
-        expirations[expirationIndex].expirationMethod,
-        maxAge,
-      );
-    }
-  };
 }
 
 /**
  * @private
  *
- * @function getMaxAgeOptions
+ * @function findExpirationIndex
  *
  * @description
- * get the micro-memoize options specific to the maxAge option
+ * find the index of the expiration based on the key
  *
- * @param expirations the expirations for the memoized function
- * @param options the options passed to the moizer
- * @param isEqual the function to test equality of the key on a per-argument basis
- * @param isMatchingKey the function to test equality of the whole key
- * @returns the object of options based on the entries passed
+ * @param expirations the list of expirations
+ * @param key the key to match
+ * @returns the index of the expiration
  */
-export function getMaxAgeOptions(
-  expirations: Moize.Expiration[],
-  options: Moize.Options,
-  isEqual: Function,
-  isMatchingKey?: Function,
-) {
-  const { maxAge, updateExpire } = options;
+export function findExpirationIndex(cache: Cache, key: any[]): number {
+  const { expirations } = cache;
 
-  let onCacheAdd;
-  let onCacheHit;
-
-  // eslint-disable-next-line no-restricted-globals
-  if (typeof maxAge === 'number' && isFinite(maxAge)) {
-    onCacheAdd = createOnCacheAddSetExpiration(
-      expirations,
-      options,
-      isEqual,
-      isMatchingKey,
-    );
+  for (let index: number = 0; index < expirations.length; index++) {
+    if (expirations[index].key === key) {
+      return index;
+    }
   }
 
-  if (onCacheAdd && updateExpire) {
-    onCacheHit = createOnCacheHitResetExpiration(expirations, options);
+  return -1;
+}
+
+export function getMaxAgeOptions(options: Options) {
+  if (typeof options.maxAge === 'number') {
+    const onCacheAdd = function (
+      _cache: Cache,
+      _options: Options,
+      memoized: MicroMemoize.Memoized<Function>,
+    ) {
+      const key: any = _cache.keys[0];
+
+      if (!~findExpirationIndex(_cache, key)) {
+        const expirationMethod = () => {
+          const { keys, values } = _cache;
+          const { onCacheChange, onExpire } = _options;
+
+          const keyIndex: number = _cache.getKeyIndex(key);
+          const value: any = values[keyIndex];
+
+          if (~keyIndex) {
+            keys.splice(keyIndex, 1);
+            values.splice(keyIndex, 1);
+
+            if (_cache.shouldUpdateOnChange) {
+              onCacheChange(_cache, _options, memoized);
+            }
+          }
+
+          clearExpiration(_cache, key, true);
+
+          if (typeof onExpire === 'function' && onExpire(key) === false) {
+            keys.unshift(key);
+            values.unshift(value);
+
+            onCacheAdd(_cache, _options, memoized);
+
+            if (_cache.shouldUpdateOnChange) {
+              onCacheChange(_cache, _options, memoized);
+            }
+          }
+        };
+
+        _cache.expirations.push({
+          expirationMethod,
+          key,
+          timeoutId: setTimeout(expirationMethod, _options.maxAge),
+        });
+      }
+    };
+
+    if (options.updateExpire) {
+      const onCacheHit = function (_cache: Cache, _options: Options) {
+        const key: any = _cache.keys[0];
+        const index: number = findExpirationIndex(_cache, key);
+
+        if (~index) {
+          clearExpiration(_cache, key, false);
+
+          const expiration = _cache.expirations[index];
+
+          expiration.timeoutId = setTimeout(expiration.expirationMethod, _options.maxAge);
+        }
+      };
+
+      return {
+        onCacheAdd,
+        onCacheHit,
+      };
+    }
+
+    return { onCacheAdd };
   }
 
-  return {
-    onCacheAdd,
-    onCacheHit,
-  };
+  return {};
 }

@@ -34,6 +34,7 @@ console.group('standard');
 const foo = 'foo';
 const bar = 'bar';
 const baz = 'baz';
+const quz = 'quz';
 
 function method(one: string, two: string) {
   console.log('standard method fired', one, two);
@@ -52,32 +53,35 @@ console.log(memoized.cache);
 console.log('has true', memoized.has([foo, bar]));
 console.log('has false', memoized.has([foo, 'baz']));
 
-memoized.update([foo, bar], 'something totally different');
+memoized.set([foo, bar], 'something totally different');
 
 console.log(memoized(foo, bar));
 
-console.log(memoized.getStats());
+// console.log(memoized.getStats());
 
 console.groupEnd();
 
 console.group('maxArgs');
 
+console.log(moize.maxArgs(1));
+
 const memoizedMax = moize.maxArgs(1)(method);
 
 memoizedMax(foo, bar);
-memoizedMax(foo, 'baz');
+memoizedMax(foo, baz);
+memoizedMax(foo, quz);
 
 console.groupEnd();
 
 console.group('deep equals');
 
-const deepEqualMethod = ({ one, two }: {one: string, two: string}) => {
+const deepEqualMethod = ({ one, two }: { one: number; two: number }) => {
   console.log('deep equalfired', one, two);
 
   return [one, two];
 };
 
-const deepEqualMemoized = moize.deep(deepEqualMethod);
+const deepEqualMemoized = moize(deepEqualMethod, { isDeepEqual: true });
 
 deepEqualMemoized({ one: 1, two: 2 });
 deepEqualMemoized({ one: 2, two: 1 });
@@ -92,13 +96,13 @@ console.groupEnd();
 
 console.group('serialize');
 
-const serializeMethod = ({ one, two }: {one: any, two: any}) => {
+const serializeMethod = ({ one, two }: { one: any; two: any }) => {
   console.log('serialize fired', one, two);
 
   return [one, two];
 };
 
-const serializeMemoized = moize.serialize(serializeMethod);
+const serializeMemoized = moize(serializeMethod, { isSerialized: true });
 
 serializeMemoized({ one: 1, two: 2 });
 serializeMemoized({ one: 2, two: 1 });
@@ -107,7 +111,7 @@ serializeMemoized({ one: 1, two: 2 });
 
 console.log(serializeMemoized.cache);
 console.log(serializeMemoized.options);
-console.log(serializeMemoized._microMemoizeOptions);
+
 console.log('has serialized true', serializeMemoized.has([{ one: 1, two: 2 }]));
 console.log('has serialized false', serializeMemoized.has([{ one: 1, two: 3 }]));
 
@@ -120,8 +124,9 @@ const withDefault = (foo: string, bar = 'default') => {
 
   return `${foo} ${bar}`;
 };
-const moizedWithDefault = moize(withDefault);
+const moizedWithDefault = moize(withDefault, { maxSize: 2 });
 
+console.log(moizedWithDefault(foo));
 console.log(moizedWithDefault(foo));
 console.log(moizedWithDefault(foo, bar));
 console.log(moizedWithDefault(foo));
@@ -168,7 +173,7 @@ const expiringMemoized = moize(method, {
       if (count !== 0) {
         console.log(
           'Expired! This is the last time I will fire, and this should be empty:',
-          expiringMemoized.expirationsSnapshot,
+          expiringMemoized.cache.expirations.snapshot,
         );
 
         console.log(moize.getStats());
@@ -178,7 +183,7 @@ const expiringMemoized = moize(method, {
 
       console.log(
         'Expired! I will now reset the expiration, but this should be empty:',
-        expiringMemoized.expirationsSnapshot,
+        expiringMemoized.cache.expirations.snapshot,
       );
 
       count++;
@@ -197,57 +202,57 @@ expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 
-console.log('existing expirations', expiringMemoized.expirationsSnapshot);
+console.log('existing expirations', expiringMemoized.cache.expirations.snapshot);
 
 console.groupEnd();
 
-console.log(moize.getStats());
+// console.log(moize.getStats());
 
-console.group('react');
+// console.group('react');
 
-const Foo = ({
-  bar, fn, object, value,
-}: {bar: string, fn: Function, object: any, value: any}) => {
-  console.count('react');
-  console.log('Foo React element fired', bar, value, fn, object);
+// const Foo = ({
+//   bar, fn, object, value,
+// }: {bar: string, fn: Function, object: any, value: any}) => {
+//   console.count('react');
+//   console.log('Foo React element fired', bar, value, fn, object);
 
-  return (
-    <div>
-      {value}
-      {' '}
-      {bar}
-    </div>
-  );
-};
+//   return (
+//     <div>
+//       {value}
+//       {' '}
+//       {bar}
+//     </div>
+//   );
+// };
 
-Foo.propTypes = {
-  bar: PropTypes.string.isRequired,
-  fn: PropTypes.func.isRequired,
-  object: PropTypes.object.isRequired,
-  value: PropTypes.string.isRequired,
-};
+// Foo.propTypes = {
+//   bar: PropTypes.string.isRequired,
+//   fn: PropTypes.func.isRequired,
+//   object: PropTypes.object.isRequired,
+//   value: PropTypes.string.isRequired,
+// };
 
-Foo.defaultProps = {
-  bar: 'default',
-};
+// Foo.defaultProps = {
+//   bar: 'default',
+// };
 
-const MemoizedFoo = moize.react(Foo, { isDeepEqual: true, profileName: 'MemoizedFoo' });
-const SimpleMemoizedFoo = moize.reactSimple(Foo);
-const LimitedMemoizedFoo = moize.compose()(Foo);
+// const MemoizedFoo = moize.react(Foo, { isDeepEqual: true, profileName: 'MemoizedFoo' });
+// const SimpleMemoizedFoo = moize.reactSimple(Foo);
+// const LimitedMemoizedFoo = moize.compose()(Foo);
 
-console.log('MemoizedFoo', MemoizedFoo.options, MemoizedFoo._microMemoizeOptions);
-console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options, SimpleMemoizedFoo._microMemoizeOptions);
-console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options, LimitedMemoizedFoo._microMemoizeOptions);
+// console.log('MemoizedFoo', MemoizedFoo.options);
+// console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
+// console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options);
 
-console.log('MemoizedFoo cache', MemoizedFoo.cache);
+// console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
-const array = [
-  { fn() {}, object: {}, value: foo },
-  { fn() {}, object: {}, value: bar },
-  { fn() {}, object: {}, value: baz },
-];
+// const array = [
+//   { fn() {}, object: {}, value: foo },
+//   { fn() {}, object: {}, value: bar },
+//   { fn() {}, object: {}, value: baz },
+// ];
 
-console.groupEnd();
+// console.groupEnd();
 
 console.group('promise');
 
@@ -274,10 +279,13 @@ const promiseMethodRejected = (number: number) => {
 const memoizedPromise = moize(promiseMethod, {
   isPromise: true,
 });
-const memoizedPromiseRejected = moize({ isPromise: true, profileName: 'rejected promise' })(promiseMethodRejected);
+const memoizedPromiseRejected = moize(promiseMethodRejected, {
+  isPromise: true,
+  profileName: 'rejected promise',
+  useProfileNameLocation: true
+});
 
 console.log('curried options', memoizedPromiseRejected.options);
-console.log('curried options under the hood', memoizedPromiseRejected._microMemoizeOptions);
 
 memoizedPromiseRejected(3)
   .then((foo: any) => {
@@ -330,9 +338,10 @@ const otherPromiseMethod = (number: number) => new Promise((resolve: Function) =
   }, 1000);
 });
 
-const memoizedOtherPromise = moize.promise(otherPromiseMethod, {
+const memoizedOtherPromise = moize(otherPromiseMethod, {
+  isPromise: true,
   maxAge: 1500,
-  onCacheHit(cache: Moize.Cache) {
+  onCacheHit(cache: any) {
     console.log('must have resolved!', cache);
   },
   onExpire() {
@@ -346,36 +355,36 @@ memoizedOtherPromise(4).then((number: any) => {
 
 console.groupEnd();
 
-const HEADER_STYLE = {
-  margin: 0,
-};
+// const HEADER_STYLE = {
+//   margin: 0,
+// };
 
-function App() {
-  return (
-    <div>
-      <h1 style={HEADER_STYLE}>App</h1>
+// function App() {
+//   return (
+//     <div>
+//       <h1 style={HEADER_STYLE}>App</h1>
 
-      <div>
-        <h3>Uncached values (first time running)</h3>
+//       <div>
+//         <h3>Uncached values (first time running)</h3>
 
-        {array.map(values => (
-          <MemoizedFoo
-            key={`called-${values.value}`}
-            {...values}
-          />
-        ))}
+//         {array.map(values => (
+//           <MemoizedFoo
+//             key={`called-${values.value}`}
+//             {...values}
+//           />
+//         ))}
 
-        <h3>Cached values</h3>
+//         <h3>Cached values</h3>
 
-        {array.map(values => (
-          <MemoizedFoo
-            key={`memoized-${values.value}`}
-            {...values}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+//         {array.map(values => (
+//           <MemoizedFoo
+//             key={`memoized-${values.value}`}
+//             {...values}
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
 
-render(<App />, div);
+// render(<App />, div);
