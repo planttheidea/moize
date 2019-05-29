@@ -206,53 +206,53 @@ console.log('existing expirations', expiringMemoized.cache.expirations.snapshot)
 
 console.groupEnd();
 
-// console.log(moize.getStats());
+console.log(moize.getStats());
 
-// console.group('react');
+console.group('react');
 
-// const Foo = ({
-//   bar, fn, object, value,
-// }: {bar: string, fn: Function, object: any, value: any}) => {
-//   console.count('react');
-//   console.log('Foo React element fired', bar, value, fn, object);
+const Foo = ({
+  bar, fn, object, value,
+}: {bar: string, fn: Function, object: any, value: any}) => {
+  console.count('react');
+  console.log('Foo React element fired', bar, value, fn, object);
 
-//   return (
-//     <div>
-//       {value}
-//       {' '}
-//       {bar}
-//     </div>
-//   );
-// };
+  return (
+    <div>
+      {value}
+      {' '}
+      {bar}
+    </div>
+  );
+};
 
-// Foo.propTypes = {
-//   bar: PropTypes.string.isRequired,
-//   fn: PropTypes.func.isRequired,
-//   object: PropTypes.object.isRequired,
-//   value: PropTypes.string.isRequired,
-// };
+Foo.propTypes = {
+  bar: PropTypes.string.isRequired,
+  fn: PropTypes.func.isRequired,
+  object: PropTypes.object.isRequired,
+  value: PropTypes.string.isRequired,
+};
 
-// Foo.defaultProps = {
-//   bar: 'default',
-// };
+Foo.defaultProps = {
+  bar: 'default',
+};
 
-// const MemoizedFoo = moize.react(Foo, { isDeepEqual: true, profileName: 'MemoizedFoo' });
-// const SimpleMemoizedFoo = moize.reactSimple(Foo);
-// const LimitedMemoizedFoo = moize.compose()(Foo);
+const MemoizedFoo = moize.react(Foo, { isDeepEqual: true, maxSize: 3, profileName: 'MemoizedFoo' });
+const SimpleMemoizedFoo = moize.react(Foo);
+const LimitedMemoizedFoo = moize.compose()(Foo);
 
-// console.log('MemoizedFoo', MemoizedFoo.options);
-// console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
-// console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options);
+console.log('MemoizedFoo', MemoizedFoo.options);
+console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
+console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options);
 
-// console.log('MemoizedFoo cache', MemoizedFoo.cache);
+console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
-// const array = [
-//   { fn() {}, object: {}, value: foo },
-//   { fn() {}, object: {}, value: bar },
-//   { fn() {}, object: {}, value: baz },
-// ];
+const array = [
+  { fn() {}, object: {}, value: foo },
+  { fn() {}, object: {}, value: bar },
+  { fn() {}, object: {}, value: baz },
+];
 
-// console.groupEnd();
+console.groupEnd();
 
 console.group('promise');
 
@@ -355,36 +355,36 @@ memoizedOtherPromise(4).then((number: any) => {
 
 console.groupEnd();
 
-// const HEADER_STYLE = {
-//   margin: 0,
-// };
+const HEADER_STYLE = {
+  margin: 0,
+};
 
-// function App() {
-//   return (
-//     <div>
-//       <h1 style={HEADER_STYLE}>App</h1>
+function App() {
+  return (
+    <div>
+      <h1 style={HEADER_STYLE}>App</h1>
 
-//       <div>
-//         <h3>Uncached values (first time running)</h3>
+      <div>
+        <h3>Uncached values (first time running)</h3>
 
-//         {array.map(values => (
-//           <MemoizedFoo
-//             key={`called-${values.value}`}
-//             {...values}
-//           />
-//         ))}
+        {array.map(values => (
+          <MemoizedFoo
+            key={`called-${values.value}`}
+            {...values}
+          />
+        ))}
 
-//         <h3>Cached values</h3>
+        <h3>Cached values</h3>
 
-//         {array.map(values => (
-//           <MemoizedFoo
-//             key={`memoized-${values.value}`}
-//             {...values}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
+        {array.map(values => (
+          <MemoizedFoo
+            key={`memoized-${values.value}`}
+            {...values}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-// render(<App />, div);
+render(<App />, div);

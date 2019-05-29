@@ -55,16 +55,16 @@ export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
     return getStats(options.profileName);
   };
 
-  moized.keys = function () {
-    return cache.snapshot.keys;
-  };
-
   moized.has = function (key: MicroMemoize.Key) {
     if (cache.canTransformKey) {
       key = options.transformKey(key);
     }
 
     return !!~cache.getKeyIndex(key);
+  };
+
+  moized.keys = function () {
+    return cache.snapshot.keys;
   };
 
   moized.set = function (key: MicroMemoize.Key, value: MicroMemoize.Value) {

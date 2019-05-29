@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { FunctionComponent, Props } from 'react';
+
 import { createMoized } from './moized';
 
 import { createOnCacheOperation, enhanceCache } from './cache';
@@ -10,7 +13,7 @@ import {
   getStatsOptions,
   isCollectingStats,
 } from './stats';
-import { DEFAULT_OPTIONS, assign, combine, isOptions, isMemoized, mergeOptions } from './utils';
+import { DEFAULT_OPTIONS, assign, combine, compose, isOptions, isMemoized, mergeOptions } from './utils';
 
 import { Cache, Moized, Options } from './types';
 
@@ -54,7 +57,7 @@ function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
     isMatchingKey,
     transformKey,
   });
-  
+
   normalizedOptions.profileName = getProfileName(fn, normalizedOptions);
 
   const maxAgeOptions = getMaxAgeOptions(normalizedOptions);
@@ -77,6 +80,39 @@ function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
 }
 
 moize.collectStats = collectStats;
+
+moize.component = function (fn: FunctionComponent, options?: Options) {
+  // eslint-disable-next-line global-require,import/no-extraneous-dependencies
+  const React = require('react');
+
+  return class MoizedComponent extends React.Component {
+    static propTypes = fn.propTypes;
+
+    constructor(props: Props<any>) {
+      super(props);
+
+      // eslint-disable-next-line no-multi-assign
+      const Comp = (this.Moized = moize.react(fn, options));
+
+      this.clear = Comp.clear;
+      this.delete = Comp.delete;
+      this.get = Comp.get;
+      this.getStats = Comp.getStats;
+      this.has = Comp.has;
+      this.keys = Comp.keys;
+      this.set = Comp.set;
+      this.values = Comp.values;
+    }
+
+    render() {
+      return React.createElement(this.Moized, this.props);
+    }
+  };
+};
+
+moize.compose = function (...args: any[]) {
+  return compose(...args) || moize;
+};
 
 moize.deep = moize({ isDeepEqual: true });
 
