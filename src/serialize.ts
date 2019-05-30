@@ -30,15 +30,15 @@ export function customReplacer(_key: string, value: any): any {
   const type = typeof value;
 
   if (!type || type === 'number') {
-    return `${type}`;
+    return `${value}`;
   }
 
   if (type === 'function') {
-    return fnToString(type);
+    return fnToString(value);
   }
 
   if (type === 'symbol') {
-    return symbolToString(type);
+    return symbolToString(value);
   }
 
   if (value instanceof RegExp) {
