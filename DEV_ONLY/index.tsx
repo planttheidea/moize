@@ -28,6 +28,7 @@ div.style.width = '100vw';
 document.body.appendChild(div);
 
 moize.collectStats();
+moize.setDefaultOptions('react', { customHostSauce: 'caliente!', maxSize: 3 });
 
 console.group('standard');
 
@@ -248,7 +249,6 @@ Foo.defaultProps = {
 
 const GloballyMemoizedFoo = moize.reactGlobal(Foo, {
   isDeepEqual: true,
-  maxSize: 3,
   profileName: 'GloballyMemoizedFoo',
 });
 const InstanceMemoizedFoo = moize.react(Foo, {

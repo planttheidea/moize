@@ -2,7 +2,13 @@ import { createMoized } from './moized';
 
 import { createOnCacheOperation, enhanceCache } from './cache';
 import { getMaxAgeOptions } from './maxAge';
-import { getMicroMemoizeOptions, mergeOptions } from './options';
+import {
+  getDefaultOptions,
+  getMicroMemoizeOptions,
+  isOptions,
+  mergeOptions,
+  setDefaultOptions,
+} from './options';
 import { createMemoizedComponent } from './reactComponent';
 import {
   collectStats,
@@ -11,7 +17,7 @@ import {
   getStatsOptions,
   isCollectingStats,
 } from './stats';
-import { DEFAULT_OPTIONS, assign, combine, compose, isOptions, isMemoized } from './utils';
+import { assign, combine, compose, isMemoized } from './utils';
 
 import { Cache, Moized, Options } from './types';
 
@@ -43,10 +49,11 @@ function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
     return moize(fn.fn, combinedOptions);
   }
 
+  const defaultOptions = getDefaultOptions(options);
   const normalizedOptions =
     options && typeof options === 'object'
-      ? assign({}, DEFAULT_OPTIONS, options)
-      : assign({}, DEFAULT_OPTIONS);
+      ? assign({}, defaultOptions, options)
+      : assign({}, defaultOptions);
 
   normalizedOptions.profileName = getProfileName(fn, normalizedOptions);
 
@@ -107,5 +114,7 @@ moize.react = moize({ isReact: true });
 moize.reactGlobal = moize({ isReact: true, isReactGlobal: true });
 
 moize.serialize = moize({ isSerialized: true });
+
+moize.setDefaultOptions = setDefaultOptions;
 
 export default moize;

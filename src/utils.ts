@@ -1,30 +1,4 @@
-import { Handler, Moized, Options } from './types';
-
-/**
- * @private
- *
- * @constant DEFAULT_OPTIONS
- */
-export const DEFAULT_OPTIONS: Options = {
-  equals: undefined,
-  isDeepEqual: false,
-  isPromise: false,
-  isReact: false,
-  isReactGlobal: false,
-  isSerialized: false,
-  matchesKey: undefined,
-  maxAge: undefined,
-  maxArgs: undefined,
-  maxSize: 1,
-  onCacheAdd: undefined,
-  onCacheChange: undefined,
-  onCacheHit: undefined,
-  onExpire: undefined,
-  profileName: undefined,
-  serializer: undefined,
-  transformArgs: undefined,
-  updateExpire: false,
-};
+import { Handler, Moized } from './types';
 
 /**
  * @private
@@ -141,10 +115,6 @@ export function getValidHandlers(args: any[]) {
 
 export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
 
-export function isOptions(value: any): value is Options {
-  return !!value && typeof value === 'object';
-}
-
 export function isMemoized<Fn extends Function>(value: any): value is Moized<Fn> {
   return typeof value === 'function' && value.isMemoized === true;
 }
@@ -154,31 +124,3 @@ export function makeCallable(method: (...args: any[]) => any) {
 }
 
 export const slice = makeCallable(Array.prototype.slice);
-
-/**
- * @private
- *
- * @function throwIfNotInteger
- *
- * @description
- * throw an error if the value passed is a number but not a positive integer
- *
- * @throws
- *
- * @param value the value to test
- * @param name the name of the value
- */
-export function throwIfNotInteger(value: number | void, name: string) {
-  if (value == null || value === DEFAULT_OPTIONS[name]) {
-    return;
-  }
-
-  if (
-    value < 0 ||
-    // eslint-disable-next-line no-self-compare
-    value !== value ||
-    value !== ~~value
-  ) {
-    throw new TypeError(`${name} must be a positive integer`);
-  }
-}

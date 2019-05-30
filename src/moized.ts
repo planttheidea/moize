@@ -13,6 +13,8 @@ export function createMoized<Fn extends Function>(
 ) {
   const moized = memoize(fn, microMemoizeOptions) as Moized<Fn>;
 
+  moized.options = options;
+
   // eslint-disable-next-line guard-for-in
   for (const staticKey in fn) {
     // eslint-disable-next-line
