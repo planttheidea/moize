@@ -3,7 +3,7 @@ import { MicroMemoize } from 'micro-memoize';
 import { statsCache } from './stats';
 import { slice } from './utils';
 
-import { Cache, Expirations, Handler, Options } from './types';
+import { Cache, Expirations, Handler, Moizable, Options } from './types';
 
 export function createOnCacheOperation(fn: Handler | void): Handler | void {
   if (typeof fn === 'function') {
@@ -24,7 +24,7 @@ export function createOnCacheOperation(fn: Handler | void): Handler | void {
     return function onCacheOperation(
       cache: Cache,
       _options: Options,
-      memoized: MicroMemoize.Memoized<Function>,
+      memoized: MicroMemoize.Memoized<Moizable>,
     ) {
       return fn(cache, memoized.options, memoized);
     };

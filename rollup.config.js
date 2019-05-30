@@ -1,11 +1,12 @@
 import typescript from 'rollup-plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
+import tsc from 'typescript';
 
 import pkg from './package.json';
 
 const EXTERNALS = [
   ...Object.keys(pkg.dependencies || {}),
-  ...Object.keys(pkg.peerDependencies || {})
+  ...Object.keys(pkg.peerDependencies || {}),
 ];
 
 const UMD_CONFIG = {
@@ -19,13 +20,14 @@ const UMD_CONFIG = {
       'fast-equals': 'fe',
       'fast-stringify': 'stringify',
       'micro-memoize': 'memoize',
+      react: 'React',
     },
     name: pkg.name,
     sourcemap: true,
   },
   plugins: [
     typescript({
-      typescript: require('typescript'),
+      typescript: tsc,
     }),
   ],
 };

@@ -92,6 +92,13 @@ export type Cache = MicroMemoize.Cache & {
   stats: StatsCache;
 };
 
+export type Moizable = Function &
+  Dictionary<any> & {
+    defaultProps?: Dictionary<any>;
+    displayName?: string;
+    propTypes?: Dictionary<Function>;
+  };
+
 export type Moizer<Fn extends Function> = (
   fn: Fn | Options | Moized<Fn>,
   options: Options,

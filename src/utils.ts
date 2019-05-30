@@ -1,4 +1,4 @@
-import { Handler, Moized } from './types';
+import { Handler, Moizable, Moized } from './types';
 
 /**
  * @private
@@ -25,7 +25,6 @@ export function assignFallback(target: any, ...sources: any[]) {
     if (source && typeof source === 'object') {
       for (const key in source) {
         if (hasOwnProperty(source, key)) {
-          // eslint-disable-next-line no-param-reassign
           target[key] = source[key];
         }
       }
@@ -115,7 +114,7 @@ export function getValidHandlers(args: any[]) {
 
 export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
 
-export function isMemoized<Fn extends Function>(value: any): value is Moized<Fn> {
+export function isMemoized<Fn extends Moizable>(value: any): value is Moized<Fn> {
   return typeof value === 'function' && value.isMemoized === true;
 }
 

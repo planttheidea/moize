@@ -1,6 +1,6 @@
 import { MicroMemoize } from 'micro-memoize';
 
-import { Cache, Options } from './types';
+import { Cache, Moizable, Options } from './types';
 
 /**
  * @private
@@ -57,7 +57,7 @@ export function getMaxAgeOptions(options: Options) {
     const onCacheAdd = function (
       _cache: Cache,
       _options: Options,
-      memoized: MicroMemoize.Memoized<Function>,
+      memoized: MicroMemoize.Memoized<Moizable>,
     ) {
       const key: any = _cache.keys[0];
 

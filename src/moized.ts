@@ -2,11 +2,10 @@ import memoize, { MicroMemoize } from 'micro-memoize';
 
 import { getDisplayName } from './reactComponent';
 import { getStats } from './stats';
-import { hasOwnProperty } from './utils';
 
-import { Moized, Options } from './types';
+import { Moizable, Moized, Options } from './types';
 
-export function createMoized<Fn extends Function>(
+export function createMoized<Fn extends Moizable>(
   fn: Fn,
   options: Options,
   microMemoizeOptions: MicroMemoize.Options,
@@ -15,14 +14,9 @@ export function createMoized<Fn extends Function>(
 
   moized.options = options;
 
-  // eslint-disable-next-line guard-for-in
-  for (const staticKey in fn) {
-    // eslint-disable-next-line
-    if (hasOwnProperty(fn, staticKey)) {
-      // @ts-ignore
-      moized[staticKey] = fn[staticKey];
-    }
-  }
+  Object.keys(fn).forEach((staticKey) => {
+    moized[staticKey] = fn[staticKey];
+  });
 
   if (options.isReact) {
     moized.displayName = getDisplayName(fn);

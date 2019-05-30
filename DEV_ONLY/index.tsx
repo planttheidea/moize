@@ -4,7 +4,7 @@
 
 import Bluebird from 'bluebird';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { render } from 'react-dom';
 // @ts-ignore
 import memoizee from 'memoizee';

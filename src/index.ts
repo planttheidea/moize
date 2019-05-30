@@ -19,12 +19,12 @@ import {
 } from './stats';
 import { assign, combine, compose, isMemoized } from './utils';
 
-import { Cache, Moized, Options } from './types';
+import { Cache, Moizable, Moized, Options } from './types';
 
-function moize<Fn extends Function>(fn: Fn, options?: Options): Moized<Fn>;
-function moize<Fn extends Function>(fn: Moized<Fn>, options?: Options): Moized<Fn>;
+function moize<Fn extends Moizable>(fn: Fn, options?: Options): Moized<Fn>;
+function moize<Fn extends Moizable>(fn: Moized<Fn>, options?: Options): Moized<Fn>;
 function moize(options: Options): <Fn extends Function>(fn: Fn, options?: Options) => Moized<Fn>;
-function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
+function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
   if (isOptions(fn)) {
     return function curriedMoize(curriedFn: Fn | Options, curriedOptions?: Options) {
       if (isOptions(curriedFn)) {
