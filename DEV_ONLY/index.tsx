@@ -213,14 +213,22 @@ console.log(moize.getStats());
 console.group('react');
 
 const Foo = ({
-  bar, fn, object, value,
-}: {bar: string, fn: Function, object: any, value: any}) => {
+  bar,
+  fn,
+  object,
+  value,
+}: {
+bar: string;
+fn: Function;
+object: any;
+value: any;
+}) => {
   console.count('react');
   console.log('Foo React element fired', bar, value, fn, object);
 
   return (
     <div>
-      {value}
+      {value} 
       {' '}
       {bar}
     </div>
@@ -238,15 +246,18 @@ Foo.defaultProps = {
   bar: 'default',
 };
 
-const MemoizedFoo = moize.react(Foo, { isDeepEqual: true, maxSize: 3, profileName: 'MemoizedFoo' });
-const SimpleMemoizedFoo = moize.react(Foo);
-const LimitedMemoizedFoo = moize.compose()(Foo);
+const GloballyMemoizedFoo = moize.reactGlobal(Foo, {
+  isDeepEqual: true,
+  maxSize: 3,
+  profileName: 'GloballyMemoizedFoo',
+});
+const InstanceMemoizedFoo = moize.react(Foo, {
+  isDeepEqual: true,
+  profileName: 'InstanceMemoizedFoo',
+});
 
-console.log('MemoizedFoo', MemoizedFoo.options);
-console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options);
-console.log('LimitedMemoizedFoo', LimitedMemoizedFoo.options);
-
-console.log('MemoizedFoo cache', MemoizedFoo.cache);
+console.log('GloballyMemoizedFoo', GloballyMemoizedFoo);
+console.log('InstanceMemoizedFoo', InstanceMemoizedFoo);
 
 const array = [
   { fn() {}, object: {}, value: foo },
@@ -258,35 +269,46 @@ const HEADER_STYLE = {
   margin: 0,
 };
 
-function App() {
+function App({ counter }: { counter: number }) {
+  console.log('GloballyMemoizedFoo stats', moize.getStats('GloballyMemoizedFoo'));
+  console.log('InstanceMemoizedFoo stats', moize.getStats('InstanceMemoizedFoo'));
+
   return (
-    <div>
+    <div data-counter={counter}>
       <h1 style={HEADER_STYLE}>App</h1>
 
+      <h3>Globally memoized</h3>
+
       <div>
-        <h3>Uncached values (first time running)</h3>
-
         {array.map(values => (
-          <MemoizedFoo
-            key={`called-${values.value}`}
-            {...values}
-          />
+          <GloballyMemoizedFoo key={`called-${values.value}`} {...values} />
         ))}
+      </div>
 
-        <h3>Cached values</h3>
+      <h3>Memoized per-instance</h3>
 
+      <div>
         {array.map(values => (
-          <MemoizedFoo
-            key={`memoized-${values.value}`}
-            {...values}
-          />
+          <InstanceMemoizedFoo key={`called-${values.value}`} {...values} />
         ))}
       </div>
     </div>
   );
 }
 
-render(<App />, div);
+const RE_RENDER_FREQUENCY = 1000;
+
+let counter = 0;
+
+function renderApp() {
+    render(<App counter={counter++} />, div);
+
+    if (counter < 5) {
+      setTimeout(renderApp, RE_RENDER_FREQUENCY);
+    }
+}
+
+setTimeout(renderApp, RE_RENDER_FREQUENCY);
 
 console.groupEnd();
 
@@ -318,7 +340,7 @@ const memoizedPromise = moize(promiseMethod, {
 const memoizedPromiseRejected = moize(promiseMethodRejected, {
   isPromise: true,
   profileName: 'rejected promise',
-  useProfileNameLocation: true
+  useProfileNameLocation: true,
 });
 
 console.log('curried options', memoizedPromiseRejected.options);

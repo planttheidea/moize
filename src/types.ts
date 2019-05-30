@@ -24,6 +24,9 @@ export type Options = Pick<
     // is the method a functional React component
     isReact?: boolean;
 
+    // is the react component memoized globally
+    isReactGlobal?: boolean;
+
     // should the parameters be serialized instead of directly referenced
     isSerialized?: boolean;
 
@@ -44,9 +47,6 @@ export type Options = Pick<
 
     // provide a serializer and override default,
     serializer?: (args: any[]) => [string];
-
-    // should functions be included in the serialization of multiple parameters
-    shouldSerializeFunctions?: boolean;
 
     // transform the args prior to storage as key
     transformArgs?: (args: any[]) => any[];

@@ -1,12 +1,9 @@
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { FunctionComponent, Props } from 'react';
-
 import { createMoized } from './moized';
 
 import { createOnCacheOperation, enhanceCache } from './cache';
 import { getMaxAgeOptions } from './maxAge';
 import { getMicroMemoizeOptions, mergeOptions } from './options';
+import { createMemoizedComponent } from './reactComponent';
 import {
   collectStats,
   getProfileName,
@@ -47,7 +44,9 @@ function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
   }
 
   const normalizedOptions =
-    options && typeof options === 'object' ? assign({}, DEFAULT_OPTIONS, options) : assign({}, DEFAULT_OPTIONS);
+    options && typeof options === 'object'
+      ? assign({}, DEFAULT_OPTIONS, options)
+      : assign({}, DEFAULT_OPTIONS);
 
   normalizedOptions.profileName = getProfileName(fn, normalizedOptions);
 
@@ -68,39 +67,14 @@ function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
 
   enhanceCache(moized.cache as Cache);
 
+  if (normalizedOptions.isReact && !normalizedOptions.isReactGlobal) {
+    return createMemoizedComponent(moize, fn, normalizedOptions);
+  }
+
   return moized as Moized<Fn>;
 }
 
 moize.collectStats = collectStats;
-
-moize.component = function (fn: FunctionComponent, options?: Options) {
-  // eslint-disable-next-line global-require,import/no-extraneous-dependencies
-  const React = require('react');
-
-  return class MoizedComponent extends React.Component {
-    static propTypes = fn.propTypes;
-
-    constructor(props: Props<any>) {
-      super(props);
-
-      // eslint-disable-next-line no-multi-assign
-      const Comp = (this.Moized = moize.react(fn, options));
-
-      this.clear = Comp.clear;
-      this.delete = Comp.delete;
-      this.get = Comp.get;
-      this.getStats = Comp.getStats;
-      this.has = Comp.has;
-      this.keys = Comp.keys;
-      this.set = Comp.set;
-      this.values = Comp.values;
-    }
-
-    render() {
-      return React.createElement(this.Moized, this.props);
-    }
-  };
-};
 
 moize.compose = function (...args: any[]) {
   return compose(...args) || moize;
@@ -129,6 +103,8 @@ moize.maxSize = function (maxSize: number) {
 moize.promise = moize({ isPromise: true, updateExpire: true });
 
 moize.react = moize({ isReact: true });
+
+moize.reactGlobal = moize({ isReact: true, isReactGlobal: true });
 
 moize.serialize = moize({ isSerialized: true });
 

@@ -10,6 +10,7 @@ export const DEFAULT_OPTIONS: Options = {
   isDeepEqual: false,
   isPromise: false,
   isReact: false,
+  isReactGlobal: false,
   isSerialized: false,
   matchesKey: undefined,
   maxAge: undefined,
@@ -21,7 +22,6 @@ export const DEFAULT_OPTIONS: Options = {
   onExpire: undefined,
   profileName: undefined,
   serializer: undefined,
-  shouldSerializeFunctions: false,
   transformArgs: undefined,
   updateExpire: false,
 };

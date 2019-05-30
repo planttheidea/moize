@@ -1,15 +1,30 @@
 import memoize, { MicroMemoize } from 'micro-memoize';
 
+import { getDisplayName } from './reactComponent';
 import { getStats } from './stats';
+import { hasOwnProperty } from './utils';
 
-import { Options } from './types';
+import { Moized, Options } from './types';
 
 export function createMoized<Fn extends Function>(
   fn: Fn,
   options: Options,
   microMemoizeOptions: MicroMemoize.Options,
 ) {
-  const moized = memoize(fn, microMemoizeOptions);
+  const moized = memoize(fn, microMemoizeOptions) as Moized<Fn>;
+
+  // eslint-disable-next-line guard-for-in
+  for (const staticKey in fn) {
+    // eslint-disable-next-line
+    if (hasOwnProperty(fn, staticKey)) {
+      // @ts-ignore
+      moized[staticKey] = fn[staticKey];
+    }
+  }
+
+  if (options.isReact) {
+    moized.displayName = getDisplayName(fn);
+  }
 
   const { cache } = moized;
 
