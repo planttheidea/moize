@@ -22,11 +22,11 @@ export function createOnCacheOperation(fn: Handler | void): Handler | void {
      * @returns the result of the cache modified operation
      */
     return function onCacheOperation(
-      _cache: Cache,
+      cache: Cache,
       _options: Options,
       memoized: MicroMemoize.Memoized<Function>,
     ) {
-      return fn(_cache, _options, memoized);
+      return fn(cache, memoized.options, memoized);
     };
   }
 }

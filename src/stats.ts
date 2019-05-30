@@ -181,12 +181,12 @@ export function getStatsOptions(options: Options) {
     }
 
     return {
-      onCacheAdd(_cache: Cache, _options: Options) {
-        profiles[_options.profileName].calls++;
+      onCacheAdd() {
+        profiles[options.profileName].calls++;
       },
-      onCacheHit(_cache: Cache, _options: Options) {
-        profiles[_options.profileName].calls++;
-        profiles[_options.profileName].hits++;
+      onCacheHit() {
+        profiles[options.profileName].calls++;
+        profiles[options.profileName].hits++;
       },
     };
   }

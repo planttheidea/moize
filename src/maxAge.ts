@@ -64,7 +64,7 @@ export function getMaxAgeOptions(options: Options) {
       if (!~findExpirationIndex(_cache, key)) {
         const expirationMethod = () => {
           const { keys, values } = _cache;
-          const { onCacheChange, onExpire } = _options;
+          const { onCacheChange, onExpire } = options;
 
           const keyIndex: number = _cache.getKeyIndex(key);
           const value: any = values[keyIndex];
@@ -74,7 +74,7 @@ export function getMaxAgeOptions(options: Options) {
             values.splice(keyIndex, 1);
 
             if (_cache.shouldUpdateOnChange) {
-              onCacheChange(_cache, _options, memoized);
+              onCacheChange(_cache, options, memoized);
             }
           }
 
@@ -84,10 +84,10 @@ export function getMaxAgeOptions(options: Options) {
             keys.unshift(key);
             values.unshift(value);
 
-            onCacheAdd(_cache, _options, memoized);
+            onCacheAdd(_cache, options, memoized);
 
             if (_cache.shouldUpdateOnChange) {
-              onCacheChange(_cache, _options, memoized);
+              onCacheChange(_cache, options, memoized);
             }
           }
         };
@@ -95,13 +95,13 @@ export function getMaxAgeOptions(options: Options) {
         _cache.expirations.push({
           expirationMethod,
           key,
-          timeoutId: setTimeout(expirationMethod, _options.maxAge),
+          timeoutId: setTimeout(expirationMethod, options.maxAge),
         });
       }
     };
 
     if (options.updateExpire) {
-      const onCacheHit = function (_cache: Cache, _options: Options) {
+      const onCacheHit = function (_cache: Cache) {
         const key: any = _cache.keys[0];
         const index: number = findExpirationIndex(_cache, key);
 
@@ -110,7 +110,7 @@ export function getMaxAgeOptions(options: Options) {
 
           const expiration = _cache.expirations[index];
 
-          expiration.timeoutId = setTimeout(expiration.expirationMethod, _options.maxAge);
+          expiration.timeoutId = setTimeout(expiration.expirationMethod, options.maxAge);
         }
       };
 
