@@ -57,7 +57,7 @@ memoized.set([foo, bar], 'something totally different');
 
 console.log(memoized(foo, bar));
 
-// console.log(memoized.getStats());
+console.log(memoized.getStats());
 
 console.groupEnd();
 
@@ -202,6 +202,8 @@ expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 
+console.log(expiringMemoized.cache);
+
 console.log('existing expirations', expiringMemoized.cache.expirations.snapshot);
 
 console.groupEnd();
@@ -251,6 +253,40 @@ const array = [
   { fn() {}, object: {}, value: bar },
   { fn() {}, object: {}, value: baz },
 ];
+
+const HEADER_STYLE = {
+  margin: 0,
+};
+
+function App() {
+  return (
+    <div>
+      <h1 style={HEADER_STYLE}>App</h1>
+
+      <div>
+        <h3>Uncached values (first time running)</h3>
+
+        {array.map(values => (
+          <MemoizedFoo
+            key={`called-${values.value}`}
+            {...values}
+          />
+        ))}
+
+        <h3>Cached values</h3>
+
+        {array.map(values => (
+          <MemoizedFoo
+            key={`memoized-${values.value}`}
+            {...values}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+render(<App />, div);
 
 console.groupEnd();
 
@@ -354,37 +390,3 @@ memoizedOtherPromise(4).then((number: any) => {
 });
 
 console.groupEnd();
-
-const HEADER_STYLE = {
-  margin: 0,
-};
-
-function App() {
-  return (
-    <div>
-      <h1 style={HEADER_STYLE}>App</h1>
-
-      <div>
-        <h3>Uncached values (first time running)</h3>
-
-        {array.map(values => (
-          <MemoizedFoo
-            key={`called-${values.value}`}
-            {...values}
-          />
-        ))}
-
-        <h3>Cached values</h3>
-
-        {array.map(values => (
-          <MemoizedFoo
-            key={`memoized-${values.value}`}
-            {...values}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-render(<App />, div);

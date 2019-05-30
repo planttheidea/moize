@@ -4,8 +4,12 @@ import { getStats } from './stats';
 
 import { Options } from './types';
 
-export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
-  const moized = memoize(fn, options);
+export function createMoized<Fn extends Function>(
+  fn: Fn,
+  options: Options,
+  microMemoizeOptions: MicroMemoize.Options,
+) {
+  const moized = memoize(fn, microMemoizeOptions);
 
   const { cache } = moized;
 
@@ -16,7 +20,7 @@ export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
     cache.values.length = 0;
 
     if (cache.shouldUpdateOnChange) {
-      options.onCacheChange(cache, options, moized);
+      microMemoizeOptions.onCacheChange(cache, options, moized);
     }
 
     return true;
@@ -24,7 +28,7 @@ export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
 
   moized.delete = function (key: MicroMemoize.Key) {
     if (cache.canTransformKey) {
-      key = options.transformKey(key);
+      key = microMemoizeOptions.transformKey(key);
     }
 
     const keyIndex = moized.cache.getKeyIndex(key);
@@ -41,7 +45,7 @@ export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
 
   moized.get = function (key: MicroMemoize.Key) {
     if (cache.canTransformKey) {
-      key = options.transformKey(key);
+      key = microMemoizeOptions.transformKey(key);
     }
 
     const keyIndex = cache.getKeyIndex(key);
@@ -57,7 +61,7 @@ export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
 
   moized.has = function (key: MicroMemoize.Key) {
     if (cache.canTransformKey) {
-      key = options.transformKey(key);
+      key = microMemoizeOptions.transformKey(key);
     }
 
     return !!~cache.getKeyIndex(key);
@@ -69,7 +73,7 @@ export function createMoized<Fn extends Function>(fn: Fn, options: Options) {
 
   moized.set = function (key: MicroMemoize.Key, value: MicroMemoize.Value) {
     if (cache.canTransformKey) {
-      key = options.transformKey(key);
+      key = microMemoizeOptions.transformKey(key);
     }
 
     // eslint-disable-next-line prefer-spread

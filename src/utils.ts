@@ -26,8 +26,6 @@ export const DEFAULT_OPTIONS: Options = {
   updateExpire: false,
 };
 
-export const MERGED_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
-
 /**
  * @private
  *
@@ -153,18 +151,6 @@ export function isMemoized<Fn extends Function>(value: any): value is Moized<Fn>
 
 export function makeCallable(method: (...args: any[]) => any) {
   return Function.prototype.bind.call(Function.prototype.call, method);
-}
-
-export function mergeOptions(originalOptions: Options, newOptions: Options): Options {
-  const mergedOptions = assign({}, originalOptions, newOptions);
-
-  return MERGED_OPTIONS.reduce((_mergedOptions: Options, option: keyof Options) => {
-    const handlers = getValidHandlers([originalOptions[option], newOptions[option]]);
-
-    _mergedOptions[option] = handlers.length ? handlers : undefined;
-
-    return _mergedOptions;
-  }, mergedOptions);
 }
 
 export const slice = makeCallable(Array.prototype.slice);

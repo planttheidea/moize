@@ -12,6 +12,9 @@ export type Options = Pick<
   'isPromise' | 'maxSize' | 'onCacheAdd' | 'onCacheChange' | 'onCacheHit'
 > &
   Dictionary<any> & {
+    // micro-memoize options
+    _mm?: MicroMemoize.Options;
+
     // custom equality comparator comparing a specific key argument
     equals?: (cacheKeyArgument: any, keyArgument: any) => boolean;
 

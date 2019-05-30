@@ -1,3 +1,4 @@
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { FunctionComponent, Props } from 'react';
 
@@ -5,7 +6,7 @@ import { createMoized } from './moized';
 
 import { createOnCacheOperation, enhanceCache } from './cache';
 import { getMaxAgeOptions } from './maxAge';
-import { getIsEqual, getIsMatchingKey, getTransformKey } from './options';
+import { getMicroMemoizeOptions, mergeOptions } from './options';
 import {
   collectStats,
   getProfileName,
@@ -13,7 +14,7 @@ import {
   getStatsOptions,
   isCollectingStats,
 } from './stats';
-import { DEFAULT_OPTIONS, assign, combine, compose, isOptions, isMemoized, mergeOptions } from './utils';
+import { DEFAULT_OPTIONS, assign, combine, compose, isOptions, isMemoized } from './utils';
 
 import { Cache, Moized, Options } from './types';
 
@@ -45,34 +46,25 @@ function moize<Fn extends Function>(fn: Fn | Options, options?: Options) {
     return moize(fn.fn, combinedOptions);
   }
 
-  const coalescedOptions =
-    options && typeof options === 'object' ? assign({}, DEFAULT_OPTIONS, options) : DEFAULT_OPTIONS;
-
-  const isEqual = getIsEqual(coalescedOptions);
-  const isMatchingKey = getIsMatchingKey(coalescedOptions);
-  const transformKey = getTransformKey(coalescedOptions);
-
-  const normalizedOptions = assign({}, coalescedOptions, {
-    isEqual,
-    isMatchingKey,
-    transformKey,
-  });
+  const normalizedOptions =
+    options && typeof options === 'object' ? assign({}, DEFAULT_OPTIONS, options) : assign({}, DEFAULT_OPTIONS);
 
   normalizedOptions.profileName = getProfileName(fn, normalizedOptions);
 
   const maxAgeOptions = getMaxAgeOptions(normalizedOptions);
   const statsOptions = getStatsOptions(normalizedOptions);
+  const onCacheAdd = createOnCacheOperation(
+    combine(normalizedOptions.onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
+  );
+  const onCacheHit = createOnCacheOperation(
+    combine(normalizedOptions.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
+  );
 
-  assign(normalizedOptions, {
-    onCacheAdd: createOnCacheOperation(
-      combine(normalizedOptions.onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
-    ),
-    onCacheHit: createOnCacheOperation(
-      combine(normalizedOptions.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
-    ),
-  });
+  const microMemoizeOptions = getMicroMemoizeOptions(normalizedOptions, onCacheAdd, onCacheHit);
 
-  const moized = createMoized(fn, normalizedOptions);
+  normalizedOptions._mm = microMemoizeOptions;
+
+  const moized = createMoized(fn, normalizedOptions, microMemoizeOptions);
 
   enhanceCache(moized.cache as Cache);
 

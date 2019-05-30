@@ -64,7 +64,10 @@ export function getMaxAgeOptions(options: Options) {
       if (!~findExpirationIndex(_cache, key)) {
         const expirationMethod = () => {
           const { keys, values } = _cache;
-          const { onCacheChange, onExpire } = options;
+          const {
+            _mm: { onCacheChange },
+            onExpire,
+          } = options;
 
           const keyIndex: number = _cache.getKeyIndex(key);
           const value: any = values[keyIndex];
