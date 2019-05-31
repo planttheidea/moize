@@ -14,17 +14,17 @@ import { Handler, Moizable, Moized } from './types';
  * @param sources the sources to assign to the target
  * @returns the assigned target
  */
-export function assignFallback(target: any) {
-  const { length } = arguments;
+export function assignFallback(target: any, ...sources: any[]) {
+  const { length } = sources;
 
-  if (length < 2) {
+  if (!length) {
     return target;
   }
 
   let source;
 
-  for (let index = 1; index < length; index++) {
-    source = arguments[index];
+  for (let index = 0; index < length; index++) {
+    source = sources[index];
 
     if (source && typeof source === 'object') {
       for (const key in source) {
@@ -97,23 +97,50 @@ export function compose(...args: any[]): Handler | void {
   });
 }
 
-export function getValidHandlers(args: any[]) {
-  return args.reduce((handlers: Handler[], arg: any) => {
-    if (typeof arg === 'function') {
-      handlers.push(arg);
-    }
-
-    return handlers;
-  }, []);
+/**
+ * @private
+ *
+ * @function getValidHandlers
+ *
+ * @description
+ * get the handlers from the list of items passed
+ *
+ * @param possibleHandlers the possible handlers
+ * @returns the list of handlers
+ */
+export function getValidHandlers(possibleHandlers: any[]) {
+  return possibleHandlers.filter(possibleHandler => typeof possibleHandler === 'function');
 }
 
 export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
 
+/**
+ * @private
+ *
+ * @function isMemoized
+ *
+ * @description
+ * is the value passed a previously-memoized function
+ *
+ * @param value the value to test
+ * @returns is the value a memoized function
+ */
 export function isMemoized<Fn extends Moizable>(value: any): value is Moized<Fn> {
   return typeof value === 'function' && value.isMemoized === true;
 }
 
-export function makeCallable(method: (...args: any[]) => any) {
+/**
+ * @private
+ *
+ * @function makeCallable
+ *
+ * @description
+ * make a prototype method that would normally require the use of `.call()` directly callable
+ *
+ * @param method the method to make callable
+ * @returns the callable method
+ */
+export function makeCallable(method: Handler) {
   return Function.prototype.bind.call(Function.prototype.call, method);
 }
 

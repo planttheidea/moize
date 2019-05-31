@@ -1,17 +1,13 @@
 /* globals describe,expect,jest,it */
 
-// src
 import {
   assignFallback,
   combine,
   compose,
-  createFindKeyIndex,
-  findExpirationIndex,
-  getArrayKey,
-  mergeOptions,
-  orderByLru,
+  getValidHandlers,
+  isMemoized,
+  makeCallable,
 } from '../src/utils';
-import { DEFAULT_OPTIONS } from '../src/constants';
 
 describe('assignFallback', () => {
   it('should shallowly merge sources into target if objects', () => {
@@ -170,217 +166,49 @@ describe('compose', () => {
   });
 });
 
-describe('findExpirationIndex', () => {
-  it('should find the expiration based on the key', () => {
-    const key = ['key'];
-    const expirations = [
-      { expirationMethod() {}, key: ['not key'], timeoutId: 2 },
-      { expirationMethod() {}, key, timeoutId: 3 },
-    ];
+describe('getValidHandlers', () => {
+  it('should return only the items that are valid handlers', () => {
+    const possibleHandlers: any[] = ['foo', () => {}, 123, function () {}];
 
-    const result = findExpirationIndex(expirations, key);
+    const validHandlers = getValidHandlers(possibleHandlers);
 
-    expect(result).toBe(1);
-  });
-
-  it('should return the default if it cannot find the expiration based on the key', () => {
-    const key = ['key'];
-    const expirations = [
-      { expirationMethod() {}, key: ['not key'], timeoutId: 2 },
-    ];
-
-    const result = findExpirationIndex(expirations, key);
-
-    expect(result).toBe(-1);
+    expect(validHandlers).toEqual([possibleHandlers[1], possibleHandlers[3]]);
   });
 });
 
-describe('createFindKeyIndex', () => {
-  it('should return the matching key in keys', () => {
-    const isEqual = (a: any, b: any) => a === b;
+describe('isMemoized', () => {
+  it('should return false if the value is not a function', () => {
+    const value = 123;
 
-    const key = ['key'];
-    const keys = [['not key'], ['key'], ['also not key']];
-
-    const result = createFindKeyIndex(isEqual)(keys, key);
-
-    expect(result).toBe(1);
+    expect(isMemoized(value)).toBe(false);
   });
 
-  it('should return the default when not able to match key in keys based on value', () => {
-    const isEqual = (a: any, b: any) => a === b;
+  it('should return false if the value is not a memoized function', () => {
+    const value = () => {};
 
-    const key = ['key'];
-    const keys = [['not key'], ['also not key']];
-
-    const result = createFindKeyIndex(isEqual)(keys, key);
-
-    expect(result).toBe(-1);
+    expect(isMemoized(value)).toBe(false);
   });
 
-  it('should return the default when not able to match key in keys based on length', () => {
-    const isEqual = (a: any, b: any) => a === b;
+  it('should return true if the value is a memoized function', () => {
+    const value = () => {};
 
-    const key = ['key'];
-    const keys = [['not key'], ['key', 'negated'], ['also not key']];
+    value.isMemoized = true;
 
-    const result = createFindKeyIndex(isEqual)(keys, key);
-
-    expect(result).toBe(-1);
-  });
-
-  it('should return the matching key in keys based on isMatchingKey', () => {
-    const isEqual = (a: any, b: any) => a === b;
-    const isMatchingKey = (a: any, b: any) => a[0] === b[0];
-
-    const key = ['key'];
-    const keys = [['not key'], ['key'], ['also not key']];
-
-    const result = createFindKeyIndex(isEqual, isMatchingKey)(keys, key);
-
-    expect(result).toBe(1);
+    expect(isMemoized(value)).toBe(true);
   });
 });
 
-describe('getArrayKey', () => {
-  it('should return the key if an array', () => {
-    const key = ['key'];
+describe('makeCallable', () => {
+  it('should convert a prototype method to be directly callable', () => {
+    const rawMethod = Object.prototype.hasOwnProperty;
 
-    const result = getArrayKey(key);
+    const object = { foo: 'bar' };
 
-    expect(result).toBe(key);
-  });
+    // @ts-ignore
+    expect(() => rawMethod(object, 'foo')).toThrow();
 
-  it('should return the key if a string', () => {
-    const key = 'key';
+    const method = makeCallable(rawMethod);
 
-    const _warn = console.warn;
-
-    console.warn = jest.fn();
-
-    const result = getArrayKey(key);
-
-    expect(console.warn).toHaveBeenCalledTimes(1);
-
-    console.warn = _warn;
-
-    expect(result).not.toBe(key);
-    expect(result).toEqual([key]);
-  });
-});
-
-describe('mergeOptions', () => {
-  it('should return the original options if newOptions are the default', () => {
-    const originalOptions = {
-      isPromise: false,
-    };
-    const newOptions = DEFAULT_OPTIONS;
-
-    const result = mergeOptions(originalOptions, newOptions);
-
-    expect(result).toBe(originalOptions);
-  });
-
-  it('should return the merged options when newOptions is not the default', () => {
-    const originalOptions = {
-      isPromise: false,
-    };
-    const newOptions = {
-      isPromise: true,
-      transformKey: () => 'key',
-    };
-
-    const result = mergeOptions(originalOptions, newOptions);
-
-    expect(result).toEqual({
-      ...originalOptions,
-      ...newOptions,
-      onCacheAdd: undefined,
-      onCacheChange: undefined,
-      onCacheHit: undefined,
-      transformArgs: undefined,
-    });
-  });
-});
-
-describe('orderByLru', () => {
-  it('will do nothing if the itemIndex is 0', () => {
-    const cache = {
-      keys: [['first'], ['second'], ['third']],
-      size: 3,
-      values: ['first', 'second', 'third'],
-    };
-    const itemIndex = 0;
-    const key = cache.keys[itemIndex];
-    const value = cache.values[itemIndex];
-    const maxSize = 3;
-
-    orderByLru(cache, key, value, itemIndex, maxSize);
-
-    expect(cache).toEqual({
-      ...cache,
-      keys: [['first'], ['second'], ['third']],
-      values: ['first', 'second', 'third'],
-    });
-  });
-
-  it('will place the itemIndex first in order when non-zero', () => {
-    const cache = {
-      keys: [['first'], ['second'], ['third']],
-      size: 3,
-      values: ['first', 'second', 'third'],
-    };
-    const itemIndex = 1;
-    const key = cache.keys[itemIndex];
-    const value = cache.values[itemIndex];
-    const maxSize = 3;
-
-    orderByLru(cache, key, value, itemIndex, maxSize);
-
-    expect(cache).toEqual({
-      ...cache,
-      keys: [['second'], ['first'], ['third']],
-      values: ['second', 'first', 'third'],
-    });
-  });
-
-  it('will add the new item to the array when the itemIndex is the array length', () => {
-    const cache = {
-      keys: [['first'], ['second'], ['third']],
-      size: 3,
-      values: ['first', 'second', 'third'],
-    };
-    const itemIndex = cache.keys.length;
-    const key = ['key'];
-    const value = 'new';
-    const maxSize = 4;
-
-    orderByLru(cache, key, value, itemIndex, maxSize);
-
-    expect(cache).toEqual({
-      ...cache,
-      keys: [key, ['first'], ['second'], ['third']],
-      values: [value, 'first', 'second', 'third'],
-    });
-  });
-
-  it('will reduce the size of the array if too long', () => {
-    const cache = {
-      keys: [['first'], ['second'], ['third']],
-      size: 3,
-      values: ['first', 'second', 'third'],
-    };
-    const itemIndex = cache.keys.length;
-    const key = ['key'];
-    const value = 'new';
-    const maxSize = 3;
-
-    orderByLru(cache, key, value, itemIndex, maxSize);
-
-    expect(cache).toEqual({
-      ...cache,
-      keys: [key, ['first'], ['second']],
-      values: [value, 'first', 'second'],
-    });
+    expect(method(object, 'foo')).toBe(true);
   });
 });
