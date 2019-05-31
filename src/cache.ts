@@ -1,6 +1,6 @@
 import { MicroMemoize } from 'micro-memoize';
 
-import { statsCache } from './stats';
+import { getStatsCache } from './stats';
 import { slice } from './utils';
 
 import { Cache, Expirations, Handler, Moizable, Options } from './types';
@@ -42,7 +42,7 @@ export function enhanceCache(cache: Cache) {
   });
 
   cache.expirations = expirations;
-  cache.stats = statsCache;
+  cache.stats = getStatsCache();
 
   return cache;
 }

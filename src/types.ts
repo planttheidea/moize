@@ -7,6 +7,8 @@ export type Dictionary<Type> = {
 
 export type Handler = (...args: any[]) => any;
 
+export type Serializer = (...args: any[]) => [string];
+
 export type Options = Pick<
   MicroMemoize.Options,
   'isPromise' | 'maxSize' | 'onCacheAdd' | 'onCacheChange' | 'onCacheHit'
@@ -46,7 +48,7 @@ export type Options = Pick<
     profileName?: string;
 
     // provide a serializer and override default,
-    serializer?: (args: any[]) => [string];
+    serializer?: Serializer;
 
     // transform the args prior to storage as key
     transformArgs?: (args: any[]) => any[];

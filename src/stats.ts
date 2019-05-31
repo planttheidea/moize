@@ -13,16 +13,16 @@ import {
 
 const INITIAL_STATS_PROFILE: StatsProfile = { calls: 0, hits: 0 };
 
+const STATS_CACHE: StatsCache = {
+  isCollectingStats: false,
+  profiles: {},
+};
+
 const profileNameCounter: Dictionary<number> = {
   __anonymous__: 1,
 };
 
 let hasWarningDisplayed = false;
-
-const STATS_CACHE: StatsCache = {
-  isCollectingStats: false,
-  profiles: {},
-};
 
 /**
  * @private
@@ -177,7 +177,7 @@ export function getStats(profileName?: string): StatsObject {
  * @function getStatsCache
  *
  * @description
- * get the stats cache in the closure (used for testing)
+ * get the stats cache in the closure
  *
  * @returns the stats cache
  */
