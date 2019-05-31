@@ -13,23 +13,13 @@ import {
 
 const INITIAL_STATS_PROFILE: StatsProfile = { calls: 0, hits: 0 };
 
-/**
- * @private
- *
- * @var hasWarningDisplayed
- */
-let hasWarningDisplayed = false;
-
 const profileNameCounter: Dictionary<number> = {
   __anonymous__: 1,
 };
 
-/**
- * @private
- *
- * @constant statsCache the cache of statistics
- */
-export const statsCache: StatsCache = {
+let hasWarningDisplayed = false;
+
+const STATS_CACHE: StatsCache = {
   isCollectingStats: false,
   profiles: {},
 };
@@ -43,9 +33,19 @@ export const statsCache: StatsCache = {
  * activate stats collection
  */
 export function collectStats() {
-  statsCache.isCollectingStats = true;
+  STATS_CACHE.isCollectingStats = true;
 }
 
+/**
+ * @private
+ *
+ * @function getErrorStack
+ *
+ * @description
+ * get the error stack to be used for locations
+ *
+ * @returns the error stack
+ */
 export function getErrorStack() {
   const error = new Error();
 
@@ -126,7 +126,7 @@ export function getProfileName(fn: ProfiledFunction, options: Options) {
  * @returns the object with stats information
  */
 export function getStats(profileName?: string): StatsObject {
-  if (!statsCache.isCollectingStats && !hasWarningDisplayed) {
+  if (!STATS_CACHE.isCollectingStats && !hasWarningDisplayed) {
     // eslint-disable-next-line no-console
     console.warn(
       'Stats are not currently being collected, please run "collectStats" to enable them.',
@@ -136,11 +136,11 @@ export function getStats(profileName?: string): StatsObject {
   }
 
   if (profileName) {
-    if (!statsCache.profiles[profileName]) {
-      statsCache.profiles[profileName] = assign({}, INITIAL_STATS_PROFILE);
+    if (!STATS_CACHE.profiles[profileName]) {
+      STATS_CACHE.profiles[profileName] = assign({}, INITIAL_STATS_PROFILE);
     }
 
-    const profile = statsCache.profiles[profileName];
+    const profile = STATS_CACHE.profiles[profileName];
 
     return assign({}, profile, {
       usage: getUsagePercentage(profile.calls, profile.hits),
@@ -155,8 +155,8 @@ export function getStats(profileName?: string): StatsObject {
   let profile;
 
   // eslint-disable-next-line guard-for-in
-  for (const name in statsCache.profiles) {
-    profile = statsCache.profiles[name];
+  for (const name in STATS_CACHE.profiles) {
+    profile = STATS_CACHE.profiles[name];
 
     /* eslint-disable no-param-reassign */
     completeStats.calls += profile.calls;
@@ -171,9 +171,34 @@ export function getStats(profileName?: string): StatsObject {
   return completeStats;
 }
 
+/**
+ * @private
+ *
+ * @function getStatsCache
+ *
+ * @description
+ * get the stats cache in the closure (used for testing)
+ *
+ * @returns the stats cache
+ */
+export function getStatsCache() {
+  return STATS_CACHE;
+}
+
+/**
+ * @private
+ *
+ * @function getStatsOptions
+ *
+ * @description
+ * get the options specific to stats collection
+ *
+ * @param options the options for the memoized function
+ * @returns the options related to stats
+ */
 export function getStatsOptions(options: Options) {
-  if (statsCache.isCollectingStats) {
-    const { profiles } = statsCache;
+  if (STATS_CACHE.isCollectingStats) {
+    const { profiles } = STATS_CACHE;
     const { profileName } = options;
 
     if (!profiles[profileName]) {
@@ -210,6 +235,16 @@ export function getUsagePercentage(calls: number, hits: number) {
   return calls ? `${((hits / calls) * 100).toFixed(4)}%` : '0%';
 }
 
+/**
+ * @private
+ *
+ * @function isCollectingStats
+ *
+ * @description
+ * are stats currently being collected
+ *
+ * @returns true if stats are being collected, false otherwise
+ */
 export function isCollectingStats() {
-  return statsCache.isCollectingStats;
+  return STATS_CACHE.isCollectingStats;
 }
