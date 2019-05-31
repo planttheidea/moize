@@ -267,31 +267,47 @@ const HEADER_STYLE = {
   margin: 0,
 };
 
-function App({ counter }: { counter: number }) {
-  console.log('GloballyMemoizedFoo stats', moize.getStats('GloballyMemoizedFoo'));
-  console.log('InstanceMemoizedFoo stats', moize.getStats('InstanceMemoizedFoo'));
+type Props = {
+  counter: number;
+};
 
-  return (
-    <div data-counter={counter}>
-      <h1 style={HEADER_STYLE}>App</h1>
+class App extends React.Component<Props, any> {
+  getInstanceRef(ref: { Moized: any }) {
+    console.log('ref', { ...ref.Moized });
+  }
 
-      <h3>Globally memoized</h3>
+  render() {
+    const { counter } = this.props;
 
-      <div>
-        {array.map(values => (
-          <GloballyMemoizedFoo key={`called-${values.value}`} {...values} />
-        ))}
+    console.log('GloballyMemoizedFoo stats', moize.getStats('GloballyMemoizedFoo'));
+    console.log('InstanceMemoizedFoo stats', moize.getStats('InstanceMemoizedFoo'));
+
+    return (
+      <div data-counter={counter}>
+        <h1 style={HEADER_STYLE}>App</h1>
+
+        <h3>Globally memoized</h3>
+
+        <div>
+          {array.map(values => (
+            <GloballyMemoizedFoo key={`called-${values.value}`} {...values} />
+          ))}
+        </div>
+
+        <h3>Memoized per-instance</h3>
+
+        <div>
+          {array.map(values => (
+            <InstanceMemoizedFoo
+              key={`called-${values.value}`}
+              ref={this.getInstanceRef}
+              {...values}
+            />
+          ))}
+        </div>
       </div>
-
-      <h3>Memoized per-instance</h3>
-
-      <div>
-        {array.map(values => (
-          <InstanceMemoizedFoo key={`called-${values.value}`} {...values} />
-        ))}
-      </div>
-    </div>
-  );
+    );
+  }
 }
 
 const RE_RENDER_FREQUENCY = 1000;
@@ -299,11 +315,11 @@ const RE_RENDER_FREQUENCY = 1000;
 let counter = 0;
 
 function renderApp() {
-    render(<App counter={counter++} />, div);
+  render(<App counter={counter++} />, div);
 
-    if (counter < 5) {
-      setTimeout(renderApp, RE_RENDER_FREQUENCY);
-    }
+  if (counter < 5) {
+    setTimeout(renderApp, RE_RENDER_FREQUENCY);
+  }
 }
 
 setTimeout(renderApp, RE_RENDER_FREQUENCY);
