@@ -25,21 +25,26 @@ const DEFAULTS: Options = {
   profileName: undefined,
   serializer: undefined,
   transformArgs: undefined,
-  updateExpire: false,
+  updateExpire: true,
 };
 
 export const DEFAULT_OPTIONS: Dictionary<Options> = {
   __global__: assign({}, DEFAULTS),
-  promise: assign({}, DEFAULTS),
-  react: assign({}, DEFAULTS),
-  reactGlobal: assign({}, DEFAULTS),
-  serialized: assign({}, DEFAULTS),
+  deep: assign({}, DEFAULTS, { isDeepEqual: true }),
+  promise: assign({}, DEFAULTS, { isPromise: true }),
+  react: assign({}, DEFAULTS, { isReact: true }),
+  reactGlobal: assign({}, DEFAULTS, { isReact: true, isReactGlobal: true }),
+  serialized: assign({}, DEFAULTS, { isSerialized: true }),
 };
 
 const MERGED_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
 
 export function getDefaultOptions(options?: Options) {
   if (options) {
+    if (options.isDeepEqual) {
+      return DEFAULT_OPTIONS.deep;
+    }
+
     if (options.isPromise) {
       return DEFAULT_OPTIONS.promise;
     }
@@ -54,22 +59,6 @@ export function getDefaultOptions(options?: Options) {
   }
 
   return DEFAULT_OPTIONS.__global__;
-}
-
-export function getDefaultOptionsType(options: Options) {
-  if (options.isPromise) {
-    return 'promise';
-  }
-
-  if (options.isReact) {
-    return options.isReactGlobal ? 'reactGlobal' : 'react';
-  }
-
-  if (options.isSerialized) {
-    return 'serialized';
-  }
-
-  return '__global__';
 }
 
 export function getIsEqual(options: Options) {

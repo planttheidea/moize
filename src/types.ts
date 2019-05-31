@@ -99,11 +99,6 @@ export type Moizable = Function &
     propTypes?: Dictionary<Function>;
   };
 
-export type Moizer<Fn extends Function> = (
-  fn: Fn | Options | Moized<Fn>,
-  options: Options,
-) => Moized<Fn>;
-
 export type Moized<Fn extends Function> = MicroMemoize.Memoized<Fn> &
   Dictionary<any> & {
     // native properties

@@ -1,3 +1,5 @@
+/* eslint-disable prefer-rest-params */
+
 import { Handler, Moizable, Moized } from './types';
 
 /**
@@ -12,15 +14,17 @@ import { Handler, Moizable, Moized } from './types';
  * @param sources the sources to assign to the target
  * @returns the assigned target
  */
-export function assignFallback(target: any, ...sources: any[]) {
-  if (!sources.length) {
+export function assignFallback(target: any) {
+  const { length } = arguments;
+
+  if (length < 2) {
     return target;
   }
 
   let source;
 
-  for (let index = 0; index < sources.length; index++) {
-    source = sources[index];
+  for (let index = 1; index < length; index++) {
+    source = arguments[index];
 
     if (source && typeof source === 'object') {
       for (const key in source) {
@@ -62,10 +66,8 @@ export function combine(...args: any[]): Handler | void {
 
   return handlers.reduceRight(function combined(f: Handler, g: Handler) {
     return function () {
-      /* eslint-disable prefer-rest-params */
       f.apply(this, arguments);
       g.apply(this, arguments);
-      /* eslint-enable */
     };
   });
 }
@@ -90,26 +92,19 @@ export function compose(...args: any[]): Handler | void {
 
   return handlers.reduceRight(function reduced(f: Handler, g: Handler) {
     return function () {
-      // eslint-disable-next-line prefer-rest-params
       return g(f.apply(this, arguments));
     };
   });
 }
 
 export function getValidHandlers(args: any[]) {
-  const handlers: Handler[] = [];
-
-  let arg;
-
-  for (let index = 0; index < args.length; index++) {
-    arg = args[index];
-
+  return args.reduce((handlers: Handler[], arg: any) => {
     if (typeof arg === 'function') {
       handlers.push(arg);
     }
-  }
 
-  return handlers;
+    return handlers;
+  }, []);
 }
 
 export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);

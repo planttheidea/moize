@@ -1,6 +1,6 @@
 import { createMoized } from './moized';
 
-import { createOnCacheOperation, enhanceCache } from './cache';
+import { createOnCacheOperation } from './cache';
 import { getMaxAgeOptions } from './maxAge';
 import {
   getDefaultOptions,
@@ -9,7 +9,6 @@ import {
   mergeOptions,
   setDefaultOptions,
 } from './options';
-import { createMemoizedComponent } from './reactComponent';
 import {
   collectStats,
   getProfileName,
@@ -19,11 +18,11 @@ import {
 } from './stats';
 import { assign, combine, compose, isMemoized } from './utils';
 
-import { Cache, Moizable, Moized, Options } from './types';
+import { Moizable, Moized, Options } from './types';
 
 function moize<Fn extends Moizable>(fn: Fn, options?: Options): Moized<Fn>;
-function moize<Fn extends Moizable>(fn: Moized<Fn>, options?: Options): Moized<Fn>;
-function moize(options: Options): <Fn extends Function>(fn: Fn, options?: Options) => Moized<Fn>;
+function moize<Fn extends Moizable>(fn: Moized<Fn>, options?: Options): Moized<Fn['fn']>;
+function moize(options: Options): moize;
 function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
   if (isOptions(fn)) {
     return function curriedMoize(curriedFn: Fn | Options, curriedOptions?: Options) {
@@ -39,14 +38,14 @@ function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
     };
   }
 
-  if (typeof fn !== 'function') {
-    throw new TypeError('Only functions or options can be passed to moize.');
-  }
-
   if (isMemoized(fn)) {
     const combinedOptions = options ? assign({}, fn.options, options) : fn.options;
 
     return moize(fn.fn, combinedOptions);
+  }
+
+  if (typeof fn !== 'function') {
+    throw new TypeError('Only functions or options can be passed to moize.');
   }
 
   const defaultOptions = getDefaultOptions(options);
@@ -59,6 +58,7 @@ function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
 
   const maxAgeOptions = getMaxAgeOptions(normalizedOptions);
   const statsOptions = getStatsOptions(normalizedOptions);
+
   const onCacheAdd = createOnCacheOperation(
     combine(normalizedOptions.onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
   );
@@ -66,26 +66,14 @@ function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
     combine(normalizedOptions.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
   );
 
-  const microMemoizeOptions = getMicroMemoizeOptions(normalizedOptions, onCacheAdd, onCacheHit);
+  normalizedOptions._mm = getMicroMemoizeOptions(normalizedOptions, onCacheAdd, onCacheHit);
 
-  normalizedOptions._mm = microMemoizeOptions;
-
-  const moized = createMoized(fn, normalizedOptions, microMemoizeOptions);
-
-  enhanceCache(moized.cache as Cache);
-
-  if (normalizedOptions.isReact && !normalizedOptions.isReactGlobal) {
-    return createMemoizedComponent(moize, fn, normalizedOptions);
-  }
-
-  return moized as Moized<Fn>;
+  return createMoized(moize, fn, normalizedOptions);
 }
 
 moize.collectStats = collectStats;
 
-moize.compose = function (...args: any[]) {
-  return compose(...args) || moize;
-};
+moize.compose = (...args: any[]) => compose(...args) || moize;
 
 moize.deep = moize({ isDeepEqual: true });
 
@@ -95,19 +83,13 @@ moize.isCollectingStats = isCollectingStats;
 
 moize.isMemoized = isMemoized;
 
-moize.maxAge = function (maxAge: number) {
-  return moize({ maxAge });
-};
+moize.maxAge = (maxAge: number) => moize({ maxAge });
 
-moize.maxArgs = function (maxArgs: number) {
-  return moize({ maxArgs });
-};
+moize.maxArgs = (maxArgs: number) => moize({ maxArgs });
 
-moize.maxSize = function (maxSize: number) {
-  return moize({ maxSize });
-};
+moize.maxSize = (maxSize: number) => moize({ maxSize });
 
-moize.promise = moize({ isPromise: true, updateExpire: true });
+moize.promise = moize({ isPromise: true });
 
 moize.react = moize({ isReact: true });
 

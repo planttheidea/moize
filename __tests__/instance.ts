@@ -6,10 +6,8 @@ import memoize, { MicroMemoize } from 'micro-memoize';
 
 // src
 import {
-  addInstanceMethods,
-  addInstanceProperties,
-  augmentInstance,
-} from '../src/instance';
+  createMoized,
+} from '../src/moized';
 import { getTransformKey } from '../src/options';
 import { getUsagePercentage, statsCache } from '../src/stats';
 
