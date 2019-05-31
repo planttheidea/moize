@@ -13,7 +13,7 @@ import {
   getIsMatchingKey,
   getTransformKey,
 } from '../src/options';
-import { getIsSerializedKeyEqual } from '../src/serialize';
+import { isMatchingSerializedKey } from '../src/serialize';
 
 describe('createOnCacheOperation', () => {
   it('should return undefined when fn is not a function', () => {
@@ -136,7 +136,7 @@ describe('getIsMatchingKey', () => {
 
     const isMatchingKey = getIsMatchingKey(moizeOptions);
 
-    expect(isMatchingKey).toBe(getIsSerializedKeyEqual);
+    expect(isMatchingKey).toBe(isMatchingSerializedKey);
   });
 });
 

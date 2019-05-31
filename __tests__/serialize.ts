@@ -3,7 +3,7 @@
 // src
 import {
   customReplacer,
-  getIsSerializedKeyEqual,
+  isMatchingSerializedKey,
   getSerializerFunction,
   stringify,
 } from '../src/serialize';
@@ -172,9 +172,9 @@ describe('getSerializerFunction', () => {
   });
 });
 
-describe('getIsSerializedKeyEqual', () => {
+describe('isMatchingSerializedKey', () => {
   it('should return correctly when the values match', () => {
-    expect(getIsSerializedKeyEqual(['key'], ['key'])).toBe(true);
-    expect(getIsSerializedKeyEqual(['key'], ['not key'])).toBe(false);
+    expect(isMatchingSerializedKey(['key'], ['key'])).toBe(true);
+    expect(isMatchingSerializedKey(['key'], ['not key'])).toBe(false);
   });
 });

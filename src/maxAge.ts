@@ -52,6 +52,17 @@ export function findExpirationIndex(cache: Cache, key: any[]): number {
   return -1;
 }
 
+/**
+ * @private
+ *
+ * @function getMaxAgeOptions
+ *
+ * @description
+ * get the options specific to the maxAge parameter
+ *
+ * @param options the options for the moize instance
+ * @returns the options specific to maxAge
+ */
 export function getMaxAgeOptions(options: Options) {
   if (typeof options.maxAge === 'number') {
     const onCacheAdd = function (

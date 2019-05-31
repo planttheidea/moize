@@ -15,7 +15,7 @@ import {
 import { createGetInitialArgs } from '../src/maxArgs';
 import { createOnCacheOperation } from '../src/options';
 import {
-  getIsSerializedKeyEqual,
+  isMatchingSerializedKey,
   getSerializerFunction,
 } from '../src/serialize';
 import { collectStats, getStats, statsCache } from '../src/stats';
@@ -283,7 +283,7 @@ describe('moize', () => {
 
     expect(_microMemoizeOptions).toEqual({
       isEqual: sameValueZeroEqual,
-      isMatchingKey: getIsSerializedKeyEqual,
+      isMatchingKey: isMatchingSerializedKey,
       isPromise: false,
       maxSize: Infinity,
       onCacheAdd: undefined,
@@ -346,7 +346,7 @@ describe('moize', () => {
 
     expect(_microMemoizeOptions).toEqual({
       isEqual: sameValueZeroEqual,
-      isMatchingKey: getIsSerializedKeyEqual,
+      isMatchingKey: isMatchingSerializedKey,
       isPromise: false,
       maxSize: Infinity,
       onCacheAdd: undefined,
@@ -409,7 +409,7 @@ describe('moize', () => {
 
     expect(_microMemoizeOptions).toEqual({
       isEqual: sameValueZeroEqual,
-      isMatchingKey: getIsSerializedKeyEqual,
+      isMatchingKey: isMatchingSerializedKey,
       isPromise: false,
       maxSize: Infinity,
       onCacheAdd: undefined,
@@ -1704,7 +1704,7 @@ describe('moize.serialize', () => {
 
     expect(_microMemoizeOptions).toEqual({
       isEqual: sameValueZeroEqual,
-      isMatchingKey: getIsSerializedKeyEqual,
+      isMatchingKey: isMatchingSerializedKey,
       isPromise: false,
       maxSize: Infinity,
       onCacheAdd: undefined,

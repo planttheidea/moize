@@ -2,7 +2,7 @@ import { deepEqual, shallowEqual, sameValueZeroEqual } from 'fast-equals';
 import { MicroMemoize } from 'micro-memoize';
 
 import { createGetInitialArgs } from './maxArgs';
-import { getSerializerFunction, getIsSerializedKeyEqual } from './serialize';
+import { getSerializerFunction, isMatchingSerializedKey } from './serialize';
 import { assign, compose, getValidHandlers } from './utils';
 
 import { Dictionary, Handler, Options } from './types';
@@ -34,11 +34,22 @@ export const DEFAULT_OPTIONS: Dictionary<Options> = {
   promise: assign({}, DEFAULTS, { isPromise: true }),
   react: assign({}, DEFAULTS, { isReact: true }),
   reactGlobal: assign({}, DEFAULTS, { isReact: true, isReactGlobal: true }),
-  serialized: assign({}, DEFAULTS, { isSerialized: true }),
+  serialize: assign({}, DEFAULTS, { isSerialized: true }),
 };
 
 const MERGED_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
 
+/**
+ * @private
+ *
+ * @function getDefaultOptions
+ *
+ * @description
+ * get the default options for the memoization type
+ *
+ * @param options the options for the moize instance
+ * @returns the default options requested
+ */
 export function getDefaultOptions(options?: Options) {
   if (options) {
     if (options.isDeepEqual) {
@@ -54,26 +65,61 @@ export function getDefaultOptions(options?: Options) {
     }
 
     if (options.isSerialized) {
-      return DEFAULT_OPTIONS.serialized;
+      return DEFAULT_OPTIONS.serialize;
     }
   }
 
   return DEFAULT_OPTIONS.__global__;
 }
 
+/**
+ * @private
+ *
+ * @function getIsEqual
+ *
+ * @description
+ * get the isEqual method used in memoization
+ *
+ * @param options the options for the moize instance
+ * @returns the isEqual method requested
+ */
 export function getIsEqual(options: Options) {
+  return options.equals || (options.isDeepEqual && deepEqual) || sameValueZeroEqual;
+}
+
+/**
+ * @private
+ *
+ * @function getIsMatchingKey
+ *
+ * @description
+ * get the isMatchingKey method used in memoization
+ *
+ * @param options the options for the moize instance
+ * @returns the isMatchingKey method requested
+ */
+export function getIsMatchingKey(options: Options) {
   return (
-    options.equals ||
-    (options.isDeepEqual && deepEqual) ||
-    (options.isReact && shallowEqual) ||
-    sameValueZeroEqual
+    options.matchesKey ||
+    (options.isSerialized && isMatchingSerializedKey) ||
+    (options.isReact && isMatchingReactKey) ||
+    undefined
   );
 }
 
-export function getIsMatchingKey(options: Options) {
-  return options.matchesKey || (options.isSerialized && getIsSerializedKeyEqual) || undefined;
-}
-
+/**
+ * @private
+ *
+ * @function getMicroMemoizeOptions
+ *
+ * @description
+ * get the options used for the micro-memoize call
+ *
+ * @param options the options for the moize instance
+ * @param onCacheAdd the onCacheAdd calculated based on the options
+ * @param onCacheHit the onCacheHit calculated based on the options
+ * @returns the options for the micro-memoize call
+ */
 export function getMicroMemoizeOptions(
   options: Options,
   onCacheAdd: Handler | void,
@@ -113,9 +159,12 @@ export function getTransformKey(options: Options) {
   return compose(
     options.isSerialized && getSerializerFunction(options),
     options.transformArgs,
-    options.isReact && createGetInitialArgs(2),
     typeof options.maxArgs === 'number' && createGetInitialArgs(options.maxArgs),
   );
+}
+
+export function isMatchingReactKey(cacheKey: Dictionary<any>[], key: Dictionary<any>[]) {
+  return shallowEqual(cacheKey[0], key[0]) && shallowEqual(cacheKey[1], key[1]);
 }
 
 export function isOptions(value: any): value is Options {
