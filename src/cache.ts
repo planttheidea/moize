@@ -43,6 +43,4 @@ export function enhanceCache(cache: Cache) {
 
   cache.expirations = expirations;
   cache.stats = getStatsCache();
-
-  return cache;
 }
