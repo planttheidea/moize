@@ -55,47 +55,48 @@ export function findExpirationIndex(cache: Cache, key: any[]): number {
 export function getMaxAgeOptions(options: Options) {
   if (typeof options.maxAge === 'number') {
     const onCacheAdd = function (
-      _cache: Cache,
+      cache: Cache,
       _options: Options,
       memoized: MicroMemoize.Memoized<Moizable>,
     ) {
-      const key: any = _cache.keys[0];
+      const key: any = cache.keys[0];
 
-      if (!~findExpirationIndex(_cache, key)) {
+      if (!~findExpirationIndex(cache, key)) {
         const expirationMethod = () => {
-          const { keys, values } = _cache;
           const {
             _mm: { onCacheChange },
             onExpire,
           } = options;
 
-          const keyIndex: number = _cache.getKeyIndex(key);
+          const keyIndex: number = cache.getKeyIndex(key);
+
+          const { keys, values } = cache;
           const value: any = values[keyIndex];
 
           if (~keyIndex) {
             keys.splice(keyIndex, 1);
             values.splice(keyIndex, 1);
 
-            if (_cache.shouldUpdateOnChange) {
-              onCacheChange(_cache, options, memoized);
+            if (cache.shouldUpdateOnChange) {
+              onCacheChange(cache, options, memoized);
             }
           }
 
-          clearExpiration(_cache, key, true);
+          clearExpiration(cache, key, true);
 
           if (typeof onExpire === 'function' && onExpire(key) === false) {
             keys.unshift(key);
             values.unshift(value);
 
-            onCacheAdd(_cache, options, memoized);
+            onCacheAdd(cache, options, memoized);
 
-            if (_cache.shouldUpdateOnChange) {
-              onCacheChange(_cache, options, memoized);
+            if (cache.shouldUpdateOnChange) {
+              onCacheChange(cache, options, memoized);
             }
           }
         };
 
-        _cache.expirations.push({
+        cache.expirations.push({
           expirationMethod,
           key,
           timeoutId: setTimeout(expirationMethod, options.maxAge),
@@ -104,14 +105,14 @@ export function getMaxAgeOptions(options: Options) {
     };
 
     if (options.updateExpire) {
-      const onCacheHit = function (_cache: Cache) {
-        const key: any = _cache.keys[0];
-        const index: number = findExpirationIndex(_cache, key);
+      const onCacheHit = function (cache: Cache) {
+        const key: any = cache.keys[0];
+        const index: number = findExpirationIndex(cache, key);
 
         if (~index) {
-          clearExpiration(_cache, key, false);
+          clearExpiration(cache, key, false);
 
-          const expiration = _cache.expirations[index];
+          const expiration = cache.expirations[index];
 
           expiration.timeoutId = setTimeout(expiration.expirationMethod, options.maxAge);
         }

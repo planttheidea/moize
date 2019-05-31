@@ -6,11 +6,9 @@ import { enhanceCache } from './cache';
 import { getStats } from './stats';
 import { assign } from './utils';
 
-import { Dictionary, Moizable, Moized, Options } from './types';
+import { Dictionary, Moizable, Moized, Moizer, Options } from './types';
 
 /* eslint-disable react/forbid-foreign-prop-types */
-
-type Moizer<Fn extends Moizable> = (fn: Fn, options: Options) => Moized<Fn>;
 
 const GLOBAL = (() => {
   if (typeof globalThis !== 'undefined') {
@@ -144,11 +142,7 @@ export function createMemoizedComponent<Fn extends Moizable>(
   return (MoizedComponent as unknown) as ComponentClass;
 }
 
-export function createMoized<Fn extends Moizable>(
-  moize: Moizer<Fn>,
-  fn: Fn,
-  options: Options,
-) {
+export function createMoized<Fn extends Moizable>(moize: Moizer<Fn>, fn: Fn, options: Options) {
   if (options.isReact && !options.isReactGlobal) {
     return createMemoizedComponent(moize, fn, options);
   }
@@ -159,6 +153,7 @@ export function createMoized<Fn extends Moizable>(
   moized.options = options;
 
   Object.keys(fn).forEach((staticKey) => {
+    // @ts-ignore
     moized[staticKey] = fn[staticKey];
   });
 

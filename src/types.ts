@@ -101,11 +101,22 @@ export type Moizable = Function &
     propTypes?: Dictionary<Function>;
   };
 
-export type Moized<Fn extends Function> = MicroMemoize.Memoized<Fn> &
-  Dictionary<any> & {
-    // native properties
-    cache: Cache;
-    fn: Fn;
-    isMemoized: boolean;
-    options: Options;
-  };
+export type Moized<Fn extends Moizable> = MicroMemoize.Memoized<Fn> & {
+  // native properties
+  cache: Cache;
+  fn: Fn;
+  isMemoized: boolean;
+  options: Options;
+
+  // added properties
+  clear: () => boolean;
+  delete: (key: MicroMemoize.Key) => boolean;
+  get: (key: MicroMemoize.Key) => MicroMemoize.Value | void;
+  getStats: () => StatsObject;
+  has: (key: MicroMemoize.Key) => boolean;
+  keys: () => MicroMemoize.Key[];
+  set: (key: MicroMemoize.Key, value: MicroMemoize.Value) => boolean;
+  values: () => MicroMemoize.Value[];
+};
+
+export type Moizer<Fn extends Moizable> = (fn: Fn, options: Options) => Moized<Fn>;
