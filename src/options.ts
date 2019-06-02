@@ -28,7 +28,7 @@ const DEFAULTS: Options = {
   updateExpire: true,
 };
 
-export const DEFAULT_OPTIONS: Dictionary<Options> = {
+export const DEFAULT_OPTIONS = {
   __global__: assign({}, DEFAULTS),
   deep: assign({}, DEFAULTS, { isDeepEqual: true }),
   promise: assign({}, DEFAULTS, { isPromise: true }),
@@ -214,7 +214,10 @@ export function mergeOptions(originalOptions: Options, newOptions: Options): Opt
   }, mergedOptions);
 }
 
-export function setDefaultOptions(type: Options | string, options?: Options) {
+export function setDefaultOptions(
+  type: Options | keyof typeof DEFAULT_OPTIONS,
+  options?: Options,
+): boolean {
   if (typeof type === 'string') {
     const defaultOptions = DEFAULT_OPTIONS[type];
 
@@ -227,20 +230,16 @@ export function setDefaultOptions(type: Options | string, options?: Options) {
         defaultOptions[option] = options[option];
       });
 
-      if (type === 'react') {
-        setDefaultOptions('reactGlobal', options);
-      }
-
-      return true;
+      return type === 'react' ? setDefaultOptions('reactGlobal', options) : true;
     }
 
-    throw new Error(`The type "${type}" passed does not exist as an options type.`);
+    return false;
   }
 
   if (isOptions(type)) {
     options = type;
 
-    Object.keys(DEFAULT_OPTIONS).forEach((optionType) => {
+    Object.keys(DEFAULT_OPTIONS).forEach((optionType: keyof typeof DEFAULT_OPTIONS) => {
       const defaultOptions = DEFAULT_OPTIONS[optionType];
 
       Object.keys(options).forEach((option) => {

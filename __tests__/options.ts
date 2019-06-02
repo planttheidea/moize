@@ -11,7 +11,7 @@ import {
   setDefaultOptions,
 } from '../src/options';
 import { getStringifiedArgs } from '../src/serialize';
-import { Handler } from '../src/types';
+import { Options } from '../src/types';
 
 describe('getDefaultOptions', () => {
   it('should return the deep options when requested', () => {
@@ -161,6 +161,24 @@ describe('getTransformKey', () => {
     expect(getTransformKey(options)).toBe(options.transformArgs);
   });
 
+  it('should get the limited arguments if react is requested', () => {
+    const options = { isReact: true };
+    const transformKey = getTransformKey(options);
+
+    const args = [{ props: true }, { context: true }, 'foo'];
+
+    expect(transformKey(args)).toEqual([args[0], args[1]]);
+  });
+
+  it('should get the limited arguments if react is requested as well as maxArgs', () => {
+    const options = { isReact: true, maxArgs: 1 };
+    const transformKey = getTransformKey(options);
+
+    const args = [{ props: true }, { context: true }, 'foo'];
+
+    expect(transformKey(args)).toEqual([args[0]]);
+  });
+
   it('should get an argument limiting function if requested', () => {
     const options = { maxArgs: 1 };
     const transformKey = getTransformKey(options);
@@ -248,5 +266,118 @@ describe('mergedOptions', () => {
     expect(result.onCacheChange).toBe(undefined);
     expect(result.onCacheHit).toBe(undefined);
     expect(result.transformArgs).toBe(undefined);
+  });
+});
+
+describe('setDefaultOptions', () => {
+  const original: typeof DEFAULT_OPTIONS = { ...DEFAULT_OPTIONS };
+
+  let key: keyof typeof DEFAULT_OPTIONS;
+  let type: keyof typeof DEFAULT_OPTIONS;
+
+  for (key in DEFAULT_OPTIONS) {
+    // @ts-ignore
+    original[key] = { ...DEFAULT_OPTIONS[key] };
+  }
+
+  afterEach(() => {
+    for (key in DEFAULT_OPTIONS) {
+      // @ts-ignore
+      DEFAULT_OPTIONS[key] = { ...original[key] };
+    }
+  });
+
+  for (type in DEFAULT_OPTIONS) {
+    if (type === '__global__') {
+      continue;
+    }
+
+    it(`should set the ${type} options`, () => {
+      const options = { equals: () => true };
+
+      const result = setDefaultOptions(type, options);
+
+      expect(result).toBe(true);
+
+      for (key in DEFAULT_OPTIONS) {
+        if (key !== type) {
+          if (type === 'react' && key === 'reactGlobal') {
+            expect(DEFAULT_OPTIONS.reactGlobal).not.toEqual(original.reactGlobal);
+            expect(DEFAULT_OPTIONS.reactGlobal).toEqual({
+              ...original.reactGlobal,
+              equals: options.equals,
+            });
+          } else {
+            expect(DEFAULT_OPTIONS[key]).toEqual(original[key]);
+          }
+        }
+      }
+
+      expect(DEFAULT_OPTIONS[type]).not.toEqual(original[type]);
+      expect(DEFAULT_OPTIONS[type]).toEqual({
+        ...original[type],
+        equals: options.equals,
+      });
+    });
+  }
+
+  it('should not set anything if the options passed are not valid', () => {
+    const options: void = null;
+
+    // @ts-ignore
+    const result = setDefaultOptions('deep', options);
+
+    expect(result).toBe(false);
+
+    let type: keyof typeof DEFAULT_OPTIONS;
+
+    for (type in DEFAULT_OPTIONS) {
+      expect(DEFAULT_OPTIONS[type]).toEqual(original[type]);
+    }
+  });
+
+  it('should not set anything if the type requested is not valid', () => {
+    const options = { equals: () => true };
+
+    const result = setDefaultOptions((123 as unknown) as keyof typeof DEFAULT_OPTIONS, options);
+
+    expect(result).toBe(false);
+
+    let type: keyof typeof DEFAULT_OPTIONS;
+
+    for (type in DEFAULT_OPTIONS) {
+      expect(DEFAULT_OPTIONS[type]).toEqual(original[type]);
+    }
+  });
+
+  it('should not set anything if the options requested are not valid', () => {
+    const options = { equals: () => true };
+
+    const result = setDefaultOptions('foo' as keyof typeof DEFAULT_OPTIONS, options);
+
+    expect(result).toBe(false);
+
+    let type: keyof typeof DEFAULT_OPTIONS;
+
+    for (type in DEFAULT_OPTIONS) {
+      expect(DEFAULT_OPTIONS[type]).toEqual(original[type]);
+    }
+  });
+
+  it('should set the options for all keys if no type is provided', () => {
+    const options = { equals: () => true };
+
+    const result = setDefaultOptions(options);
+
+    expect(result).toBe(true);
+
+    let key: keyof typeof DEFAULT_OPTIONS;
+
+    for (key in DEFAULT_OPTIONS) {
+      expect(DEFAULT_OPTIONS[key]).toEqual({
+        ...original[key],
+        equals: options.equals,
+      });
+    }
   });
 });
