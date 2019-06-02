@@ -4,15 +4,14 @@ import {
   DEFAULT_OPTIONS,
   getDefaultOptions,
   getIsEqual,
-  getIsMatchingKey,
   getMicroMemoizeOptions,
   getTransformKey,
-  isMatchingReactKey,
   isOptions,
   mergeOptions,
   setDefaultOptions,
 } from '../src/options';
-import { isMatchingSerializedKey } from '../src/serialize';
+import { getStringifiedArgs } from '../src/serialize';
+import { Handler } from '../src/types';
 
 describe('getDefaultOptions', () => {
   it('should return the deep options when requested', () => {
@@ -87,46 +86,20 @@ describe('getIsEqual', () => {
     expect(result).toBe(deepEqual);
   });
 
+  it('should return shallowEqual if react is requested', () => {
+    const options = { isReact: true };
+
+    const result = getIsEqual(options);
+
+    expect(result).toBe(shallowEqual);
+  });
+
   it('should return sameValueZeroEqual as the ultimate fallback', () => {
     const options = {};
 
     const result = getIsEqual(options);
 
     expect(result).toBe(sameValueZeroEqual);
-  });
-});
-
-describe('getIsMatchingKey', () => {
-  it('should return the matchesKey method if it exists in options', () => {
-    const options = { matchesKey: () => true };
-
-    const result = getIsMatchingKey(options);
-
-    expect(result).toBe(options.matchesKey);
-  });
-
-  it('should return isMatchingSerializedKey if serialize is requested', () => {
-    const options = { isSerialized: true };
-
-    const result = getIsMatchingKey(options);
-
-    expect(result).toBe(isMatchingSerializedKey);
-  });
-
-  it('should return isMatchingReactKey if react is requested', () => {
-    const options = { isReact: true };
-
-    const result = getIsMatchingKey(options);
-
-    expect(result).toBe(isMatchingReactKey);
-  });
-
-  it('should return undefined as the ultimate fallback', () => {
-    const options = {};
-
-    const result = getIsMatchingKey(options);
-
-    expect(result).toBe(undefined);
   });
 });
 
@@ -151,7 +124,7 @@ describe('getMicroMemoizeOptions', () => {
       ...DEFAULT_OPTIONS.__global__,
       isDeepEqual: true,
       isPromise: true,
-      isReact: true,
+      matchesKey: () => true,
       maxAge: 1000,
       onCacheChange() {},
       transformArgs: (): any[] => [],
@@ -164,7 +137,7 @@ describe('getMicroMemoizeOptions', () => {
 
     expect(result).toEqual({
       isEqual: deepEqual,
-      isMatchingKey: isMatchingReactKey,
+      isMatchingKey: options.matchesKey,
       isPromise: options.isPromise,
       maxSize: options.maxSize,
       onCacheAdd,
@@ -172,5 +145,108 @@ describe('getMicroMemoizeOptions', () => {
       onCacheHit,
       transformKey: options.transformArgs,
     });
+  });
+});
+
+describe('getTransformKey', () => {
+  it('should get the serialize key if requested', () => {
+    const options = { isSerialized: true };
+
+    expect(getTransformKey(options)).toBe(getStringifiedArgs);
+  });
+
+  it('should get the custom transformArgs if requested', () => {
+    const options = { transformArgs: () => ['foo'] };
+
+    expect(getTransformKey(options)).toBe(options.transformArgs);
+  });
+
+  it('should get an argument limiting function if requested', () => {
+    const options = { maxArgs: 1 };
+    const transformKey = getTransformKey(options);
+
+    const args = ['foo', 'bar'];
+
+    expect(transformKey(args)).toEqual(['foo']);
+  });
+
+  it('should handle all options passed if requested', () => {
+    const options = {
+      isSerialized: true,
+      maxArgs: 2,
+      transformArgs(args: any[]) {
+        return args.slice().reverse();
+      },
+    };
+    const transformKey = getTransformKey(options);
+
+    const args = ['foo', 'bar', 'baz'];
+
+    expect(transformKey(args)).toEqual(['bar|foo']);
+  });
+});
+
+describe('isOptions', () => {
+  it('should return true if it is an object that is not null', () => {
+    expect(isOptions({})).toBe(true);
+  });
+
+  it('should return true if it is a pure object that is not null', () => {
+    expect(isOptions(Object.create(null))).toBe(true);
+  });
+
+  it('should return false if it is null', () => {
+    expect(isOptions(null)).toBe(false);
+  });
+
+  it('should return false if it is not a plain object', () => {
+    expect(isOptions([])).toBe(false);
+  });
+});
+
+describe('mergedOptions', () => {
+  it('should merge the non-handlers options safely', () => {
+    const originalOptions = { ...DEFAULT_OPTIONS.__global__, isReact: true };
+    const newOptions = { maxAge: 1000, isSerialized: true };
+
+    const result = mergeOptions(originalOptions, newOptions);
+
+    expect(result).toEqual({
+      ...originalOptions,
+      ...newOptions,
+    });
+  });
+
+  it('should merge the handlers options safely', () => {
+    let count = 0;
+
+    const originalOptions = {
+      onCacheAdd() {
+        count++;
+      },
+    };
+    const newOptions = {
+      onCacheAdd() {
+        count++;
+      },
+    };
+
+    const result = mergeOptions(originalOptions, newOptions);
+
+    expect(Object.keys(result)).toEqual([
+      'onCacheAdd',
+      'onCacheChange',
+      'onCacheHit',
+      'transformArgs',
+    ]);
+
+    // @ts-ignore
+    result.onCacheAdd();
+
+    expect(count).toBe(2);
+
+    expect(result.onCacheChange).toBe(undefined);
+    expect(result.onCacheHit).toBe(undefined);
+    expect(result.transformArgs).toBe(undefined);
   });
 });

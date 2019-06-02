@@ -2,8 +2,8 @@ import { deepEqual, shallowEqual, sameValueZeroEqual } from 'fast-equals';
 import { MicroMemoize } from 'micro-memoize';
 
 import { createGetInitialArgs } from './maxArgs';
-import { getSerializerFunction, isMatchingSerializedKey } from './serialize';
-import { assign, compose, getValidHandlers } from './utils';
+import { getSerializerFunction } from './serialize';
+import { assign, compose } from './utils';
 
 import { Dictionary, Handler, Options } from './types';
 
@@ -37,7 +37,7 @@ export const DEFAULT_OPTIONS: Dictionary<Options> = {
   serialize: assign({}, DEFAULTS, { isSerialized: true }),
 };
 
-const MERGED_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
+const MERGED_HANDLER_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
 
 /**
  * @private
@@ -84,26 +84,11 @@ export function getDefaultOptions(options?: Options) {
  * @returns the isEqual method requested
  */
 export function getIsEqual(options: Options) {
-  return options.equals || (options.isDeepEqual && deepEqual) || sameValueZeroEqual;
-}
-
-/**
- * @private
- *
- * @function getIsMatchingKey
- *
- * @description
- * get the isMatchingKey method used in memoization
- *
- * @param options the options for the moize instance
- * @returns the isMatchingKey method requested
- */
-export function getIsMatchingKey(options: Options) {
   return (
-    options.matchesKey ||
-    (options.isSerialized && isMatchingSerializedKey) ||
-    (options.isReact && isMatchingReactKey) ||
-    undefined
+    options.equals ||
+    (options.isDeepEqual && deepEqual) ||
+    (options.isReact && shallowEqual) ||
+    sameValueZeroEqual
   );
 }
 
@@ -126,12 +111,11 @@ export function getMicroMemoizeOptions(
   onCacheHit: Handler | void,
 ) {
   const isEqual = getIsEqual(options);
-  const isMatchingKey = getIsMatchingKey(options);
   const transformKey = getTransformKey(options);
 
   const microMemoizeOptions: MicroMemoize.Options = {
     isEqual,
-    isMatchingKey,
+    isMatchingKey: options.matchesKey,
     isPromise: options.isPromise,
     maxSize: options.maxSize,
   };
@@ -155,29 +139,76 @@ export function getMicroMemoizeOptions(
   return microMemoizeOptions;
 }
 
+/**
+ * @private
+ *
+ * @function getTransformKey
+ *
+ * @description
+ * get the transformKey option based on the options passed
+ *
+ * @param options the options for the moize instance
+ * @returns the transformKey option to use
+ */
 export function getTransformKey(options: Options) {
-  return compose(
-    options.isSerialized && getSerializerFunction(options),
-    options.transformArgs,
-    typeof options.maxArgs === 'number' && createGetInitialArgs(options.maxArgs),
-  );
+  const handlers = [options.isSerialized && getSerializerFunction(options), options.transformArgs];
+
+  let maxArgs;
+
+  if (typeof options.maxArgs === 'number') {
+    ({ maxArgs } = options);
+  }
+
+  if (options.isReact) {
+    maxArgs = typeof maxArgs === 'number' ? Math.min(maxArgs, 2) : 2;
+  }
+
+  if (typeof maxArgs === 'number') {
+    handlers.push(createGetInitialArgs(maxArgs));
+  }
+
+  const transformKey = compose(...handlers);
+
+  if (typeof transformKey === 'function') {
+    return transformKey;
+  }
 }
 
-export function isMatchingReactKey(cacheKey: Dictionary<any>[], key: Dictionary<any>[]) {
-  return shallowEqual(cacheKey[0], key[0]) && shallowEqual(cacheKey[1], key[1]);
-}
-
+/**
+ * @private
+ *
+ * @function isOptions
+ *
+ * @description
+ * determine if the value passed is an options object
+ *
+ * @param value the value to test
+ * @returns if the value passed is a valid options value
+ */
 export function isOptions(value: any): value is Options {
-  return !!value && typeof value === 'object';
+  return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
+/**
+ * @private
+ *
+ * @function mergeOptions
+ *
+ * @description
+ * merge the original and new options into a new object
+ *
+ * @param originalOptions the original options passed
+ * @param newOptions the new options to merge
+ * @returns the merged optoins
+ */
 export function mergeOptions(originalOptions: Options, newOptions: Options): Options {
   const mergedOptions = assign({}, originalOptions, newOptions);
 
-  return MERGED_OPTIONS.reduce((_mergedOptions: Options, option: keyof Options) => {
-    const handlers = getValidHandlers([originalOptions[option], newOptions[option]]);
-
-    _mergedOptions[option] = handlers.length ? handlers : undefined;
+  return MERGED_HANDLER_OPTIONS.reduce((_mergedOptions: Options, option: keyof Options) => {
+    _mergedOptions[option] = compose(
+      originalOptions[option],
+      newOptions[option],
+    );
 
     return _mergedOptions;
   }, mergedOptions);

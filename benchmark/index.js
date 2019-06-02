@@ -418,17 +418,16 @@ const mMoizeSerialize = moize.serialize(fibonacciMultipleDeepEqual);
 
 const Foo = _props => React.createElement('div', null, JSON.stringify(_props));
 
-const mMoizeReact = moize.react(Foo);
-const mMoizeReactDeep = moize.react(Foo, {
+const mMoizeReact = moize.reactGlobal(Foo);
+const mMoizeReactDeep = moize.reactGlobal(Foo, {
   isDeepEqual: true,
 });
-const mMoizeReactLodashDeep = moize.react(Foo, {
+const mMoizeReactLodashDeep = moize.reactGlobal(Foo, {
   equals: deepEqualLodash,
 });
 const mMoizeReactOld = moize(Foo, {
   isSerialized: true,
   maxArgs: 2,
-  shouldSerializeFunctions: true,
 });
 
 const chooseSpecificArgs = (foo, bar, baz) => [foo, baz];
@@ -530,4 +529,5 @@ alternativeSuite.add('moize.maxArgs', alternative, () => {
   mMoizeMaxArgs('foo', object1, object2);
 });
 
-mainSuite.run().then(() => alternativeSuite.run());
+alternativeSuite.run();
+// mainSuite.run().then(() => alternativeSuite.run());

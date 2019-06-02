@@ -15,7 +15,7 @@
   "dependencies": {
     "fast-equals": "^2.0.0",
     "fast-stringify": "^1.1.0",
-    "micro-memoize": "^4.0.5"
+    "micro-memoize": "^4.0.6"
   },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {
@@ -56,7 +56,7 @@
     "react-dom": "^16.8.6",
     "react-virtualized": "^9.21.1",
     "remeasure": "^3.1.1",
-    "rollup": "^1.13.0",
+    "rollup": "^1.13.1",
     "rollup-plugin-node-resolve": "^5.0.1",
     "rollup-plugin-terser": "^5.0.0",
     "rollup-plugin-typescript": "^1.0.1",
@@ -67,7 +67,7 @@
     "underscore": "^1.9.1",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.5.0"
+    "webpack-dev-server": "^3.5.1"
   },
   "homepage": "https://github.com/planttheidea/moize#readme",
   "keywords": [

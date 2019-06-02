@@ -1,12 +1,7 @@
 /* globals afterEach,beforeEach,describe,expect,it,jest */
 
 // src
-import {
-  customReplacer,
-  isMatchingSerializedKey,
-  getSerializerFunction,
-  stringify,
-} from '../src/serialize';
+import { customReplacer, getSerializerFunction, stringify } from '../src/serialize';
 
 describe('customReplacer', () => {
   it('should convert the value to string if it is a function', () => {
@@ -169,12 +164,5 @@ describe('getSerializerFunction', () => {
     const result = serializeArguments(args);
 
     expect(result).toEqual([`KEY: ${JSON.stringify(args)}`]);
-  });
-});
-
-describe('isMatchingSerializedKey', () => {
-  it('should return correctly when the values match', () => {
-    expect(isMatchingSerializedKey(['key'], ['key'])).toBe(true);
-    expect(isMatchingSerializedKey(['key'], ['not key'])).toBe(false);
   });
 });

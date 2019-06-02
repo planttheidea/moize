@@ -102,22 +102,6 @@ export function getStringifiedArgs(args: any[]): [string] {
 /**
  * @private
  *
- * @function isMatchingSerializedKey
- *
- * @description
- * are the serialized keys equal to one another
- *
- * @param {Array<string>} cacheKey the cache key to compare
- * @param {*} key the key to test
- * @returns {boolean} are the keys equal
- */
-export function isMatchingSerializedKey(cacheKey: string[], key: string[]) {
-  return cacheKey[0] === key[0];
-}
-
-/**
- * @private
- *
  * @function stringify
  *
  * @description
