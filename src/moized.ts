@@ -3,6 +3,7 @@
 import memoize, { MicroMemoize } from 'micro-memoize';
 
 import { enhanceCache } from './cache';
+import { clearExpiration } from './maxAge';
 import { getStats } from './stats';
 import { assign } from './utils';
 
@@ -38,6 +39,38 @@ const ReactNoopUpdater = {
     return false;
   },
 };
+
+export const STATIC_VALUES = ['cache'];
+export const STATIC_METHODS = [
+  'clear',
+  'delete',
+  'get',
+  'getStats',
+  'has',
+  'keys',
+  'set',
+  'values',
+];
+
+function defineStaticProperty<Fn extends Moizable>(
+  fn: Moized<Fn>,
+  propertyName: keyof Moized<Fn>,
+  isMethod: boolean,
+) {
+  const message = `${propertyName} is not available on MoizedComponent directly. You can access it on the instance by capturing the ref and accessing the "Moized" property on it.`;
+
+  if (isMethod) {
+    fn[propertyName] = function () {
+      throw new Error(message);
+    };
+  } else {
+    Object.defineProperty(fn, propertyName, {
+      get() {
+        throw new Error(message);
+      },
+    });
+  }
+}
 
 let React: { createElement: Function } = GLOBAL && 'React' in GLOBAL && GLOBAL.React;
 
@@ -88,7 +121,7 @@ function loadReact() {
   }
 }
 
-export function createMemoizedComponent<Fn extends Moizable>(
+export function createMoizedComponent<Fn extends Moizable>(
   moize: Moizer<Fn>,
   fn: Fn,
   options?: Options,
@@ -98,6 +131,9 @@ export function createMemoizedComponent<Fn extends Moizable>(
   type ComponentClass = import('react').ComponentClass<GenericProps, any>;
   type FunctionComponent = import('react').FunctionComponent;
   type GenericProps = import('react').Props<any>;
+  type Component = import('react').Component<GenericProps, any, any>;
+
+  type MoizedComponent = ComponentClass & Moized<Fn>;
 
   if (!React) {
     loadReact();
@@ -111,14 +147,21 @@ export function createMemoizedComponent<Fn extends Moizable>(
 
   /* eslint-disable react/no-this-in-sfc */
 
-  function MoizedComponent(props: GenericProps, context: Dictionary<any>, updater: any) {
+  // @ts-ignore
+  const MoizedComponent: MoizedComponent = function MoizedComponent(
+    props: GenericProps,
+    context: Dictionary<any>,
+    updater: any,
+  ): Component {
     this.props = props;
     this.context = context;
     this.refs = EMPTY_OBJECT;
     this.updater = updater || ReactNoopUpdater;
 
     this.Moized = moize(fn, componentOptions);
-  }
+
+    return this;
+  };
 
   MoizedComponent.prototype.isReactComponent = EMPTY_OBJECT;
 
@@ -126,25 +169,33 @@ export function createMemoizedComponent<Fn extends Moizable>(
     return React.createElement((this.Moized as unknown) as FunctionComponent, this.props);
   };
 
+  MoizedComponent.options = options;
+  MoizedComponent.fn = fn;
+
+  Object.keys(fn).forEach((staticKey) => {
+    // @ts-ignore
+    MoizedComponent[staticKey] = fn[staticKey];
+  });
+
   MoizedComponent.displayName = getDisplayName(fn);
 
-  if (fn.propTypes) {
-    MoizedComponent.propTypes = fn.propTypes;
-  }
+  STATIC_METHODS.forEach((method) => {
+    defineStaticProperty(MoizedComponent, method, true);
+  });
 
-  if (fn.defaultProps) {
-    MoizedComponent.defaultProps = fn.defaultProps;
-  }
+  STATIC_VALUES.forEach((value) => {
+    defineStaticProperty(MoizedComponent, value, false);
+  });
 
   /* eslint-enable */
 
   // eslint-disable-next-line global-require,import/no-extraneous-dependencies
-  return (MoizedComponent as unknown) as ComponentClass;
+  return MoizedComponent;
 }
 
 export function createMoized<Fn extends Moizable>(moize: Moizer<Fn>, fn: Fn, options: Options) {
   if (options.isReact && !options.isReactGlobal) {
-    return createMemoizedComponent(moize, fn, options);
+    return createMoizedComponent(moize, fn, options);
   }
 
   const { _mm: microMemoizeOptions } = options;
@@ -181,11 +232,19 @@ export function createMoized<Fn extends Moizable>(moize: Moizer<Fn>, fn: Fn, opt
       key = microMemoizeOptions.transformKey(key);
     }
 
-    const keyIndex = moized.cache.getKeyIndex(key);
+    const keyIndex = cache.getKeyIndex(key);
 
     if (~keyIndex) {
+      const existingKey = cache.keys[keyIndex];
+
       cache.keys.splice(keyIndex, 1);
       cache.values.splice(keyIndex, 1);
+
+      if (cache.shouldUpdateOnChange) {
+        microMemoizeOptions.onCacheChange(cache, options, moized);
+      }
+
+      clearExpiration(cache, existingKey, true);
 
       return true;
     }
