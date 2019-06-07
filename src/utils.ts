@@ -1,6 +1,6 @@
 /* eslint-disable prefer-rest-params */
 
-import { Handler, Moizable, Moized } from './types';
+import { Moize } from './types';
 
 /**
  * @private
@@ -57,14 +57,14 @@ export const assign = typeof Object.assign === 'function' ? Object.assign : assi
  * @param functions the functions to combine
  * @returns the combined function
  */
-export function combine(...args: any[]): Handler | void {
+export function combine(...args: any[]): Moize.Handler | void {
   const handlers = getValidHandlers(args);
 
   if (!handlers.length) {
     return;
   }
 
-  return handlers.reduceRight(function combined(f: Handler, g: Handler) {
+  return handlers.reduceRight(function combined(f: Moize.Handler, g: Moize.Handler) {
     return function () {
       f.apply(this, arguments);
       g.apply(this, arguments);
@@ -83,14 +83,14 @@ export function combine(...args: any[]): Handler | void {
  * @param functions the functions to compose
  * @returns the composed function
  */
-export function compose(...args: any[]): Handler | void {
+export function compose(...args: any[]): Moize.Handler | void {
   const handlers = getValidHandlers(args);
 
   if (!handlers.length) {
     return;
   }
 
-  return handlers.reduceRight(function reduced(f: Handler, g: Handler) {
+  return handlers.reduceRight(function reduced(f: Moize.Handler, g: Moize.Handler) {
     return function () {
       return g(f.apply(this, arguments));
     };
@@ -125,7 +125,7 @@ export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
  * @param value the value to test
  * @returns is the value a memoized function
  */
-export function isMemoized<Fn extends Moizable>(value: any): value is Moized<Fn> {
+export function isMemoized<Fn extends Moize.Moizable>(value: any): value is Moize.Moized<Fn> {
   return typeof value === 'function' && value.isMemoized === true;
 }
 
@@ -140,7 +140,7 @@ export function isMemoized<Fn extends Moizable>(value: any): value is Moized<Fn>
  * @param method the method to make callable
  * @returns the callable method
  */
-export function makeCallable(method: Handler) {
+export function makeCallable(method: Moize.Handler) {
   return Function.prototype.bind.call(Function.prototype.call, method);
 }
 

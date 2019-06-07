@@ -3,9 +3,9 @@ import { MicroMemoize } from 'micro-memoize';
 import { getStatsCache } from './stats';
 import { slice } from './utils';
 
-import { Cache, Expirations, Handler, Moizable, Options } from './types';
+import { Moize } from './types';
 
-export function createOnCacheOperation(fn: Handler | void): Handler | void {
+export function createOnCacheOperation(fn: Moize.Handler | void): Moize.Handler | void {
   if (typeof fn === 'function') {
     /**
      * @private
@@ -22,18 +22,18 @@ export function createOnCacheOperation(fn: Handler | void): Handler | void {
      * @returns the result of the cache modified operation
      */
     return function onCacheOperation(
-      cache: Cache,
-      _options: Options,
-      memoized: MicroMemoize.Memoized<Moizable>,
+      cache: Moize.Cache,
+      _options: Moize.Options,
+      memoized: MicroMemoize.Memoized<Moize.Moizable>,
     ) {
       return fn(cache, memoized.options, memoized);
     };
   }
 }
 
-export function enhanceCache(cache: Cache) {
+export function enhanceCache(cache: Moize.Cache) {
   // @ts-ignore
-  const expirations: Expirations = [];
+  const expirations: Moize.Expirations = [];
 
   Object.defineProperty(expirations, 'snapshot', {
     get() {

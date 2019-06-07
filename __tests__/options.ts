@@ -11,7 +11,6 @@ import {
   setDefaultOptions,
 } from '../src/options';
 import { getStringifiedArgs } from '../src/serialize';
-import { Options } from '../src/types';
 
 describe('getDefaultOptions', () => {
   it('should return the deep options when requested', () => {
@@ -107,9 +106,10 @@ describe('getMicroMemoizeOptions', () => {
   it('should get the micro-memoize options with defaults', () => {
     const options = { ...DEFAULT_OPTIONS.__global__ };
     const onCacheAdd: void = undefined;
+    const onCacheChange: void = undefined;
     const onCacheHit: void = undefined;
 
-    const result = getMicroMemoizeOptions(options, onCacheAdd, onCacheHit);
+    const result = getMicroMemoizeOptions(options, onCacheAdd, onCacheChange, onCacheHit);
 
     expect(result).toEqual({
       isEqual: sameValueZeroEqual,
@@ -131,9 +131,10 @@ describe('getMicroMemoizeOptions', () => {
       updateExpire: true,
     };
     const onCacheAdd = () => {};
+    const onCacheChange = () => {};
     const onCacheHit = () => {};
 
-    const result = getMicroMemoizeOptions(options, onCacheAdd, onCacheHit);
+    const result = getMicroMemoizeOptions(options, onCacheAdd, onCacheChange, onCacheHit);
 
     expect(result).toEqual({
       isEqual: deepEqual,
@@ -141,7 +142,7 @@ describe('getMicroMemoizeOptions', () => {
       isPromise: options.isPromise,
       maxSize: options.maxSize,
       onCacheAdd,
-      onCacheChange: options.onCacheChange,
+      onCacheChange,
       onCacheHit,
       transformKey: options.transformArgs,
     });

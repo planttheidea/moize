@@ -2,23 +2,16 @@
 import { assign } from './utils';
 
 // types
-import {
-  Dictionary,
-  Options,
-  ProfiledFunction,
-  StatsCache,
-  StatsObject,
-  StatsProfile,
-} from './types';
+import { Moize } from './types';
 
-const INITIAL_STATS_PROFILE: StatsProfile = { calls: 0, hits: 0 };
+const INITIAL_STATS_PROFILE: Moize.StatsProfile = { calls: 0, hits: 0 };
 
-const STATS_CACHE: StatsCache = {
+const STATS_CACHE: Moize.StatsCache = {
   isCollectingStats: false,
   profiles: {},
 };
 
-const profileNameCounter: Dictionary<number> = {
+const profileNameCounter: Moize.Dictionary<number> = {
   __anonymous__: 1,
 };
 
@@ -71,7 +64,7 @@ export function getErrorStack() {
  * @param fn the function to be memoized
  * @returns the derived profileName for the function
  */
-export function getProfileName(fn: ProfiledFunction, options: Options) {
+export function getProfileName(fn: Moize.ProfiledFunction, options: Moize.Options) {
   const { profileName } = options;
 
   let fnName = profileName || fn.displayName || fn.name;
@@ -125,7 +118,7 @@ export function getProfileName(fn: ProfiledFunction, options: Options) {
  * @param [profileName] the profileName to get the statistics for (get all when not provided)
  * @returns the object with stats information
  */
-export function getStats(profileName?: string): StatsObject {
+export function getStats(profileName?: string): Moize.StatsObject {
   if (!STATS_CACHE.isCollectingStats && !hasWarningDisplayed) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -147,7 +140,7 @@ export function getStats(profileName?: string): StatsObject {
     });
   }
 
-  const completeStats: StatsObject = assign({}, INITIAL_STATS_PROFILE, {
+  const completeStats: Moize.StatsObject = assign({}, INITIAL_STATS_PROFILE, {
     profiles: {},
     usage: '',
   });
@@ -196,7 +189,7 @@ export function getStatsCache() {
  * @param options the options for the memoized function
  * @returns the options related to stats
  */
-export function getStatsOptions(options: Options) {
+export function getStatsOptions(options: Moize.Options) {
   if (STATS_CACHE.isCollectingStats) {
     const { profiles } = STATS_CACHE;
     const { profileName } = options;

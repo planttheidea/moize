@@ -1,6 +1,6 @@
 import { MicroMemoize } from 'micro-memoize';
 
-import { Cache, Moizable, Options } from './types';
+import { Moize } from './types';
 
 /**
  * @private
@@ -14,7 +14,7 @@ import { Cache, Moizable, Options } from './types';
  * @param key the key to clear
  * @param shouldRemove should the expiration be removed from the list
  */
-export function clearExpiration(cache: Cache, key: any, shouldRemove: boolean) {
+export function clearExpiration(cache: Moize.Cache, key: any, shouldRemove: boolean) {
   const index = findExpirationIndex(cache, key);
 
   if (~index) {
@@ -40,7 +40,7 @@ export function clearExpiration(cache: Cache, key: any, shouldRemove: boolean) {
  * @param key the key to match
  * @returns the index of the expiration
  */
-export function findExpirationIndex(cache: Cache, key: any[]): number {
+export function findExpirationIndex(cache: Moize.Cache, key: any[]): number {
   const { expirations } = cache;
 
   for (let index: number = 0; index < expirations.length; index++) {
@@ -63,12 +63,12 @@ export function findExpirationIndex(cache: Cache, key: any[]): number {
  * @param options the options for the moize instance
  * @returns the options specific to maxAge
  */
-export function getMaxAgeOptions(options: Options) {
+export function getMaxAgeOptions(options: Moize.Options) {
   if (typeof options.maxAge === 'number') {
     const onCacheAdd = function (
-      cache: Cache,
-      _options: Options,
-      memoized: MicroMemoize.Memoized<Moizable>,
+      cache: Moize.Cache,
+      _options: Moize.Options,
+      memoized: MicroMemoize.Memoized<Moize.Moizable>,
     ) {
       const key: any = cache.keys[0];
 
@@ -116,7 +116,7 @@ export function getMaxAgeOptions(options: Options) {
     };
 
     if (options.updateExpire) {
-      const onCacheHit = function (cache: Cache) {
+      const onCacheHit = function (cache: Moize.Cache) {
         const key: any = cache.keys[0];
         const index: number = findExpirationIndex(cache, key);
 

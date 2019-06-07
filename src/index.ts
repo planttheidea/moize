@@ -18,14 +18,17 @@ import {
 } from './stats';
 import { assign, combine, compose, isMemoized } from './utils';
 
-import { Moizable, Moized, Options } from './types';
+import { Moize } from './types';
 
-function moize<Fn extends Moizable>(fn: Fn, options?: Options): Moized<Fn>;
-function moize<Fn extends Moizable>(fn: Moized<Fn>, options?: Options): Moized<Fn['fn']>;
-function moize(options: Options): moize;
-function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
+function moize<Fn extends Moize.Moizable>(fn: Fn, options?: Moize.Options): Moize.Moized<Fn>;
+function moize<Fn extends Moize.Moizable>(
+  fn: Moize.Moized<Fn>,
+  options?: Moize.Options,
+): Moize.Moized<Fn['fn']>;
+function moize(options: Moize.Options): moize;
+function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moize.Options) {
   if (isOptions(fn)) {
-    return function curriedMoize(curriedFn: Fn | Options, curriedOptions?: Options) {
+    return function curriedMoize(curriedFn: Fn | Moize.Options, curriedOptions?: Moize.Options) {
       if (isOptions(curriedFn)) {
         return moize(mergeOptions(fn, curriedFn));
       }
@@ -62,11 +65,12 @@ function moize<Fn extends Moizable>(fn: Fn | Options, options?: Options) {
   const onCacheAdd = createOnCacheOperation(
     combine(normalizedOptions.onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
   );
+  const onCacheChange = createOnCacheOperation(normalizedOptions.onCacheChange);
   const onCacheHit = createOnCacheOperation(
     combine(normalizedOptions.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
   );
 
-  normalizedOptions._mm = getMicroMemoizeOptions(normalizedOptions, onCacheAdd, onCacheHit);
+  normalizedOptions._mm = getMicroMemoizeOptions(normalizedOptions, onCacheAdd, onCacheChange, onCacheHit);
 
   return createMoized(moize, fn, normalizedOptions);
 }
@@ -78,6 +82,8 @@ moize.compose = (...args: any[]) => compose(...args) || moize;
 moize.deep = moize({ isDeepEqual: true });
 
 moize.getStats = getStats;
+
+moize.infinite = moize({ maxSize: Infinity });
 
 moize.isCollectingStats = isCollectingStats;
 
