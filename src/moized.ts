@@ -285,10 +285,18 @@ export function createMoized<Fn extends Moizable>(moize: Moizer<Fn>, fn: Fn, opt
       key = microMemoizeOptions.transformKey(key);
     }
 
-    // eslint-disable-next-line prefer-spread
-    moized.apply(null, key);
+    const index = cache.getKeyIndex(key);
+    const isAdd = index === -1;
 
-    cache.values[0] = value;
+    cache.orderByLru(key, value, isAdd ? cache.size : index);
+
+    if (isAdd && cache.shouldUpdateOnAdd) {
+      microMemoizeOptions.onCacheAdd(cache, options, moized);
+    }
+
+    if (cache.shouldUpdateOnChange) {
+      microMemoizeOptions.onCacheChange(cache, options, moized);
+    }
 
     return true;
   };
