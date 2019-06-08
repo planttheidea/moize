@@ -23,10 +23,9 @@ type CacheHandler = (cache: Moize.Cache, options: Moize.Options, memoized: Moize
 function getOptions(
   options: Moize.Options,
   profileName?: string,
-  type: keyof typeof DEFAULT_OPTIONS = '__global__',
 ): Moize.Options {
   const merged = {
-    ...DEFAULT_OPTIONS[type],
+    ...DEFAULT_OPTIONS,
     ...options,
   };
   const maxAgeOptions = getMaxAgeOptions(merged);

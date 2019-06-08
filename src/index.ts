@@ -51,7 +51,7 @@ function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moiz
     throw new TypeError('Only functions or options can be passed to moize.');
   }
 
-  const defaultOptions = getDefaultOptions(options);
+  const defaultOptions = getDefaultOptions();
   const normalizedOptions =
     options && typeof options === 'object'
       ? assign({}, defaultOptions, options)

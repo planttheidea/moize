@@ -28,7 +28,8 @@ div.style.width = '100vw';
 document.body.appendChild(div);
 
 moize.collectStats();
-moize.setDefaultOptions('react', { customHostSauce: 'caliente!', deepEqual: true, maxSize: 3 });
+
+moize.react = moize.react({ customHostSauce: 'caliente!', deepEqual: true, maxSize: 3 });
 
 console.group('standard');
 

@@ -15,12 +15,13 @@ import { Moize } from '../src/types';
 describe('createMoized', () => {
   describe('MoizedComponent (per instance)', () => {
     const options = {
-      ...DEFAULT_OPTIONS.react,
+      ...DEFAULT_OPTIONS,
       _mm: {
         isEqual: shallowEqual,
         maxArgs: 2,
-        maxSize: DEFAULT_OPTIONS.react.maxSize,
+        maxSize: DEFAULT_OPTIONS.maxSize,
       },
+      isReact: true
     };
 
     it('should create a Moized component that is cached per-instance', () => {
@@ -147,12 +148,14 @@ describe('createMoized', () => {
 
   describe('MoizedComponent (global)', () => {
     const options = {
-      ...DEFAULT_OPTIONS.reactGlobal,
+      ...DEFAULT_OPTIONS,
       _mm: {
         isEqual: shallowEqual,
         maxArgs: 2,
-        maxSize: DEFAULT_OPTIONS.reactGlobal.maxSize,
+        maxSize: DEFAULT_OPTIONS.maxSize,
       },
+      isReact: true,
+      isReactGlobal: true
     };
 
     it('should create a Moized component that is cached globally', () => {
@@ -246,11 +249,11 @@ describe('createMoized', () => {
   });
 
   const options = {
-    ...DEFAULT_OPTIONS.__global__,
+    ...DEFAULT_OPTIONS,
     maxArgs: 1,
     _mm: {
       maxArgs: 1,
-      maxSize: DEFAULT_OPTIONS.__global__.maxSize,
+      maxSize: DEFAULT_OPTIONS.maxSize,
     },
   };
 

@@ -28,14 +28,7 @@ const DEFAULTS: Moize.Options = {
   updateExpire: true,
 };
 
-export const DEFAULT_OPTIONS = {
-  __global__: assign({}, DEFAULTS),
-  deep: assign({}, DEFAULTS, { isDeepEqual: true }),
-  promise: assign({}, DEFAULTS, { isPromise: true }),
-  react: assign({}, DEFAULTS, { isReact: true }),
-  reactGlobal: assign({}, DEFAULTS, { isReact: true, isReactGlobal: true }),
-  serialize: assign({}, DEFAULTS, { isSerialized: true }),
-};
+export const DEFAULT_OPTIONS = assign({}, DEFAULTS);
 
 const MERGED_HANDLER_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
 
@@ -50,26 +43,8 @@ const MERGED_HANDLER_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'tr
  * @param options the options for the moize instance
  * @returns the default options requested
  */
-export function getDefaultOptions(options?: Moize.Options) {
-  if (options) {
-    if (options.isDeepEqual) {
-      return DEFAULT_OPTIONS.deep;
-    }
-
-    if (options.isPromise) {
-      return DEFAULT_OPTIONS.promise;
-    }
-
-    if (options.isReact) {
-      return options.isReactGlobal ? DEFAULT_OPTIONS.reactGlobal : DEFAULT_OPTIONS.react;
-    }
-
-    if (options.isSerialized) {
-      return DEFAULT_OPTIONS.serialize;
-    }
-  }
-
-  return DEFAULT_OPTIONS.__global__;
+export function getDefaultOptions(): Moize.Options {
+  return DEFAULT_OPTIONS;
 }
 
 /**
@@ -221,37 +196,10 @@ export function mergeOptions(
   );
 }
 
-export function setDefaultOptions(
-  type: Moize.Options | keyof typeof DEFAULT_OPTIONS,
-  options?: Moize.Options,
-): boolean {
-  if (typeof type === 'string') {
-    const defaultOptions = DEFAULT_OPTIONS[type];
-
-    if (isOptions(defaultOptions)) {
-      if (!isOptions(options)) {
-        return false;
-      }
-
-      Object.keys(options).forEach((option) => {
-        defaultOptions[option] = options[option];
-      });
-
-      return type === 'react' ? setDefaultOptions('reactGlobal', options) : true;
-    }
-
-    return false;
-  }
-
-  if (isOptions(type)) {
-    options = type;
-
-    Object.keys(DEFAULT_OPTIONS).forEach((optionType: keyof typeof DEFAULT_OPTIONS) => {
-      const defaultOptions = DEFAULT_OPTIONS[optionType];
-
-      Object.keys(options).forEach((option) => {
-        defaultOptions[option] = options[option];
-      });
+export function setDefaultOptions(options?: Moize.Options): boolean {
+  if (isOptions(options)) {
+    Object.keys(options).forEach((option: keyof typeof DEFAULT_OPTIONS) => {
+      DEFAULT_OPTIONS[option] = options[option];
     });
 
     return true;
