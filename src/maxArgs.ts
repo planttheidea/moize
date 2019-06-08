@@ -1,6 +1,10 @@
-import { slice } from './utils';
+import { isValidNumericOption, slice } from './utils';
 
 export function createGetInitialArgs(size: number) {
+  if (!isValidNumericOption(size)) {
+    throw new Error('The maxArgs option must be a non-negative integer.');
+  }
+
   /**
    * @private
    *

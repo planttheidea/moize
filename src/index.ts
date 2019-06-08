@@ -16,7 +16,7 @@ import {
   getStatsOptions,
   isCollectingStats,
 } from './stats';
-import { assign, combine, compose, isMemoized } from './utils';
+import { assign, combine, compose, isMemoized, isValidNumericOption } from './utils';
 
 import { Moize } from './types';
 
@@ -57,6 +57,10 @@ function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moiz
       ? assign({}, defaultOptions, options)
       : assign({}, defaultOptions);
 
+  if (!isValidNumericOption(normalizedOptions.maxSize)) {
+    throw new Error('The maxSize option must be a non-negative integer.');
+  }
+
   normalizedOptions.profileName = getProfileName(fn, normalizedOptions);
 
   const maxAgeOptions = getMaxAgeOptions(normalizedOptions);
@@ -70,7 +74,12 @@ function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moiz
     combine(normalizedOptions.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
   );
 
-  normalizedOptions._mm = getMicroMemoizeOptions(normalizedOptions, onCacheAdd, onCacheChange, onCacheHit);
+  normalizedOptions._mm = getMicroMemoizeOptions(
+    normalizedOptions,
+    onCacheAdd,
+    onCacheChange,
+    onCacheHit,
+  );
 
   return createMoized(moize, fn, normalizedOptions);
 }

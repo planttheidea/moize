@@ -1,5 +1,8 @@
 import { MicroMemoize } from 'micro-memoize';
 
+// utils
+import { isValidNumericOption } from './utils';
+
 import { Moize } from './types';
 
 /**
@@ -64,7 +67,11 @@ export function findExpirationIndex(cache: Moize.Cache, key: any[]): number {
  * @returns the options specific to maxAge
  */
 export function getMaxAgeOptions(options: Moize.Options) {
-  if (typeof options.maxAge === 'number') {
+  if (typeof options.maxAge === 'number' && options.maxAge !== Infinity) {
+    if (!isValidNumericOption(options.maxAge)) {
+      throw new Error('The maxAge option must be a non-negative integer.');
+    }
+
     const onCacheAdd = function (
       cache: Moize.Cache,
       _options: Moize.Options,

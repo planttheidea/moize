@@ -132,6 +132,21 @@ export function isMemoized<Fn extends Moize.Moizable>(value: any): value is Moiz
 /**
  * @private
  *
+ * @function isValidNumericOption
+ *
+ * @description
+ * is the option passed a valid number value
+ *
+ * @param option the option to test
+ * @returns is the option a valid number
+ */
+export function isValidNumericOption(option: any) {
+  return typeof option === 'number' && option > -1 && option === option && (option === ~~option || option === Infinity);
+}
+
+/**
+ * @private
+ *
  * @function makeCallable
  *
  * @description
