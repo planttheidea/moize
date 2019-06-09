@@ -43,7 +43,8 @@ export function assignFallback(target: any, ...sources: any[]) {
  *
  * @constant assign the method to assign sources into a target
  */
-export const assign = typeof Object.assign === 'function' ? Object.assign : assignFallback;
+export const assign =
+  typeof Object.assign === 'function' ? Object.assign : assignFallback;
 
 /**
  * @private
@@ -64,7 +65,10 @@ export function combine(...args: any[]): Moize.Handler | void {
     return;
   }
 
-  return handlers.reduceRight(function combined(f: Moize.Handler, g: Moize.Handler) {
+  return handlers.reduceRight(function combined(
+    f: Moize.Handler,
+    g: Moize.Handler,
+  ) {
     return function () {
       f.apply(this, arguments);
       g.apply(this, arguments);
@@ -90,7 +94,10 @@ export function compose(...args: any[]): Moize.Handler | void {
     return;
   }
 
-  return handlers.reduceRight(function reduced(f: Moize.Handler, g: Moize.Handler) {
+  return handlers.reduceRight(function reduced(
+    f: Moize.Handler,
+    g: Moize.Handler,
+  ) {
     return function () {
       return g(f.apply(this, arguments));
     };
@@ -109,7 +116,9 @@ export function compose(...args: any[]): Moize.Handler | void {
  * @returns the list of handlers
  */
 export function getValidHandlers(possibleHandlers: any[]) {
-  return possibleHandlers.filter(possibleHandler => typeof possibleHandler === 'function');
+  return possibleHandlers.filter(
+    possibleHandler => typeof possibleHandler === 'function',
+  );
 }
 
 export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
@@ -125,7 +134,9 @@ export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
  * @param value the value to test
  * @returns is the value a memoized function
  */
-export function isMemoized<Fn extends Moize.Moizable>(value: any): value is Moize.Moized<Fn> {
+export function isMemoized<Fn extends Moize.Moizable>(
+  value: any,
+): value is Moize.Moized<Fn> {
   return typeof value === 'function' && value.isMemoized === true;
 }
 
@@ -141,7 +152,13 @@ export function isMemoized<Fn extends Moize.Moizable>(value: any): value is Moiz
  * @returns is the option a valid number
  */
 export function isValidNumericOption(option: any) {
-  return typeof option === 'number' && option > -1 && option === option && (option === ~~option || option === Infinity);
+  return (
+    typeof option === 'number' &&
+    option > -1 &&
+    // eslint-disable-next-line no-self-compare
+    option === option &&
+    (option === ~~option || option === Infinity)
+  );
 }
 
 /**
