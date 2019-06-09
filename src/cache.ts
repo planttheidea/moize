@@ -33,6 +33,16 @@ export function createOnCacheOperation(
   }
 }
 
+/**
+ * @private
+ *
+ * @function enhanceCache
+ *
+ * @description
+ * enhance the provided cache with the extra values
+ *
+ * @param cache the cache to enhance
+ */
 export function enhanceCache(cache: Moize.Cache) {
   // @ts-ignore
   const expirations: Moize.Expirations = [];

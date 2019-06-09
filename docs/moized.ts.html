@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>moize Source: moized.ts</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">moize</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#loadReact">loadReact</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: moized.ts</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/* globals define */
+
+import memoize, { MicroMemoize } from 'micro-memoize';
+
+import { enhanceCache } from './cache';
+import { clearExpiration } from './maxAge';
+import { getStats } from './stats';
+import { assign } from './utils';
+
+import { Moize } from './types';
+
+/* eslint-disable react/forbid-foreign-prop-types */
+
+const GLOBAL = (() => {
+  if (typeof globalThis !== 'undefined') {
+    // eslint-disable-next-line no-undef
+    return globalThis;
+  }
+
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-undef
+    return window;
+  }
+
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+})();
+
+const REACT_OPTIONS = { isReact: true, isReactGlobal: true };
+
+const EMPTY_OBJECT = {};
+
+const ReactNoopUpdater = {
+  enqueueForceUpdate() {},
+  enqueueReplaceState() {},
+  enqueueSetState() {},
+  isMounted() {
+    return false;
+  },
+};
+
+export const STATIC_VALUES = ['cache'];
+export const STATIC_METHODS = [
+  'clear',
+  'delete',
+  'get',
+  'getStats',
+  'has',
+  'keys',
+  'set',
+  'values',
+];
+
+function defineStaticProperty&lt;Fn extends Moize.Moizable>(
+  fn: Moize.Moized&lt;Fn>,
+  propertyName: keyof Moize.Moized&lt;Fn>,
+  isMethod: boolean,
+) {
+  const message = `${propertyName} is not available on MoizedComponent directly. You can access it on the instance by capturing the ref and accessing the "Moized" property on it.`;
+
+  if (isMethod) {
+    fn[propertyName] = function () {
+      throw new Error(message);
+    };
+  } else {
+    Object.defineProperty(fn, propertyName, {
+      get() {
+        throw new Error(message);
+      },
+    });
+  }
+}
+
+let React: { createElement: Function } =
+  GLOBAL &amp;&amp; 'React' in GLOBAL &amp;&amp; GLOBAL.React;
+
+/**
+ * @function loadReact
+ *
+ * @description
+ * `react` is a special dependency; unlike the others in this project, we should not
+ * import it unless we actually need it.
+ *
+ * If `React` is not available globally, then attempt the various loading mechanisms:
+ *
+ * - Synchronous `require` (CommonJS)
+ * - Asynchronous `define` (AMD)
+ * - Asynchronous `import` (ESM)
+ *
+ * This mimics the rollup logic, including order of operations, with the addition of the
+ * dynamic `import()` syntax in case this is being run in a browser `&lt;script type="module">`.
+ *
+ * Throw an error if not able to successfully use any technique.
+ */
+function loadReact() {
+  function onLoad(pkg: any) {
+    React = pkg;
+  }
+
+  function onFail() {
+    throw new Error(
+      'You have tried to use the `isReact` option when React is not installed. Please install install `react` as a dependency of your project.',
+    );
+  }
+
+  try {
+    if (typeof exports === 'object' &amp;&amp; typeof module !== 'undefined') {
+      // eslint-disable-next-line global-require,import/no-extraneous-dependencies
+      React = require('react');
+      // @ts-ignore
+    } else if (typeof define === 'function' &amp;&amp; define.amd) {
+      // @ts-ignore
+      define(['react'], onLoad);
+    } else {
+      import('react')
+        .catch(onFail)
+        .then(onLoad);
+    }
+  } catch {
+    onFail();
+  }
+}
+
+export function createMoizedComponent&lt;Fn extends Moize.Moizable>(
+  moize: Moize.Moizer&lt;Fn>,
+  fn: Fn,
+  options?: Moize.Options,
+) {
+  const componentOptions = options
+    ? assign({}, options, REACT_OPTIONS)
+    : REACT_OPTIONS;
+
+  type ComponentClass = import('react').ComponentClass&lt;GenericProps, any>;
+  type FunctionComponent = import('react').FunctionComponent;
+  type GenericProps = import('react').Props&lt;any>;
+  type Component = import('react').Component&lt;GenericProps, any, any>;
+
+  type MoizedComponent = ComponentClass &amp; Moize.Moized&lt;Fn>;
+
+  if (!React) {
+    loadReact();
+  }
+
+  /**
+   * @NOTE This is basically creating a custom React.Component class
+   *
+   * Not only is this faster, it is also less code for the compiler to produce.
+   */
+
+  /* eslint-disable react/no-this-in-sfc */
+
+  // @ts-ignore
+  const MoizedComponent: MoizedComponent = function MoizedComponent(
+    props: GenericProps,
+    context: Moize.Dictionary&lt;any>,
+    updater: any,
+  ): Component {
+    this.props = props;
+    this.context = context;
+    this.refs = EMPTY_OBJECT;
+    this.updater = updater || ReactNoopUpdater;
+
+    this.Moized = moize(fn, componentOptions);
+
+    return this;
+  };
+
+  MoizedComponent.prototype.isReactComponent = EMPTY_OBJECT;
+
+  MoizedComponent.prototype.render = function () {
+    return React.createElement(
+      (this.Moized as unknown) as FunctionComponent,
+      this.props,
+    );
+  };
+
+  MoizedComponent.options = options;
+  MoizedComponent.fn = fn;
+
+  Object.keys(fn).forEach((staticKey) => {
+    // @ts-ignore
+    MoizedComponent[staticKey] = fn[staticKey];
+  });
+
+  MoizedComponent.displayName = getDisplayName(fn);
+
+  STATIC_METHODS.forEach((method) => {
+    defineStaticProperty(MoizedComponent, method, true);
+  });
+
+  STATIC_VALUES.forEach((value) => {
+    defineStaticProperty(MoizedComponent, value, false);
+  });
+
+  /* eslint-enable */
+
+  // eslint-disable-next-line global-require,import/no-extraneous-dependencies
+  return MoizedComponent;
+}
+
+export function createMoized&lt;Fn extends Moize.Moizable>(
+  moize: Moize.Moizer&lt;Fn>,
+  fn: Fn,
+  options: Moize.Options,
+) {
+  if (options.isReact &amp;&amp; !options.isReactGlobal) {
+    return createMoizedComponent(moize, fn, options);
+  }
+
+  const { _mm: microMemoizeOptions } = options;
+
+  const moized = memoize(fn, microMemoizeOptions) as Moize.Moized&lt;Fn>;
+
+  moized.options = options;
+
+  Object.keys(fn).forEach((staticKey) => {
+    // @ts-ignore
+    moized[staticKey] = fn[staticKey];
+  });
+
+  if (options.isReact) {
+    moized.displayName = getDisplayName(fn);
+  }
+
+  const { cache } = moized;
+
+  /* eslint-disable func-names */
+
+  moized.clear = function () {
+    cache.keys.length = 0;
+    cache.values.length = 0;
+
+    if (cache.shouldUpdateOnChange) {
+      microMemoizeOptions.onCacheChange(cache, options, moized);
+    }
+
+    return true;
+  };
+
+  moized.delete = function (key: MicroMemoize.Key) {
+    if (cache.canTransformKey) {
+      key = microMemoizeOptions.transformKey(key);
+    }
+
+    const keyIndex = cache.getKeyIndex(key);
+
+    if (~keyIndex) {
+      const existingKey = cache.keys[keyIndex];
+
+      cache.keys.splice(keyIndex, 1);
+      cache.values.splice(keyIndex, 1);
+
+      if (cache.shouldUpdateOnChange) {
+        microMemoizeOptions.onCacheChange(cache, options, moized);
+      }
+
+      clearExpiration(cache, existingKey, true);
+
+      return true;
+    }
+
+    return false;
+  };
+
+  moized.get = function (key: MicroMemoize.Key) {
+    if (cache.canTransformKey) {
+      key = microMemoizeOptions.transformKey(key);
+    }
+
+    const keyIndex = cache.getKeyIndex(key);
+
+    if (~keyIndex) {
+      return cache.values[keyIndex];
+    }
+  };
+
+  moized.getStats = function () {
+    return getStats(options.profileName);
+  };
+
+  moized.has = function (key: MicroMemoize.Key) {
+    if (cache.canTransformKey) {
+      key = microMemoizeOptions.transformKey(key);
+    }
+
+    return !!~cache.getKeyIndex(key);
+  };
+
+  moized.keys = function () {
+    return cache.snapshot.keys;
+  };
+
+  moized.set = function (key: MicroMemoize.Key, value: MicroMemoize.Value) {
+    if (cache.canTransformKey) {
+      key = microMemoizeOptions.transformKey(key);
+    }
+
+    const index = cache.getKeyIndex(key);
+    const isAdd = index === -1;
+
+    cache.orderByLru(key, value, isAdd ? cache.size : index);
+
+    if (isAdd &amp;&amp; cache.shouldUpdateOnAdd) {
+      microMemoizeOptions.onCacheAdd(cache, options, moized);
+    }
+
+    if (cache.shouldUpdateOnChange) {
+      microMemoizeOptions.onCacheChange(cache, options, moized);
+    }
+
+    return true;
+  };
+
+  moized.values = function () {
+    return cache.snapshot.values;
+  };
+
+  /* eslint-enable */
+
+  enhanceCache(cache);
+
+  return moized;
+}
+
+function getDisplayName(fn: Moize.Moizable) {
+  return `Moized(${fn.displayName || fn.name || 'Component'})`;
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
