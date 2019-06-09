@@ -529,5 +529,5 @@ alternativeSuite.add('moize.maxArgs', alternative, () => {
   mMoizeMaxArgs('foo', object1, object2);
 });
 
-alternativeSuite.run();
-// mainSuite.run().then(() => alternativeSuite.run());
+// alternativeSuite.run();
+mainSuite.run().then(() => alternativeSuite.run());
