@@ -72,7 +72,8 @@ function defineStaticProperty<Fn extends Moize.Moizable>(
   }
 }
 
-let React: { createElement: Function } = GLOBAL && 'React' in GLOBAL && GLOBAL.React;
+let React: { createElement: Function } =
+  GLOBAL && 'React' in GLOBAL && GLOBAL.React;
 
 /**
  * @function loadReact
@@ -126,7 +127,9 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   fn: Fn,
   options?: Moize.Options,
 ) {
-  const componentOptions = options ? assign({}, options, REACT_OPTIONS) : REACT_OPTIONS;
+  const componentOptions = options
+    ? assign({}, options, REACT_OPTIONS)
+    : REACT_OPTIONS;
 
   type ComponentClass = import('react').ComponentClass<GenericProps, any>;
   type FunctionComponent = import('react').FunctionComponent;
@@ -166,7 +169,10 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   MoizedComponent.prototype.isReactComponent = EMPTY_OBJECT;
 
   MoizedComponent.prototype.render = function () {
-    return React.createElement((this.Moized as unknown) as FunctionComponent, this.props);
+    return React.createElement(
+      (this.Moized as unknown) as FunctionComponent,
+      this.props,
+    );
   };
 
   MoizedComponent.options = options;
@@ -203,6 +209,7 @@ export function createMoized<Fn extends Moize.Moizable>(
   }
 
   const { _mm: microMemoizeOptions } = options;
+
   const moized = memoize(fn, microMemoizeOptions) as Moize.Moized<Fn>;
 
   moized.options = options;

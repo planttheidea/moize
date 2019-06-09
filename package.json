@@ -29,6 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
     "benchee": "^1.1.0",
+    "benchmark": "^2.1.4",
     "cli-table2": "^0.2.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
@@ -50,6 +51,7 @@
     "memoizee": "^0.4.14",
     "memoizerific": "^1.11.3",
     "nyc": "^14.1.1",
+    "ora": "^3.4.0",
     "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
     "react": "^16.8.6",
@@ -101,6 +103,7 @@
   },
   "scripts": {
     "benchmark": "npm run dist -- --no-comments && node benchmark/index.js",
+    "benchmark:legacy": "npm run dist -- --no-comments && node benchmark/legacy.js",
     "build": "NODE_ENV=production rollup -c",
     "clean": "npm run clean:dist && npm run clean:docs",
     "clean:dist": "rimraf dist",

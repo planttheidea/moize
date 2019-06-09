@@ -16,25 +16,42 @@ import {
   getStatsOptions,
   isCollectingStats,
 } from './stats';
-import { assign, combine, compose, isMemoized, isValidNumericOption } from './utils';
+import {
+  assign,
+  combine,
+  compose,
+  isMemoized,
+  isValidNumericOption,
+} from './utils';
 
 import { Moize } from './types';
 
-function moize<Fn extends Moize.Moizable>(fn: Fn, options?: Moize.Options): Moize.Moized<Fn>;
+function moize<Fn extends Moize.Moizable>(
+  fn: Fn,
+  options?: Moize.Options,
+): Moize.Moized<Fn>;
 function moize<Fn extends Moize.Moizable>(
   fn: Moize.Moized<Fn>,
   options?: Moize.Options,
 ): Moize.Moized<Fn['fn']>;
 function moize(options: Moize.Options): moize;
-function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moize.Options) {
+function moize<Fn extends Moize.Moizable>(
+  fn: Fn | Moize.Options,
+  options?: Moize.Options,
+) {
   if (isOptions(fn)) {
-    return function curriedMoize(curriedFn: Fn | Moize.Options, curriedOptions?: Moize.Options) {
+    return function curriedMoize(
+      curriedFn: Fn | Moize.Options,
+      curriedOptions?: Moize.Options,
+    ) {
       if (isOptions(curriedFn)) {
         return moize(mergeOptions(fn, curriedFn));
       }
 
       if (typeof curriedFn !== 'function') {
-        throw new TypeError('Only functions or options can be passed to moize.');
+        throw new TypeError(
+          'Only functions or options can be passed to moize.',
+        );
       }
 
       return moize(curriedFn, mergeOptions(fn, curriedOptions || {}));
@@ -42,7 +59,9 @@ function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moiz
   }
 
   if (isMemoized(fn)) {
-    const combinedOptions = options ? assign({}, fn.options, options) : fn.options;
+    const combinedOptions = options
+      ? assign({}, fn.options, options)
+      : fn.options;
 
     return moize(fn.fn, combinedOptions);
   }
@@ -67,11 +86,19 @@ function moize<Fn extends Moize.Moizable>(fn: Fn | Moize.Options, options?: Moiz
   const statsOptions = getStatsOptions(normalizedOptions);
 
   const onCacheAdd = createOnCacheOperation(
-    combine(normalizedOptions.onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
+    combine(
+      normalizedOptions.onCacheAdd,
+      maxAgeOptions.onCacheAdd,
+      statsOptions.onCacheAdd,
+    ),
   );
   const onCacheChange = createOnCacheOperation(normalizedOptions.onCacheChange);
   const onCacheHit = createOnCacheOperation(
-    combine(normalizedOptions.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
+    combine(
+      normalizedOptions.onCacheHit,
+      maxAgeOptions.onCacheHit,
+      statsOptions.onCacheHit,
+    ),
   );
 
   normalizedOptions._mm = getMicroMemoizeOptions(

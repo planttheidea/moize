@@ -1,4 +1,4 @@
-/* globals describe,expect,it */
+/* eslint-disable */
 
 // src
 import { createGetInitialArgs } from '../src/maxArgs';

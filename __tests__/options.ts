@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { deepEqual, shallowEqual, sameValueZeroEqual } from 'fast-equals';
 
 import {
@@ -14,8 +16,6 @@ import { getStringifiedArgs } from '../src/serialize';
 
 describe('getDefaultOptions', () => {
   it('should return the global options', () => {
-    const options = { maxAge: 1000 };
-
     const result = getDefaultOptions();
 
     expect(result).toBe(DEFAULT_OPTIONS);
@@ -63,7 +63,12 @@ describe('getMicroMemoizeOptions', () => {
     const onCacheChange: void = undefined;
     const onCacheHit: void = undefined;
 
-    const result = getMicroMemoizeOptions(options, onCacheAdd, onCacheChange, onCacheHit);
+    const result = getMicroMemoizeOptions(
+      options,
+      onCacheAdd,
+      onCacheChange,
+      onCacheHit,
+    );
 
     expect(result).toEqual({
       isEqual: sameValueZeroEqual,
@@ -88,7 +93,12 @@ describe('getMicroMemoizeOptions', () => {
     const onCacheChange = () => {};
     const onCacheHit = () => {};
 
-    const result = getMicroMemoizeOptions(options, onCacheAdd, onCacheChange, onCacheHit);
+    const result = getMicroMemoizeOptions(
+      options,
+      onCacheAdd,
+      onCacheChange,
+      onCacheHit,
+    );
 
     expect(result).toEqual({
       isEqual: deepEqual,
@@ -143,7 +153,7 @@ describe('getTransformKey', () => {
     expect(transformKey(args)).toEqual(['foo']);
   });
 
-  it('should handle all options passed if requested', () => {
+  it('should handle all options passed if requested in the correct order', () => {
     const options = {
       isSerialized: true,
       maxArgs: 2,

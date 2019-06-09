@@ -64,7 +64,10 @@ export function getErrorStack() {
  * @param fn the function to be memoized
  * @returns the derived profileName for the function
  */
-export function getProfileName(fn: Moize.ProfiledFunction, options: Moize.Options) {
+export function getProfileName(
+  fn: Moize.ProfiledFunction,
+  options: Moize.Options,
+) {
   const { profileName } = options;
 
   let fnName = profileName || fn.displayName || fn.name;
@@ -98,7 +101,11 @@ export function getProfileName(fn: Moize.ProfiledFunction, options: Moize.Option
   for (let index = 0, line; index < lines.length; index++) {
     line = lines[index];
 
-    if (!~line.indexOf('/moize/') && !~line.indexOf(' (native)') && !~line.indexOf(' Function.')) {
+    if (
+      !~line.indexOf('/moize/') &&
+      !~line.indexOf(' (native)') &&
+      !~line.indexOf(' Function.')
+    ) {
       profileNameLocation = line.replace(/\n/g, '\\n').trim();
       break;
     }
@@ -159,7 +166,10 @@ export function getStats(profileName?: string): Moize.StatsObject {
     completeStats.profiles[name] = getStats(name);
   }
 
-  completeStats.usage = getUsagePercentage(completeStats.calls, completeStats.hits);
+  completeStats.usage = getUsagePercentage(
+    completeStats.calls,
+    completeStats.hits,
+  );
 
   return completeStats;
 }

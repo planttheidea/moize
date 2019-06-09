@@ -1,4 +1,4 @@
-/* globals afterEach,beforeEach,describe,expect,it,jest */
+/* eslint-disable */
 
 import { clearExpiration, getMaxAgeOptions } from '../src/maxAge';
 
@@ -350,7 +350,11 @@ describe('getMaxAgeOptions', () => {
       expirationMethod();
 
       expect(options.onCacheChange).toHaveBeenCalledTimes(2);
-      expect(options.onCacheChange).toHaveBeenCalledWith(cache, options, memoized);
+      expect(options.onCacheChange).toHaveBeenCalledWith(
+        cache,
+        options,
+        memoized,
+      );
 
       expect(cache.keys.length).toBe(1);
       expect(cache.keys).toEqual(currentKeys);
@@ -443,7 +447,10 @@ describe('getMaxAgeOptions', () => {
       expect(clearStub).toHaveBeenCalledWith(originalExpirations[0].timeoutId);
 
       expect(setStub).toHaveBeenCalledTimes(1);
-      expect(setStub).toHaveBeenCalledWith(originalExpirations[0].expirationMethod, options.maxAge);
+      expect(setStub).toHaveBeenCalledWith(
+        originalExpirations[0].expirationMethod,
+        options.maxAge,
+      );
 
       expect(cache.expirations).toEqual([
         {

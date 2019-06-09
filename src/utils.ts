@@ -61,19 +61,24 @@ export const assign =
 export function combine(...args: any[]): Moize.Handler | void {
   const handlers = getValidHandlers(args);
 
-  if (!handlers.length) {
-    return;
-  }
+  switch (handlers.length) {
+    case 0:
+      return;
 
-  return handlers.reduceRight(function combined(
-    f: Moize.Handler,
-    g: Moize.Handler,
-  ) {
-    return function () {
-      f.apply(this, arguments);
-      g.apply(this, arguments);
-    };
-  });
+    case 1:
+      return handlers[0];
+
+    default:
+      return handlers.reduceRight(function combined(
+        f: Moize.Handler,
+        g: Moize.Handler,
+      ) {
+        return function () {
+          f.apply(this, arguments);
+          g.apply(this, arguments);
+        };
+      });
+  }
 }
 
 /**
@@ -90,18 +95,23 @@ export function combine(...args: any[]): Moize.Handler | void {
 export function compose(...args: any[]): Moize.Handler | void {
   const handlers = getValidHandlers(args);
 
-  if (!handlers.length) {
-    return;
-  }
+  switch (handlers.length) {
+    case 0:
+      return;
 
-  return handlers.reduceRight(function reduced(
-    f: Moize.Handler,
-    g: Moize.Handler,
-  ) {
-    return function () {
-      return g(f.apply(this, arguments));
-    };
-  });
+    case 1:
+      return handlers[0];
+
+    default:
+      return handlers.reduceRight(function reduced(
+        f: Moize.Handler,
+        g: Moize.Handler,
+      ) {
+        return function () {
+          return g(f.apply(this, arguments));
+        };
+      });
+  }
 }
 
 /**

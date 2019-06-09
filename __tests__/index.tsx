@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // test
 import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
 import React from 'react';
@@ -10,15 +12,28 @@ import { createOnCacheOperation } from '../src/cache';
 import { getMaxAgeOptions } from '../src/maxAge';
 import { createGetInitialArgs } from '../src/maxArgs';
 import { DEFAULT_OPTIONS, getMicroMemoizeOptions } from '../src/options';
-import { getSerializerFunction, getStringifiedArgs, stringify } from '../src/serialize';
-import { collectStats, getStats, getStatsCache, getStatsOptions } from '../src/stats';
+import {
+  getSerializerFunction,
+  getStringifiedArgs,
+  stringify,
+} from '../src/serialize';
+import {
+  collectStats,
+  getStats,
+  getStatsCache,
+  getStatsOptions,
+} from '../src/stats';
 import { combine, compose } from '../src/utils';
 
 import { Moize } from '../src/types';
 
 const { hasOwnProperty } = Object.prototype;
 
-type CacheHandler = (cache: Moize.Cache, options: Moize.Options, memoized: Moize.Moized<Moize.Moizable>) => void;
+type CacheHandler = (
+  cache: Moize.Cache,
+  options: Moize.Options,
+  memoized: Moize.Moized<Moize.Moizable>,
+) => void;
 
 function getOptions(
   options: Moize.Options,
@@ -32,11 +47,19 @@ function getOptions(
   const statsOptions = getStatsOptions(merged);
 
   const onCacheAdd = createOnCacheOperation(
-    combine(merged.onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd),
+    combine(
+      merged.onCacheAdd,
+      maxAgeOptions.onCacheAdd,
+      statsOptions.onCacheAdd,
+    ),
   );
   const onCacheChange = createOnCacheOperation(merged.onCacheChange);
   const onCacheHit = createOnCacheOperation(
-    combine(merged.onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit),
+    combine(
+      merged.onCacheHit,
+      maxAgeOptions.onCacheHit,
+      statsOptions.onCacheHit,
+    ),
   );
 
   const withMmOptions = {
@@ -47,7 +70,10 @@ function getOptions(
   return profileName ? { ...withMmOptions, profileName } : withMmOptions;
 }
 
-const isMoizedFunction = (fn: Moize.Moized<Moize.Moizable>, options: Moize.Options) => {
+const isMoizedFunction = (
+  fn: Moize.Moized<Moize.Moizable>,
+  options: Moize.Options,
+) => {
   expect(hasOwnProperty.call(fn, 'cache')).toBe(true);
   expect(fn.cache.snapshot).toEqual({
     keys: [],
@@ -283,7 +309,7 @@ describe('moize', () => {
     };
     const maxAgeOptions = getMaxAgeOptions({
       ...options,
-      updateExpire: true
+      updateExpire: true,
     });
 
     const moized = moize(fn, options);
@@ -334,7 +360,7 @@ describe('moize', () => {
 
     expect(fn).toHaveBeenCalledTimes(1);
     expect(fn).toHaveBeenCalledWith(...args);
-    
+
     const { transformKey } = moized.options._mm;
 
     expect(transformKey(args)).toEqual(
@@ -464,7 +490,7 @@ describe('moize', () => {
     }
   });
 
-  it('should handle an onExpire method for cache expiration correctly', (done) => {
+  it('should handle an onExpire method for cache expiration correctly', done => {
     const args = ['foo', 'bar', 'baz', 'quz'];
 
     const fn = jest.fn();
@@ -587,7 +613,7 @@ describe('moize', () => {
     };
 
     const moized = moize(fn, options);
-    
+
     isMoizedFunction(moized, getOptions(options, 'mockConstructor 16'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
@@ -617,11 +643,11 @@ describe('moize', () => {
 
     const mergedOptions = {
       ...firstOptions,
-      ...secondOptions
+      ...secondOptions,
     };
 
     const moized = moize(firstOptions)(secondOptions)(fn);
-    
+
     isMoizedFunction(moized, getOptions(mergedOptions, 'mockConstructor 17'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
@@ -643,7 +669,9 @@ describe('moize', () => {
       throw new TypeError('should be a function');
     }
 
-    expect(moized.options._mm.transformKey).toEqual(mergedOptions.transformArgs);
+    expect(moized.options._mm.transformKey).toEqual(
+      mergedOptions.transformArgs,
+    );
   });
 
   it('should handle a curried options implementation correctly when the final call has options', () => {
@@ -659,11 +687,11 @@ describe('moize', () => {
 
     const mergedOptions = {
       ...firstOptions,
-      ...secondOptions
+      ...secondOptions,
     };
 
     const moized = moize(firstOptions)(fn, secondOptions);
-    
+
     isMoizedFunction(moized, getOptions(mergedOptions, 'mockConstructor 18'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
@@ -685,11 +713,12 @@ describe('moize', () => {
       throw new TypeError('should be a function');
     }
 
-    expect(moized.options._mm.transformKey).toEqual(mergedOptions.transformArgs);
+    expect(moized.options._mm.transformKey).toEqual(
+      mergedOptions.transformArgs,
+    );
   });
 
   it('should throw if a non-function and non-options is passed to the curried function', () => {
-
     const fn = jest.fn();
     const firstOptions = {
       isDeepEqual: true,
@@ -707,8 +736,11 @@ describe('moize', () => {
     const firstMoized = moize(fn, firstOptions);
 
     expect(firstMoized.fn).toBe(fn);
-    
-    isMoizedFunction(firstMoized, getOptions(firstOptions, 'mockConstructor 19'));
+
+    isMoizedFunction(
+      firstMoized,
+      getOptions(firstOptions, 'mockConstructor 19'),
+    );
 
     const secondOptions = {
       transformArgs(args: any[]) {
@@ -720,10 +752,13 @@ describe('moize', () => {
 
     const mergedOptions = {
       ...firstOptions,
-      ...secondOptions
+      ...secondOptions,
     };
 
-    isMoizedFunction(secondMoized, getOptions(mergedOptions, 'mockConstructor 19'));
+    isMoizedFunction(
+      secondMoized,
+      getOptions(mergedOptions, 'mockConstructor 19'),
+    );
 
     expect(secondMoized.fn).toBe(firstMoized.fn);
     expect(secondMoized.fn).toBe(fn);
@@ -741,7 +776,9 @@ describe('moize', () => {
     expect(fn).toHaveBeenCalledTimes(1);
     expect(fn).toHaveBeenCalledWith(...args);
 
-    expect(secondMoized.options._mm.transformKey).toEqual(mergedOptions.transformArgs);
+    expect(secondMoized.options._mm.transformKey).toEqual(
+      mergedOptions.transformArgs,
+    );
   });
 
   it('should not call onExpire for deleted cache items', async () => {
@@ -829,9 +866,15 @@ describe('moize.deep', () => {
 
     const moizedShorthand = moize.deep(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 21'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 22'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 21'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 22'),
+    );
   });
 });
 
@@ -850,9 +893,15 @@ describe('moize.infinite', () => {
 
     const moizedShorthand = moize.infinite(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 23'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 24'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 23'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 24'),
+    );
   });
 });
 
@@ -888,14 +937,20 @@ describe('moize.maxAge', () => {
   it('should produce the correct moized function options', () => {
     const fn = jest.fn();
     const options = {
-      maxAge: 1000
+      maxAge: 1000,
     };
 
     const moizedShorthand = moize.maxAge(options.maxAge)(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 25'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 26'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 25'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 26'),
+    );
   });
 
   it('should throw if maxAge is a negative number', () => {
@@ -920,9 +975,15 @@ describe('moize.maxArgs', () => {
 
     const moizedShorthand = moize.maxArgs(options.maxArgs)(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 27'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 28'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 27'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 28'),
+    );
 
     moizedShorthand('foo', 'bar', 'baz');
     moizedShorthand('foo', 'baz');
@@ -953,9 +1014,15 @@ describe('moize.maxSize', () => {
 
     const moizedShorthand = moize.maxSize(options.maxSize)(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 29'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 30'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 29'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 30'),
+    );
   });
 
   it('should throw if maxSize is a negative number', () => {
@@ -980,14 +1047,20 @@ describe('moize.promise', () => {
 
     const moizedShorthand = moize.promise(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 31'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 32'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 31'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 32'),
+    );
   });
 });
 
 describe('moize.react', () => {
-  it('should produce the correct moized function options', (done) => {
+  it('should produce the correct moized function options', done => {
     const fn = jest.fn().mockImplementation(function Foo(props) {
       return <div {...props} />;
     });
@@ -1006,33 +1079,39 @@ describe('moize.react', () => {
         if (!ref) {
           return;
         }
-        
+
         expect(ref.Moized.cache.size).toBe(1);
 
         ref.Moized.clear();
 
-        isMoizedFunction(ref.Moized, getOptions({ ...options, isReactGlobal: true }, 'mockConstructor 33'));
+        isMoizedFunction(
+          ref.Moized,
+          getOptions({ ...options, isReactGlobal: true }, 'mockConstructor 33'),
+        );
 
         this.hasCheckedShorthand = true;
 
         this.complete();
-      }
+      };
 
       checkWithOptionsRef = (ref: any) => {
         if (!ref) {
           return;
         }
-        
+
         expect(ref.Moized.cache.size).toBe(1);
 
         ref.Moized.clear();
 
-        isMoizedFunction(ref.Moized, getOptions({ ...options, isReactGlobal: true }, 'mockConstructor 34'));
+        isMoizedFunction(
+          ref.Moized,
+          getOptions({ ...options, isReactGlobal: true }, 'mockConstructor 34'),
+        );
 
         this.hasCheckedWithOptions = true;
 
         this.complete();
-      }
+      };
 
       complete = () => {
         if (this.hasCheckedShorthand && this.hasCheckedWithOptions) {
@@ -1046,7 +1125,7 @@ describe('moize.react', () => {
             <MoizedShorthand foo="foo" ref={this.checkShorthandRef} />
             <MoizedWithOptions bar="bar" ref={this.checkWithOptionsRef} />
           </div>
-        )
+        );
       }
     }
 
@@ -1061,14 +1140,20 @@ describe('moize.reactGlobal', () => {
     const fn = jest.fn();
     const options = {
       isReact: true,
-      isReactGlobal: true
+      isReactGlobal: true,
     };
 
     const moizedShorthand = moize.reactGlobal(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 35'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 36'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 35'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 36'),
+    );
   });
 });
 
@@ -1081,8 +1166,14 @@ describe('moize.serialize', () => {
 
     const moizedShorthand = moize.serialize(fn);
     const moizedWithOptions = moize(fn, options);
-    
-    isMoizedFunction(moizedShorthand, getOptions(options, 'mockConstructor 37'));
-    isMoizedFunction(moizedWithOptions, getOptions(options, 'mockConstructor 38'));
+
+    isMoizedFunction(
+      moizedShorthand,
+      getOptions(options, 'mockConstructor 37'),
+    );
+    isMoizedFunction(
+      moizedWithOptions,
+      getOptions(options, 'mockConstructor 38'),
+    );
   });
 });

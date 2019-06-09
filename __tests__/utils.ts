@@ -1,4 +1,4 @@
-/* globals describe,expect,jest,it */
+/* eslint-disable */
 
 import {
   assignFallback,
@@ -168,7 +168,7 @@ describe('compose', () => {
 
 describe('getValidHandlers', () => {
   it('should return only the items that are valid handlers', () => {
-    const possibleHandlers: any[] = ['foo', () => {}, 123, function () {}];
+    const possibleHandlers: any[] = ['foo', () => {}, 123, function() {}];
 
     const validHandlers = getValidHandlers(possibleHandlers);
 

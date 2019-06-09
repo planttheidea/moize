@@ -1,7 +1,11 @@
-/* globals afterEach,beforeEach,describe,expect,it,jest */
+/* eslint-disable */
 
 // src
-import { customReplacer, getSerializerFunction, stringify } from '../src/serialize';
+import {
+  customReplacer,
+  getSerializerFunction,
+  stringify,
+} from '../src/serialize';
 
 describe('customReplacer', () => {
   it('should convert the value to string if it is a function', () => {
@@ -130,7 +134,17 @@ describe('getSerializerFunction', () => {
     const symbol = Symbol('quz');
     const regexp = /blah/;
 
-    const args = [undef, nil, string, number, boolean, fn, object, symbol, regexp];
+    const args = [
+      undef,
+      nil,
+      string,
+      number,
+      boolean,
+      fn,
+      object,
+      symbol,
+      regexp,
+    ];
 
     const result = serialize(args);
 

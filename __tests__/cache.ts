@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { MicroMemoize } from 'micro-memoize';
 
 import { createOnCacheOperation, enhanceCache } from '../src/cache';

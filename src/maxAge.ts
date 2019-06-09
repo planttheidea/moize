@@ -17,7 +17,11 @@ import { Moize } from './types';
  * @param key the key to clear
  * @param shouldRemove should the expiration be removed from the list
  */
-export function clearExpiration(cache: Moize.Cache, key: any, shouldRemove: boolean) {
+export function clearExpiration(
+  cache: Moize.Cache,
+  key: any,
+  shouldRemove: boolean,
+) {
   const index = findExpirationIndex(cache, key);
 
   if (~index) {
@@ -132,7 +136,10 @@ export function getMaxAgeOptions(options: Moize.Options) {
 
           const expiration = cache.expirations[index];
 
-          expiration.timeoutId = setTimeout(expiration.expirationMethod, options.maxAge);
+          expiration.timeoutId = setTimeout(
+            expiration.expirationMethod,
+            options.maxAge,
+          );
         }
       };
 

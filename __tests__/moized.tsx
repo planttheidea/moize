@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { shallowEqual } from 'fast-equals';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -11,7 +13,6 @@ import * as maxAge from '../src/maxAge';
 import { getStatsCache, getUsagePercentage, getStats } from '../src/stats';
 import { Moize } from '../src/types';
 
-
 describe('createMoized', () => {
   describe('MoizedComponent (per instance)', () => {
     const options = {
@@ -21,7 +22,7 @@ describe('createMoized', () => {
         maxArgs: 2,
         maxSize: DEFAULT_OPTIONS.maxSize,
       },
-      isReact: true
+      isReact: true,
     };
 
     it('should create a Moized component that is cached per-instance', () => {
@@ -89,7 +90,7 @@ describe('createMoized', () => {
       expect(Moized.staticFn).toBe(Foo.staticFn);
     });
 
-    it('should allow access to static methods and values on the moized instance ref', (done) => {
+    it('should allow access to static methods and values on the moized instance ref', done => {
       function Foo(props: Moize.Dictionary<any>) {
         return <div {...props} />;
       }
@@ -100,11 +101,13 @@ describe('createMoized', () => {
         getRef(ref: { Moized: typeof Moized }) {
           const { Moized: MemoizedComponent } = ref;
 
-          STATIC_METHODS.forEach((method) => {
-            expect(() => MemoizedComponent[method](['foo', 'bar'])).not.toThrow();
+          STATIC_METHODS.forEach(method => {
+            expect(() =>
+              MemoizedComponent[method](['foo', 'bar']),
+            ).not.toThrow();
           });
 
-          STATIC_VALUES.forEach((value) => {
+          STATIC_VALUES.forEach(value => {
             expect(() => MemoizedComponent[value]).not.toThrow();
           });
 
@@ -128,7 +131,7 @@ describe('createMoized', () => {
 
       const Moized = createMoized(moize, Foo, options);
 
-      STATIC_METHODS.forEach((method) => {
+      STATIC_METHODS.forEach(method => {
         expect(() => Moized[method]()).toThrow();
       });
     });
@@ -140,7 +143,7 @@ describe('createMoized', () => {
 
       const Moized = createMoized(moize, Foo, options);
 
-      STATIC_VALUES.forEach((value) => {
+      STATIC_VALUES.forEach(value => {
         expect(() => Moized[value]).toThrow();
       });
     });
@@ -155,7 +158,7 @@ describe('createMoized', () => {
         maxSize: DEFAULT_OPTIONS.maxSize,
       },
       isReact: true,
-      isReactGlobal: true
+      isReactGlobal: true,
     };
 
     it('should create a Moized component that is cached globally', () => {
@@ -230,7 +233,7 @@ describe('createMoized', () => {
 
       const Moized = createMoized(moize, Foo, options);
 
-      STATIC_METHODS.forEach((method) => {
+      STATIC_METHODS.forEach(method => {
         expect(() => Moized[method]()).not.toThrow();
       });
     });
@@ -242,7 +245,7 @@ describe('createMoized', () => {
 
       const Moized = createMoized(moize, Foo, options);
 
-      STATIC_VALUES.forEach((value) => {
+      STATIC_VALUES.forEach(value => {
         expect(() => Moized[value]).not.toThrow();
       });
     });
@@ -325,8 +328,8 @@ describe('createMoized', () => {
         maxSize: 2,
         _mm: {
           ...options._mm,
-          maxSize: 2
-        }
+          maxSize: 2,
+        },
       };
       const moized = createMoized(moize, fn, customOptions);
 
@@ -344,7 +347,11 @@ describe('createMoized', () => {
       expect(moized.cache.size).toBe(1);
 
       expect(clearExpirationSpy).toHaveBeenCalledTimes(1);
-      expect(clearExpirationSpy).toHaveBeenCalledWith(moized.cache, existingKey, true);
+      expect(clearExpirationSpy).toHaveBeenCalledWith(
+        moized.cache,
+        existingKey,
+        true,
+      );
 
       clearExpirationSpy.mockRestore();
     });
@@ -361,8 +368,8 @@ describe('createMoized', () => {
           ...options._mm,
           maxSize: 2,
           onCacheChange: jest.fn(),
-          transformKey: transformArgs
-        }
+          transformKey: transformArgs,
+        },
       };
       const moized = createMoized(moize, fn, customOptions);
 
@@ -421,9 +428,9 @@ describe('createMoized', () => {
         ...options,
         _mm: {
           ...options._mm,
-          transformKey
+          transformKey,
         },
-        transformArgs: transformKey
+        transformArgs: transformKey,
       });
 
       moized('foo', 'bar');
@@ -463,7 +470,7 @@ describe('createMoized', () => {
 
       const _options = {
         ...options,
-        profileName: 'profileName'
+        profileName: 'profileName',
       };
 
       const moized = createMoized(moize, fn, _options);
@@ -490,20 +497,20 @@ describe('createMoized', () => {
 
       moized.cache.keys = [key];
       moized.cache.values = [value];
-  
+
       expect(moized.has(key)).toBe(true);
     });
-  
+
     it('should return false if the key does not exist', () => {
       const key = ['key'];
       const value = 'value';
 
       const fn = () => value;
       const moized = createMoized(moize, fn, options);
-  
+
       expect(moized.has(key)).toBe(false);
     });
-  
+
     it('should return true if the transformed key exists in cache', () => {
       const key = ['key'];
       const value = 'value';
@@ -515,15 +522,15 @@ describe('createMoized', () => {
         ...options,
         _mm: {
           ...options._mm,
-          transformKey
+          transformKey,
         },
-        transformArgs: transformKey
+        transformArgs: transformKey,
       };
       const moized = createMoized(moize, fn, _options);
 
       moized.cache.keys = [key];
       moized.cache.values = [value];
-  
+
       expect(moized.has(key)).toBe(true);
     });
   });
@@ -538,9 +545,9 @@ describe('createMoized', () => {
 
       moized.cache.keys = [key];
       moized.cache.values = [value];
-  
+
       const keys = moized.keys();
-  
+
       expect(keys).toEqual(moized.cache.keys);
       expect(keys).not.toBe(moized.cache.keys);
     });
@@ -561,18 +568,21 @@ describe('createMoized', () => {
         maxSize: 10,
       };
       const moized = createMoized(moize, fn, _options);
-  
+
       moized.cache.keys.push(['foo'], [{ bar: 'baz' }], key);
-      moized.cache.values.push('bar', ['quz'], value); 
+      moized.cache.values.push('bar', ['quz'], value);
 
       const keys = moized.keys();
       const values = moized.values();
-  
+
       const newValue = 'new value';
-  
+
       moized.set(key, newValue);
-  
-      expect(moized.cache.keys).toEqual([key, ...keys.slice(0, keys.length - 1)]);
+
+      expect(moized.cache.keys).toEqual([
+        key,
+        ...keys.slice(0, keys.length - 1),
+      ]);
       expect(moized.cache.values).toEqual([
         newValue,
         ...values.slice(0, values.length - 1),
@@ -589,28 +599,31 @@ describe('createMoized', () => {
         _mm: {
           ...options._mm,
           maxSize: 10,
-          onCacheChange: jest.fn()
+          onCacheChange: jest.fn(),
         },
         maxSize: 10,
       };
       const moized = createMoized(moize, fn, _options);
-  
+
       moized.cache.keys.push(['foo'], [{ bar: 'baz' }], key);
-      moized.cache.values.push('bar', ['quz'], value); 
+      moized.cache.values.push('bar', ['quz'], value);
 
       const keys = moized.keys();
       const values = moized.values();
-  
+
       const newValue = 'new value';
-  
+
       moized.set(key, newValue);
-  
-      expect(moized.cache.keys).toEqual([key, ...keys.slice(0, keys.length - 1)]);
+
+      expect(moized.cache.keys).toEqual([
+        key,
+        ...keys.slice(0, keys.length - 1),
+      ]);
       expect(moized.cache.values).toEqual([
         newValue,
         ...values.slice(0, values.length - 1),
       ]);
-  
+
       expect(moized.options._mm.onCacheChange).toHaveBeenCalledTimes(1);
       expect(moized.options._mm.onCacheChange).toHaveBeenCalledWith(
         moized.cache,
@@ -622,7 +635,7 @@ describe('createMoized', () => {
     it('should add the value in cache for the new key', () => {
       const key = ['key'];
       const value = 'value';
-  
+
       const fn = () => value;
       const _options = {
         ...options,
@@ -633,17 +646,17 @@ describe('createMoized', () => {
         maxSize: 10,
       };
       const moized = createMoized(moize, fn, _options);
-  
+
       moized.cache.keys.push(['foo'], [{ bar: 'baz' }]);
-      moized.cache.values.push('bar', ['quz']); 
-  
+      moized.cache.values.push('bar', ['quz']);
+
       const keys = moized.keys();
       const values = moized.values();
-  
+
       const newValue = 'new value';
-  
+
       moized.set(key, newValue);
-  
+
       expect(moized.cache.keys).toEqual([key, ...keys]);
       expect(moized.cache.values).toEqual([newValue, ...values]);
     });
@@ -651,7 +664,7 @@ describe('createMoized', () => {
     it('should add the value in cache for the new key and notify of cache add / update', () => {
       const key = ['key'];
       const value = 'value';
-  
+
       const fn = () => value;
       const _options = {
         ...options,
@@ -659,32 +672,32 @@ describe('createMoized', () => {
           ...options._mm,
           maxSize: 10,
           onCacheAdd: jest.fn(),
-          onCacheChange: jest.fn()
+          onCacheChange: jest.fn(),
         },
         maxSize: 10,
       };
       const moized = createMoized(moize, fn, _options);
-  
+
       moized.cache.keys.push(['foo'], [{ bar: 'baz' }]);
-      moized.cache.values.push('bar', ['quz']); 
-  
+      moized.cache.values.push('bar', ['quz']);
+
       const keys = moized.keys();
       const values = moized.values();
-  
+
       const newValue = 'new value';
-  
+
       moized.set(key, newValue);
-  
+
       expect(moized.cache.keys).toEqual([key, ...keys]);
       expect(moized.cache.values).toEqual([newValue, ...values]);
-  
+
       expect(moized.options._mm.onCacheAdd).toHaveBeenCalledTimes(1);
       expect(moized.options._mm.onCacheAdd).toHaveBeenCalledWith(
         moized.cache,
         _options,
         moized,
       );
-  
+
       expect(moized.options._mm.onCacheChange).toHaveBeenCalledTimes(1);
       expect(moized.options._mm.onCacheChange).toHaveBeenCalledWith(
         moized.cache,
@@ -704,9 +717,9 @@ describe('createMoized', () => {
 
       moized.cache.keys = [key];
       moized.cache.values = [value];
-  
+
       const values = moized.values();
-  
+
       expect(values).toEqual(moized.cache.values);
       expect(values).not.toBe(moized.cache.values);
     });

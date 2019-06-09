@@ -5,7 +5,9 @@ import { slice } from './utils';
 
 import { Moize } from './types';
 
-export function createOnCacheOperation(fn: Moize.Handler | void): Moize.Handler | void {
+export function createOnCacheOperation(
+  fn: Moize.Handler | void,
+): Moize.Handler | void {
   if (typeof fn === 'function') {
     /**
      * @private

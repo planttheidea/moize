@@ -55,8 +55,12 @@ export function customReplacer(_key: string, value: any): any {
  * @param {Options} options the options passed to the moized function
  * @returns {function} the function to use in serializing the arguments
  */
-export function getSerializerFunction(options: Moize.Options): Moize.Serializer {
-  return typeof options.serializer === 'function' ? options.serializer : getStringifiedArgs;
+export function getSerializerFunction(
+  options: Moize.Options,
+): Moize.Serializer {
+  return typeof options.serializer === 'function'
+    ? options.serializer
+    : getStringifiedArgs;
 }
 
 const STRINGIFY_TYPES: Moize.Dictionary<true> = {
