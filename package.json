@@ -107,7 +107,7 @@
   },
   "scripts": {
     "benchmark": "npm run dist -- --no-comments && node benchmark/index.js",
-    "benchmark:legacy": "npm run dist -- --no-comments && node benchmark/legacy.js",
+    "benchmark:new": "npm run dist -- --no-comments && node benchmark/new.js",
     "build": "NODE_ENV=production rollup -c",
     "clean": "npm run clean:dist && npm run clean:docs",
     "clean:dist": "rimraf dist",
