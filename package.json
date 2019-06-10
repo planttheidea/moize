@@ -15,7 +15,7 @@
   "dependencies": {
     "fast-equals": "^2.0.0",
     "fast-stringify": "^1.1.0",
-    "micro-memoize": "^4.0.6"
+    "micro-memoize": "^4.0.7"
   },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {
@@ -30,8 +30,8 @@
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
     "@types/react-virtualized": "^9.21.2",
-    "@typescript-eslint/eslint-plugin": "^1.9.0",
-    "@typescript-eslint/parser": "^1.9.0",
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
     "benchee": "^1.1.0",
     "benchmark": "^2.1.4",
     "cli-table2": "^0.2.0",
@@ -62,7 +62,7 @@
     "react-dom": "^16.8.6",
     "react-virtualized": "^9.21.1",
     "remeasure": "^3.1.1",
-    "rollup": "^1.14.5",
+    "rollup": "^1.14.6",
     "rollup-plugin-node-resolve": "^5.0.1",
     "rollup-plugin-terser": "^5.0.0",
     "rollup-plugin-typescript": "^1.0.1",
