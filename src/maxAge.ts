@@ -1,6 +1,3 @@
-import { MicroMemoize } from 'micro-memoize';
-
-// utils
 import { isValidNumericOption } from './utils';
 
 import { Moize } from './types';
@@ -79,7 +76,7 @@ export function getMaxAgeOptions(options: Moize.Options) {
     const onCacheAdd = function (
       cache: Moize.Cache,
       _options: Moize.Options,
-      memoized: MicroMemoize.Memoized<Moize.Moizable>,
+      memoized: Moize.Moized<Moize.Moizable>,
     ) {
       const key: any = cache.keys[0];
 

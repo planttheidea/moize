@@ -94,7 +94,7 @@ export function getMicroMemoizeOptions(
   const isEqual = getIsEqual(options);
   const transformKey = getTransformKey(options);
 
-  const microMemoizeOptions: MicroMemoize.Options = {
+  const microMemoizeOptions: MicroMemoize.NormalizedOptions = {
     isEqual,
     isMatchingKey: options.matchesKey,
     isPromise: options.isPromise,

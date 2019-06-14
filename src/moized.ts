@@ -175,6 +175,7 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
     );
   };
 
+  // @ts-ignore
   MoizedComponent.options = options;
   MoizedComponent.fn = fn;
 
@@ -212,6 +213,7 @@ export function createMoized<Fn extends Moize.Moizable>(
 
   const moized = memoize(fn, microMemoizeOptions) as Moize.Moized<Fn>;
 
+  // @ts-ignore
   moized.options = options;
 
   Object.keys(fn).forEach((staticKey) => {

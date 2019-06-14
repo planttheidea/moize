@@ -10,13 +10,31 @@ export namespace Moize {
 
   export type Serializer = (...args: any[]) => [string];
 
-  export type Options = Pick<
-    MicroMemoize.Options,
-    'isPromise' | 'maxSize' | 'onCacheAdd' | 'onCacheChange' | 'onCacheHit'
-  > &
-    Dictionary<any> & {
+  export type CacheHandler = (
+    cache: MicroMemoize.Cache,
+    options: Options,
+    memoized: Moized<Moizable>,
+  ) => void;
+
+  export type CacheHandlers = {
+    // handled for when an item is added to cache (overrides micro-memoize)
+    onCacheAdd?: CacheHandler;
+
+    // handled for when an item is added to cache (overrides micro-memoize)
+    onCacheChange?: CacheHandler;
+
+    // handled for when an item is added to cache (overrides micro-memoize)
+    onCacheHit?: CacheHandler;
+  };
+
+  export type Options = Pick<MicroMemoize.Options, 'isPromise' | 'maxSize'> &
+    CacheHandlers & {
       // micro-memoize options
-      _mm?: MicroMemoize.Options;
+      _mm?: Omit<
+        MicroMemoize.NormalizedOptions,
+        'onCacheAdd' | 'onCacheChange' | 'onCacheHit'
+      > &
+        CacheHandlers;
 
       // custom equality comparator comparing a specific key argument
       equals?: (cacheKeyArgument: any, keyArgument: any) => boolean;
@@ -59,7 +77,7 @@ export namespace Moize {
 
       // should a location be calculated for stats
       useProfileNameLocation?: boolean;
-    };
+    } & Dictionary<any>;
 
   export type Expiration = {
     expirationMethod: () => void;
@@ -122,5 +140,8 @@ export namespace Moize {
     values: () => MicroMemoize.Value[];
   };
 
-  export type Moizer<Fn extends Moizable> = (fn: Fn, options: Options) => Moized<Fn>;
+  export type Moizer<Fn extends Moizable> = (
+    fn: Fn,
+    options: Options,
+  ) => Moized<Fn>;
 }

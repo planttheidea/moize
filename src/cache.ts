@@ -1,13 +1,11 @@
-import { MicroMemoize } from 'micro-memoize';
-
 import { getStatsCache } from './stats';
 import { slice } from './utils';
 
 import { Moize } from './types';
 
 export function createOnCacheOperation(
-  fn: Moize.Handler | void,
-): Moize.Handler | void {
+  fn: Moize.CacheHandler | void,
+): Moize.CacheHandler | void {
   if (typeof fn === 'function') {
     /**
      * @private
@@ -26,7 +24,7 @@ export function createOnCacheOperation(
     return function onCacheOperation(
       cache: Moize.Cache,
       _options: Moize.Options,
-      memoized: MicroMemoize.Memoized<Moize.Moizable>,
+      memoized: Moize.Moized<Moize.Moizable>,
     ) {
       return fn(cache, memoized.options, memoized);
     };
