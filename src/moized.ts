@@ -52,6 +52,18 @@ export const STATIC_METHODS = [
   'values',
 ];
 
+/**
+ * @private
+ *
+ * @function defineStaticProperty
+ *
+ * @description
+ * define a static property on the function passed
+ *
+ * @param fn the function to define the property on
+ * @param propertyName the name of the property to define
+ * @param isMethod is the property a method
+ */
 function defineStaticProperty<Fn extends Moize.Moizable>(
   fn: Moize.Moized<Fn>,
   propertyName: keyof Moize.Moized<Fn>,
@@ -72,10 +84,11 @@ function defineStaticProperty<Fn extends Moize.Moizable>(
   }
 }
 
-let React: { createElement: Function } =
-  GLOBAL && 'React' in GLOBAL && GLOBAL.React;
+let React: { createElement: Function } = GLOBAL && 'React' in GLOBAL && GLOBAL.React;
 
 /**
+ * @private
+ *
  * @function loadReact
  *
  * @description
@@ -127,9 +140,7 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   fn: Fn,
   options?: Moize.Options,
 ) {
-  const componentOptions = options
-    ? assign({}, options, REACT_OPTIONS)
-    : REACT_OPTIONS;
+  const componentOptions = options ? assign({}, options, REACT_OPTIONS) : REACT_OPTIONS;
 
   type ComponentClass = import('react').ComponentClass<GenericProps, any>;
   type FunctionComponent = import('react').FunctionComponent;
@@ -169,10 +180,7 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   MoizedComponent.prototype.isReactComponent = EMPTY_OBJECT;
 
   MoizedComponent.prototype.render = function () {
-    return React.createElement(
-      (this.Moized as unknown) as FunctionComponent,
-      this.props,
-    );
+    return React.createElement((this.Moized as unknown) as FunctionComponent, this.props);
   };
 
   // @ts-ignore

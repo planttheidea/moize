@@ -30,12 +30,7 @@ const DEFAULTS: Moize.Options = {
 
 export const DEFAULT_OPTIONS = assign({}, DEFAULTS);
 
-const MERGED_HANDLER_OPTIONS = [
-  'onCacheAdd',
-  'onCacheChange',
-  'onCacheHit',
-  'transformArgs',
-];
+const MERGED_HANDLER_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'transformArgs'];
 
 /**
  * @private
@@ -132,10 +127,7 @@ export function getMicroMemoizeOptions(
  * @returns the transformKey option to use
  */
 export function getTransformKey(options: Moize.Options) {
-  const handlers = [
-    options.isSerialized && getSerializerFunction(options),
-    options.transformArgs,
-  ];
+  const handlers = [options.isSerialized && getSerializerFunction(options), options.transformArgs];
 
   let maxArgs;
 
@@ -204,6 +196,18 @@ export function mergeOptions(
   );
 }
 
+/**
+ * @private
+ *
+ * @function setDefaultOptions
+ *
+ * @description
+ * set the default options globally based on the options passed, so that
+ * all uses of moize henceforth will use them as the defaults
+ *
+ * @param options the options to set
+ * @returns whether the options were updated or not
+ */
 export function setDefaultOptions(options?: Moize.Options): boolean {
   if (isOptions(options)) {
     Object.keys(options).forEach((option: keyof typeof DEFAULT_OPTIONS) => {
