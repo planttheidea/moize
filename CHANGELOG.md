@@ -6,15 +6,22 @@
 
 #### BREAKING CHANGES
 
-- `moize` will now throw if `maxAge`, `maxArgs`, or `maxSize` is not a positive integer or infinity
-- `collectStats` is no longer a named export (use `moize.collectStats`)
-- CommonJS `require`s no longer require `.default`
-- Types contract is much stricter
+- Options value changes
+  - `maxSize` is now set to `1` by default (formerly `Infinity`)
+  - `isReact` now will memoize on a _per-instance_ basis unless the `isReactGlobal` option is set to `true` (formerly memoized globally)
+  - `isSerialized` will now automatically serialize functions, symbols, and `undefined` (`shouldSerializeFunctions` option is deprecated)
+  - See [Setting legacy behavior as default](#Setting-legacy-behavior-as-default) for setting moize globally to use legacy options as defaults
+- Strictness changes
+  - `moize` will now throw if `maxAge`, `maxArgs`, or `maxSize` is not a positive integer or infinity
+  - Types contract is much stricter
+- Module changes
+  - `collectStats` is no longer a named export (use `moize.collectStats`)
+  - CommonJS `require` no longer needs `.default`
 
 #### ENHANCEMENTS
 
+- Ability to globally [set the default options](#moizesetDefaultOptions) for all `moize` calls
 - Targeted builds for all environments (`module`, `cjs` and `umd`)
-- More accurate benchmarks with `benchee`
 
 ## 5.4.2
 
