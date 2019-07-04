@@ -2,8 +2,5 @@
   "github": {
     "release": true,
     "tagName": "v${version}"
-  },
-  "scripts": {
-    "beforeStart": "npm run prepublish:compile"
   }
 }

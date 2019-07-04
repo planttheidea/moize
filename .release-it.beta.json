@@ -5,8 +5,5 @@
   "npm": {
     "tag": "next"
   },
-  "preReleaseId": "beta",
-  "scripts": {
-    "beforeStart": "npm run prepublish:compile"
-  }
+  "preReleaseId": "beta"
 }

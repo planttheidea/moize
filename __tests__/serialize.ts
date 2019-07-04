@@ -1,11 +1,7 @@
 /* eslint-disable */
 
 // src
-import {
-  customReplacer,
-  getSerializerFunction,
-  stringify,
-} from '../src/serialize';
+import { customReplacer, getSerializerFunction, stringify } from '../src/serialize';
 
 describe('customReplacer', () => {
   it('should convert the value to string if it is a function', () => {
@@ -106,7 +102,7 @@ describe('stringify', () => {
 
     expect(JSON.stringify).toHaveBeenCalledTimes(3);
 
-    expect(circularResult).toEqual('{"foo":{"bar":"baz","baz":"[ref-1]"}}');
+    expect(circularResult).toEqual('{"foo":{"bar":"baz","baz":"[ref=.foo]"}}');
   });
 });
 
@@ -134,17 +130,7 @@ describe('getSerializerFunction', () => {
     const symbol = Symbol('quz');
     const regexp = /blah/;
 
-    const args = [
-      undef,
-      nil,
-      string,
-      number,
-      boolean,
-      fn,
-      object,
-      symbol,
-      regexp,
-    ];
+    const args = [undef, nil, string, number, boolean, fn, object, symbol, regexp];
 
     const result = serialize(args);
 
