@@ -1,5 +1,9 @@
 {
-  "extends": ["rapid7/browser"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended"],
   "globals": {
     "__dirname": true,
     "global": true,
@@ -14,6 +18,9 @@
     "sourceType": "module"
   },
   "rules": {
+    "no-unused-vars": [2, {
+      "ignoreRestSiblings": true
+    }],
     "prefer-spread": 0
   }
 }
