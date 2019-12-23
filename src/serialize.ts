@@ -2,10 +2,8 @@
 
 // external dependencies
 import stringifySafe from 'fast-stringify';
-
-import { makeCallable } from './utils';
-
 import * as Types from './types';
+import { makeCallable } from './utils';
 
 const fnToString = makeCallable(Function.prototype.toString);
 const regexpToString = makeCallable(RegExp.prototype.toString);
@@ -55,9 +53,7 @@ export function customReplacer(_key: string, value: any): any {
  * @param {Options} options the options passed to the moized function
  * @returns {function} the function to use in serializing the arguments
  */
-export function getSerializerFunction(
-  options: Types.Options,
-): Types.Serializer {
+export function getSerializerFunction(options: Types.Options) {
   return typeof options.serializer === 'function'
     ? options.serializer
     : getStringifiedArgs;
@@ -87,17 +83,12 @@ const STRINGIFY_TYPES: Types.Dictionary<true> = {
 export function getStringifiedArgs(args: any[]): [string] {
   const { length } = args;
 
-  let stringified = '';
-  let arg: any;
+  let arg = args[0];
+  let stringified = arg && STRINGIFY_TYPES[typeof arg] ? stringify(arg) : `${arg}`;
 
-  for (let index = 0; index < length; index++) {
+  for (let index = 1; index < length; index++) {
     arg = args[index];
-
-    if (index) {
-      stringified += '|';
-    }
-
-    stringified += arg && STRINGIFY_TYPES[typeof arg] ? stringify(arg) : arg;
+    stringified += `|${arg && STRINGIFY_TYPES[typeof arg] ? stringify(arg) : arg}`;
   }
 
   return [stringified];
@@ -115,7 +106,7 @@ export function getStringifiedArgs(args: any[]): [string] {
  * @param [replacer] replacer to used in stringification
  * @returns the stringified version of value
  */
-export function stringify(value: any): string {
+export function stringify(value: any) {
   try {
     return JSON.stringify(value, customReplacer);
   } catch (exception) {

@@ -1,3 +1,5 @@
+/* globals self */
+
 /* eslint-disable prefer-rest-params */
 
 import * as Types from './types';
@@ -14,17 +16,17 @@ import * as Types from './types';
  * @param sources the sources to assign to the target
  * @returns the assigned target
  */
-export function assignFallback(target: any, ...sources: any[]) {
-  const { length } = sources;
+export function assignFallback(target: any) {
+  const { length } = arguments;
 
-  if (!length) {
+  if (length < 2) {
     return target;
   }
 
   let source;
 
-  for (let index = 0; index < length; index++) {
-    source = sources[index];
+  for (let index = 1; index < length; index++) {
+    source = arguments[index];
 
     if (source && typeof source === 'object') {
       for (const key in source) {
@@ -100,14 +102,44 @@ export function compose(...args: Types.Fn[]): Types.Fn {
       return handlers[0];
 
     default:
-      return handlers.reduceRight(function reduced(
-        f: Types.Fn,
-        g: Types.Fn,
-      ) {
+      return handlers.reduce(function (f, g) {
         return function () {
-          return g(f.apply(this, arguments));
+          return f(g.apply(this, arguments));
         };
       });
+  }
+}
+
+export function getGlobalObject() {
+  if (typeof globalThis !== 'undefined') {
+    // eslint-disable-next-line no-undef
+    return globalThis;
+  }
+
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-undef
+    return window;
+  }
+
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+
+  /* eslint-disable no-restricted-globals */
+
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+
+  /* eslint-enable */
+
+  try {
+    // eslint-disable-next-line no-new-func
+    return Function('return this')();
+  } catch {
+    throw new Error(
+      'The global object is not available in this environment. Please surface either `globalThis`, `window`, `global`, or `self` as a reference to it.',
+    );
   }
 }
 
@@ -119,13 +151,11 @@ export function compose(...args: Types.Fn[]): Types.Fn {
  * @description
  * get the handlers from the list of items passed
  *
- * @param possibleHandlers the possible handlers
+ * @param handlers the possible handlers
  * @returns the list of handlers
  */
-export function getValidHandlers(possibleHandlers: any[]) {
-  return possibleHandlers.filter(
-    (possibleHandler) => typeof possibleHandler === 'function',
-  );
+export function getValidHandlers(handlers: any[]) {
+  return handlers.filter((handler) => typeof handler === 'function');
 }
 
 export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
@@ -164,7 +194,7 @@ export function isValidNumericOption(option: any) {
     option > -1 &&
     // eslint-disable-next-line no-self-compare
     option === option &&
-    (option === ~~option || option === Infinity)
+    (option === Math.floor(option) || option === Infinity)
   );
 }
 

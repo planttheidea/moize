@@ -1,6 +1,4 @@
 import { getStatsCache } from './stats';
-import { slice } from './utils';
-
 import * as Types from './types';
 
 export function createOnCacheOperation(
@@ -47,7 +45,7 @@ export function enhanceCache(cache: Types.Cache) {
 
   Object.defineProperty(expirations, 'snapshot', {
     get() {
-      return slice(cache.expirations, 0);
+      return [...cache.expirations];
     },
   });
 

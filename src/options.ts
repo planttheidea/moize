@@ -1,11 +1,9 @@
-import { deepEqual, shallowEqual, sameValueZeroEqual } from 'fast-equals';
+import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
 import { MicroMemoize } from 'micro-memoize';
-
 import { createGetInitialArgs } from './maxArgs';
 import { getSerializerFunction } from './serialize';
-import { assign, compose } from './utils';
-
 import * as Types from './types';
+import { assign, compose } from './utils';
 
 const DEFAULTS: Types.Options = {
   equals: undefined,
@@ -210,8 +208,8 @@ export function mergeOptions(
  */
 export function setDefaultOptions(options: Types.Options) {
   if (isOptions(options)) {
-    Object.keys(options).forEach((option: keyof typeof DEFAULT_OPTIONS) => {
-      DEFAULT_OPTIONS[option] = options[option as string];
+    Object.keys(options).forEach((option) => {
+      DEFAULT_OPTIONS[option] = options[option];
     });
 
     return true;

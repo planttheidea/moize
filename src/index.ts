@@ -1,30 +1,10 @@
-import { createMoized } from './moized';
-
 import { createOnCacheOperation } from './cache';
 import { getMaxAgeOptions } from './maxAge';
-import {
-  getDefaultOptions,
-  getMicroMemoizeOptions,
-  isOptions,
-  mergeOptions,
-  setDefaultOptions,
-} from './options';
-import {
-  collectStats,
-  getProfileName,
-  getStats,
-  getStatsOptions,
-  isCollectingStats,
-} from './stats';
-import {
-  assign,
-  combine,
-  compose,
-  isMemoized,
-  isValidNumericOption,
-} from './utils';
-
+import { createMoized } from './moized';
+import { getDefaultOptions, getMicroMemoizeOptions, isOptions, mergeOptions, setDefaultOptions } from './options';
+import { collectStats, getProfileName, getStats, getStatsOptions, isCollectingStats } from './stats';
 import * as Types from './types';
+import { assign, combine, compose, isMemoized, isValidNumericOption } from './utils';
 
 export interface Moize<Fn extends Types.Moizeable = Types.Fn> extends Types.Fn {
   (fn: Fn, options?: Types.Options): Types.Moized<Fn>;
@@ -57,17 +37,9 @@ const moize: Moize = function<Fn extends Types.Moizeable = Types.Fn> (
       curriedFn: Fn | Types.Options,
       curriedOptions?: Types.Options,
     ) {
-      if (isOptions(curriedFn)) {
-        return moize(mergeOptions(fn, curriedFn));
-      }
-
-      if (typeof curriedFn !== 'function') {
-        throw new TypeError(
-          'Only functions or options can be passed to moize.',
-        );
-      }
-
-      return moize(curriedFn, mergeOptions(fn, curriedOptions || {}));
+      return isOptions(curriedFn)
+        ? moize(mergeOptions(fn, curriedFn))
+        : moize(curriedFn, mergeOptions(fn, curriedOptions || {}));
     };
   }
 

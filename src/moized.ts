@@ -1,31 +1,15 @@
 /* globals define */
 
 import memoize, { MicroMemoize } from 'micro-memoize';
-
 import { enhanceCache } from './cache';
 import { clearExpiration } from './maxAge';
 import { getStats } from './stats';
-import { assign } from './utils';
-
 import * as Types from './types';
+import { assign, getGlobalObject } from './utils';
 
 /* eslint-disable react/forbid-foreign-prop-types */
 
-const GLOBAL = (() => {
-  if (typeof globalThis !== 'undefined') {
-    // eslint-disable-next-line no-undef
-    return globalThis;
-  }
-
-  if (typeof window !== 'undefined') {
-    // eslint-disable-next-line no-undef
-    return window;
-  }
-
-  if (typeof global !== 'undefined') {
-    return global;
-  }
-})();
+const GLOBAL = getGlobalObject();
 
 const REACT_OPTIONS = { isReact: true, isReactGlobal: true };
 
@@ -67,21 +51,12 @@ export const STATIC_METHODS = [
 function defineStaticProperty<Fn extends Types.Moizeable>(
   fn: Types.Moized<Fn>,
   propertyName: keyof Types.Moized<Fn>,
-  isMethod: boolean,
 ) {
-  const message = `${propertyName} is not available on MoizedComponent directly. You can access it on the instance by capturing the ref and accessing the "Moized" property on it.`;
-
-  if (isMethod) {
-    fn[propertyName] = function () {
-      throw new Error(message);
-    };
-  } else {
-    Object.defineProperty(fn, propertyName, {
-      get() {
-        throw new Error(message);
-      },
-    });
-  }
+  Object.defineProperty(fn, propertyName, {
+    get() {
+      throw new Error(`${propertyName} is not available on MoizedComponent directly. You can access it on the instance by capturing the ref and accessing the "Moized" property on it.`);
+    },
+  });
 }
 
 let React: { createElement: Function } = GLOBAL && 'React' in GLOBAL && GLOBAL.React;
@@ -120,7 +95,7 @@ function loadReact() {
   try {
     if (typeof exports === 'object' && typeof module !== 'undefined') {
       // eslint-disable-next-line global-require,import/no-extraneous-dependencies
-      React = require('react');
+      onLoad(require('react'));
       // @ts-ignore
     } else if (typeof define === 'function' && define.amd) {
       // @ts-ignore
@@ -145,7 +120,7 @@ export function createMoizedComponent<Fn extends Types.Moizeable>(
   type ComponentClass = import('react').ComponentClass<GenericProps, any>;
   type FunctionComponent = import('react').FunctionComponent;
   type GenericProps = import('react').Props<any>;
-  type Component = import('react').Component<GenericProps, any, any>;
+  type Component<Props, State> = import('react').Component<Props, State>;
 
   type MoizedComponent = ComponentClass & Types.Moized<Fn>;
 
@@ -161,26 +136,34 @@ export function createMoizedComponent<Fn extends Types.Moizeable>(
 
   /* eslint-disable react/no-this-in-sfc */
 
-  // @ts-ignore
-  const MoizedComponent: MoizedComponent = function MoizedComponent(
-    props: GenericProps,
+  type MoizedThis = {
+    Moized: FunctionComponent;
+    context: Types.Dictionary<any>;
+    props: GenericProps;
+    refs: typeof EMPTY_OBJECT;
+    updater: typeof ReactNoopUpdater;
+  }
+
+  const MoizedComponent = function MoizedComponent<Props, State>(
+    this: MoizedThis,
+    props: Props,
     context: Types.Dictionary<any>,
     updater: any,
-  ): Component {
+  ) {
     this.props = props;
     this.context = context;
     this.refs = EMPTY_OBJECT;
     this.updater = updater || ReactNoopUpdater;
 
-    this.Moized = moize(fn, componentOptions);
+    this.Moized = moize(fn, componentOptions) as FunctionComponent;
 
-    return this;
-  };
+    return this as unknown as Component<Props, State>;
+  } as MoizedComponent;
 
   MoizedComponent.prototype.isReactComponent = EMPTY_OBJECT;
 
-  MoizedComponent.prototype.render = function () {
-    return React.createElement((this.Moized as unknown) as FunctionComponent, this.props);
+  MoizedComponent.prototype.render = function (this: MoizedThis) {
+    return React.createElement(this.Moized, this.props);
   };
 
   // @ts-ignore
@@ -194,13 +177,9 @@ export function createMoizedComponent<Fn extends Types.Moizeable>(
 
   MoizedComponent.displayName = getDisplayName(fn);
 
-  STATIC_METHODS.forEach((method) => {
-    defineStaticProperty(MoizedComponent, method, true);
-  });
+  STATIC_METHODS.forEach((method) => defineStaticProperty(MoizedComponent, method));
 
-  STATIC_VALUES.forEach((value) => {
-    defineStaticProperty(MoizedComponent, value, false);
-  });
+  STATIC_VALUES.forEach((value) => defineStaticProperty(MoizedComponent, value));
 
   /* eslint-enable */
 
@@ -221,11 +200,11 @@ export function createMoized<Fn extends Types.Moizeable>(
 
   const moized = memoize(fn, microMemoizeOptions) as Types.Moized<Fn>;
 
-  // @ts-ignore
+  // @ts-ignore - allow options to be assigned to the moized function
   moized.options = options;
 
   Object.keys(fn).forEach((staticKey) => {
-    // @ts-ignore
+    // @ts-ignore - allow statics to be passed through to the moized function
     moized[staticKey] = fn[staticKey];
   });
 
@@ -234,8 +213,6 @@ export function createMoized<Fn extends Types.Moizeable>(
   }
 
   const { cache } = moized;
-
-  /* eslint-disable func-names */
 
   moized.clear = function () {
     cache.keys.length = 0;
@@ -255,7 +232,7 @@ export function createMoized<Fn extends Types.Moizeable>(
 
     const keyIndex = cache.getKeyIndex(key);
 
-    if (~keyIndex) {
+    if (keyIndex !== -1) {
       const existingKey = cache.keys[keyIndex];
 
       cache.keys.splice(keyIndex, 1);
@@ -280,7 +257,7 @@ export function createMoized<Fn extends Types.Moizeable>(
 
     const keyIndex = cache.getKeyIndex(key);
 
-    if (~keyIndex) {
+    if (keyIndex !== -1) {
       return cache.values[keyIndex];
     }
   };
@@ -290,11 +267,11 @@ export function createMoized<Fn extends Types.Moizeable>(
   };
 
   moized.has = function (key: MicroMemoize.Key) {
-    if (cache.canTransformKey) {
-      key = microMemoizeOptions.transformKey(key);
-    }
+    const cacheKey = cache.canTransformKey
+      ? microMemoizeOptions.transformKey(key)
+      : key;
 
-    return !!~cache.getKeyIndex(key);
+    return cache.getKeyIndex(cacheKey) !== -1;
   };
 
   moized.keys = function () {
@@ -302,14 +279,12 @@ export function createMoized<Fn extends Types.Moizeable>(
   };
 
   moized.set = function (key: MicroMemoize.Key, value: MicroMemoize.Value) {
-    if (cache.canTransformKey) {
-      key = microMemoizeOptions.transformKey(key);
-    }
+    const cacheKey = cache.canTransformKey ? microMemoizeOptions.transformKey(key) : key;
 
-    const index = cache.getKeyIndex(key);
+    const index = cache.getKeyIndex(cacheKey);
     const isAdd = index === -1;
 
-    cache.orderByLru(key, value, isAdd ? cache.size : index);
+    cache.orderByLru(cacheKey, value, isAdd ? cache.size : index);
 
     if (isAdd && cache.shouldUpdateOnAdd) {
       microMemoizeOptions.onCacheAdd(cache, options, moized);
@@ -325,8 +300,6 @@ export function createMoized<Fn extends Types.Moizeable>(
   moized.values = function () {
     return cache.snapshot.values;
   };
-
-  /* eslint-enable */
 
   enhanceCache(cache);
 

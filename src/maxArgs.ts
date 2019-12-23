@@ -21,7 +21,7 @@ export function createGetInitialArgs(size: number) {
       return args;
     }
 
-    if (!size) {
+    if (size === 0) {
       return [];
     }
 

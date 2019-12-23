@@ -1,6 +1,5 @@
-import { isValidNumericOption } from './utils';
-
 import * as Types from './types';
+import { isValidNumericOption } from './utils';
 
 /**
  * @private
@@ -21,7 +20,7 @@ export function clearExpiration(
 ) {
   const index = findExpirationIndex(cache, key);
 
-  if (~index) {
+  if (index !== -1) {
     const { expirations } = cache;
 
     clearTimeout(expirations[index].timeoutId as number);
@@ -44,10 +43,10 @@ export function clearExpiration(
  * @param key the key to match
  * @returns the index of the expiration
  */
-export function findExpirationIndex(cache: Types.Cache, key: any[]): number {
+export function findExpirationIndex(cache: Types.Cache, key: any[]) {
   const { expirations } = cache;
 
-  for (let index: number = 0; index < expirations.length; index++) {
+  for (let index = 0; index < expirations.length; index++) {
     if (expirations[index].key === key) {
       return index;
     }
@@ -78,21 +77,21 @@ export function getMaxAgeOptions(options: Types.Options) {
       _options: Types.Options,
       memoized: Types.Moized<Types.Moizeable>,
     ) {
-      const key: any = cache.keys[0];
+      const key = cache.keys[0];
 
-      if (!~findExpirationIndex(cache, key)) {
+      if (findExpirationIndex(cache, key) === -1) {
         const expirationMethod = () => {
           const {
             _mm: { onCacheChange },
             onExpire,
           } = options;
 
-          const keyIndex: number = cache.getKeyIndex(key);
+          const keyIndex = cache.getKeyIndex(key);
 
           const { keys, values } = cache;
-          const value: any = values[keyIndex];
+          const value = values[keyIndex];
 
-          if (~keyIndex) {
+          if (keyIndex !== -1) {
             keys.splice(keyIndex, 1);
             values.splice(keyIndex, 1);
 
@@ -125,10 +124,10 @@ export function getMaxAgeOptions(options: Types.Options) {
 
     if (options.updateExpire) {
       const onCacheHit = function (cache: Types.Cache) {
-        const key: any = cache.keys[0];
-        const index: number = findExpirationIndex(cache, key);
+        const key = cache.keys[0];
+        const index = findExpirationIndex(cache, key);
 
-        if (~index) {
+        if (index !== -1) {
           clearExpiration(cache, key, false);
 
           const expiration = cache.expirations[index];

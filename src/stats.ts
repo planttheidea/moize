@@ -1,8 +1,5 @@
-// utils
-import { assign } from './utils';
-
-// types
 import * as Types from './types';
+import { assign } from './utils';
 
 const INITIAL_STATS_PROFILE: Types.StatsProfile = { calls: 0, hits: 0 };
 
@@ -97,14 +94,15 @@ export function getProfileName(
   const lines = stack.split('\n').slice(3);
 
   let profileNameLocation;
+  let line;
 
-  for (let index = 0, line; index < lines.length; index++) {
+  for (let index = 0; index < lines.length; index++) {
     line = lines[index];
 
     if (
-      !~line.indexOf('/moize/') &&
-      !~line.indexOf(' (native)') &&
-      !~line.indexOf(' Function.')
+      line.indexOf('/moize/') === -1 &&
+      line.indexOf(' (native)') === -1 &&
+      line.indexOf(' Function.') === -1
     ) {
       profileNameLocation = line.replace(/\n/g, '\\n').trim();
       break;
@@ -200,26 +198,26 @@ export function getStatsCache() {
  * @returns the options related to stats
  */
 export function getStatsOptions(options: Types.Options) {
-  if (STATS_CACHE.isCollectingStats) {
-    const { profiles } = STATS_CACHE;
-    const { profileName } = options;
-
-    if (!profiles[profileName]) {
-      profiles[profileName] = assign({}, INITIAL_STATS_PROFILE);
-    }
-
-    return {
-      onCacheAdd() {
-        profiles[options.profileName].calls++;
-      },
-      onCacheHit() {
-        profiles[options.profileName].calls++;
-        profiles[options.profileName].hits++;
-      },
-    };
+  if (!STATS_CACHE.isCollectingStats) {
+    return {};
   }
 
-  return {};
+  const { profiles } = STATS_CACHE;
+  const { profileName } = options;
+
+  if (!profiles[profileName]) {
+    profiles[profileName] = assign({}, INITIAL_STATS_PROFILE);
+  }
+
+  return {
+    onCacheAdd() {
+      profiles[options.profileName].calls++;
+    },
+    onCacheHit() {
+      profiles[options.profileName].calls++;
+      profiles[options.profileName].hits++;
+    },
+  };
 }
 
 /**
