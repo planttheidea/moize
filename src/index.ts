@@ -24,25 +24,38 @@ import {
   isValidNumericOption,
 } from './utils';
 
-import { Moize } from './types';
+import * as Types from './types';
 
-function moize<Fn extends Moize.Moizable>(
-  fn: Fn,
-  options?: Moize.Options,
-): Moize.Moized<Fn>;
-function moize<Fn extends Moize.Moizable>(
-  fn: Moize.Moized<Fn>,
-  options?: Moize.Options,
-): Moize.Moized<Fn['fn']>;
-function moize(options: Moize.Options): moize;
-function moize<Fn extends Moize.Moizable>(
-  fn: Fn | Moize.Options,
-  options?: Moize.Options,
+export interface Moize<Fn extends Types.Moizeable = Types.Fn> extends Types.Fn {
+  (fn: Fn, options?: Types.Options): Types.Moized<Fn>;
+  (fn: Types.Moized<Fn>, options?: Types.Options): Types.Moized<Fn['fn']>;
+  (options: Types.Options): Moize;
+
+  collectStats: () => void;
+  compose: (...args: Types.Fn[]) => Types.Fn;
+  deep: Moize;
+  getStats: (profileName?: string) => Types.StatsObject;
+  infinite: Moize;
+  isCollectingStats: () => boolean;
+  isMemoized: <Fn extends Types.Moizeable = Types.Fn>(value: any) => value is Types.Moized<Fn>;
+  maxAge: (age: number) => Moize;
+  maxArgs: (args: number) => Moize;
+  maxSize: (size: number) => Moize;
+  promise: Moize;
+  react: Moize;
+  reactGlobal: Moize;
+  serialize: Moize;
+  setDefaultOptions: (options: Types.Options) => boolean;
+}
+
+const moize: Moize = function<Fn extends Types.Moizeable = Types.Fn> (
+  fn: Fn | Types.Options | Types.Moized<Fn>,
+  options?: Types.Options,
 ) {
   if (isOptions(fn)) {
     return function curriedMoize(
-      curriedFn: Fn | Moize.Options,
-      curriedOptions?: Moize.Options,
+      curriedFn: Fn | Types.Options,
+      curriedOptions?: Types.Options,
     ) {
       if (isOptions(curriedFn)) {
         return moize(mergeOptions(fn, curriedFn));
@@ -109,7 +122,7 @@ function moize<Fn extends Moize.Moizable>(
   );
 
   return createMoized(moize, fn, normalizedOptions);
-}
+};
 
 moize.collectStats = collectStats;
 

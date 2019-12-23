@@ -5,7 +5,7 @@ import { MicroMemoize } from 'micro-memoize';
 import { createOnCacheOperation, enhanceCache } from '../src/cache';
 import moize from '../src';
 import { getStatsCache } from '../src/stats';
-import { Moize } from '../src/types';
+import * as Types from '../src/types';
 
 describe('createOnCacheOperation', () => {
   it('should return undefined when fn is not a function', () => {
@@ -43,7 +43,7 @@ describe('createOnCacheOperation', () => {
 
 describe('enhanceCache', () => {
   it('should add the expirations and stats to the cache', () => {
-    const cache = {} as Moize.Cache;
+    const cache = {} as Types.Cache;
 
     enhanceCache(cache);
 

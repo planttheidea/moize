@@ -5,7 +5,7 @@ import stringifySafe from 'fast-stringify';
 
 import { makeCallable } from './utils';
 
-import { Moize } from './types';
+import * as Types from './types';
 
 const fnToString = makeCallable(Function.prototype.toString);
 const regexpToString = makeCallable(RegExp.prototype.toString);
@@ -56,14 +56,14 @@ export function customReplacer(_key: string, value: any): any {
  * @returns {function} the function to use in serializing the arguments
  */
 export function getSerializerFunction(
-  options: Moize.Options,
-): Moize.Serializer {
+  options: Types.Options,
+): Types.Serializer {
   return typeof options.serializer === 'function'
     ? options.serializer
     : getStringifiedArgs;
 }
 
-const STRINGIFY_TYPES: Moize.Dictionary<true> = {
+const STRINGIFY_TYPES: Types.Dictionary<true> = {
   function: true,
   object: true,
   symbol: true,

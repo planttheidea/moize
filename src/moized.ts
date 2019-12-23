@@ -7,7 +7,7 @@ import { clearExpiration } from './maxAge';
 import { getStats } from './stats';
 import { assign } from './utils';
 
-import { Moize } from './types';
+import * as Types from './types';
 
 /* eslint-disable react/forbid-foreign-prop-types */
 
@@ -64,9 +64,9 @@ export const STATIC_METHODS = [
  * @param propertyName the name of the property to define
  * @param isMethod is the property a method
  */
-function defineStaticProperty<Fn extends Moize.Moizable>(
-  fn: Moize.Moized<Fn>,
-  propertyName: keyof Moize.Moized<Fn>,
+function defineStaticProperty<Fn extends Types.Moizeable>(
+  fn: Types.Moized<Fn>,
+  propertyName: keyof Types.Moized<Fn>,
   isMethod: boolean,
 ) {
   const message = `${propertyName} is not available on MoizedComponent directly. You can access it on the instance by capturing the ref and accessing the "Moized" property on it.`;
@@ -135,10 +135,10 @@ function loadReact() {
   }
 }
 
-export function createMoizedComponent<Fn extends Moize.Moizable>(
-  moize: Moize.Moizer<Fn>,
+export function createMoizedComponent<Fn extends Types.Moizeable>(
+  moize: Types.Moizer<Fn>,
   fn: Fn,
-  options?: Moize.Options,
+  options?: Types.Options,
 ) {
   const componentOptions = options ? assign({}, options, REACT_OPTIONS) : REACT_OPTIONS;
 
@@ -147,7 +147,7 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   type GenericProps = import('react').Props<any>;
   type Component = import('react').Component<GenericProps, any, any>;
 
-  type MoizedComponent = ComponentClass & Moize.Moized<Fn>;
+  type MoizedComponent = ComponentClass & Types.Moized<Fn>;
 
   if (!React) {
     loadReact();
@@ -164,7 +164,7 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   // @ts-ignore
   const MoizedComponent: MoizedComponent = function MoizedComponent(
     props: GenericProps,
-    context: Moize.Dictionary<any>,
+    context: Types.Dictionary<any>,
     updater: any,
   ): Component {
     this.props = props;
@@ -208,10 +208,10 @@ export function createMoizedComponent<Fn extends Moize.Moizable>(
   return MoizedComponent;
 }
 
-export function createMoized<Fn extends Moize.Moizable>(
-  moize: Moize.Moizer<Fn>,
+export function createMoized<Fn extends Types.Moizeable>(
+  moize: Types.Moizer<Fn>,
   fn: Fn,
-  options: Moize.Options,
+  options: Types.Options,
 ) {
   if (options.isReact && !options.isReactGlobal) {
     return createMoizedComponent(moize, fn, options);
@@ -219,7 +219,7 @@ export function createMoized<Fn extends Moize.Moizable>(
 
   const { _mm: microMemoizeOptions } = options;
 
-  const moized = memoize(fn, microMemoizeOptions) as Moize.Moized<Fn>;
+  const moized = memoize(fn, microMemoizeOptions) as Types.Moized<Fn>;
 
   // @ts-ignore
   moized.options = options;
@@ -333,6 +333,6 @@ export function createMoized<Fn extends Moize.Moizable>(
   return moized;
 }
 
-function getDisplayName(fn: Moize.Moizable) {
+function getDisplayName(fn: Types.Moizeable) {
   return `Moized(${fn.displayName || fn.name || 'Component'})`;
 }

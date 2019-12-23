@@ -1,6 +1,6 @@
 import { isValidNumericOption } from './utils';
 
-import { Moize } from './types';
+import * as Types from './types';
 
 /**
  * @private
@@ -15,7 +15,7 @@ import { Moize } from './types';
  * @param shouldRemove should the expiration be removed from the list
  */
 export function clearExpiration(
-  cache: Moize.Cache,
+  cache: Types.Cache,
   key: any,
   shouldRemove: boolean,
 ) {
@@ -44,7 +44,7 @@ export function clearExpiration(
  * @param key the key to match
  * @returns the index of the expiration
  */
-export function findExpirationIndex(cache: Moize.Cache, key: any[]): number {
+export function findExpirationIndex(cache: Types.Cache, key: any[]): number {
   const { expirations } = cache;
 
   for (let index: number = 0; index < expirations.length; index++) {
@@ -67,16 +67,16 @@ export function findExpirationIndex(cache: Moize.Cache, key: any[]): number {
  * @param options the options for the moize instance
  * @returns the options specific to maxAge
  */
-export function getMaxAgeOptions(options: Moize.Options) {
+export function getMaxAgeOptions(options: Types.Options) {
   if (typeof options.maxAge === 'number' && options.maxAge !== Infinity) {
     if (!isValidNumericOption(options.maxAge)) {
       throw new Error('The maxAge option must be a non-negative integer.');
     }
 
     const onCacheAdd = function (
-      cache: Moize.Cache,
-      _options: Moize.Options,
-      memoized: Moize.Moized<Moize.Moizable>,
+      cache: Types.Cache,
+      _options: Types.Options,
+      memoized: Types.Moized<Types.Moizeable>,
     ) {
       const key: any = cache.keys[0];
 
@@ -124,7 +124,7 @@ export function getMaxAgeOptions(options: Moize.Options) {
     };
 
     if (options.updateExpire) {
-      const onCacheHit = function (cache: Moize.Cache) {
+      const onCacheHit = function (cache: Types.Cache) {
         const key: any = cache.keys[0];
         const index: number = findExpirationIndex(cache, key);
 

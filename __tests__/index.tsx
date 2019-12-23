@@ -25,20 +25,20 @@ import {
 } from '../src/stats';
 import { combine, compose } from '../src/utils';
 
-import { Moize } from '../src/types';
+import * as Types from '../src/types';
 
 const { hasOwnProperty } = Object.prototype;
 
 type CacheHandler = (
-  cache: Moize.Cache,
-  options: Moize.Options,
-  memoized: Moize.Moized<Moize.Moizable>,
+  cache: Types.Cache,
+  options: Types.Options,
+  memoized: Types.Moized<Types.Moizeable>,
 ) => void;
 
 function getOptions(
-  options: Moize.Options,
+  options: Types.Options,
   profileName?: string,
-): Moize.Options {
+): Types.Options {
   const merged = {
     ...DEFAULT_OPTIONS,
     ...options,
@@ -70,9 +70,9 @@ function getOptions(
   return profileName ? { ...withMmOptions, profileName } : withMmOptions;
 }
 
-const isMoizedFunction = (
-  fn: Moize.Moized<Moize.Moizable>,
-  options: Moize.Options,
+const isMemoizedFunction = (
+  fn: Types.Moized<Types.Moizeable>,
+  options: Types.Options,
 ) => {
   expect(hasOwnProperty.call(fn, 'cache')).toBe(true);
   expect(fn.cache.snapshot).toEqual({
@@ -99,7 +99,7 @@ describe('moize', () => {
 
     const moized = moize(fn);
 
-    isMoizedFunction(moized, getOptions({}, 'mockConstructor 1'));
+    isMemoizedFunction(moized, getOptions({}, 'mockConstructor 1'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -123,7 +123,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 2'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 2'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -147,7 +147,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 3'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 3'));
 
     const fnArg = () => {};
 
@@ -173,7 +173,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 4'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 4'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -192,7 +192,7 @@ describe('moize', () => {
   it('should handle React components correctly when global', () => {
     const Fn = jest.fn().mockImplementation(function FakeComponent(props) {
       return <div>{JSON.stringify(props)}</div>;
-    }) as Moize.Moizable;
+    }) as Types.Moizeable;
 
     Fn.contextTypes = {};
     Fn.displayName = 'Custom';
@@ -206,7 +206,7 @@ describe('moize', () => {
 
     const Moized = moize(Fn, options);
 
-    isMoizedFunction(Moized, getOptions(options, 'Custom 1'));
+    isMemoizedFunction(Moized, getOptions(options, 'Custom 1'));
 
     const { transformKey } = Moized.options._mm;
 
@@ -238,7 +238,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 5'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 5'));
 
     const fnArg = () => {};
 
@@ -273,7 +273,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 6'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 6'));
 
     const fnArg = () => {};
 
@@ -314,7 +314,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 7'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 7'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -346,7 +346,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 8'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 8'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -376,7 +376,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 9'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 9'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
     const reverseArgs = [...args].reverse();
@@ -401,7 +401,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 10'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 10'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -432,7 +432,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 11'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 11'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -463,7 +463,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 12'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 12'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -495,7 +495,7 @@ describe('moize', () => {
 
     const fn = jest.fn();
 
-    let moized: Moize.Moized<typeof fn>;
+    let moized: Types.Moized<typeof fn>;
 
     const options = {
       maxAge: 100,
@@ -510,7 +510,7 @@ describe('moize', () => {
 
     moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 13'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 13'));
 
     moized(...args);
     moized(...args);
@@ -534,7 +534,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options));
+    isMemoizedFunction(moized, getOptions(options));
   });
 
   it('should handle a custom transformArgs method correctly', () => {
@@ -547,7 +547,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 14'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 14'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -574,7 +574,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 15'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 15'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -614,7 +614,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 16'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 16'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -648,7 +648,7 @@ describe('moize', () => {
 
     const moized = moize(firstOptions)(secondOptions)(fn);
 
-    isMoizedFunction(moized, getOptions(mergedOptions, 'mockConstructor 17'));
+    isMemoizedFunction(moized, getOptions(mergedOptions, 'mockConstructor 17'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -692,7 +692,7 @@ describe('moize', () => {
 
     const moized = moize(firstOptions)(fn, secondOptions);
 
-    isMoizedFunction(moized, getOptions(mergedOptions, 'mockConstructor 18'));
+    isMemoizedFunction(moized, getOptions(mergedOptions, 'mockConstructor 18'));
 
     const args = ['foo', 'bar', 'baz', 'quz'];
 
@@ -737,7 +737,7 @@ describe('moize', () => {
 
     expect(firstMoized.fn).toBe(fn);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       firstMoized,
       getOptions(firstOptions, 'mockConstructor 19'),
     );
@@ -755,7 +755,7 @@ describe('moize', () => {
       ...secondOptions,
     };
 
-    isMoizedFunction(
+    isMemoizedFunction(
       secondMoized,
       getOptions(mergedOptions, 'mockConstructor 19'),
     );
@@ -790,7 +790,7 @@ describe('moize', () => {
 
     const moized = moize(fn, options);
 
-    isMoizedFunction(moized, getOptions(options, 'mockConstructor 20'));
+    isMemoizedFunction(moized, getOptions(options, 'mockConstructor 20'));
 
     const args = ['foo', 'bar'];
 
@@ -851,7 +851,7 @@ describe('moize.compose', () => {
   it('should call the internal compose and returns moize itself when undefined', () => {
     const functions = [null, false];
 
-    const result = moize.compose(...functions);
+    const result = moize.compose(...functions as unknown as Types.Fn[]);
 
     expect(result).toBe(moize);
   });
@@ -867,11 +867,11 @@ describe('moize.deep', () => {
     const moizedShorthand = moize.deep(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 21'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 22'),
     );
@@ -894,11 +894,11 @@ describe('moize.infinite', () => {
     const moizedShorthand = moize.infinite(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 23'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 24'),
     );
@@ -943,11 +943,11 @@ describe('moize.maxAge', () => {
     const moizedShorthand = moize.maxAge(options.maxAge)(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 25'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 26'),
     );
@@ -976,11 +976,11 @@ describe('moize.maxArgs', () => {
     const moizedShorthand = moize.maxArgs(options.maxArgs)(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 27'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 28'),
     );
@@ -1015,11 +1015,11 @@ describe('moize.maxSize', () => {
     const moizedShorthand = moize.maxSize(options.maxSize)(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 29'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 30'),
     );
@@ -1048,11 +1048,11 @@ describe('moize.promise', () => {
     const moizedShorthand = moize.promise(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 31'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 32'),
     );
@@ -1084,7 +1084,7 @@ describe('moize.react', () => {
 
         ref.Moized.clear();
 
-        isMoizedFunction(
+        isMemoizedFunction(
           ref.Moized,
           getOptions({ ...options, isReactGlobal: true }, 'mockConstructor 33'),
         );
@@ -1103,7 +1103,7 @@ describe('moize.react', () => {
 
         ref.Moized.clear();
 
-        isMoizedFunction(
+        isMemoizedFunction(
           ref.Moized,
           getOptions({ ...options, isReactGlobal: true }, 'mockConstructor 34'),
         );
@@ -1146,11 +1146,11 @@ describe('moize.reactGlobal', () => {
     const moizedShorthand = moize.reactGlobal(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 35'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 36'),
     );
@@ -1167,11 +1167,11 @@ describe('moize.serialize', () => {
     const moizedShorthand = moize.serialize(fn);
     const moizedWithOptions = moize(fn, options);
 
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedShorthand,
       getOptions(options, 'mockConstructor 37'),
     );
-    isMoizedFunction(
+    isMemoizedFunction(
       moizedWithOptions,
       getOptions(options, 'mockConstructor 38'),
     );

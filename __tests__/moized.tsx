@@ -11,7 +11,7 @@ import { DEFAULT_OPTIONS } from '../src/options';
 import moize from '../src';
 import * as maxAge from '../src/maxAge';
 import { getStatsCache, getUsagePercentage, getStats } from '../src/stats';
-import { Moize } from '../src/types';
+import * as Types from '../src/types';
 
 describe('createMoized', () => {
   describe('MoizedComponent (per instance)', () => {
@@ -29,13 +29,13 @@ describe('createMoized', () => {
       let fooCount = 0;
       let barCount = 0;
 
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         fooCount++;
 
         return <div {...props} />;
       }
 
-      function Bar(props: Moize.Dictionary<any>) {
+      function Bar(props: Types.Dictionary<any>) {
         barCount++;
 
         return <div {...props} />;
@@ -63,7 +63,7 @@ describe('createMoized', () => {
     });
 
     it('should create a moized function with the extra values', () => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 
@@ -91,7 +91,7 @@ describe('createMoized', () => {
     });
 
     it('should allow access to static methods and values on the moized instance ref', done => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 
@@ -125,7 +125,7 @@ describe('createMoized', () => {
     });
 
     it('should throw errors if attempting to access normal moized methods on the component class', () => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 
@@ -137,7 +137,7 @@ describe('createMoized', () => {
     });
 
     it('should throw errors if attempting to access normal moized values on the component class', () => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 
@@ -165,13 +165,13 @@ describe('createMoized', () => {
       let fooCount = 0;
       let barCount = 0;
 
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         fooCount++;
 
         return <div {...props} />;
       }
 
-      function Bar(props: Moize.Dictionary<any>) {
+      function Bar(props: Types.Dictionary<any>) {
         barCount++;
 
         return <div {...props} />;
@@ -199,7 +199,7 @@ describe('createMoized', () => {
     });
 
     it('should create a moized function with the extra values', () => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 
@@ -227,7 +227,7 @@ describe('createMoized', () => {
     });
 
     it('should not throw errors if attempting to access normal moized methods on the component class', () => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 
@@ -239,7 +239,7 @@ describe('createMoized', () => {
     });
 
     it('should throw errors if attempting to access normal moized values on the component class', () => {
-      function Foo(props: Moize.Dictionary<any>) {
+      function Foo(props: Types.Dictionary<any>) {
         return <div {...props} />;
       }
 

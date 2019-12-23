@@ -1,6 +1,6 @@
 /* eslint-disable prefer-rest-params */
 
-import { Moize } from './types';
+import * as Types from './types';
 
 /**
  * @private
@@ -58,7 +58,7 @@ export const assign =
  * @param functions the functions to combine
  * @returns the combined function
  */
-export function combine(...args: any[]): Moize.Handler | void {
+export function combine(...args: Types.Fn[]): Types.Fn | void {
   const handlers = getValidHandlers(args);
 
   switch (handlers.length) {
@@ -69,10 +69,7 @@ export function combine(...args: any[]): Moize.Handler | void {
       return handlers[0];
 
     default:
-      return handlers.reduceRight(function combined(
-        f: Moize.Handler,
-        g: Moize.Handler,
-      ) {
+      return handlers.reduceRight(function combined(f, g) {
         return function () {
           f.apply(this, arguments);
           g.apply(this, arguments);
@@ -92,20 +89,20 @@ export function combine(...args: any[]): Moize.Handler | void {
  * @param functions the functions to compose
  * @returns the composed function
  */
-export function compose(...args: any[]): Moize.Handler | void {
+export function compose(...args: Types.Fn[]): Types.Fn {
   const handlers = getValidHandlers(args);
 
   switch (handlers.length) {
     case 0:
-      return;
+      return undefined;
 
     case 1:
       return handlers[0];
 
     default:
       return handlers.reduceRight(function reduced(
-        f: Moize.Handler,
-        g: Moize.Handler,
+        f: Types.Fn,
+        g: Types.Fn,
       ) {
         return function () {
           return g(f.apply(this, arguments));
@@ -127,7 +124,7 @@ export function compose(...args: any[]): Moize.Handler | void {
  */
 export function getValidHandlers(possibleHandlers: any[]) {
   return possibleHandlers.filter(
-    possibleHandler => typeof possibleHandler === 'function',
+    (possibleHandler) => typeof possibleHandler === 'function',
   );
 }
 
@@ -144,9 +141,9 @@ export const hasOwnProperty = makeCallable(Object.prototype.hasOwnProperty);
  * @param value the value to test
  * @returns is the value a memoized function
  */
-export function isMemoized<Fn extends Moize.Moizable>(
+export function isMemoized<Fn extends Types.Moizeable>(
   value: any,
-): value is Moize.Moized<Fn> {
+): value is Types.Moized<Fn> {
   return typeof value === 'function' && value.isMemoized === true;
 }
 
@@ -182,7 +179,7 @@ export function isValidNumericOption(option: any) {
  * @param method the method to make callable
  * @returns the callable method
  */
-export function makeCallable(method: Moize.Handler) {
+export function makeCallable(method: Types.Fn) {
   return Function.prototype.bind.call(Function.prototype.call, method);
 }
 

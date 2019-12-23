@@ -1,22 +1,16 @@
-import { MicroMemoize } from 'micro-memoize';
+import { MicroMemoize } from 'micro-memoize/src/types';
 
-export namespace Moize {
-  export type Dictionary<Type> = {
-    [key: string]: Type;
-    [index: number]: Type;
-  };
+export type Dictionary<Type> = Record<number | string, Type>;
 
-  export type Handler = (...args: any[]) => any;
+export type Serializer = (...args: any[]) => [string];
 
-  export type Serializer = (...args: any[]) => [string];
-
-  export type CacheHandler = (
+export type CacheHandler = (
     cache: MicroMemoize.Cache,
     options: Options,
-    memoized: Moized<Moizable>,
+    memoized: Moized<Moizeable>,
   ) => void;
 
-  export type CacheHandlers = {
+export type CacheHandlers = {
     // handled for when an item is added to cache (overrides micro-memoize)
     onCacheAdd?: CacheHandler;
 
@@ -27,7 +21,7 @@ export namespace Moize {
     onCacheHit?: CacheHandler;
   };
 
-  export type Options = Pick<MicroMemoize.Options, 'isPromise' | 'maxSize'> &
+export type Options = Pick<MicroMemoize.Options, 'isPromise' | 'maxSize'> &
     CacheHandlers & {
       // micro-memoize options
       _mm?: Omit<
@@ -79,54 +73,54 @@ export namespace Moize {
       useProfileNameLocation?: boolean;
     } & Dictionary<any>;
 
-  export type Expiration = {
+export type Expiration = {
     expirationMethod: () => void;
     key: any[];
     timeoutId: number | NodeJS.Timer;
   };
 
-  export type Expirations = Expiration[] & {
+export type Expirations = Expiration[] & {
     snapshot: Expiration[];
   };
 
-  export type StatsProfile = {
+export type StatsProfile = {
     calls: number;
     hits: number;
   };
 
-  export type StatsObject = StatsProfile & {
+export type StatsObject = StatsProfile & {
     profiles?: { [key: string]: StatsProfile };
     usage: string;
   };
 
-  export type StatsCache = {
+export type StatsCache = {
     isCollectingStats: boolean;
     profiles: { [key: string]: StatsProfile };
   };
 
-  export interface ProfiledFunction extends Function {
+export interface ProfiledFunction extends Fn {
     displayName?: string;
   }
 
-  export type Cache = MicroMemoize.Cache & {
+export type Cache = MicroMemoize.Cache & {
     expirations: Expirations;
     stats: StatsCache;
   };
 
-  export type Fn = (...args: any[]) => any;
+export type Fn = (...args: any[]) => any;
 
-  export type Moizable = Fn &
+export type Moizeable = Fn &
     Dictionary<any> & {
       defaultProps?: Dictionary<any>;
       displayName?: string;
-      propTypes?: Dictionary<Function>;
+      propTypes?: Dictionary<Fn>;
     };
 
-  export type Moized<Fn extends Moizable> = MicroMemoize.Memoized<Fn> & {
+export type Moized<Fn extends Moizeable> = MicroMemoize.Memoized<Fn> & {
     // native properties
     cache: Cache;
     fn: Fn;
-    isMemoized: boolean;
+    isMemoized: true;
     options: Options;
 
     // added properties
@@ -140,8 +134,7 @@ export namespace Moize {
     values: () => MicroMemoize.Value[];
   };
 
-  export type Moizer<Fn extends Moizable> = (
+export type Moizer<Fn extends Moizeable> = (
     fn: Fn,
     options: Options,
   ) => Moized<Fn>;
-}

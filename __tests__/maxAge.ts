@@ -2,7 +2,7 @@
 
 import { clearExpiration, getMaxAgeOptions } from '../src/maxAge';
 
-import { Moize } from '../src/types';
+import * as Types from '../src/types';
 import moize from '../src';
 
 const isStrictlyEqual = (a: any, b: any) => a === b;
@@ -31,7 +31,7 @@ describe('clearExpiration', () => {
           timeoutId: 123,
         },
       ],
-    } as Moize.Cache;
+    } as Types.Cache;
 
     clearExpiration(cache, key, false);
 
@@ -49,7 +49,7 @@ describe('clearExpiration', () => {
           timeoutId: 123,
         },
       ],
-    } as Moize.Cache;
+    } as Types.Cache;
 
     clearExpiration(cache, key, true);
 
@@ -67,7 +67,7 @@ describe('clearExpiration', () => {
           timeoutId: 123,
         },
       ],
-    } as Moize.Cache;
+    } as Types.Cache;
 
     clearExpiration(cache, key, true);
 
@@ -387,7 +387,7 @@ describe('getMaxAgeOptions', () => {
     });
 
     it('should do onCacheHitnothing when the expiration does not exist', () => {
-      const originalExpirations: Moize.Expiration[] = [];
+      const originalExpirations: Types.Expiration[] = [];
 
       const options = {
         isEqual: isStrictlyEqual,

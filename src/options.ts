@@ -5,9 +5,9 @@ import { createGetInitialArgs } from './maxArgs';
 import { getSerializerFunction } from './serialize';
 import { assign, compose } from './utils';
 
-import { Moize } from './types';
+import * as Types from './types';
 
-const DEFAULTS: Moize.Options = {
+const DEFAULTS: Types.Options = {
   equals: undefined,
   isDeepEqual: false,
   isPromise: false,
@@ -43,7 +43,7 @@ const MERGED_HANDLER_OPTIONS = ['onCacheAdd', 'onCacheChange', 'onCacheHit', 'tr
  * @param options the options for the moize instance
  * @returns the default options requested
  */
-export function getDefaultOptions(): Moize.Options {
+export function getDefaultOptions(): Types.Options {
   return DEFAULT_OPTIONS;
 }
 
@@ -58,7 +58,7 @@ export function getDefaultOptions(): Moize.Options {
  * @param options the options for the moize instance
  * @returns the isEqual method requested
  */
-export function getIsEqual(options: Moize.Options) {
+export function getIsEqual(options: Types.Options) {
   return (
     options.equals ||
     (options.isDeepEqual && deepEqual) ||
@@ -81,10 +81,10 @@ export function getIsEqual(options: Moize.Options) {
  * @returns the options for the micro-memoize call
  */
 export function getMicroMemoizeOptions(
-  options: Moize.Options,
-  onCacheAdd: Moize.Handler | void,
-  onCacheChange: Moize.Handler | void,
-  onCacheHit: Moize.Handler | void,
+  options: Types.Options,
+  onCacheAdd: Types.Fn | void,
+  onCacheChange: Types.Fn | void,
+  onCacheHit: Types.Fn | void,
 ) {
   const isEqual = getIsEqual(options);
   const transformKey = getTransformKey(options);
@@ -126,7 +126,7 @@ export function getMicroMemoizeOptions(
  * @param options the options for the moize instance
  * @returns the transformKey option to use
  */
-export function getTransformKey(options: Moize.Options) {
+export function getTransformKey(options: Types.Options) {
   const handlers = [options.isSerialized && getSerializerFunction(options), options.transformArgs];
 
   let maxArgs;
@@ -161,7 +161,7 @@ export function getTransformKey(options: Moize.Options) {
  * @param value the value to test
  * @returns if the value passed is a valid options value
  */
-export function isOptions(value: any): value is Moize.Options {
+export function isOptions(value: any): value is Types.Options {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
@@ -178,13 +178,13 @@ export function isOptions(value: any): value is Moize.Options {
  * @returns the merged optoins
  */
 export function mergeOptions(
-  originalOptions: Moize.Options,
-  newOptions: Moize.Options,
-): Moize.Options {
+  originalOptions: Types.Options,
+  newOptions: Types.Options,
+): Types.Options {
   const mergedOptions = assign({}, originalOptions, newOptions);
 
   return MERGED_HANDLER_OPTIONS.reduce(
-    (_mergedOptions: Moize.Options, option: keyof Moize.Options) => {
+    (_mergedOptions: Types.Options, option: keyof Types.Options) => {
       _mergedOptions[option] = compose(
         originalOptions[option],
         newOptions[option],
@@ -208,10 +208,10 @@ export function mergeOptions(
  * @param options the options to set
  * @returns whether the options were updated or not
  */
-export function setDefaultOptions(options?: Moize.Options): boolean {
+export function setDefaultOptions(options: Types.Options) {
   if (isOptions(options)) {
     Object.keys(options).forEach((option: keyof typeof DEFAULT_OPTIONS) => {
-      DEFAULT_OPTIONS[option] = options[option];
+      DEFAULT_OPTIONS[option] = options[option as string];
     });
 
     return true;

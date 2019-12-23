@@ -1,11 +1,11 @@
 import { getStatsCache } from './stats';
 import { slice } from './utils';
 
-import { Moize } from './types';
+import * as Types from './types';
 
 export function createOnCacheOperation(
-  fn: Moize.CacheHandler | void,
-): Moize.CacheHandler | void {
+  fn: Types.CacheHandler | void,
+): Types.CacheHandler | void {
   if (typeof fn === 'function') {
     /**
      * @private
@@ -22,9 +22,9 @@ export function createOnCacheOperation(
      * @returns the result of the cache modified operation
      */
     return function onCacheOperation(
-      cache: Moize.Cache,
-      _options: Moize.Options,
-      memoized: Moize.Moized<Moize.Moizable>,
+      cache: Types.Cache,
+      _options: Types.Options,
+      memoized: Types.Moized<Types.Moizeable>,
     ) {
       return fn(cache, memoized.options, memoized);
     };
@@ -41,9 +41,9 @@ export function createOnCacheOperation(
  *
  * @param cache the cache to enhance
  */
-export function enhanceCache(cache: Moize.Cache) {
+export function enhanceCache(cache: Types.Cache) {
   // @ts-ignore
-  const expirations: Moize.Expirations = [];
+  const expirations: Types.Expirations = [];
 
   Object.defineProperty(expirations, 'snapshot', {
     get() {
