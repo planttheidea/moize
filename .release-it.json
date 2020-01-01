@@ -3,7 +3,23 @@
     "release": true,
     "tagName": "v${version}"
   },
-  "scripts": {
-    "beforeStart": "npm run prepublish:compile"
+  "hooks": {
+    "before:init": [
+      "npm run lint",
+      "npm run flow",
+      "npm run copy:types",
+      "npm run test:coverage",
+      "npm run transpile:lib",
+      "npm run transpile:es",
+      "npm run transpile:mjs",
+      "npm run rename:mjs",
+      "npm run dist"
+    ],
+    "after:release": [
+      "npm run docs",
+      "git add .",
+      "git commit -m 'Update docs'",
+      "git push"
+    ]
   }
 }
