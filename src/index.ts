@@ -3,7 +3,13 @@ import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
 import { getMaxAgeOptions } from './maxAge';
 import { createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey } from './options';
-import { collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache } from './stats';
+import {
+  collectStats,
+  getDefaultProfileName,
+  getStats,
+  getStatsOptions,
+  statsCache,
+} from './stats';
 import { Expiration, MicroMemoizeOptions, Moize, Moizeable, Moized, Options } from './types';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
@@ -12,7 +18,6 @@ export * from './types';
 /**
  * @module moize
  */
-
 
 /**
  * @description
@@ -165,8 +170,8 @@ moize.collectStats = collectStats;
  * @param functions the functions to compose
  * @returns the composed function
  */
-moize.compose = function(...moized: Moize[]): Moize {
-  return compose<typeof moize>(...moized) || moize;
+moize.compose = function(...moized: Moize[]) {
+  return compose<Moize>(...moized) || moize;
 };
 
 /**
@@ -251,7 +256,7 @@ moize.isMoized = function isMoized(fn: any): fn is Moized {
  * @param {number} maxAge the TTL of the value in cache
  * @returns {function} the moizer function
  */
-moize.maxAge = function maxAge(maxAge: number): Moize {
+moize.maxAge = function maxAge(maxAge: number) {
   return moize({ maxAge });
 };
 
@@ -267,7 +272,7 @@ moize.maxAge = function maxAge(maxAge: number): Moize {
  * @param {number} maxArgs the number of args to base the key on
  * @returns {function} the moizer function
  */
-moize.maxArgs = function maxArgs(maxArgs: number): Moize {
+moize.maxArgs = function maxArgs(maxArgs: number) {
   return moize({ maxArgs });
 };
 
@@ -283,7 +288,7 @@ moize.maxArgs = function maxArgs(maxArgs: number): Moize {
  * @param {number} maxSize the maximum size of the cache
  * @returns {function} the moizer function
  */
-moize.maxSize = function maxSize(maxSize: number): Moize {
+moize.maxSize = function maxSize(maxSize: number) {
   return moize({ maxSize });
 };
 
