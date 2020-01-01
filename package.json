@@ -11,7 +11,7 @@
       "@babel/polyfill"
     ],
     "sources": [
-      "src/*.js"
+      "src/*.ts"
     ],
     "verbose": true
   },

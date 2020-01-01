@@ -1,24 +1,17 @@
-// test
 import test from 'ava';
-import {
-  deepEqual,
-  sameValueZeroEqual,
-  shallowEqual,
-} from 'fast-equals';
-import {onCacheOperation} from 'micro-memoize/lib/utils';
-import React, {useRef} from 'react';
+import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
+import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
 import sinon from 'sinon';
-
-// src
+import { DEFAULT_OPTIONS } from 'src/constants';
 import * as index from 'src/index';
-import {DEFAULT_OPTIONS} from 'src/constants';
 import * as maxAge from 'src/maxAge';
 import * as maxArgs from 'src/maxArgs';
 import * as optionsUtils from 'src/options';
 import * as serialize from 'src/serialize';
 import * as stats from 'src/stats';
 import * as utils from 'src/utils';
+
 
 const moize = index.default;
 
@@ -58,9 +51,9 @@ test('if moize will handle the standard use-case', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -101,9 +94,9 @@ test('if moize will handle a custom equals function correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -142,9 +135,9 @@ test('if moize will handle deep equals correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -185,9 +178,9 @@ test('if moize will handle promises correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: true,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -208,7 +201,7 @@ test('if moize will handle promises correctly', (t) => {
 test.serial('if moize will handle React components correctly', (t) => {
   const jsdom = require('jsdom-global')();
 
-  const Fn = sinon.stub().callsFake((props) => <div />);
+  const Fn = sinon.stub().callsFake(() => <div />);
 
   Fn.contextTypes = {};
   Fn.displayName = 'Custom';
@@ -236,9 +229,9 @@ test.serial('if moize will handle React components correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
@@ -286,9 +279,9 @@ test('if moize will handle serialization of keys correctly', (t) => {
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -338,9 +331,9 @@ test('if moize will handle serialization of keys correctly when functions should
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -390,9 +383,9 @@ test('if moize will handle serialization of keys correctly when a custom seriali
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -443,8 +436,8 @@ test('if moize will handle expiration of items in cache via maxAge correctly', a
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -502,9 +495,9 @@ test('if moize will handle limiting of arguments via maxArgs passed correctly', 
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -545,9 +538,9 @@ test('if moize will handle limiting of cache size via maxSize correctly', (t) =>
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: 1,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -583,9 +576,9 @@ test('if moize will handle negative maxSize correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -623,8 +616,8 @@ test('if moize will handle an onCacheAdd method correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -668,8 +661,8 @@ test('if moize will handle an onCacheChange method correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -713,8 +706,8 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
     transformKey: undefined,
   });
 
@@ -732,11 +725,6 @@ test('if moize will handle an onCacheHit method correctly', (t) => {
   t.true(fn.calledWith(...args));
 
   t.is(options.onCacheHit.callCount, 6);
-
-  const expectedArg = {
-    keys: moized.cache.keys,
-    values: moized.cache.values,
-  };
 
   t.deepEqual(options.onCacheHit.args, [
     [moized.cache, moized.options, moized],
@@ -773,8 +761,8 @@ test('if moize will handle an onExpire method for cache expiration correctly', a
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -831,9 +819,9 @@ test('if moize will handle a custom profileName for stats collection correctly',
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 });
@@ -863,9 +851,9 @@ test('if moize will handle a custom transformArgs method correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -924,7 +912,7 @@ test('if moize will handle an updateExpire method for cache expiration correctly
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheChange: onCacheOperation,
+    onCacheChange: undefined,
     transformKey: undefined,
   });
 
@@ -991,9 +979,9 @@ test('if moize will handle additional custom options correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -1043,9 +1031,9 @@ test('if moize will handle a curried options implementation correctly', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -1111,9 +1099,9 @@ test('if moize will handle a curried options implementation correctly when the f
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -1182,9 +1170,9 @@ test('if moize will handle moizing a previously-moized function correctly', (t) 
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   const args = ['foo', 'bar', 'baz', 'quz'];
@@ -1275,9 +1263,9 @@ test('if moize.deep will produce the correct moized function options', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 });
@@ -1344,8 +1332,8 @@ test('if moize.maxAge will produce the correct moized function options', (t) => 
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 
@@ -1393,9 +1381,9 @@ test('if moize.maxArgs will produce the correct moized function options', (t) =>
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(options.maxArgs).toString());
@@ -1434,9 +1422,9 @@ test('if moize.maxArgs will produce the correct moized function options when max
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey, undefined);
@@ -1474,9 +1462,9 @@ test('if moize.maxSize will produce the correct moized function options', (t) =>
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: options.maxSize,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 });
@@ -1515,9 +1503,9 @@ test('if moize.promise will produce the correct moized function options', (t) =>
     isMatchingKey: undefined,
     isPromise: options.isPromise,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 });
@@ -1556,9 +1544,9 @@ test('if moize.react will produce the correct moized function options', (t) => {
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
@@ -1600,9 +1588,9 @@ test('if moize.reactSimple will produce the correct moized function options', (t
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: options.maxSize,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), maxArgs.createGetInitialArgs(2).toString());
@@ -1642,9 +1630,9 @@ test('if moize.serialize will produce the correct moized function options', (t) 
     isMatchingKey: serialize.getIsSerializedKeyEqual,
     isPromise: false,
     maxSize: Infinity,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
   });
 
   t.is(transformKey.toString(), serialize.getSerializerFunction(options).toString());
@@ -1682,9 +1670,9 @@ test('if moize.simple will produce the correct moized function options', (t) => 
     isMatchingKey: undefined,
     isPromise: false,
     maxSize: options.maxSize,
-    onCacheAdd: onCacheOperation,
-    onCacheChange: onCacheOperation,
-    onCacheHit: onCacheOperation,
+    onCacheAdd: undefined,
+    onCacheChange: undefined,
+    onCacheHit: undefined,
     transformKey: undefined,
   });
 });

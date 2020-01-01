@@ -3,21 +3,16 @@ import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
 import { getMaxAgeOptions } from './maxAge';
 import { createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey } from './options';
-import {
-  collectStats,
-  getDefaultProfileName,
-  getStats,
-  getStatsOptions,
-  statsCache,
-} from './stats';
-import { CurriedMoize, Expiration, MicroMemoizeOptions, Moizeable, Moized, Options } from './types';
+import { collectStats, getDefaultProfileName, getStats, getStatsOptions, statsCache } from './stats';
+import { Expiration, MicroMemoizeOptions, Moize, Moizeable, Moized, Options } from './types';
 import { combine, compose, isMoized, mergeOptions } from './utils';
+
+export * from './types';
 
 /**
  * @module moize
  */
 
-export { collectStats };
 
 /**
  * @description
@@ -39,14 +34,16 @@ export { collectStats };
  * const MemoizedFoo = moize.react(Foo);
  *
  * @param fn the function to memoized, or a list of options when currying
- * @param options the options to apply
+ * @param [options=DEFAULT_OPTIONS] the options to apply
  * @returns the memoized function
  */
-function moize<Fn extends Moizeable, PassedOptions extends Options>(
+const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Options>(
   fn: Fn | PassedOptions,
-  options: PassedOptions = DEFAULT_OPTIONS
-): Moized<Fn, Options & PassedOptions> | CurriedMoize<Options & PassedOptions> {
+  passedOptions?: PassedOptions
+) {
   type CombinedOptions = Options & PassedOptions;
+
+  const options: Options = passedOptions || DEFAULT_OPTIONS;
 
   if (isMoized(fn)) {
     const moizeable = fn.originalFunction as Fn;
@@ -60,21 +57,21 @@ function moize<Fn extends Moizeable, PassedOptions extends Options>(
       curriedFn: CurriedFn | CurriedOptions,
       curriedOptions: CurriedOptions
     ) {
-      type CombinedCurriedOptions = Options & PassedOptions & CurriedOptions;
+      type CombinedCurriedOptions = CombinedOptions & CurriedOptions;
 
       if (typeof curriedFn === 'function') {
         const mergedOptions = mergeOptions(
-          fn as PassedOptions,
+          fn as CombinedOptions,
           curriedOptions
         ) as CombinedCurriedOptions;
 
         return moize(curriedFn, mergedOptions);
       }
 
-      const mergedOptions = mergeOptions(fn as PassedOptions, curriedFn as CurriedOptions);
+      const mergedOptions = mergeOptions(fn as CombinedOptions, curriedFn as CurriedOptions);
 
       return moize(mergedOptions);
-    } as CurriedMoize<CombinedOptions>;
+    };
   }
 
   const coalescedOptions: Options = {
@@ -143,7 +140,7 @@ function moize<Fn extends Moizeable, PassedOptions extends Options>(
     options: coalescedOptions,
     originalFunction: fn,
   });
-}
+};
 
 /**
  * @function
@@ -165,12 +162,11 @@ moize.collectStats = collectStats;
  * @description
  * method to compose moized methods and return a single moized function
  *
- * @param {...Array<(function)>} functions the functions to compose
- * @returns {function(...Array<*>): *} the composed function
+ * @param functions the functions to compose
+ * @returns the composed function
  */
-moize.compose = function(): Function {
-  // eslint-disable-next-line prefer-rest-params
-  return compose.apply(null, arguments) || moize;
+moize.compose = function(...moized: Moize[]): Moize {
+  return compose<typeof moize>(...moized) || moize;
 };
 
 /**
@@ -201,6 +197,19 @@ moize.getStats = getStats;
 
 /**
  * @function
+ * @name infinite
+ * @memberof module:moize
+ * @alias moize.infinite
+ *
+ * @description
+ * a moized method that will remove all limits from the cache size
+ *
+ * @returns {function} the moizer function
+ */
+moize.infinite = moize({ maxSize: Infinity });
+
+/**
+ * @function
  * @name isCollectingStats
  * @memberof module:moize
  * @alias moize.isCollectingStats
@@ -226,7 +235,7 @@ moize.isCollectingStats = function isCollectingStats(): boolean {
  * @param {*} fn the object to test
  * @returns {boolean} is fn a moized function
  */
-moize.isMoized = function isMoized(fn: any): boolean {
+moize.isMoized = function isMoized(fn: any): fn is Moized {
   return typeof fn === 'function' && !!fn.isMoized;
 };
 
@@ -242,7 +251,7 @@ moize.isMoized = function isMoized(fn: any): boolean {
  * @param {number} maxAge the TTL of the value in cache
  * @returns {function} the moizer function
  */
-moize.maxAge = function maxAge(maxAge: number): Function {
+moize.maxAge = function maxAge(maxAge: number): Moize {
   return moize({ maxAge });
 };
 
@@ -258,7 +267,7 @@ moize.maxAge = function maxAge(maxAge: number): Function {
  * @param {number} maxArgs the number of args to base the key on
  * @returns {function} the moizer function
  */
-moize.maxArgs = function maxArgs(maxArgs: number): Function {
+moize.maxArgs = function maxArgs(maxArgs: number): Moize {
   return moize({ maxArgs });
 };
 
@@ -274,7 +283,7 @@ moize.maxArgs = function maxArgs(maxArgs: number): Function {
  * @param {number} maxSize the maximum size of the cache
  * @returns {function} the moizer function
  */
-moize.maxSize = function maxSize(maxSize: number): Function {
+moize.maxSize = function maxSize(maxSize: number): Moize {
   return moize({ maxSize });
 };
 
@@ -309,22 +318,6 @@ moize.react = moize({ isReact: true });
 
 /**
  * @function
- * @name reactSimple
- * @memberof module:moize
- * @alias moize.reactSimple
- *
- * @description
- * a moized method specific to caching React element values, limiting to only the most recent result
- *
- * @returns {function} the moizer function
- */
-moize.reactSimple = moize({
-  isReact: true,
-  maxSize: 1,
-});
-
-/**
- * @function
  * @name serialize
  * @memberof module:moize
  * @alias moize.serialize
@@ -335,18 +328,5 @@ moize.reactSimple = moize({
  * @returns {function} the moizer function
  */
 moize.serialize = moize({ isSerialized: true });
-
-/**
- * @function
- * @name simple
- * @memberof module:moize
- * @alias moize.simple
- *
- * @description
- * a moized method that will limit the cache values to only the most recent result
- *
- * @returns {function} the moizer function
- */
-moize.simple = moize({ maxSize: 1 });
 
 export default moize;

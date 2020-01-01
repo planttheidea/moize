@@ -5,7 +5,7 @@ import { Options } from './types';
  *
  * @constant DEFAULT_OPTIONS
  */
-export const DEFAULT_OPTIONS: Options<any> = {
+export const DEFAULT_OPTIONS: Options = {
   equals: undefined,
   isDeepEqual: false,
   isPromise: false,
@@ -14,7 +14,7 @@ export const DEFAULT_OPTIONS: Options<any> = {
   matchesKey: undefined,
   maxAge: undefined,
   maxArgs: undefined,
-  maxSize: Infinity,
+  maxSize: 1,
   onExpire: undefined,
   profileName: undefined,
   serializer: undefined,

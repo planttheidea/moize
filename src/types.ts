@@ -27,26 +27,26 @@ export type TransformKey = (key: Key) => Key;
 
 export type MicroMemoizeOptions = MicroMemoize.Options;
 
-export type Options = {
-  equals?: IsEqual;
-  isDeepEqual?: boolean;
-  isPromise?: boolean;
-  isReact?: boolean;
-  isSerialized?: boolean;
-  matchesKey?: IsMatchingKey;
-  maxAge?: number;
-  maxArgs?: number;
-  maxSize?: number;
-  onCacheAdd?: OnCacheOperation;
-  onCacheChange?: OnCacheOperation;
-  onCacheHit?: OnCacheOperation;
-  onExpire?: (key: Key) => any;
-  profileName?: string;
-  serializer?: (key: Key) => [string];
-  shouldSerializeFunctions?: boolean;
-  transformArgs?: (key: Key) => Key;
-  updateExpire?: boolean;
-};
+export type Options = Partial<{
+  equals: IsEqual;
+  isDeepEqual: boolean;
+  isPromise: boolean;
+  isReact: boolean;
+  isSerialized: boolean;
+  matchesKey: IsMatchingKey;
+  maxAge: number;
+  maxArgs: number;
+  maxSize: number;
+  onCacheAdd: OnCacheOperation;
+  onCacheChange: OnCacheOperation;
+  onCacheHit: OnCacheOperation;
+  onExpire: (key: Key) => any;
+  profileName: string;
+  serializer: (key: Key) => [string];
+  shouldSerializeFunctions: boolean;
+  transformArgs: (key: Key) => Key;
+  updateExpire: boolean;
+}>;
 
 export type StatsProfile = {
   calls: number;
@@ -128,3 +128,29 @@ export type CurriedMoize<OriginalOptions> = <
 ) =>
   | Moized<CurriedFn, OriginalOptions & CurriedOptions>
   | CurriedMoize<OriginalOptions & CurriedOptions>;
+
+export interface Moize<DefaultOptions extends Options = Options> extends Moizeable {
+  <Fn extends Moizeable, PassedOptions extends Options>(fn: Fn, options?: PassedOptions): Moized<
+    Fn,
+    Options & DefaultOptions & PassedOptions
+  >;
+  <Fn extends Moized<Moizeable>, PassedOptions extends Options>(
+    fn: Fn,
+    options?: PassedOptions
+  ): Moized<Fn['fn'], Options & DefaultOptions & PassedOptions>;
+  <PassedOptions extends Options>(options: PassedOptions): Moize<PassedOptions>;
+
+  collectStats: () => void;
+  compose: (...moizers: Moize[]) => Moize;
+  deep: Moize<{ isDeepEqual: true }>;
+  getStats: (profileName?: string) => StatsObject;
+  infinite: Moize;
+  isCollectingStats: () => boolean;
+  isMoized: (value: any) => value is Moized;
+  maxAge: (age: number) => Moize;
+  maxArgs: (args: number) => Moize;
+  maxSize: (size: number) => Moize;
+  promise: Moize<{ isPromise: true }>;
+  react: Moize<{ isReact: true }>;
+  serialize: Moize<{ isSerialized: true }>;
+}

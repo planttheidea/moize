@@ -38,7 +38,7 @@ export function combine<Arg, Result>(...functions: Fn<Arg>[]): Fn<Arg, Result> |
  * @param functions the functions to compose
  * @returns the composed function
  */
-export function compose<Arg, Result>(...functions: Fn<Arg>[]): Fn<Arg, Result> {
+export function compose<Method>(...functions: Method[]): Method {
   if (functions.length) {
     return functions.reduce(function(f: any, g: any) {
       if (typeof f === 'function') {

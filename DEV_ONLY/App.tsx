@@ -1,49 +1,49 @@
-import "@babel/polyfill";
-import Bluebird from "bluebird";
-import { get, isEmpty, isEqual, isNil, omitBy, set, union } from "lodash";
-import memoizee from "memoizee";
-import PropTypes from "prop-types";
-import React from "react";
-import ReactDOM from "react-dom";
-import moize, { collectStats } from "../src";
+import '@babel/polyfill';
+import Bluebird from 'bluebird';
+import { get, isEmpty, isEqual, isNil, omitBy, set, union } from 'lodash';
+import memoizee from 'memoizee';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import moize, { Options } from '../src';
 
 const { useRef } = React;
 const { render } = ReactDOM;
 
-const div = document.createElement("div");
+const div = document.createElement('div');
 
-div.id = "app-container";
-div.style.backgroundColor = "#1d1d1d";
-div.style.boxSizing = "border-box";
-div.style.color = "#d5d5d5";
-div.style.height = "100vh";
-div.style.padding = "15px";
-div.style.width = "100vw";
+div.id = 'app-container';
+div.style.backgroundColor = '#1d1d1d';
+div.style.boxSizing = 'border-box';
+div.style.color = '#d5d5d5';
+div.style.height = '100vh';
+div.style.padding = '15px';
+div.style.width = '100vw';
 
-document.body.style.margin = "0px";
-document.body.style.padding = "0px";
+document.body.style.margin = '0px';
+document.body.style.padding = '0px';
 
 document.body.appendChild(div);
 
 const AGG_TYPE = {
-  AVG: "AVG",
-  COUNT: "COUNT",
-  INCLUSIVE: "INCLUSIVE",
-  SUM: "SUM"
+  AVG: 'AVG',
+  COUNT: 'COUNT',
+  INCLUSIVE: 'INCLUSIVE',
+  SUM: 'SUM',
 };
 
 const { INCLUSIVE, SUM, AVG, COUNT } = AGG_TYPE;
 
-function useMoize(fn: (...args: any[]) => void, nextArgs: any[], options?: moize.Options) {
+function useMoize(fn: (...args: any[]) => void, nextArgs: any[], options?: Options) {
   const moizedFn = useRef(moize(fn, options));
 
   return moizedFn.current(...nextArgs);
 }
 
 export const getFieldValue = (item, field) => {
-  let value = typeof field === "string" ? item[field] : get(item, field);
+  let value = typeof field === 'string' ? item[field] : get(item, field);
 
-  if (typeof value === "object" && value !== null) {
+  if (typeof value === 'object' && value !== null) {
     value = value.value;
   }
 
@@ -51,7 +51,7 @@ export const getFieldValue = (item, field) => {
 };
 
 export const setFieldValue = (item, field, value) => {
-  if (typeof field === "string") {
+  if (typeof field === 'string') {
     item[field] = value;
   } else {
     set(item, field, value);
@@ -59,9 +59,9 @@ export const setFieldValue = (item, field, value) => {
 };
 
 export const getFieldAggValue = (item, field) => {
-  const value = typeof field === "string" ? item[field] : get(item, field);
+  const value = typeof field === 'string' ? item[field] : get(item, field);
 
-  if (typeof value === "object" && value !== null) {
+  if (typeof value === 'object' && value !== null) {
     return value.agg;
   }
 
@@ -72,10 +72,10 @@ export const unionInclusiveObject = (objA, objB) => {
   if (isNil(objA) && isNil(objB)) {
     return undefined;
   } else if (isNil(objA) && !isNil(objB)) {
-    return typeof objB === "object" ? { ...objB } : undefined;
+    return typeof objB === 'object' ? { ...objB } : undefined;
   } else if (!isNil(objA) && isNil(objB)) {
-    return typeof objA === "object" ? { ...objA } : undefined;
-  } else if (typeof objA !== "object" || typeof objB !== "object") {
+    return typeof objA === 'object' ? { ...objA } : undefined;
+  } else if (typeof objA !== 'object' || typeof objB !== 'object') {
     return undefined;
   }
 
@@ -84,7 +84,7 @@ export const unionInclusiveObject = (objA, objB) => {
   const objBKeys = Object.keys(objB);
   const keys = union(objAKeys, objBKeys);
 
-  keys.forEach(key => {
+  keys.forEach((key) => {
     sum[key] = (objA[key] || 0) + (objB[key] || 0);
   });
 
@@ -105,139 +105,132 @@ export const sumWithNil = (a, b) => {
 
 // export const aggregateData = memoize(
 // export const aggregateData = memoizee(
-export const aggregateData = moize(
-  (data, aggMetadata) => {
-    const AGG_NAMES = Object.keys(aggMetadata);
-    const { children } = data;
+export const aggregateData = moize((data, aggMetadata) => {
+  const AGG_NAMES = Object.keys(aggMetadata);
+  const { children } = data;
 
-    if (isEmpty(children)) {
-      return data;
-    }
+  if (isEmpty(children)) {
+    return data;
+  }
 
-    // Recursion
-    const newChildren = children.map(row =>
-      row.children ? aggregateData(row, aggMetadata) : row
-    );
+  // Recursion
+  const newChildren = children.map((row) => (row.children ? aggregateData(row, aggMetadata) : row));
 
-    const aggData = {};
+  const aggData = {};
 
-    AGG_NAMES.forEach(aggName => {
-      const { ref: field = aggName, type, rounding } = aggMetadata[aggName];
+  AGG_NAMES.forEach((aggName) => {
+    const { ref: field = aggName, type, rounding } = aggMetadata[aggName];
 
-      let inclusiveAgg;
+    let inclusiveAgg;
 
-      let sumAgg;
+    let sumAgg;
 
-      let avgAgg;
+    let avgAgg;
 
-      let countAgg;
+    let countAgg;
 
-      newChildren.forEach(row => {
-        const rowAggValue = getFieldAggValue(row, field);
-        const rowValue = getFieldValue(row, field);
+    newChildren.forEach((row) => {
+      const rowAggValue = getFieldAggValue(row, field);
+      const rowValue = getFieldValue(row, field);
 
-        // Determine if it aggregates on aggregated value or on primitive value
-        // Aggregate on aggregated: group row aggregated from group rows
-        // Aggregate on primitive: group row aggregated from element rows
+      // Determine if it aggregates on aggregated value or on primitive value
+      // Aggregate on aggregated: group row aggregated from group rows
+      // Aggregate on primitive: group row aggregated from element rows
 
-        const isAggOnAgg = !isNil(rowAggValue);
-        const canAggOnPri = !isNil(rowValue);
+      const isAggOnAgg = !isNil(rowAggValue);
+      const canAggOnPri = !isNil(rowValue);
 
-        if (isAggOnAgg) {
-          countAgg = sumWithNil(countAgg, rowAggValue[COUNT]);
-        } else if (canAggOnPri) {
-          countAgg = sumWithNil(countAgg, 1);
-        }
-
-        if (type === INCLUSIVE) {
-          if (isAggOnAgg) {
-            inclusiveAgg = unionInclusiveObject(
-              inclusiveAgg,
-              rowAggValue[INCLUSIVE]
-            );
-          } else if (canAggOnPri) {
-            inclusiveAgg = unionInclusiveObject(inclusiveAgg, {
-              [rowValue]: 1
-            });
-          }
-        } else if (type === SUM || type === AVG) {
-          if (isAggOnAgg) {
-            sumAgg = sumWithNil(sumAgg, rowAggValue[SUM]);
-          } else if (canAggOnPri) {
-            sumAgg = sumWithNil;
-
-            // document.body.style.margin(sumAgg, rowValue);
-          }
-        }
-      });
-
-      if (type === AVG && countAgg && !isNil(sumAgg)) {
-        avgAgg = sumAgg / countAgg;
-        if (rounding) {
-          const { strategy } = rounding;
-
-          if (strategy === "truncate") {
-            avgAgg = Math.trunc(avgAgg);
-          }
-        }
+      if (isAggOnAgg) {
+        countAgg = sumWithNil(countAgg, rowAggValue[COUNT]);
+      } else if (canAggOnPri) {
+        countAgg = sumWithNil(countAgg, 1);
       }
 
-      setFieldValue(aggData, field, {
-        agg: omitBy(
-          {
-            [AVG]: avgAgg,
-            [COUNT]: countAgg,
-            [INCLUSIVE]: inclusiveAgg,
-            [SUM]: sumAgg
-          },
-          isNil
-        )
-      });
+      if (type === INCLUSIVE) {
+        if (isAggOnAgg) {
+          inclusiveAgg = unionInclusiveObject(inclusiveAgg, rowAggValue[INCLUSIVE]);
+        } else if (canAggOnPri) {
+          inclusiveAgg = unionInclusiveObject(inclusiveAgg, {
+            [rowValue]: 1,
+          });
+        }
+      } else if (type === SUM || type === AVG) {
+        if (isAggOnAgg) {
+          sumAgg = sumWithNil(sumAgg, rowAggValue[SUM]);
+        } else if (canAggOnPri) {
+          sumAgg = sumWithNil;
+
+          // document.body.style.margin(sumAgg, rowValue);
+        }
+      }
     });
 
-    return {
-      ...data,
-      ...aggData,
-      children: newChildren
-    };
-  }
-);
+    if (type === AVG && countAgg && !isNil(sumAgg)) {
+      avgAgg = sumAgg / countAgg;
+      if (rounding) {
+        const { strategy } = rounding;
+
+        if (strategy === 'truncate') {
+          avgAgg = Math.trunc(avgAgg);
+        }
+      }
+    }
+
+    setFieldValue(aggData, field, {
+      agg: omitBy(
+        {
+          [AVG]: avgAgg,
+          [COUNT]: countAgg,
+          [INCLUSIVE]: inclusiveAgg,
+          [SUM]: sumAgg,
+        },
+        isNil
+      ),
+    });
+  });
+
+  return {
+    ...data,
+    ...aggData,
+    children: newChildren,
+  };
+});
 
 const aggMetadata = {
   a: { type: COUNT },
   b: { type: SUM },
   c: { type: AVG },
-  d: { type: INCLUSIVE }
+  d: { type: INCLUSIVE },
 };
 const el1 = {
-  a: "sku_1",
+  a: 'sku_1',
   b: 1,
   c: 2,
-  d: "cat_1"
+  d: 'cat_1',
 };
 const el2 = {
-  a: "sku_2",
+  a: 'sku_2',
   b: 3,
   c: 4,
-  d: "cat_1"
+  d: 'cat_1',
 };
 const el3 = {
-  a: "sku_3",
+  a: 'sku_3',
   b: 5,
   c: undefined,
-  d: "cat_2"
+  d: 'cat_2',
 };
 const el4 = {
-  a: "sku_4",
+  a: 'sku_4',
   b: null,
   c: 0,
-  d: "cat_2"
+  d: 'cat_2',
 };
 const el5 = {
-  a: "sku_5",
+  a: 'sku_5',
   b: undefined,
   c: null,
-  d: "cat_2"
+  d: 'cat_2',
 };
 
 // const data = {
@@ -258,7 +251,7 @@ const el5 = {
 const calc = moize((object, metadata) =>
   Object.keys(object).reduce((totals, key) => {
     if (Array.isArray(object[key])) {
-      totals[key] = object[key].map(subObject => calc(subObject, metadata));
+      totals[key] = object[key].map((subObject) => calc(subObject, metadata));
     } else {
       totals[key] = object[key].a + object[key].b + metadata.c;
     }
@@ -270,29 +263,29 @@ const calc = moize((object, metadata) =>
 const data = {
   fifth: {
     a: 4,
-    b: 5
+    b: 5,
   },
   first: [
     {
       second: {
         a: 1,
-        b: 2
-      }
+        b: 2,
+      },
     },
     {
       third: [
         {
           fourth: {
             a: 2,
-            b: 3
-          }
-        }
-      ]
-    }
-  ]
+            b: 3,
+          },
+        },
+      ],
+    },
+  ],
 };
 const metadata = {
-  c: 6
+  c: 6,
 };
 
 const result1 = calc(data, metadata);
@@ -300,18 +293,18 @@ const result2 = calc(data, metadata);
 
 console.log(isEqual(result1, result2));
 
-collectStats();
+moize.collectStats();
 
-console.group("standard");
+console.group('standard');
 
-const foo = "foo";
-const bar = "bar";
-const baz = "baz";
+const foo = 'foo';
+const bar = 'bar';
+const baz = 'baz';
 
-const method = function(one, two) {
-  console.log("standard method fired", one, two);
+const method = function(one: string, two: string) {
+  console.log('standard method fired', one, two);
 
-  return [one, two].join(" ");
+  return [one, two].join(' ');
 };
 
 const memoized = moize(method);
@@ -322,10 +315,10 @@ memoized(foo, bar);
 memoized(foo, bar);
 
 console.log(memoized.cache);
-console.log("has true", memoized.has([foo, bar]));
-console.log("has false", memoized.has([foo, "baz"]));
+console.log('has true', memoized.has([foo, bar]));
+console.log('has false', memoized.has([foo, 'baz']));
 
-memoized.update([foo, bar], "something totally different");
+memoized.update([foo, bar], 'something totally different');
 
 console.log(memoized(foo, bar));
 
@@ -333,19 +326,19 @@ console.log(memoized.getStats());
 
 console.groupEnd();
 
-console.group("maxArgs");
+console.group('maxArgs');
 
 const memoizedMax = moize.maxArgs(1)(method);
 
 memoizedMax(foo, bar);
-memoizedMax(foo, "baz");
+memoizedMax(foo, 'baz');
 
 console.groupEnd();
 
-console.group("deep equals");
+console.group('deep equals');
 
 const deepEqualMethod = ({ one, two }) => {
-  console.log("deep equalfired", one, two);
+  console.log('deep equalfired', one, two);
 
   return [one, two];
 };
@@ -354,47 +347,47 @@ const deepEqualMemoized = moize.deep(deepEqualMethod);
 
 deepEqualMemoized({
   one: 1,
-  two: 2
+  two: 2,
 });
 deepEqualMemoized({
   one: 2,
-  two: 1
+  two: 1,
 });
 deepEqualMemoized({
   one: 1,
-  two: 2
+  two: 2,
 });
 deepEqualMemoized({
   one: 1,
-  two: 2
+  two: 2,
 });
 
 console.log(deepEqualMemoized.cache);
 console.log(
-  "has deep true",
+  'has deep true',
   deepEqualMemoized.has([
     {
       one: 1,
-      two: 2
-    }
+      two: 2,
+    },
   ])
 );
 console.log(
-  "has deep false",
+  'has deep false',
   deepEqualMemoized.has([
     {
       one: 1,
-      two: 3
-    }
+      two: 3,
+    },
   ])
 );
 
 console.groupEnd();
 
-console.group("serialize");
+console.group('serialize');
 
 const serializeMethod = ({ one, two }) => {
-  console.log("serialize fired", one, two);
+  console.log('serialize fired', one, two);
 
   return [one, two];
 };
@@ -403,57 +396,57 @@ const serializeMemoized = moize.serialize(serializeMethod);
 
 serializeMemoized({
   one: 1,
-  two: 2
+  two: 2,
 });
 serializeMemoized({
   one: 2,
-  two: 1
+  two: 1,
 });
 serializeMemoized({
   one: 1,
-  two: 2
+  two: 2,
 });
 serializeMemoized({
   one: 1,
-  two: 2
+  two: 2,
 });
 
 console.log(serializeMemoized.cache);
 console.log(serializeMemoized.options);
 console.log(serializeMemoized._microMemoizeOptions);
 console.log(
-  "has serialized true",
+  'has serialized true',
   serializeMemoized.has([
     {
       one: 1,
-      two: 2
-    }
+      two: 2,
+    },
   ])
 );
 console.log(
-  "has serialized false",
+  'has serialized false',
   serializeMemoized.has([
     {
       one: 1,
-      two: 3
-    }
+      two: 3,
+    },
   ])
 );
 
 console.groupEnd();
 
-console.group("promise");
+console.group('promise');
 
 const promiseMethod = (number, otherNumber) => {
-  console.log("promise method fired", number);
+  console.log('promise method fired', number);
 
-  return new Bluebird(resolve => {
+  return new Bluebird((resolve) => {
     resolve(number * otherNumber);
   });
 };
 
-const promiseMethodRejected = number => {
-  console.log("promise rejection method fired", number);
+const promiseMethodRejected = (number) => {
+  console.log('promise rejection method fired', number);
 
   return new Bluebird((resolve, reject) => {
     setTimeout(() => {
@@ -463,24 +456,21 @@ const promiseMethodRejected = number => {
 };
 
 const memoizedPromise = moize(promiseMethod, {
-  isPromise: true
+  isPromise: true,
 });
 const memoizedPromiseRejected = moize({
   isPromise: true,
-  profileName: "rejected promise"
+  profileName: 'rejected promise',
 })(promiseMethodRejected);
 
-console.log("curried options", memoizedPromiseRejected.options);
-console.log(
-  "curried options under the hood",
-  memoizedPromiseRejected._microMemoizeOptions
-);
+console.log('curried options', memoizedPromiseRejected.options);
+console.log('curried options under the hood', memoizedPromiseRejected._microMemoizeOptions);
 
 memoizedPromiseRejected(3)
-  .then(foo => {
+  .then((foo) => {
     console.log(foo);
   })
-  .catch(bar => {
+  .catch((bar) => {
     console.error(bar);
   })
   .finally(() => {
@@ -488,10 +478,10 @@ memoizedPromiseRejected(3)
   });
 
 memoizedPromiseRejected(3)
-  .then(foo => {
+  .then((foo) => {
     console.log(foo);
   })
-  .catch(bar => {
+  .catch((bar) => {
     console.error(bar);
   })
   .finally(() => {
@@ -499,10 +489,10 @@ memoizedPromiseRejected(3)
   });
 
 memoizedPromiseRejected(3)
-  .then(foo => {
+  .then((foo) => {
     console.log(foo);
   })
-  .catch(bar => {
+  .catch((bar) => {
     console.error(bar);
   })
   .finally(() => {
@@ -510,19 +500,19 @@ memoizedPromiseRejected(3)
   });
 
 // get result
-memoizedPromise(2, 2).then(value => {
+memoizedPromise(2, 2).then((value) => {
   console.log(`computed value: ${value}`);
 });
 
 // pull from cache
-memoizedPromise(2, 2).then(value => {
+memoizedPromise(2, 2).then((value) => {
   console.log(`cached value: ${value}`);
 });
 
 console.log(memoizedPromise.keys());
 
-const otherPromiseMethod = number =>
-  new Promise(resolve => {
+const otherPromiseMethod = (number) =>
+  new Promise((resolve) => {
     setTimeout(() => {
       resolve(number * 2);
     }, 1000);
@@ -531,23 +521,23 @@ const otherPromiseMethod = number =>
 const memoizedOtherPromise = moize.promise(otherPromiseMethod, {
   maxAge: 1500,
   onCacheHit(cache) {
-    console.log("must have resolved!", cache);
+    console.log('must have resolved!', cache);
   },
   onExpire() {
-    console.log("updated promise expired");
-  }
+    console.log('updated promise expired');
+  },
 });
 
-memoizedOtherPromise(4).then(number => {
-  console.log("i should be 8", number);
+memoizedOtherPromise(4).then((number) => {
+  console.log('i should be 8', number);
 });
 
 console.groupEnd();
 
-console.group("with default parameters");
+console.group('with default parameters');
 
-const withDefault = (foo, bar = "default") => {
-  console.log("withDefault fired");
+const withDefault = (foo, bar = 'default') => {
+  console.log('withDefault fired');
 
   return `${foo} ${bar}`;
 };
@@ -564,10 +554,10 @@ console.log(memoizeedWithDefault(bar));
 
 console.groupEnd();
 
-console.group("transform args");
+console.group('transform args');
 
 const onlyLastTwo = (one, two, three) => {
-  console.log("only last two called", [one, two, three]);
+  console.log('only last two called', [one, two, three]);
 
   return [two, three];
 };
@@ -582,7 +572,7 @@ const moizedLastTwo = moize(onlyLastTwo, {
     }
 
     return newKey;
-  }
+  },
 });
 
 console.log(moizedLastTwo(foo, bar, baz));
@@ -592,11 +582,19 @@ console.log(moizedLastTwo.cache);
 
 console.groupEnd();
 
-console.group("react");
+console.group('react');
 
-const Foo = ({ bar, fn, object, value }) => {
-  console.count("react");
-  console.log("Foo React element fired", bar, value, fn, object);
+type FooProps = {
+  bar?: string;
+  fn?: (...args: any[]) => any;
+  key: string;
+  object?: object;
+  value?: any;
+};
+
+const Foo = ({ bar, fn, object, value }: FooProps) => {
+  console.count('react');
+  console.log('Foo React element fired', bar, value, fn, object);
 
   return (
     <div>
@@ -609,68 +607,59 @@ Foo.propTypes = {
   bar: PropTypes.string.isRequired,
   fn: PropTypes.func.isRequired,
   object: PropTypes.object.isRequired,
-  value: PropTypes.string.isRequired
+  value: PropTypes.string.isRequired,
 };
 
 Foo.defaultProps = {
-  bar: "default"
+  bar: 'default',
 };
 
 const MemoizedFoo = moize.react(Foo, { isDeepEqual: true });
 const SimpleMemoizedFoo = moize.reactSimple(Foo, {
-  profileName: "SimpleMemoizedFoo"
+  profileName: 'SimpleMemoizedFoo',
 });
 const LimitedMemoizedFoo = moize.compose()(Foo);
 
+console.log('MemoizedFoo', MemoizedFoo.options, MemoizedFoo._microMemoizeOptions);
+console.log('SimpleMemoizedFoo', SimpleMemoizedFoo.options, SimpleMemoizedFoo._microMemoizeOptions);
 console.log(
-  "MemoizedFoo",
-  MemoizedFoo.options,
-  MemoizedFoo._microMemoizeOptions
-);
-console.log(
-  "SimpleMemoizedFoo",
-  SimpleMemoizedFoo.options,
-  SimpleMemoizedFoo._microMemoizeOptions
-);
-console.log(
-  "LimitedMemoizedFoo",
+  'LimitedMemoizedFoo',
   LimitedMemoizedFoo.options,
   LimitedMemoizedFoo._microMemoizeOptions
 );
 
-console.log("MemoizedFoo cache", MemoizedFoo.cache);
+console.log('MemoizedFoo cache', MemoizedFoo.cache);
 
 const array = [
   {
     fn() {},
     object: {},
-    value: foo
+    value: foo,
   },
   {
     fn() {},
     object: {},
-    value: bar
+    value: bar,
   },
   {
     fn() {},
     object: {},
-    value: baz
-  }
+    value: baz,
+  },
 ];
 
 console.groupEnd();
 
-console.group("expiration");
+console.group('expiration');
 
-const expiringMemoized = moize(method, {
-  maxAge: 1000,
+const expiringMemoized = moize.maxAge(1000)(method, {
   onExpire: (() => {
     let count = 0;
 
     return () => {
       if (count !== 0) {
         console.log(
-          "Expired! This is the last time I will fire, and this should be empty:",
+          'Expired! This is the last time I will fire, and this should be empty:',
           expiringMemoized.expirationsSnapshot
         );
 
@@ -680,7 +669,7 @@ const expiringMemoized = moize(method, {
       }
 
       console.log(
-        "Expired! I will now reset the expiration, but this should be empty:",
+        'Expired! I will now reset the expiration, but this should be empty:',
         expiringMemoized.expirationsSnapshot
       );
 
@@ -689,7 +678,7 @@ const expiringMemoized = moize(method, {
       return false;
     };
   })(),
-  updateExpire: true
+  updateExpire: true,
 });
 
 expiringMemoized(foo, bar);
@@ -700,44 +689,44 @@ expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 expiringMemoized(foo, bar);
 
-console.log("existing expirations", expiringMemoized.expirationsSnapshot);
+console.log('existing expirations', expiringMemoized.expirationsSnapshot);
 
 console.groupEnd();
 
 console.log(moize.getStats());
 
 const HEADER_STYLE = {
-  margin: 0
+  margin: 0,
 };
 
 function App({ first, second }) {
-  console.log("rendered");
+  console.log('rendered');
 
   const sum = useMoize(
     (a, b) => {
-      console.log("memoized called");
+      console.log('memoized called');
 
       return a + b;
     },
     [first, second]
   );
   const deepSum = useMoize(
-    object => {
-      console.log("deep memoized called");
+    (object) => {
+      console.log('deep memoized called');
 
       return object.a + object.b;
     },
     [
       {
         a: first,
-        b: second
-      }
+        b: second,
+      },
     ],
     { isDeepEqual: true }
   );
 
-  console.log("sum", sum);
-  console.log("deepSum", deepSum);
+  console.log('sum', sum);
+  console.log('deepSum', deepSum);
 
   return (
     <div>
@@ -746,14 +735,14 @@ function App({ first, second }) {
       <div>
         <h3>Uncached values (first time running)</h3>
 
-        {array.map(values => (
+        {array.map((values) => (
           // prettier
           <MemoizedFoo key={`called-${values.value}`} {...values} />
         ))}
 
         <h3>Cached values</h3>
 
-        {array.map(values => (
+        {array.map((values) => (
           // prettier
           <MemoizedFoo key={`memoized-${values.value}`} {...values} />
         ))}
