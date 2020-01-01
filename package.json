@@ -30,7 +30,7 @@
   "dependencies": {
     "fast-equals": "^1.6.0",
     "fast-stringify": "^1.1.0",
-    "micro-memoize": "^2.1.1"
+    "micro-memoize": "^4.0.9"
   },
   "description": "Blazing fast memoization based on all parameters passed",
   "devDependencies": {

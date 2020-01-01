@@ -1,14 +1,11 @@
-// @flow
-
-// types
-import type {Options} from './types';
+import { Options } from './types';
 
 /**
  * @private
  *
- * @constant {Object} DEFAULT_OPTIONS
+ * @constant DEFAULT_OPTIONS
  */
-export const DEFAULT_OPTIONS: Options = {
+export const DEFAULT_OPTIONS: Options<any> = {
   equals: undefined,
   isDeepEqual: false,
   isPromise: false,

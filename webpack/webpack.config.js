@@ -44,16 +44,16 @@ module.exports = {
           fix: true,
           formatter: require("eslint-friendly-formatter")
         },
-        test: /\.js$/
+        test: /\.(js|ts)$/
       },
       {
         include: [path.resolve(ROOT, "src"), path.resolve(ROOT, "DEV_ONLY")],
         loader: "babel-loader",
         options: {
           cacheDirectory: true,
-          presets: ["@babel/preset-react", "@babel/preset-typescript"]
+          presets: ["@babel/preset-react"]
         },
-        test: /\.js$/
+        test: /\.(js|ts|tsx)$/
       }
     ]
   },
