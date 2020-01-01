@@ -6,7 +6,17 @@
     "tag": "next"
   },
   "preReleaseId": "beta",
-  "scripts": {
-    "beforeStart": "npm run prepublish:compile"
+  "hooks": {
+    "before:init": [
+      "npm run lint",
+      "npm run flow",
+      "npm run copy:types",
+      "npm run test:coverage",
+      "npm run transpile:lib",
+      "npm run transpile:es",
+      "npm run transpile:mjs",
+      "npm run rename:mjs",
+      "npm run dist"
+    ]
   }
 }
