@@ -13,9 +13,7 @@
       "npm run transpile:es",
       "npm run transpile:mjs",
       "npm run rename:mjs",
-      "npm run dist"
-    ],
-    "after:release": [
+      "npm run dist",
       "npm run docs",
       "git add .",
       "git commit -m 'Update docs'",
