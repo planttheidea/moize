@@ -51,6 +51,7 @@ declare namespace moize {
   };
 
   export type Fn = (...args: any[]) => any;
+  // no longer used internally, but keeping for backwards compatibility
   export type Moizer<T extends Fn> = (t: T) => Moized<T>;
 
   export interface Cache {
@@ -95,7 +96,7 @@ declare namespace moize {
   }
 
   function collectStats(): void;
-  function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
+  function compose(...fns: Array<typeof moize>): typeof moize;
   function deep<T extends Fn, O extends Options>(
     t: T,
     o?: Options
