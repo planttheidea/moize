@@ -34,7 +34,7 @@ const AGG_TYPE = {
 
 const { INCLUSIVE, SUM, AVG, COUNT } = AGG_TYPE;
 
-function useMoize(fn, nextArgs, options) {
+function useMoize(fn: (...args: any[]) => void, nextArgs: any[], options?: moize.Options) {
   const moizedFn = useRef(moize(fn, options));
 
   return moizedFn.current(...nextArgs);
@@ -200,10 +200,6 @@ export const aggregateData = moize(
       ...aggData,
       children: newChildren
     };
-  },
-  {
-    length: false,
-    max: 10
   }
 );
 
@@ -344,7 +340,7 @@ const memoizedMax = moize.maxArgs(1)(method);
 memoizedMax(foo, bar);
 memoizedMax(foo, "baz");
 
-console.groupEnd("maxArgs");
+console.groupEnd();
 
 console.group("deep equals");
 
