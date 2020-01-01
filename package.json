@@ -147,5 +147,5 @@
   },
   "sideEffects": false,
   "types": "./index.d.ts",
-  "version": "5.4.4"
+  "version": "5.4.5"
 }
