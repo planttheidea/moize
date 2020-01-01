@@ -442,19 +442,11 @@ A callback that is called when the cached entry expires.
 ```js
 const fn = item => item;
 
-// standard
 const memoized = moize(fn, {
   maxAge: 10000,
   onExpire(key) {
     console.log(key);
   },
-});
-
-// shorthand
-const memoized = moize.maxAge(10000)(fn, {
-  onExpire(key) {
-    console.log(key);
-  }
 });
 ```
 
@@ -508,17 +500,10 @@ const FunctionalComponent = ({ onClickFoo }) => (
   </button>
 );
 
-// standard
 const MemoizedFunctionalComponent = moize(FunctionalComponent, {
   isReact: true,
   isSerialized: true,
   shouldSerializeFunctions: true,
-});
-
-// shorthand
-const MemoizedFunctionalComponent = moize.serialize(FunctionalComponent, {
-  isReact: true,
-  shouldSerializeFunctions: true
 });
 ```
 
@@ -533,14 +518,10 @@ Method used in place of the internal serializer when serializing the parameters 
 ```js
 const serializer = args => [JSON.stringify(args[0])];
 
-// standard
 const memoized = moize(fn, {
   isSerialized: true,
   serializer,
 });
-
-// shorthand
-const memoized = moize.serialize(fn, { serializer });
 ```
 
 **NOTE**: You must set [`isSerialized`](#isserialized) for this option to take effect.
@@ -575,14 +556,10 @@ const fn = item => item;
 
 const MAX_AGE = 1000 * 60 * 5; // five minutes
 
-// standard
 const memoized = moize(fn, {
   maxAge: MAX_AGE,
   updateExpire: true,
 });
-
-// shorthand
-const memoized = moize.maxAge(MAX_AGE)(fn, { updateExpire: true });
 
 memoized('foo');
 
