@@ -1,7 +1,7 @@
 export as namespace moize;
 export default moize;
 
-declare function moize<T extends moize.Fn>(o: moize.Cache): (t: T) => T;
+declare function moize<T extends moize.Fn>(o: moize.Options): ((t: T) => T);
 declare function moize<
   T extends moize.Fn,
   O extends moize.Options = moize.Options
