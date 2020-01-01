@@ -1,7 +1,7 @@
 export as namespace moize;
 export default moize;
 
-declare function moize<T extends moize.Fn>(o: moize.Cache): ((t: T) => T);
+declare function moize<T extends moize.Fn>(o: moize.Cache): (t: T) => T;
 declare function moize<T extends moize.Fn>(t: T, o?: moize.Options): T;
 
 declare namespace moize {
@@ -13,6 +13,20 @@ declare namespace moize {
     size: number;
     values: Array<any>;
   }
+
+  export type StatsProfile = {
+    calls: number;
+    hits: number;
+  };
+
+  export type StatsObject = {
+    calls: number;
+    hits: number;
+    profiles?: {
+      [key: string]: StatsProfile;
+    };
+    usage: string;
+  };
 
   export interface Options {
     equals?: (cacheKeyArgument: any, keyArgument: any) => boolean; // custom equality comparator comparing a specific key argument
@@ -35,9 +49,11 @@ declare namespace moize {
     updateExpire?: boolean; // should the expiration be updated when cache is hit
   }
 
+  function collectStats(): void;
   function compose<T extends Fn>(...fns: Array<Moizer<T>>): Moizer<T>;
-
   function deep<T extends Fn>(t: T, o?: Options): T;
+  function getStats(profileName?: string): moize.StatsObject;
+  function isCollectingStats(): boolean;
   function isMoized<T extends Fn>(t: T): boolean;
   function maxAge<T extends Fn>(a: number): (t: T, o?: Options) => T;
   function maxArgs<T extends Fn>(a: number): (t: T, o?: Options) => T;
@@ -49,4 +65,4 @@ declare namespace moize {
   function simple<T extends Fn>(t: T, o?: Options): T;
 }
 
-export function collectStats<T extends moize.Fn>(): void;
+export function collectStats(): void;
