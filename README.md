@@ -554,9 +554,7 @@ const fn = (one, two, three) => [two, three];
 
 const ignoreFirstArg = args => args.slice(1);
 
-const moized = moize(fn, {
-  transformArgs: ignoreFirstArg,
-});
+const moized = moize(fn, { transformArgs: ignoreFirstArg });
 
 moize('foo', 'bar', 'baz');
 moize(null, 'bar', 'baz'); // pulled from cache
