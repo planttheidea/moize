@@ -1,11 +1,14 @@
 export as namespace moize;
 export default moize;
 
-declare function moize<T extends moize.Fn>(o: moize.Cache): (t: T) => T;
-declare function moize<
-  T extends moize.Fn,
-  O extends moize.Options = moize.Options
->(t: T, o?: O): moize.Moized<T, O>;
+declare function moize<O extends moize.Options>(
+  options: O
+): <Fn extends moize.Fn>(fn: Fn) => moize.Moized<Fn, moize.Options & O>;
+declare function moize<Fn extends moize.Fn>(fn: Fn): moize.Moized<Fn>;
+declare function moize<Fn extends moize.Fn, O extends moize.Options>(
+  fn: Fn,
+  options: O
+): moize.Moized<Fn, moize.Options & O>;
 
 declare namespace moize {
   export type Expiration = {
@@ -15,7 +18,7 @@ declare namespace moize {
   };
 
   export type Moized<
-    Method extends Fn,
+    Method extends Fn = Fn,
     CombinedOptions extends Options = Options
   > = Method & {
     // values

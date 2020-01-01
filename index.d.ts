@@ -1,11 +1,14 @@
 export as namespace moize;
 export default moize;
 
-declare function moize<T extends moize.Fn>(o: moize.Options): ((t: T) => T);
-declare function moize<
-  T extends moize.Fn,
-  O extends moize.Options = moize.Options
->(t: T, o?: O): moize.Moized<T, O>;
+declare function moize<O extends moize.Options>(
+  options: O
+): <Fn extends moize.Fn>(fn: Fn) => moize.Moized<Fn, moize.Options & O>;
+declare function moize<Fn extends moize.Fn>(fn: Fn): moize.Moized<Fn>;
+declare function moize<Fn extends moize.Fn, O extends moize.Options>(
+  fn: Fn,
+  options: O
+): moize.Moized<Fn, moize.Options & O>;
 
 declare namespace moize {
   export type Expiration = {
@@ -15,18 +18,16 @@ declare namespace moize {
   };
 
   export type Moized<
-    Method extends Fn,
+    Method extends Fn = Fn,
     CombinedOptions extends Options = Options
   > = Method & {
     // values
-    _microMemoizeOptions: {
+    _microMemoizeOptions: Pick<
+      CombinedOptions,
+      "isPromise" | "maxSize" | "onCacheAdd" | "onCacheChange" | "onCacheHit"
+    > & {
       isEqual: CombinedOptions["equals"];
       isMatchingKey: CombinedOptions["matchesKey"];
-      isPromise: CombinedOptions["isPromise"];
-      maxSize: CombinedOptions["maxSize"];
-      onCacheAdd: CombinedOptions["onCacheAdd"];
-      onCacheChange: CombinedOptions["onCacheChange"];
-      onCacheHit: CombinedOptions["onCacheHit"];
       transformKey: CombinedOptions["transformArgs"];
     };
     cache: Cache;
@@ -78,7 +79,7 @@ declare namespace moize {
     isPromise?: boolean; // is the result a promise
     isReact?: boolean; // is the method a functional React component
     isSerialized?: boolean; // should the parameters be serialized instead of directly referenced
-    matchesKey?: (cacheKey: Array<any>, key: Array<any>) => boolean; // custom equality comparator comparing the entire key
+    matchesKey?: (cacheKey: any[], key: any[]) => boolean; // custom equality comparator comparing the entire key
     maxAge?: number; // amount of time in milliseconds before the cache will expire
     maxArgs?: number; // maximum number of arguments to use as key for caching
     maxSize?: number; // maximum size of cache for this method
