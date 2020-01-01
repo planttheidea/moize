@@ -119,7 +119,7 @@ moize(options)(fn);
 
 The full shape of these options:
 
-```js
+```ts
 {
   // custom method to compare equality between two objects
   equals: (cachedKeyArg: any, keyArg: any) => boolean,
@@ -230,10 +230,10 @@ Is the function passed a stateless functional `React` component.
 
 ```js
 const Foo = ({ bar, baz }) => (
-    <div>
-      {bar}: {baz}
-    </div>
-  );
+  <div>
+    {bar}: {baz}
+  </div>
+);
 
 const MemoizedFoo = moize(Foo, { isReact: true });
 ```
@@ -322,8 +322,6 @@ const memoized = moize(fn, { maxAge: MAX_AGE });
 This is also available via the shortcut method of [`moize.maxAge`](#moizemaxage).
 
 ```js
-const MAX_AGE = 1000 * 60 * 5 // five minutes;
-
 const memoized = moize.maxAge(MAX_AGE)(fn);
 ```
 
