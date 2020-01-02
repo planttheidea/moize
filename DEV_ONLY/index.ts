@@ -4,8 +4,8 @@ import { createContainer } from './environment';
 
 const container = createContainer();
 
-function logStats(memoized: Moized) {
-  console.group('stats');
+function logStats(name: string, memoized: Moized) {
+  console.group(`stats for ${name}`);
 
   console.log('global', cloneDeep(moize.getStats()));
   console.log(`specific to ${memoized.options.profileName}`, memoized.getStats());
@@ -28,10 +28,12 @@ async function run() {
     withDefaultParams,
   } = await import('./default');
   const { deepEqual } = await import('./deepEqual');
+  const { maxAge } = await import('./maxAge');
   const { maxArgs } = await import('./maxArgs');
   const { bluebirdPromise, nativePromise } = await import('./promise');
   const { renderSimple } = await import('./react');
   const { serialize } = await import('./serialize');
+  const { shallowEqual } = await import('./shallowEqual');
   const { transformArgs } = await import('./transformArgs');
 
   const useCases: [string, (container: HTMLDivElement) => void | Moized][] = [
@@ -46,16 +48,18 @@ async function run() {
 
     // simple options
     ['deep equal', deepEqual],
+    ['max age', maxAge],
     ['max args', maxArgs],
-    // ['promise (native)', nativePromise],
-    // ['promise (bluebird)', bluebirdPromise],
+    ['promise (native)', nativePromise],
+    ['promise (bluebird)', bluebirdPromise],
     ['react simple', renderSimple],
     ['serialize', serialize],
+    ['shallow equal', shallowEqual],
     ['transform args', transformArgs],
 
-    // complex
-    // ['aggregate', aggregate],
-    // ['calculate', calculate],
+    // complex computation
+    ['aggregate', aggregate],
+    ['calculate', calculate],
   ];
 
   useCases.forEach(([name, useCase]) => {
@@ -65,9 +69,9 @@ async function run() {
 
     if (memoized) {
       if (memoized.options.isPromise) {
-        Promise.resolve().then(() => logStats(memoized));
+        new Promise((resolve) => setTimeout(resolve, 100)).then(() => logStats(name, memoized));
       } else {
-        logStats(memoized);
+        logStats(name, memoized);
       }
     }
 

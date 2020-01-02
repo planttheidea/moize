@@ -15,11 +15,10 @@ const $$typeof = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.
  * @description
  * Create a component that memoizes based on `props` and legacy `context`
  * on a per-instance basis. This requires creating a component class to
- * store the memoized function on, and then a functional component to render
- * this class.
- *
- * While this may seem like overkill, the cost is quite low and avoids the
- * need to have access to the React dependency.
+ * store the memoized function. The cost is quite low, and avoids the
+ * need to have access to the React dependency by basically re-creating
+ * the basic essentials for a component class and the results of the
+ * `createElement` function.
  *
  * @param moizer the top-level moize method
  * @param fn the component to memoize
@@ -56,40 +55,27 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
     fn.displayName = fn.name || 'Component';
   }
 
-  function MoizeWrapper(props: object, context: any, updater: any) {
+  function Moized(this: any, props: object, context: any, updater: any) {
     this.props = props;
     this.context = context;
     this.updater = updater;
 
-    this.Moized = reactMoizer(fn);
+    this.MoizedComponent = reactMoizer(fn);
   }
 
-  MoizeWrapper.prototype.isReactComponent = {};
+  Moized.prototype.isReactComponent = {};
 
   // eslint-disable-next-line react/display-name
-  MoizeWrapper.prototype.render = function() {
+  Moized.prototype.render = function() {
     return {
       $$typeof,
-      type: this.Moized,
+      type: this.MoizedComponent,
       props: this.props,
       ref: null,
       key: null,
       _owner: null,
     };
   };
-
-  MoizeWrapper.displayName = 'MoizeWrapper';
-
-  function Moized<Props = {}>(props: Props) {
-    return {
-      $$typeof,
-      type: MoizeWrapper,
-      props,
-      ref: null,
-      key: null,
-      _owner: null,
-    };
-  }
 
   for (const staticProperty in fn) {
     if (staticProperty.indexOf('context') === -1 && hasOwnProperty.call(fn, staticProperty)) {

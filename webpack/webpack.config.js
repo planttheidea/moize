@@ -50,6 +50,7 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           cacheDirectory: true,
+          plugins: ['@babel/plugin-proposal-class-properties'],
           presets: ['@babel/preset-react'],
         },
         test: /\.(js|ts|tsx)$/,

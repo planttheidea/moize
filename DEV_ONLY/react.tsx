@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import moize from '../src';
+import moize, { Moized } from '../src';
 
 type Props = {
   bar?: string;
@@ -30,7 +30,7 @@ ValueBar.propTypes = {
 };
 
 ValueBar.defaultProps = {
-  bar: 'default'
+  bar: 'default',
 };
 
 const Memoized = moize.react(ValueBar);
@@ -45,7 +45,7 @@ const data = [
       return foo;
     },
     object: { value: foo },
-    value: foo
+    value: foo,
   },
   {
     bar,
@@ -53,37 +53,56 @@ const data = [
       return bar;
     },
     object: { value: bar },
-    value: bar
+    value: bar,
   },
   {
     fn() {
       return baz;
     },
     object: { value: baz },
-    value: baz
-  }
+    value: baz,
+  },
 ];
 
 type SimpleAppProps = {
   isRerender?: boolean;
-}
+};
 
-function SimpleApp({ isRerender }: SimpleAppProps) {
-  console.log('rendering simple app');
-  
-  return (
-    <div>
-      <h1 style={{ margin: 0 }}>App</h1>
+class SimpleApp extends React.Component<SimpleAppProps> {
+  MoizedComponent: Moized;
 
+  componentDidUpdate() {
+    console.log('post-update stats', this.MoizedComponent.getStats());
+  }
+
+  setMoizedComponent = (Ref: { MoizedComponent: Moized }) => {
+    this.MoizedComponent = Ref.MoizedComponent;
+  };
+
+  render() {
+    console.log('rendering simple app');
+
+    const { isRerender } = this.props;
+
+    return (
       <div>
-        <h3>Memoized data list</h3>
+        <h1 style={{ margin: 0 }}>App</h1>
 
-        {data.map((values, index) => (
-          <Memoized key={`called-${values.value}`} {...values} isDynamic={index === 2 && isRerender} />
-        ))}
+        <div>
+          <h3>Memoized data list</h3>
+
+          {data.map((values, index) => (
+            <Memoized
+              key={`called-${values.value}`}
+              {...values}
+              isDynamic={index === 2 && isRerender}
+              ref={this.setMoizedComponent}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export function renderSimple(container: HTMLDivElement) {
