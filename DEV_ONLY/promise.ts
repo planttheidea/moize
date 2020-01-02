@@ -53,7 +53,7 @@ function logItems(items: [number, number, Moized, string][]) {
     const key = [number, otherNumber];
 
     method(number, otherNumber).then(() => {
-      console.group(`delayed results for ${name}`);
+      console.groupCollapsed(`delayed results for ${name}`);
 
       logStoredValue(method, 'exists', key);
       logStoredValue(method, 'does not exist', key.slice().reverse());

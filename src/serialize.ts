@@ -11,8 +11,18 @@ import { Key, Options } from './types';
  * @param value value in json object
  * @returns if function then toString of it, else the value itself
  */
-export function customReplacer(propertyIgnored: string, value: any) {
-  return typeof value === 'function' ? '' + value : value;
+export function defaultReplacer(propertyIgnored: string, value: any) {
+  switch (typeof value) {
+    case 'function':
+    case 'symbol':
+      return value.toString();
+
+    case 'object':
+      return value || '' + value;
+
+    default:
+      return '' + value;
+  }
 }
 
 /**
@@ -25,11 +35,11 @@ export function customReplacer(propertyIgnored: string, value: any) {
  * @param replacer replacer to used in stringification
  * @returns the stringified version of value
  */
-export function stringify(value: any, replacer?: typeof customReplacer) {
+export function stringify(value: any) {
   try {
-    return JSON.stringify(value, replacer);
+    return JSON.stringify(value, defaultReplacer);
   } catch (exception) {
-    return stringifySafe(value, replacer);
+    return stringifySafe(value, defaultReplacer);
   }
 }
 
@@ -40,40 +50,32 @@ export function stringify(value: any, replacer?: typeof customReplacer) {
  * get the stringified version of the argument passed
  *
  * @param arg argument to stringify
- * @param replacer replacer to used in stringification
  * @returns the stringified argument
  */
-export function getStringifiedArgument(arg: any, replacer?: typeof customReplacer) {
+export function getStringifiedArgument(arg: any) {
   const typeOfArg = typeof arg;
 
-  return arg && (typeOfArg === 'object' || typeOfArg === 'function')
-    ? stringify(arg, replacer)
-    : arg;
+  return arg && (typeOfArg === 'object' || typeOfArg === 'function') ? stringify(arg) : arg;
 }
 
 /**
  * @private
  *
  * @description
- * create the internal argument serializer based on the options passed
+ * serialize the arguments passed
  *
  * @param options the options passed to the moizer
- * @param options.serializeFunctions should functions be included in the serialization
  * @param options.maxArgs the cap on the number of arguments used in serialization
  * @returns argument serialization method
  */
-export function createArgumentSerializer(options: Options) {
-  const replacer = options.shouldSerializeFunctions ? customReplacer : null;
+export function defaultArgumentSerializer(args: Key) {
+  let key = '|';
 
-  return function(args: Key) {
-    let key = '|';
+  for (let index = 0; index < args.length; index++) {
+    key += getStringifiedArgument(args[index]) + '|';
+  }
 
-    for (let index = 0; index < args.length; index++) {
-      key += getStringifiedArgument(args[index], replacer) + '|';
-    }
-
-    return [key];
-  };
+  return [key];
 }
 
 /**
@@ -86,9 +88,7 @@ export function createArgumentSerializer(options: Options) {
  * @returns the function to use in serializing the arguments
  */
 export function getSerializerFunction(options: Options) {
-  return typeof options.serializer === 'function'
-    ? options.serializer
-    : createArgumentSerializer(options);
+  return typeof options.serializer === 'function' ? options.serializer : defaultArgumentSerializer;
 }
 
 /**

@@ -44,7 +44,6 @@ export type Options = Partial<{
   onExpire: (key: Key) => any;
   profileName: string;
   serializer: (key: Key) => Key;
-  shouldSerializeFunctions: boolean;
   transformArgs: (key: Key) => Key;
   updateExpire: boolean;
 }>;

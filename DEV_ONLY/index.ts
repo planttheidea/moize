@@ -5,7 +5,7 @@ import { createContainer } from './environment';
 const container = createContainer();
 
 function logStats(name: string, memoized: Moized) {
-  console.group(`stats for ${name}`);
+  console.groupCollapsed(`stats for ${name}`);
 
   console.log('global', cloneDeep(moize.getStats()));
   console.log(`specific to ${memoized.options.profileName}`, memoized.getStats());
@@ -63,7 +63,7 @@ async function run() {
   ];
 
   useCases.forEach(([name, useCase]) => {
-    console.group(name);
+    console.groupCollapsed(name);
 
     const memoized = useCase(container);
 

@@ -50,7 +50,7 @@ export function maxAge() {
 
   console.log('existing expirations', memoized.expirationsSnapshot);
 
-  logStoredValue(memoized, 'exists only for foo', [foo, bar]);
+  logStoredValue(memoized, 'exists', [foo, bar]);
 
   logCache(memoized);
 
