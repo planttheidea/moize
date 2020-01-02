@@ -1,6 +1,6 @@
 {
   "author": "planttheidea",
-  "browser": "dist/moize.min.js",
+  "browser": "dist/moize.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
@@ -70,7 +70,7 @@
     "rimraf": "^3.0.0",
     "rollup": "^1.27.14",
     "rollup-plugin-babel": "^4.0.1",
-    "rollup-plugin-uglify": "^6.0.4",
+    "rollup-plugin-terser": "^5.1.3",
     "ts-jest": "^24.2.0",
     "tslib": "^1.10.0",
     "typescript": "^3.7.4",
@@ -92,8 +92,8 @@
     "ttl"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
-  "module": "es/index.js",
+  "main": "dist/moize.cjs.js",
+  "module": "dist/moize.esm.js",
   "name": "moize",
   "nyc": {
     "exclude": [
