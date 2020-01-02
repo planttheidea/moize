@@ -11,21 +11,28 @@ import { Expiration, Fn, IsEqual, IsMatchingKey, Key, Moizeable, Moized, Options
  * @returns the composed function
  */
 export function combine<Arg, Result>(...functions: Fn<Arg>[]): Fn<Arg, Result> | undefined {
-  if (functions.length) {
-    return functions.reduce(function(f: any, g: any) {
-      if (typeof f === 'function') {
-        return typeof g === 'function'
-          ? function(this: any) {
-              f.apply(this, arguments);
-              g.apply(this, arguments);
-            }
-          : f;
-      }
+  switch (functions.length) {
+    case 0:
+      return;
 
-      if (typeof g === 'function') {
-        return g;
-      }
-    });
+    case 1:
+      return functions[0];
+
+    default:
+      return functions.reduce(function(f: any, g: any) {
+        if (typeof f === 'function') {
+          return typeof g === 'function'
+            ? function(this: any) {
+                f.apply(this, arguments);
+                g.apply(this, arguments);
+              }
+            : f;
+        }
+
+        if (typeof g === 'function') {
+          return g;
+        }
+      });
   }
 }
 
@@ -39,20 +46,27 @@ export function combine<Arg, Result>(...functions: Fn<Arg>[]): Fn<Arg, Result> |
  * @returns the composed function
  */
 export function compose<Method>(...functions: Method[]): Method {
-  if (functions.length) {
-    return functions.reduce(function(f: any, g: any) {
-      if (typeof f === 'function') {
-        return typeof g === 'function'
-          ? function(this: any) {
-              return f(g.apply(this, arguments));
-            }
-          : f;
-      }
+  switch (functions.length) {
+    case 0:
+      return;
 
-      if (typeof g === 'function') {
-        return g;
-      }
-    });
+    case 1:
+      return functions[0];
+
+    default:
+      return functions.reduce(function(f: any, g: any) {
+        if (typeof f === 'function') {
+          return typeof g === 'function'
+            ? function(this: any) {
+                return f(g.apply(this, arguments));
+              }
+            : f;
+        }
+
+        if (typeof g === 'function') {
+          return g;
+        }
+      });
   }
 }
 
@@ -115,19 +129,6 @@ export function createFindKeyIndex(isEqual: IsEqual, isMatchingKey: IsMatchingKe
  * @private
  *
  * @description
- * return the transformed key as an array
- *
- * @param key the transformed key
- * @returns the key as an array
- */
-export function getArrayKey<Key>(key: Key): Key | Key[] {
-  return Array.isArray(key) ? key : [key];
-}
-
-/**
- * @private
- *
- * @description
  * merge two options objects, combining or composing functions as necessary
  *
  * @param originalOptions the options that already exist on the method
@@ -135,7 +136,7 @@ export function getArrayKey<Key>(key: Key): Key | Key[] {
  * @returns the merged options
  */
 export function mergeOptions(originalOptions: Options, newOptions: Options): Options {
-  return newOptions === DEFAULT_OPTIONS
+  return !newOptions || newOptions === DEFAULT_OPTIONS
     ? originalOptions
     : {
         ...originalOptions,

@@ -14,7 +14,15 @@ export const statsCache: StatsCache = {
   profiles: {},
 };
 
-let hasWarningDisplayed: boolean = false;
+let hasWarningDisplayed = false;
+
+export function clearStats(profileName?: string) {
+  if (profileName) {
+    delete statsCache.profiles[profileName];
+  } else {
+    statsCache.profiles = {};
+  }
+}
 
 /**
  * @private
@@ -35,14 +43,14 @@ export function collectStats() {
 export function createOnCacheAddIncrementCalls(options: Options) {
   const { profileName } = options;
 
-  if (profileName && !statsCache.profiles[profileName]) {
-    statsCache.profiles[profileName] = {
-      calls: 0,
-      hits: 0,
-    };
-  }
-
   return function() {
+    if (profileName && !statsCache.profiles[profileName]) {
+      statsCache.profiles[profileName] = {
+        calls: 0,
+        hits: 0,
+      };
+    }
+
     statsCache.profiles[profileName].calls++;
   };
 }
@@ -54,11 +62,19 @@ export function createOnCacheAddIncrementCalls(options: Options) {
  * create a function that increments the number of calls and cache hits for the specific profile
  */
 export function createOnCacheHitIncrementCallsAndHits(options: Options) {
-  const { profileName } = options;
-
   return function() {
-    statsCache.profiles[profileName].calls++;
-    statsCache.profiles[profileName].hits++;
+    const { profiles } = statsCache;
+    const { profileName } = options;
+
+    if (!profiles[profileName]) {
+      profiles[profileName] = {
+        calls: 0,
+        hits: 0,
+      };
+    }
+
+    profiles[profileName].calls++;
+    profiles[profileName].hits++;
   };
 }
 
@@ -84,7 +100,8 @@ export function getDefaultProfileName(fn: Fn | FunctionalComponent<{}>) {
 
   const lines = stack.split('\n').slice(3);
 
-  let line, profileNameLocation;
+  let line: string;
+  let profileNameLocation: string;
 
   for (let index = 0; index < lines.length; index++) {
     line = lines[index];
@@ -134,8 +151,10 @@ export function getStats(profileName?: string): GlobalStatsObject {
     hasWarningDisplayed = true;
   }
 
+  const { profiles } = statsCache;
+
   if (profileName) {
-    if (!statsCache.profiles[profileName]) {
+    if (!profiles[profileName]) {
       return {
         calls: 0,
         hits: 0,
@@ -143,7 +162,7 @@ export function getStats(profileName?: string): GlobalStatsObject {
       };
     }
 
-    const profile: StatsProfile = statsCache.profiles[profileName];
+    const { [profileName]: profile } = profiles;
 
     return {
       ...profile,
@@ -152,11 +171,11 @@ export function getStats(profileName?: string): GlobalStatsObject {
   }
 
   const completeStats: StatsProfile = Object.keys(statsCache.profiles).reduce(
-    (profiles, profileName) => {
-      profiles.calls += statsCache.profiles[profileName].calls;
-      profiles.hits += statsCache.profiles[profileName].hits;
+    (completeProfiles, profileName) => {
+      completeProfiles.calls += profiles[profileName].calls;
+      completeProfiles.hits += profiles[profileName].hits;
 
-      return profiles;
+      return completeProfiles;
     },
     {
       calls: 0,
@@ -166,10 +185,10 @@ export function getStats(profileName?: string): GlobalStatsObject {
 
   return {
     ...completeStats,
-    profiles: Object.keys(statsCache.profiles).reduce((profiles, profileName) => {
-      profiles[profileName] = getStats(profileName);
+    profiles: Object.keys(profiles).reduce((computedProfiles, profileName) => {
+      computedProfiles[profileName] = getStats(profileName);
 
-      return profiles;
+      return computedProfiles;
     }, {}),
     usage: getUsagePercentage(completeStats.calls, completeStats.hits),
   };

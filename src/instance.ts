@@ -1,5 +1,5 @@
 import { clearExpiration } from './maxAge';
-import { getStats, statsCache } from './stats';
+import { clearStats, getStats, statsCache } from './stats';
 import {
   Fn,
   Key,
@@ -11,6 +11,20 @@ import {
   StatsProfile,
 } from './types';
 import { createFindKeyIndex } from './utils';
+
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+export function copyStaticProperties<Fn extends Moizeable, CombinedOptions extends Options>(
+  originalFn: Fn,
+  moized: Moized<Fn, CombinedOptions>,
+  skippedProperties: string[] = []
+) {
+  for (const property in originalFn) {
+    if (skippedProperties.indexOf(property) === -1 && hasOwnProperty.call(originalFn, property)) {
+      moized[property as keyof typeof moized] = originalFn[property];
+    }
+  }
+}
 
 /**
  * @private
@@ -24,44 +38,40 @@ export function addInstanceMethods<OriginalFn extends Fn>(
   memoized: Moizeable,
   { expirations }: MoizeConfiguration<OriginalFn>
 ) {
-  const { isEqual, isMatchingKey, onCacheAdd, onCacheChange } = memoized.options;
+  const { options } = memoized;
 
-  const findKeyIndex: Function = createFindKeyIndex(isEqual, isMatchingKey);
+  const findKeyIndex: Function = createFindKeyIndex(options.isEqual, options.isMatchingKey);
 
   const moized = (memoized as unknown) as Moized<OriginalFn, Options>;
 
-  moized.add = function(key: Key, value: any) {
-    const { transformKey } = moized.options;
+  moized.clear = function() {
+    const {
+      _microMemoizeOptions: { onCacheChange },
+      cache,
+    } = moized;
 
-    const savedKey = transformKey ? transformKey(key) : key;
+    cache.keys.length = 0;
+    cache.values.length = 0;
 
-    if (!~findKeyIndex(moized.cache.keys, savedKey)) {
-      if (moized.cache.size >= moized.options.maxSize) {
-        moized.cache.keys.pop();
-        moized.cache.values.pop();
-      }
-
-      moized.cache.keys.unshift(savedKey);
-      moized.cache.values.unshift(value);
-
-      onCacheAdd(moized.cache, moized.options, moized);
-      onCacheChange(moized.cache, moized.options, moized);
+    if (onCacheChange) {
+      onCacheChange(cache, moized.options, moized);
     }
   };
 
-  moized.clear = function() {
-    moized.cache.keys.length = 0;
-    moized.cache.values.length = 0;
-
-    onCacheChange(moized.cache, moized.options, moized);
+  moized.clearStats = function() {
+    clearStats(moized.options.profileName);
   };
 
   moized.get = function(key: Key) {
-    const { transformKey } = moized.options;
+    const {
+      _microMemoizeOptions: { transformKey },
+      cache,
+    } = moized;
 
-    const keyIndex = findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key);
+    const cacheKey = transformKey ? transformKey(key) : key;
+    const keyIndex = findKeyIndex(cache.keys, cacheKey);
 
-    return keyIndex !== -1 ? moized.apply(this, moized.cache.keys[keyIndex]) : undefined;
+    return keyIndex !== -1 ? moized.apply(this, key) : undefined;
   };
 
   moized.getStats = function(): StatsProfile {
@@ -69,9 +79,11 @@ export function addInstanceMethods<OriginalFn extends Fn>(
   };
 
   moized.has = function(key: Key) {
-    const { transformKey } = moized.options;
+    const { transformKey } = moized._microMemoizeOptions;
 
-    return findKeyIndex(moized.cache.keys, transformKey ? transformKey(key) : key) !== -1;
+    const cacheKey = transformKey ? transformKey(key) : key;
+
+    return findKeyIndex(moized.cache.keys, cacheKey) !== -1;
   };
 
   moized.keys = function() {
@@ -80,39 +92,63 @@ export function addInstanceMethods<OriginalFn extends Fn>(
 
   moized.remove = function(key: Key) {
     const {
+      _microMemoizeOptions: { onCacheChange, transformKey },
       cache,
-      options: { transformKey },
     } = moized;
 
     const keyIndex: number = findKeyIndex(cache.keys, transformKey ? transformKey(key) : key);
 
     if (keyIndex !== -1) {
-      const existingKey: Array<any> = cache.keys[keyIndex];
+      const existingKey = cache.keys[keyIndex];
 
       cache.keys.splice(keyIndex, 1);
       cache.values.splice(keyIndex, 1);
 
-      onCacheChange(cache, moized.options, moized);
+      if (onCacheChange) {
+        onCacheChange(cache, moized.options, moized);
+      }
 
       clearExpiration(expirations, existingKey, true);
     }
   };
 
-  moized.update = function(key: Key, value: any) {
-    const {
-      cache,
-      options: { transformKey },
-    } = moized;
+  moized.set = function(key: Key, value: any) {
+    const { _microMemoizeOptions, cache, options } = moized;
+    const { onCacheAdd, onCacheChange, transformKey } = _microMemoizeOptions;
 
-    const keyIndex = findKeyIndex(cache.keys, transformKey ? transformKey(key) : key);
+    const cacheKey = transformKey ? transformKey(key) : key;
+    const keyIndex = findKeyIndex(cache.keys, cacheKey);
 
-    if (keyIndex !== -1) {
-      const existingKey: Array<any> = cache.keys[keyIndex];
+    if (keyIndex === -1) {
+      const cutoff = options.maxSize - 1;
 
-      cache.orderByLru(cache.keys, existingKey, keyIndex);
-      cache.orderByLru(cache.values, value, keyIndex);
+      if (cache.size > cutoff) {
+        cache.keys.length = cutoff;
+        cache.values.length = cutoff;
+      }
 
-      onCacheChange(cache, moized.options, moized);
+      cache.keys.unshift(cacheKey);
+      cache.values.unshift(value);
+
+      if (onCacheAdd) {
+        onCacheAdd(cache, options, moized);
+      }
+
+      if (onCacheChange) {
+        onCacheChange(cache, options, moized);
+      }
+    } else {
+      const existingKey = cache.keys[keyIndex];
+
+      cache.values[keyIndex] = value;
+
+      if (keyIndex > 0) {
+        cache.orderByLru(existingKey, value, keyIndex);
+      }
+
+      if (typeof onCacheChange === 'function') {
+        onCacheChange(cache, options, moized);
+      }
     }
   };
 
@@ -143,6 +179,19 @@ export function addInstanceProperties<OriginalFn extends Moizeable>(
       configurable: true,
       get() {
         return microMemoizeOptions;
+      },
+    },
+
+    cacheSnapshot: {
+      configurable: true,
+      get() {
+        const { cache: currentCache } = memoized;
+
+        return {
+          keys: currentCache.keys.slice(0),
+          size: currentCache.size,
+          values: currentCache.values.slice(0),
+        };
       },
     },
 
@@ -191,14 +240,7 @@ export function addInstanceProperties<OriginalFn extends Moizeable>(
 
   const moized = (memoized as unknown) as Moized<OriginalFn, Options>;
 
-  if (moizeOptions.isReact) {
-    moized.contextTypes = originalFunction.contextTypes;
-    moized.defaultProps = originalFunction.defaultProps;
-    moized.displayName = `Moized(${originalFunction.displayName ||
-      originalFunction.name ||
-      'Component'})`;
-    moized.propTypes = originalFunction.propTypes;
-  }
+  copyStaticProperties(originalFunction, moized);
 }
 
 /**

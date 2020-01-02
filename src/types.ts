@@ -33,6 +33,7 @@ export type Options = Partial<{
   isPromise: boolean;
   isReact: boolean;
   isSerialized: boolean;
+  isShallowEqual: boolean;
   matchesKey: IsMatchingKey;
   maxAge: number;
   maxArgs: number;
@@ -42,7 +43,7 @@ export type Options = Partial<{
   onCacheHit: OnCacheOperation;
   onExpire: (key: Key) => any;
   profileName: string;
-  serializer: (key: Key) => [string];
+  serializer: (key: Key) => Key;
   shouldSerializeFunctions: boolean;
   transformArgs: (key: Key) => Key;
   updateExpire: boolean;
@@ -100,16 +101,16 @@ export type Moized<
   propTypes: Record<string, Function>;
 
   // methods
-  add: (key: any[], value: any) => void;
   clear: () => void;
-  get: (key: any[]) => any;
+  clearStats: () => void;
+  get: (key: Key) => any;
   getStats: () => StatsProfile;
-  has: (key: any[]) => boolean;
+  has: (key: Key) => boolean;
   isCollectingStats: () => boolean;
   isMoized: () => true;
   keys: () => Cache['keys'];
-  remove: (key: any[]) => void;
-  update: (key: any[], value: any) => void;
+  remove: (key: Key) => void;
+  set: (key: Key, value: any) => void;
   values: () => Cache['values'];
 };
 
@@ -140,6 +141,7 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   ): Moized<Fn['fn'], Options & DefaultOptions & PassedOptions>;
   <PassedOptions extends Options>(options: PassedOptions): Moize<PassedOptions>;
 
+  clearStats: (profileName?: string) => void;
   collectStats: () => void;
   compose: (...moizers: Moize[]) => Moize;
   deep: Moize<{ isDeepEqual: true }>;
@@ -153,4 +155,5 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   promise: Moize<{ isPromise: true }>;
   react: Moize<{ isReact: true }>;
   serialize: Moize<{ isSerialized: true }>;
+  shallow: Moize<{ isShallowEqual: true }>;
 }

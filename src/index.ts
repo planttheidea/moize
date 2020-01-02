@@ -3,7 +3,9 @@ import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
 import { getMaxAgeOptions } from './maxAge';
 import { createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey } from './options';
+import { createMoizedComponent } from './react';
 import {
+  clearStats,
   collectStats,
   getDefaultProfileName,
   getStats,
@@ -79,6 +81,10 @@ const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Option
     };
   }
 
+  if (options.isReact) {
+    return createMoizedComponent(moize, fn, options);
+  }
+
   const coalescedOptions: Options = {
     ...DEFAULT_OPTIONS,
     ...options,
@@ -118,8 +124,10 @@ const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Option
 
   const isEqual = getIsEqual(coalescedOptions);
   const isMatchingKey = getIsMatchingKey(coalescedOptions);
-  const maxAgeOptions = getMaxAgeOptions(expirations, coalescedOptions);
+
+  const maxAgeOptions = getMaxAgeOptions(expirations, coalescedOptions, isEqual, isMatchingKey);
   const statsOptions = getStatsOptions(coalescedOptions);
+
   const transformKey = getTransformKey(coalescedOptions);
 
   const microMemoizeOptions: MicroMemoizeOptions = {
@@ -146,6 +154,17 @@ const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Option
     originalFunction: fn,
   });
 };
+
+/**
+ * @function
+ * @name clearStats
+ * @memberof module:moize
+ * @alias moize.clearStats
+ *
+ * @description
+ * clear all existing stats stored
+ */
+moize.clearStats = clearStats;
 
 /**
  * @function
@@ -333,5 +352,18 @@ moize.react = moize({ isReact: true });
  * @returns {function} the moizer function
  */
 moize.serialize = moize({ isSerialized: true });
+
+/**
+ * @function
+ * @name shallow
+ * @memberof module:moize
+ * @alias moize.shallow
+ *
+ * @description
+ * should shallow equality check be used
+ *
+ * @returns {function} the moizer function
+ */
+moize.shallow = moize({ isShallowEqual: true });
 
 export default moize;

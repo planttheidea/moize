@@ -11,13 +11,13 @@ import {
   Options,
   TransformKey,
 } from './types';
-import { compose, getArrayKey } from './utils';
+import { compose } from './utils';
 
 export function createOnCacheOperation(fn?: OnCacheOperation): OnCacheOperation {
   if (typeof fn === 'function') {
     return (
-      cacheIgnored: Cache,
-      microMemoizeOptionsIgnored: MicroMemoizeOptions,
+      _cacheIgnored: Cache,
+      _microMemoizeOptionsIgnored: MicroMemoizeOptions,
       memoized: Moized
     ): void => fn(memoized.cache, memoized.options, memoized);
   }
@@ -36,7 +36,7 @@ export function getIsEqual(options: Options): IsEqual {
   return (
     options.equals ||
     (options.isDeepEqual && deepEqual) ||
-    (options.isReact && shallowEqual) ||
+    (options.isShallowEqual && shallowEqual) ||
     sameValueZeroEqual
   );
 }
@@ -66,8 +66,7 @@ export function getIsMatchingKey(options: Options): IsMatchingKey | undefined {
 export function getTransformKey(options: Options): TransformKey | undefined {
   return compose(
     options.isSerialized && getSerializerFunction(options),
-    typeof options.transformArgs === 'function' && compose(getArrayKey, options.transformArgs),
-    options.isReact && createGetInitialArgs(2),
+    typeof options.transformArgs === 'function' && options.transformArgs,
     typeof options.maxArgs === 'number' && createGetInitialArgs(options.maxArgs)
   ) as TransformKey;
 }

@@ -1,6 +1,5 @@
 import stringifySafe from 'fast-stringify';
 import { Key, Options } from './types';
-import { compose, getArrayKey } from './utils';
 
 /**
  * @private
@@ -45,7 +44,7 @@ export function stringify(value: any, replacer?: typeof customReplacer) {
  * @returns the stringified argument
  */
 export function getStringifiedArgument(arg: any, replacer?: typeof customReplacer) {
-  const typeOfArg: string = typeof arg;
+  const typeOfArg = typeof arg;
 
   return arg && (typeOfArg === 'object' || typeOfArg === 'function')
     ? stringify(arg, replacer)
@@ -88,7 +87,7 @@ export function createArgumentSerializer(options: Options) {
  */
 export function getSerializerFunction(options: Options) {
   return typeof options.serializer === 'function'
-    ? compose(getArrayKey, options.serializer)
+    ? options.serializer
     : createArgumentSerializer(options);
 }
 

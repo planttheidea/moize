@@ -1,4 +1,13 @@
-import { Cache, Expiration, Fn, Key, OnCacheOperation, Options } from './types';
+import {
+  Cache,
+  Expiration,
+  Fn,
+  IsEqual,
+  IsMatchingKey,
+  Key,
+  OnCacheOperation,
+  Options,
+} from './types';
 import { createFindKeyIndex, findExpirationIndex } from './utils';
 
 /**
@@ -37,7 +46,9 @@ export function clearExpiration(expirations: Expiration[], key: Key, shouldRemov
  */
 export function createOnCacheAddSetExpiration(
   expirations: Expiration[],
-  options: Options
+  options: Options,
+  isEqual: IsEqual,
+  isMatchingKey: IsMatchingKey
 ): OnCacheOperation {
   const { maxAge } = options;
 
@@ -46,7 +57,7 @@ export function createOnCacheAddSetExpiration(
 
     if (findExpirationIndex(expirations, key) === -1) {
       const expirationMethod = function() {
-        const findKeyIndex = createFindKeyIndex(options.equals, options.matchesKey);
+        const findKeyIndex = createFindKeyIndex(isEqual, isMatchingKey);
 
         const keyIndex: number = findKeyIndex(cache.keys, key);
         const value: any = cache.values[keyIndex];
@@ -66,7 +77,12 @@ export function createOnCacheAddSetExpiration(
           cache.keys.unshift(key);
           cache.values.unshift(value);
 
-          createOnCacheAddSetExpiration(expirations, options)(cache, moizedOptions, moized);
+          createOnCacheAddSetExpiration(
+            expirations,
+            options,
+            isEqual,
+            isMatchingKey
+          )(cache, moizedOptions, moized);
 
           if (typeof options.onCacheChange === 'function') {
             options.onCacheChange(cache, moizedOptions, moized);
@@ -126,14 +142,16 @@ export function createOnCacheHitResetExpiration(
  */
 export function getMaxAgeOptions(
   expirations: Expiration[],
-  options: Options
+  options: Options,
+  isEqual: IsEqual,
+  isMatchingKey: IsMatchingKey
 ): {
   onCacheAdd: OnCacheOperation | undefined;
   onCacheHit: OnCacheOperation | undefined;
 } {
   const onCacheAdd =
     typeof options.maxAge === 'number' && isFinite(options.maxAge)
-      ? createOnCacheAddSetExpiration(expirations, options)
+      ? createOnCacheAddSetExpiration(expirations, options, isEqual, isMatchingKey)
       : undefined;
 
   return {
