@@ -141,7 +141,7 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   <PassedOptions extends Options>(options: PassedOptions): Moize<PassedOptions>;
 
   clearStats: (profileName?: string) => void;
-  collectStats: () => void;
+  collectStats: (isCollectingStats?: boolean) => void;
   compose: (...moizers: Moize[]) => Moize;
   deep: Moize<{ isDeepEqual: true }>;
   getStats: (profileName?: string) => StatsObject;

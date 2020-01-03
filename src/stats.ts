@@ -29,9 +29,11 @@ export function clearStats(profileName?: string) {
  *
  * @description
  * activate stats collection
+ *
+ * @param isCollectingStats should stats be collected
  */
-export function collectStats() {
-  statsCache.isCollectingStats = true;
+export function collectStats(isCollectingStats = true) {
+  statsCache.isCollectingStats = isCollectingStats;
 }
 
 /**
@@ -130,7 +132,7 @@ export function getDefaultProfileName(fn: Fn | FunctionalComponent<{}>) {
  * @returns the usage as a percentage string
  */
 export function getUsagePercentage(calls: number, hits: number) {
-  return calls ? `${((hits / calls) * 100).toFixed(4)}%` : '0%';
+  return calls ? `${((hits / calls) * 100).toFixed(4)}%` : '0.0000%';
 }
 
 /**
@@ -158,7 +160,7 @@ export function getStats(profileName?: string): GlobalStatsObject {
       return {
         calls: 0,
         hits: 0,
-        usage: '0%',
+        usage: '0.0000%',
       };
     }
 
