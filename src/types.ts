@@ -43,7 +43,7 @@ export type Options = Partial<{
   onCacheHit: OnCacheOperation;
   onExpire: (key: Key) => any;
   profileName: string;
-  serializer: (key: Key) => Key;
+  serializer: (key: Key) => string[];
   transformArgs: (key: Key) => Key;
   updateExpire: boolean;
 }>;
@@ -155,4 +155,7 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   react: Moize<{ isReact: true }>;
   serialize: Moize<{ isSerialized: true }>;
   shallow: Moize<{ isShallowEqual: true }>;
+  transformArgs: <Transformer extends (key: Key) => Key>(
+    fn: Transformer
+  ) => Moize<{ transformArgs: Transformer }>;
 }

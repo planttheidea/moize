@@ -12,7 +12,7 @@ import {
   getStatsOptions,
   statsCache,
 } from './stats';
-import { Expiration, MicroMemoizeOptions, Moize, Moizeable, Moized, Options } from './types';
+import { Expiration, Key, MicroMemoizeOptions, Moize, Moizeable, Moized, Options } from './types';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
 export * from './types';
@@ -186,7 +186,7 @@ moize.collectStats = collectStats;
  * @description
  * method to compose moized methods and return a single moized function
  *
- * @param functions the functions to compose
+ * @param moized the functions to compose
  * @returns the composed function
  */
 moize.compose = function(...moized: Moize[]) {
@@ -202,7 +202,7 @@ moize.compose = function(...moized: Moize[]) {
  * @description
  * should deep equality check be used
  *
- * @returns {function} the moizer function
+ * @returns the moizer function
  */
 moize.deep = moize({ isDeepEqual: true });
 
@@ -215,7 +215,7 @@ moize.deep = moize({ isDeepEqual: true });
  * @description
  * get the statistics of a given profile, or overall usage
  *
- * @returns {StatsProfile} statistics for a given profile or overall usage
+ * @returns statistics for a given profile or overall usage
  */
 moize.getStats = getStats;
 
@@ -228,7 +228,7 @@ moize.getStats = getStats;
  * @description
  * a moized method that will remove all limits from the cache size
  *
- * @returns {function} the moizer function
+ * @returns the moizer function
  */
 moize.infinite = moize({ maxSize: Infinity });
 
@@ -241,7 +241,7 @@ moize.infinite = moize({ maxSize: Infinity });
  * @description
  * are stats being collected
  *
- * @returns {boolean} are stats being collected
+ * @returns are stats being collected
  */
 moize.isCollectingStats = function isCollectingStats(): boolean {
   return statsCache.isCollectingStats;
@@ -256,8 +256,8 @@ moize.isCollectingStats = function isCollectingStats(): boolean {
  * @description
  * is the fn passed a moized function
  *
- * @param {*} fn the object to test
- * @returns {boolean} is fn a moized function
+ * @param fn the object to test
+ * @returns is fn a moized function
  */
 moize.isMoized = function isMoized(fn: any): fn is Moized {
   return typeof fn === 'function' && !!fn.isMoized;
@@ -272,8 +272,8 @@ moize.isMoized = function isMoized(fn: any): fn is Moized {
  * @description
  * a moized method where the age of the cache is limited to the number of milliseconds passed
  *
- * @param {number} maxAge the TTL of the value in cache
- * @returns {function} the moizer function
+ * @param maxAge the TTL of the value in cache
+ * @returns the moizer function
  */
 moize.maxAge = function maxAge(maxAge: number) {
   return moize({ maxAge });
@@ -288,8 +288,8 @@ moize.maxAge = function maxAge(maxAge: number) {
  * @description
  * a moized method where the number of arguments used for determining cache is limited to the value passed
  *
- * @param {number} maxArgs the number of args to base the key on
- * @returns {function} the moizer function
+ * @param maxArgs the number of args to base the key on
+ * @returns the moizer function
  */
 moize.maxArgs = function maxArgs(maxArgs: number) {
   return moize({ maxArgs });
@@ -304,8 +304,8 @@ moize.maxArgs = function maxArgs(maxArgs: number) {
  * @description
  * a moized method where the total size of the cache is limited to the value passed
  *
- * @param {number} maxSize the maximum size of the cache
- * @returns {function} the moizer function
+ * @param maxSize the maximum size of the cache
+ * @returns the moizer function
  */
 moize.maxSize = function maxSize(maxSize: number) {
   return moize({ maxSize });
@@ -320,7 +320,7 @@ moize.maxSize = function maxSize(maxSize: number) {
  * @description
  * a moized method specific to caching resolved promise / async values
  *
- * @returns {function} the moizer function
+ * @returns the moizer function
  */
 moize.promise = moize({
   isPromise: true,
@@ -336,7 +336,7 @@ moize.promise = moize({
  * @description
  * a moized method specific to caching React element values
  *
- * @returns {function} the moizer function
+ * @returns the moizer function
  */
 moize.react = moize({ isReact: true });
 
@@ -349,7 +349,7 @@ moize.react = moize({ isReact: true });
  * @description
  * a moized method that will serialize the arguments passed to use as the cache key
  *
- * @returns {function} the moizer function
+ * @returns the moizer function
  */
 moize.serialize = moize({ isSerialized: true });
 
@@ -362,8 +362,23 @@ moize.serialize = moize({ isSerialized: true });
  * @description
  * should shallow equality check be used
  *
- * @returns {function} the moizer function
+ * @returns the moizer function
  */
 moize.shallow = moize({ isShallowEqual: true });
+
+/**
+ * @function
+ * @name transformArgs
+ * @memberof module:moize
+ * @alias moize.transformArgs
+ *
+ * @description
+ * transform the args to allow for specific cache key comparison
+ *
+ * @param transformArgs the args transformer
+ * @returns the moizer function
+ */
+moize.transformArgs = <Transformer extends (key: Key) => Key>(transformArgs: Transformer) =>
+  moize({ transformArgs });
 
 export default moize;
