@@ -4,7 +4,7 @@ import { logCache, logStoredValue } from './environment';
 type Arg = {
   one: number;
   two: {
-    deep: 2;
+    deep: number;
   };
 };
 
