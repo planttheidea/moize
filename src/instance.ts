@@ -1,17 +1,26 @@
 import { clearExpiration } from './maxAge';
 import { clearStats, getStats, statsCache } from './stats';
-import { Fn, Key, Memoized, Moizeable, MoizeConfiguration, Moized, Options, StatsProfile } from './types';
+import {
+  Fn,
+  Key,
+  Memoized,
+  Moizeable,
+  MoizeConfiguration,
+  Moized,
+  Options,
+  StatsProfile,
+} from './types';
 import { createFindKeyIndex } from './utils';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
  * @private
- * 
+ *
  * @description
  * copy the static properties from the original function to the moized
  * function
- * 
+ *
  * @param originalFn the function being memoized
  * @param moized the moized function
  * @param skippedProperties the list of skipped properties, if any
