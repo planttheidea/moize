@@ -14,6 +14,7 @@ import {
 } from './stats';
 import {
   Expiration,
+  IsEqual,
   IsMatchingKey,
   Key,
   MicroMemoizeOptions,
@@ -21,6 +22,7 @@ import {
   Moizeable,
   Moized,
   Options,
+  Serialize,
 } from './types';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
@@ -274,12 +276,28 @@ moize.isMoized = function isMoized(fn: any): fn is Moized {
 
 /**
  * @function
+ * @name matchesArg
+ * @memberof module:moize
+ * @alias moize.matchesArg
+ *
+ * @description
+ * a moized method where the arg matching method is the custom one passed
+ *
+ * @param keyMatcher the method to compare against those in cache
+ * @returns the moizer function
+ */
+moize.matchesArg = function(argMatcher: IsEqual) {
+  return moize({ matchesArg: argMatcher });
+};
+
+/**
+ * @function
  * @name matchesKey
  * @memberof module:moize
  * @alias moize.matchesKey
  *
  * @description
- * a moized method where the key matching method is the custom one psse
+ * a moized method where the key matching method is the custom one passed
  *
  * @param keyMatcher the method to compare against those in cache
  * @returns the moizer function
@@ -377,6 +395,22 @@ moize.react = moize({ isReact: true });
  * @returns the moizer function
  */
 moize.serialize = moize({ isSerialized: true });
+
+/**
+ * @function
+ * @name serializeWith
+ * @memberof module:moize
+ * @alias moize.serializeWith
+ *
+ * @description
+ * a moized method that will serialize the arguments passed to use as the cache key
+ * based on the serializer passed
+ *
+ * @returns the moizer function
+ */
+moize.serializeWith = function(serializer: Serialize) {
+  return moize({ isSerialized: true, serializer });
+};
 
 /**
  * @function

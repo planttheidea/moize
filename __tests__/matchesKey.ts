@@ -15,7 +15,7 @@ const bar = 'bar';
 const baz = 'baz';
 
 describe('moize.matchesKey', () => {
-  it('limits the args memoized by', () => {
+  it('performs a custom equality check of the key', () => {
     const resultA = memoized(foo, bar, baz);
     const resultB = memoized(foo);
 

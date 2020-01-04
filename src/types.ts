@@ -21,11 +21,13 @@ export type Expiration = {
 
 export type OnCacheOperation = (cache: Cache, options: Options, moized: Function) => void;
 
-export type IsEqual = <KeyArg>(cacheKeyArg: KeyArg, keyArg: KeyArg) => boolean;
+export type IsEqual = (cacheKeyArg: any, keyArg: any) => boolean;
 export type IsMatchingKey = (cacheKey: Key, key: Key) => boolean;
 export type TransformKey = (key: Key) => Key;
 
 export type MicroMemoizeOptions = MicroMemoize.Options;
+
+export type Serialize = (key: Key) => string[];
 
 export type Options = Partial<{
   isDeepEqual: boolean;
@@ -44,7 +46,7 @@ export type Options = Partial<{
   onExpire: (key: Key) => any;
   profileName: string;
   serializer: (key: Key) => string[];
-  transformArgs: (key: Key) => Key;
+  transformArgs: Serialize;
   updateExpire: boolean;
 }>;
 
@@ -148,6 +150,7 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   infinite: Moize;
   isCollectingStats: () => boolean;
   isMoized: (value: any) => value is Moized;
+  matchesArg: <Matcher extends IsEqual>(argMatcher: Matcher) => Moize<{ matchesArg: Matcher }>;
   matchesKey: <Matcher extends IsMatchingKey>(
     keyMatcher: Matcher
   ) => Moize<{ matchesKey: Matcher }>;
@@ -157,6 +160,9 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   promise: Moize<{ isPromise: true }>;
   react: Moize<{ isReact: true }>;
   serialize: Moize<{ isSerialized: true }>;
+  serializeWith: <Serializer extends Serialize>(
+    serializer: Serializer
+  ) => Moize<{ isSerialized: true; serializer: Serializer }>;
   shallow: Moize<{ isShallowEqual: true }>;
   transformArgs: <Transformer extends (key: Key) => Key>(
     transformer: Transformer
