@@ -23,6 +23,7 @@ export type OnCacheOperation = (cache: Cache, options: Options, moized: Function
 
 export type IsEqual = (cacheKeyArg: any, keyArg: any) => boolean;
 export type IsMatchingKey = (cacheKey: Key, key: Key) => boolean;
+export type OnExpire = (key: Key) => any;
 export type TransformKey = (key: Key) => Key;
 
 export type MicroMemoizeOptions = MicroMemoize.Options;
@@ -43,7 +44,7 @@ export type Options = Partial<{
   onCacheAdd: OnCacheOperation;
   onCacheChange: OnCacheOperation;
   onCacheHit: OnCacheOperation;
-  onExpire: (key: Key) => any;
+  onExpire: OnExpire;
   profileName: string;
   serializer: (key: Key) => string[];
   transformArgs: Serialize;
@@ -154,7 +155,21 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   matchesKey: <Matcher extends IsMatchingKey>(
     keyMatcher: Matcher
   ) => Moize<{ matchesKey: Matcher }>;
-  maxAge: (age: number) => Moize;
+  maxAge: <
+    ExpireHandler extends OnExpire,
+    UpdateExpire extends boolean,
+    ExpireOptions extends { onExpire?: ExpireHandler; updateExpire?: UpdateExpire },
+    _OnExpire = ExpireHandler | UpdateExpire | ExpireOptions
+  >(
+    age: number,
+    onExpire?: _OnExpire
+  ) => _OnExpire extends ExpireHandler
+    ? Moize<{ onExpire: _OnExpire; updateExpire: true }>
+    : _OnExpire extends true
+    ? Moize<{ updateExpire: true }>
+    : _OnExpire extends UpdateExpire
+    ? Moize<ExpireOptions>
+    : Moize;
   maxArgs: (args: number) => Moize;
   maxSize: (size: number) => Moize;
   promise: Moize<{ isPromise: true }>;

@@ -74,6 +74,8 @@ export function createOnCacheAddSetExpiration(
         clearExpiration(expirations, key, true);
 
         if (typeof options.onExpire === 'function' && options.onExpire(key) === false) {
+          console.log('updated');
+
           cache.keys.unshift(key);
           cache.values.unshift(value);
 

@@ -21,6 +21,7 @@ import {
   Moize,
   Moizeable,
   Moized,
+  OnExpire,
   Options,
   Serialize,
 } from './types';
@@ -99,6 +100,10 @@ const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Option
   const coalescedOptions: Options = {
     ...DEFAULT_OPTIONS,
     ...options,
+    maxAge:
+      typeof options.maxAge === 'number' && options.maxAge >= 0
+        ? options.maxAge
+        : DEFAULT_OPTIONS.maxAge,
     maxArgs:
       typeof options.maxArgs === 'number' && options.maxArgs >= 0
         ? options.maxArgs
@@ -318,7 +323,33 @@ moize.matchesKey = function(keyMatcher: IsMatchingKey) {
  * @param maxAge the TTL of the value in cache
  * @returns the moizer function
  */
-moize.maxAge = function maxAge(maxAge: number) {
+moize.maxAge = function maxAge<ExpireHandler>(maxAge: number, expireOptions?: ExpireHandler) {
+  const type = typeof expireOptions;
+
+  if (type === 'object') {
+    const { onExpire, updateExpire } = expireOptions as {
+      onExpire?: OnExpire;
+      updateExpire?: boolean;
+    };
+
+    return moize({
+      maxAge,
+      onExpire,
+      updateExpire,
+    });
+  }
+
+  if (type === 'function') {
+    return moize({ maxAge, onExpire: expireOptions, updateExpire: true });
+  }
+
+  if (type === 'boolean') {
+    return moize({
+      maxAge,
+      updateExpire: expireOptions,
+    });
+  }
+
   return moize({ maxAge });
 };
 
