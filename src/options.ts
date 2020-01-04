@@ -34,7 +34,7 @@ export function createOnCacheOperation(fn?: OnCacheOperation): OnCacheOperation 
  */
 export function getIsEqual(options: Options): IsEqual {
   return (
-    options.equals ||
+    options.matchesArg ||
     (options.isDeepEqual && deepEqual) ||
     (options.isShallowEqual && shallowEqual) ||
     sameValueZeroEqual

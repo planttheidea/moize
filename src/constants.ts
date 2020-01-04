@@ -6,12 +6,12 @@ import { Options } from './types';
  * @constant DEFAULT_OPTIONS
  */
 export const DEFAULT_OPTIONS: Options = {
-  equals: undefined,
   isDeepEqual: false,
   isPromise: false,
   isReact: false,
   isSerialized: false,
   isShallowEqual: false,
+  matchesArg: undefined,
   matchesKey: undefined,
   maxAge: undefined,
   maxArgs: undefined,

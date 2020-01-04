@@ -28,12 +28,12 @@ export type TransformKey = (key: Key) => Key;
 export type MicroMemoizeOptions = MicroMemoize.Options;
 
 export type Options = Partial<{
-  equals: IsEqual;
   isDeepEqual: boolean;
   isPromise: boolean;
   isReact: boolean;
   isSerialized: boolean;
   isShallowEqual: boolean;
+  matchesArg: IsEqual;
   matchesKey: IsMatchingKey;
   maxAge: number;
   maxArgs: number;
@@ -82,7 +82,7 @@ export type Moized<
     CombinedOptions,
     'isPromise' | 'maxSize' | 'onCacheAdd' | 'onCacheChange' | 'onCacheHit'
   > & {
-    isEqual: CombinedOptions['equals'];
+    isEqual: CombinedOptions['matchesArg'];
     isMatchingKey: CombinedOptions['matchesKey'];
     transformKey: CombinedOptions['transformArgs'];
   };
@@ -148,6 +148,9 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   infinite: Moize;
   isCollectingStats: () => boolean;
   isMoized: (value: any) => value is Moized;
+  matchesKey: <Matcher extends IsMatchingKey>(
+    keyMatcher: Matcher
+  ) => Moize<{ matchesKey: Matcher }>;
   maxAge: (age: number) => Moize;
   maxArgs: (args: number) => Moize;
   maxSize: (size: number) => Moize;
@@ -156,6 +159,6 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
   serialize: Moize<{ isSerialized: true }>;
   shallow: Moize<{ isShallowEqual: true }>;
   transformArgs: <Transformer extends (key: Key) => Key>(
-    fn: Transformer
+    transformer: Transformer
   ) => Moize<{ transformArgs: Transformer }>;
 }

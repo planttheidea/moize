@@ -12,7 +12,16 @@ import {
   getStatsOptions,
   statsCache,
 } from './stats';
-import { Expiration, Key, MicroMemoizeOptions, Moize, Moizeable, Moized, Options } from './types';
+import {
+  Expiration,
+  IsMatchingKey,
+  Key,
+  MicroMemoizeOptions,
+  Moize,
+  Moizeable,
+  Moized,
+  Options,
+} from './types';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
 export * from './types';
@@ -101,7 +110,7 @@ const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Option
   const expirations: Array<Expiration> = [];
 
   const {
-    equals: equalsIgnored,
+    matchesArg: equalsIgnored,
     isDeepEqual: isDeepEqualIgnored,
     isPromise,
     isReact: isReactIgnored,
@@ -261,6 +270,22 @@ moize.isCollectingStats = function isCollectingStats(): boolean {
  */
 moize.isMoized = function isMoized(fn: any): fn is Moized {
   return typeof fn === 'function' && !!fn.isMoized;
+};
+
+/**
+ * @function
+ * @name matchesKey
+ * @memberof module:moize
+ * @alias moize.matchesKey
+ *
+ * @description
+ * a moized method where the key matching method is the custom one psse
+ *
+ * @param keyMatcher the method to compare against those in cache
+ * @returns the moizer function
+ */
+moize.matchesKey = function(keyMatcher: IsMatchingKey) {
+  return moize({ matchesKey: keyMatcher });
 };
 
 /**
