@@ -32,6 +32,9 @@ _ValueBar.defaultProps = {
 
 const ValueBar = jest.fn(_ValueBar) as (props: Props) => JSX.Element;
 
+// force static properties to be passed to mock
+Object.assign(ValueBar, _ValueBar);
+
 const Memoized = moize.react(ValueBar);
 
 const foo = 'foo';
@@ -108,6 +111,12 @@ class SimpleApp extends React.Component<SimpleAppProps> {
 }
 
 describe('moize.react', () => {
+  it('should have the correct static values', () => {
+    expect(Memoized.propTypes).toBe(_ValueBar.propTypes);
+    expect(Memoized.defaultProps).toBe(_ValueBar.defaultProps);
+    expect(Memoized.displayName).toBe(`Moized(${ValueBar.name})`);
+  });
+
   it('should memoize on a per-instance basis on render', (done) => {
     const simpleAppContainer = document.createElement('div');
 
@@ -117,6 +126,6 @@ describe('moize.react', () => {
   
     setTimeout(() => {
       ReactDOM.render(<SimpleApp isRerender />, simpleAppContainer, done);
-    }, 3000);
+    }, 1000);
   });
 });

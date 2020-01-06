@@ -33,7 +33,7 @@ export function createGetInitialArgs(size: number) {
 
     const clone = [];
 
-    for (let index = 0; index < args.length; index++) {
+    for (let index = 0; index < size; index++) {
       clone[index] = args[index];
     }
 

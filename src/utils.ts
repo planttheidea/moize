@@ -11,29 +11,20 @@ import { Expiration, Fn, IsEqual, IsMatchingKey, Key, Moizeable, Moized, Options
  * @returns the composed function
  */
 export function combine<Arg, Result>(...functions: Fn<Arg>[]): Fn<Arg, Result> | undefined {
-  switch (functions.length) {
-    case 0:
-      return;
+  return functions.reduce(function(f: any, g: any) {
+    if (typeof f === 'function') {
+      return typeof g === 'function'
+        ? function(this: any) {
+            f.apply(this, arguments);
+            g.apply(this, arguments);
+          }
+        : f;
+    }
 
-    case 1:
-      return functions[0];
-
-    default:
-      return functions.reduce(function(f: any, g: any) {
-        if (typeof f === 'function') {
-          return typeof g === 'function'
-            ? function(this: any) {
-                f.apply(this, arguments);
-                g.apply(this, arguments);
-              }
-            : f;
-        }
-
-        if (typeof g === 'function') {
-          return g;
-        }
-      });
-  }
+    if (typeof g === 'function') {
+      return g;
+    }
+  });
 }
 
 /**
@@ -46,28 +37,19 @@ export function combine<Arg, Result>(...functions: Fn<Arg>[]): Fn<Arg, Result> |
  * @returns the composed function
  */
 export function compose<Method>(...functions: Method[]): Method {
-  switch (functions.length) {
-    case 0:
-      return;
+  return functions.reduce(function(f: any, g: any) {
+    if (typeof f === 'function') {
+      return typeof g === 'function'
+        ? function(this: any) {
+            return f(g.apply(this, arguments));
+          }
+        : f;
+    }
 
-    case 1:
-      return functions[0];
-
-    default:
-      return functions.reduce(function(f: any, g: any) {
-        if (typeof f === 'function') {
-          return typeof g === 'function'
-            ? function(this: any) {
-                return f(g.apply(this, arguments));
-              }
-            : f;
-        }
-
-        if (typeof g === 'function') {
-          return g;
-        }
-      });
-  }
+    if (typeof g === 'function') {
+      return g;
+    }
+  });
 }
 
 /**
