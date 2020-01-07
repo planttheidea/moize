@@ -1,3 +1,5 @@
+import { sameValueZeroEqual } from 'fast-equals';
+import microMemoize from 'micro-memoize';
 import moize, { Moized } from '../src/index';
 
 const foo = 'foo';
@@ -260,6 +262,42 @@ describe('moize', () => {
         hits: 0,
         usage: '0.0000%',
       });
+    });
+  });
+
+  describe('properties', () => {
+    it('should have the micro-memoize options', () => {
+      const mmResult = microMemoize(method, { maxSize: Infinity });
+
+      const { isEqual, ...options } = memoized._microMemoizeOptions;
+      const { isEqual: _isEqualIgnored, ...resultOptions } = mmResult.options;
+
+      expect(options).toEqual(resultOptions);
+      expect(isEqual).toBe(sameValueZeroEqual);
+    });
+
+    it('should have cache and cacheSnapshot', () => {
+      memoized(foo, bar);
+
+      expect(memoized.cache).toEqual(
+        expect.objectContaining({
+          keys: [[foo, bar]],
+          values: [{ one: foo, two: bar }],
+        })
+      );
+      expect(memoized.cache.size).toBe(1);
+
+      expect(memoized.cacheSnapshot).toEqual(
+        expect.objectContaining({
+          keys: [[foo, bar]],
+          values: [{ one: foo, two: bar }],
+        })
+      );
+      expect(memoized.cacheSnapshot.size).toBe(1);
+    });
+
+    it('should have the original function', () => {
+      expect(memoized.originalFunction).toBe(method);
     });
   });
 });

@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "fast-equals": "^2.0.0",
-    "fast-stringify": "^2.0.0",
     "micro-memoize": "^4.0.9"
   },
   "description": "Blazing fast memoization based on all parameters passed",

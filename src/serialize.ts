@@ -1,4 +1,3 @@
-import stringifySafe from 'fast-stringify';
 import { Key, Options } from './types';
 
 /**
@@ -7,40 +6,41 @@ import { Key, Options } from './types';
  * @description
  * custom replacer for the stringify function
  *
- * @param propertyIgnored key in json object
+ * @param key key in json object
  * @param value value in json object
  * @returns if function then toString of it, else the value itself
  */
-export function defaultReplacer(propertyIgnored: string, value: any) {
-  switch (typeof value) {
-    case 'function':
-    case 'symbol':
-      return value.toString();
+export function createDefaultReplacer() {
+  const keys = [];
+  const values = [];
 
-    case 'object':
-      return value || '' + value;
+  return function defaultReplacer(key: string, value: any) {
+    switch (typeof value) {
+      case 'function':
+      case 'symbol':
+        return value.toString();
 
-    default:
-      return '' + value;
-  }
-}
+      case 'object': {
+        if (!value) {
+          return '' + value;
+        }
 
-/**
- * @private
- *
- * @description
- * stringify with a custom replacer if circular, else use standard JSON.stringify
- *
- * @param value value to stringify
- * @param replacer replacer to used in stringification
- * @returns the stringified version of value
- */
-export function stringify(value: any) {
-  try {
-    return JSON.stringify(value, defaultReplacer);
-  } catch (exception) {
-    return stringifySafe(value, defaultReplacer);
-  }
+        const index = values.indexOf(value);
+
+        if (index !== -1) {
+          return `["${key}":Circular~${index}]`;
+        }
+
+        keys.push(key);
+        values.push(value);
+
+        return value;
+      }
+
+      default:
+        return '' + value;
+    }
+  };
 }
 
 /**
@@ -55,7 +55,9 @@ export function stringify(value: any) {
 export function getStringifiedArgument(arg: any) {
   const typeOfArg = typeof arg;
 
-  return arg && (typeOfArg === 'object' || typeOfArg === 'function') ? stringify(arg) : arg;
+  return arg && (typeOfArg === 'object' || typeOfArg === 'function')
+    ? JSON.stringify(arg, createDefaultReplacer())
+    : arg;
 }
 
 /**

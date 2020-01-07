@@ -1,5 +1,5 @@
 import { clearExpiration } from './maxAge';
-import { clearStats, getStats, statsCache } from './stats';
+import { clearStats, getStats } from './stats';
 import {
   Fn,
   Key,
@@ -217,13 +217,6 @@ export function addInstanceProperties<OriginalFn extends Moizeable>(
       configurable: true,
       get() {
         return expirations.slice(0);
-      },
-    },
-
-    isCollectingStats: {
-      configurable: true,
-      get() {
-        return statsCache.isCollectingStats;
       },
     },
 
