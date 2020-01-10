@@ -1,5 +1,5 @@
+import { copyStaticProperties } from './instance';
 import { Moize, Moizeable, Options } from './types';
-const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
  * Copying React internals for the internal $$typeof value used
@@ -77,11 +77,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
     };
   };
 
-  for (const staticProperty in fn) {
-    if (staticProperty.indexOf('context') === -1 && hasOwnProperty.call(fn, staticProperty)) {
-      Moized[staticProperty as keyof typeof Moized] = fn[staticProperty];
-    }
-  }
+  copyStaticProperties(fn, Moized, ['contextTypes', 'contextType', 'displayName']);
 
   Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
 

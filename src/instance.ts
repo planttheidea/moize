@@ -1,15 +1,6 @@
 import { clearExpiration } from './maxAge';
 import { clearStats, getStats } from './stats';
-import {
-  Fn,
-  Key,
-  Memoized,
-  Moizeable,
-  MoizeConfiguration,
-  Moized,
-  Options,
-  StatsProfile,
-} from './types';
+import { Fn, Key, Memoized, Moizeable, MoizeConfiguration, Moized, Options, StatsProfile } from './types';
 import { createFindKeyIndex } from './utils';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -21,18 +12,14 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
  * copy the static properties from the original function to the moized
  * function
  *
- * @param originalFn the function being memoized
- * @param moized the moized function
+ * @param originalFn the function copying from
+ * @param newFn the function copying to
  * @param skippedProperties the list of skipped properties, if any
  */
-export function copyStaticProperties<Fn extends Moizeable, CombinedOptions extends Options>(
-  originalFn: Fn,
-  moized: Moized<Fn, CombinedOptions>,
-  skippedProperties: string[] = []
-) {
+export function copyStaticProperties(originalFn: Fn, newFn: Fn, skippedProperties: string[] = []) {
   for (const property in originalFn) {
     if (skippedProperties.indexOf(property) === -1 && hasOwnProperty.call(originalFn, property)) {
-      moized[property as keyof typeof moized] = originalFn[property];
+      newFn[property] = originalFn[property];
     }
   }
 }
