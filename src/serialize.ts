@@ -11,8 +11,8 @@ import { Key, Options } from './types';
  * @returns if function then toString of it, else the value itself
  */
 export function createDefaultReplacer() {
-  const keys = [];
-  const values = [];
+  const keys: string[] = [];
+  const values: any[] = [];
 
   return function defaultReplacer(key: string, value: any) {
     switch (typeof value) {
@@ -28,7 +28,7 @@ export function createDefaultReplacer() {
         const index = values.indexOf(value);
 
         if (index !== -1) {
-          return `["${key}":Circular~${index}]`;
+          return `[Circular~${index}]`;
         }
 
         keys.push(key);

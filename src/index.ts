@@ -387,6 +387,21 @@ moize.maxSize = function maxSize(maxSize: number) {
 
 /**
  * @function
+ * @name profile
+ * @memberof module:moize
+ * @alias moize.profile
+ *
+ * @description
+ * a moized method with a profile name
+ *
+ * @returns the moizer function
+ */
+moize.profile = function(profileName: string) {
+  return moize({ profileName });
+};
+
+/**
+ * @function
  * @name promise
  * @memberof module:moize
  * @alias moize.promise

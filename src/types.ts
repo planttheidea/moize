@@ -172,6 +172,7 @@ export interface Moize<DefaultOptions extends Options = Options> extends Moizeab
     : Moize;
   maxArgs: (args: number) => Moize;
   maxSize: (size: number) => Moize;
+  profile: (profileName: string) => Moize;
   promise: Moize<{ isPromise: true }>;
   react: Moize<{ isReact: true }>;
   serialize: Moize<{ isSerialized: true }>;

@@ -51,7 +51,7 @@ export function addInstanceMethods<OriginalFn extends Fn>(
 ) {
   const { options } = memoized;
 
-  const findKeyIndex: Function = createFindKeyIndex(options.isEqual, options.isMatchingKey);
+  const findKeyIndex = createFindKeyIndex(options.isEqual, options.isMatchingKey);
 
   const moized = (memoized as unknown) as Moized<OriginalFn, Options>;
 
@@ -67,6 +67,8 @@ export function addInstanceMethods<OriginalFn extends Fn>(
     if (onCacheChange) {
       onCacheChange(cache, moized.options, moized);
     }
+
+    return true;
   };
 
   moized.clearStats = function() {
@@ -107,20 +109,24 @@ export function addInstanceMethods<OriginalFn extends Fn>(
       cache,
     } = moized;
 
-    const keyIndex: number = findKeyIndex(cache.keys, transformKey ? transformKey(key) : key);
+    const keyIndex = findKeyIndex(cache.keys, transformKey ? transformKey(key) : key);
 
-    if (keyIndex !== -1) {
-      const existingKey = cache.keys[keyIndex];
-
-      cache.keys.splice(keyIndex, 1);
-      cache.values.splice(keyIndex, 1);
-
-      if (onCacheChange) {
-        onCacheChange(cache, moized.options, moized);
-      }
-
-      clearExpiration(expirations, existingKey, true);
+    if (keyIndex === -1) {
+      return false;
     }
+
+    const existingKey = cache.keys[keyIndex];
+
+    cache.keys.splice(keyIndex, 1);
+    cache.values.splice(keyIndex, 1);
+
+    if (onCacheChange) {
+      onCacheChange(cache, moized.options, moized);
+    }
+
+    clearExpiration(expirations, existingKey, true);
+
+    return true;
   };
 
   moized.set = function(key: Key, value: any) {
