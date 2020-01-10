@@ -1,6 +1,15 @@
 import { clearExpiration } from './maxAge';
 import { clearStats, getStats } from './stats';
-import { Fn, Key, Memoized, Moizeable, MoizeConfiguration, Moized, Options, StatsProfile } from './types';
+import {
+  Fn,
+  Key,
+  Memoized,
+  Moizeable,
+  MoizeConfiguration,
+  Moized,
+  Options,
+  StatsProfile,
+} from './types';
 import { createFindKeyIndex } from './utils';
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -19,7 +28,7 @@ const hasOwnProperty = Object.prototype.hasOwnProperty;
 export function copyStaticProperties(originalFn: Fn, newFn: Fn, skippedProperties: string[] = []) {
   for (const property in originalFn) {
     if (skippedProperties.indexOf(property) === -1 && hasOwnProperty.call(originalFn, property)) {
-      newFn[property] = originalFn[property];
+      newFn[property as keyof typeof newFn] = originalFn[property as keyof typeof originalFn];
     }
   }
 }

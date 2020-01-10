@@ -191,7 +191,7 @@ export function getStats(profileName?: string): GlobalStatsObject {
       computedProfiles[profileName] = getStats(profileName);
 
       return computedProfiles;
-    }, {}),
+    }, {} as Record<string, StatsProfile>),
     usage: getUsagePercentage(completeStats.calls, completeStats.hits),
   };
 }

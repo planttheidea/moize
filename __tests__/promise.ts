@@ -79,10 +79,11 @@ const METHODS = {
 
 describe('moize.promise', () => {
   ['native', 'bluebird'].forEach((type) => {
-    const Constructor = TYPES[type];
+    const Constructor = TYPES[type as keyof typeof TYPES];
 
     ['resolve', 'reject', 'expiring'].forEach((test) => {
-      const method = METHODS[type][test];
+      const methodType = METHODS[type as keyof typeof METHODS];
+      const method = methodType[test as keyof typeof methodType];
 
       it(`should handle ${test}`, async () => {
         try {

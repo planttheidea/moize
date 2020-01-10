@@ -130,7 +130,8 @@
     "test:watch": "npm test -- --watch",
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es",
     "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib",
-    "transpile:mjs": "npm run clean:mjs && BABEL_ENV=mjs babel src --out-dir mjs"
+    "transpile:mjs": "npm run clean:mjs && BABEL_ENV=mjs babel src --out-dir mjs",
+    "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,
   "types": "./index.d.ts",

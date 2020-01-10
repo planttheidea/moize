@@ -1,8 +1,5 @@
 import moize from '../src';
 
-const foo = 'foo';
-const bar = 'bar';
-
 const method = jest.fn(function(one: string, two: string) {
   return { one, two };
 });

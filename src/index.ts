@@ -1,9 +1,9 @@
 import memoize from 'micro-memoize';
+import { createMoizedComponent } from './component';
 import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
 import { getMaxAgeOptions } from './maxAge';
 import { createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey } from './options';
-import { createMoizedComponent } from './react';
 import {
   clearStats,
   collectStats,
