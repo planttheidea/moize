@@ -6,20 +6,11 @@
   "hooks": {
     "before:init": [
       "npm run lint",
-      "npm run flow",
-      "npm run copy:types",
+      "npm run typecheck",
       "npm run test:coverage",
-      "npm run transpile:lib",
-      "npm run transpile:es",
-      "npm run transpile:mjs",
-      "npm run rename:mjs",
-      "npm run dist"
+      "npm run dist",
+      "npm run copy:mjs"
     ],
-    "before:release": [
-      "npm run docs",
-      "git add .",
-      "git commit -m 'Update docs'",
-      "git push"
-    ]
+    "before:release": ["npm run docs", "git add .", "git commit -m 'Update docs'", "git push"]
   }
 }
