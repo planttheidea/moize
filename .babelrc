@@ -10,19 +10,6 @@
         ]
       ]
     },
-    "mjs": {
-      "plugins": [
-        [
-          "./plugins/search-and-replace.js",
-          {
-            "micro-memoize/es/utils": "micro-memoize/mjs/utils",
-            "micro-memoize": "micro-memoize/mjs",
-            "fast-equals": "fast-equals/mjs",
-            "fast-stringify": "fast-stringify/mjs"
-          }
-        ]
-      ]
-    },
     "test": {
       "plugins": ["@babel/plugin-proposal-class-properties"],
       "presets": [
