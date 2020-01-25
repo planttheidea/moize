@@ -1,16 +1,7 @@
-import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
+import { deepEqual, shallowEqual } from 'fast-equals';
 import { createGetInitialArgs } from './maxArgs';
 import { getIsSerializedKeyEqual, getSerializerFunction } from './serialize';
-import {
-  Cache,
-  IsEqual,
-  IsMatchingKey,
-  MicroMemoizeOptions,
-  Moized,
-  OnCacheOperation,
-  Options,
-  TransformKey,
-} from './types';
+import { Cache, IsEqual, IsMatchingKey, MicroMemoizeOptions, Moized, OnCacheOperation, Options, TransformKey } from './types';
 import { compose } from './utils';
 
 export function createOnCacheOperation(fn?: OnCacheOperation): OnCacheOperation {
@@ -21,6 +12,10 @@ export function createOnCacheOperation(fn?: OnCacheOperation): OnCacheOperation 
       memoized: Moized
     ): void => fn(memoized.cache, memoized.options, memoized);
   }
+}
+
+function isStrictlyEqual(a: any, b: any) {
+  return a === b;
 }
 
 /**
@@ -37,7 +32,7 @@ export function getIsEqual(options: Options): IsEqual {
     options.matchesArg ||
     (options.isDeepEqual && deepEqual) ||
     (options.isShallowEqual && shallowEqual) ||
-    sameValueZeroEqual
+    isStrictlyEqual
   );
 }
 

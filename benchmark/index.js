@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 'use strict';
 
 const _ = require('lodash');
@@ -15,17 +17,19 @@ const lruMemoize = require('lru-memoize').default;
 const mem = require('mem');
 const memoizee = require('memoizee');
 const memoizerific = require('memoizerific');
-const moize = require('../lib').default;
+const moize = require('../dist/moize.cjs');
 const ramda = require('ramda').memoizeWith;
 const underscore = require('underscore').memoize;
 
 const deepEquals = _.isEqual;
 
-const resolveArguments = function() {
-  return arguments.length > 1
-    ? JSON.stringify(arguments)
-    : typeof arguments[0] === 'object' ? JSON.stringify(arguments[0]) : arguments[0];
-};
+const resolveSingleArgument = function(arg) {
+  return arg;
+}
+
+const resolveMultipleArguments = function() {
+  return JSON.stringify(arguments);
+}
 
 const showResults = (benchmarkResults) => {
   const table = new Table({
@@ -54,8 +58,9 @@ const sortDescResults = (benchmarkResults) => {
 
 const spinner = ora('Running benchmark');
 
-let cliResults = [],
-    csvResults = {};
+const csvResults = {};
+
+let cliResults = [];
 
 const onCycle = (event) => {
   cliResults.push(event);
@@ -170,7 +175,7 @@ const runSinglePrimitiveSuite = () => {
   const mMemoizee = memoizee(fibonacciSinglePrimitive);
   const mMemoizerific = memoizerific(Infinity)(fibonacciSinglePrimitive);
   const mMoize = moize(fibonacciSinglePrimitive);
-  const mRamda = ramda(resolveArguments, fibonacciSinglePrimitive);
+  const mRamda = ramda(resolveSingleArgument, fibonacciSinglePrimitive);
   const mUnderscore = underscore(fibonacciSinglePrimitive);
 
   return new Promise((resolve) => {
@@ -220,8 +225,8 @@ const runSingleArraySuite = () => {
   const mMemoizee = memoizee(fibonacciSingleArray);
   const mMemoizerific = memoizerific(Infinity)(fibonacciSingleArray);
   const mMoize = moize(fibonacciSingleArray);
-  const mRamda = ramda(resolveArguments, fibonacciSingleArray);
-  const mUnderscore = underscore(fibonacciSingleArray, resolveArguments);
+  const mRamda = ramda(resolveSingleArgument, fibonacciSingleArray);
+  const mUnderscore = underscore(fibonacciSingleArray);
 
   return new Promise((resolve) => {
     new Benchmark.Suite(getSuiteOptions('single array parameter', resolve))
@@ -275,8 +280,8 @@ const runSingleObjectSuite = () => {
   const mMemoizee = memoizee(fibonacciSingleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciSingleObject);
   const mMoize = moize(fibonacciSingleObject);
-  const mRamda = ramda(resolveArguments, fibonacciSingleObject);
-  const mUnderscore = underscore(fibonacciSingleObject, resolveArguments);
+  const mRamda = ramda(resolveSingleArgument, fibonacciSingleObject);
+  const mUnderscore = underscore(fibonacciSingleObject);
 
   return new Promise((resolve) => {
     new Benchmark.Suite(getSuiteOptions('single object parameter', resolve))
@@ -323,14 +328,14 @@ const runMultiplePrimitiveSuite = () => {
 
   const mAddyOsmani = addyOsmani(fibonacciMultiplePrimitive);
   const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
-  const mLodash = lodash(fibonacciMultiplePrimitive, resolveArguments);
+  const mLodash = lodash(fibonacciMultiplePrimitive, resolveMultipleArguments);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciMultiplePrimitive);
-  const mMem = mem(fibonacciMultiplePrimitive);
+  const mMem = mem(fibonacciMultiplePrimitive, resolveMultipleArguments);
   const mMemoizee = memoizee(fibonacciMultiplePrimitive);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
   const mMoize = moize(fibonacciMultiplePrimitive);
-  const mRamda = ramda(resolveArguments, fibonacciMultiplePrimitive);
-  const mUnderscore = underscore(fibonacciMultiplePrimitive, resolveArguments);
+  const mRamda = ramda(resolveMultipleArguments, fibonacciMultiplePrimitive);
+  const mUnderscore = underscore(fibonacciMultiplePrimitive, resolveMultipleArguments);
 
   return new Promise((resolve) => {
     new Benchmark.Suite(getSuiteOptions('multiple primitive parameters', resolve))
@@ -377,14 +382,14 @@ const runMultipleArraySuite = () => {
 
   const mAddyOsmani = addyOsmani(fibonacciMultipleArray);
   const mFastMemoize = fastMemoize(fibonacciMultipleArray);
-  const mLodash = lodash(fibonacciMultipleArray, resolveArguments);
+  const mLodash = lodash(fibonacciMultipleArray, resolveMultipleArguments);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleArray);
-  const mMem = mem(fibonacciMultipleArray);
+  const mMem = mem(fibonacciMultipleArray, resolveMultipleArguments);
   const mMemoizee = memoizee(fibonacciMultipleArray);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleArray);
   const mMoize = moize(fibonacciMultipleArray);
-  const mRamda = ramda(resolveArguments, fibonacciMultipleArray);
-  const mUnderscore = underscore(fibonacciMultipleArray, resolveArguments);
+  const mRamda = ramda(resolveMultipleArguments, fibonacciMultipleArray);
+  const mUnderscore = underscore(fibonacciMultipleArray, resolveMultipleArguments);
 
   return new Promise((resolve) => {
     new Benchmark.Suite(getSuiteOptions('multiple array parameters', resolve))
@@ -431,14 +436,14 @@ const runMultipleObjectSuite = () => {
 
   const mAddyOsmani = addyOsmani(fibonacciMultipleObject);
   const mFastMemoize = fastMemoize(fibonacciMultipleObject);
-  const mLodash = lodash(fibonacciMultipleObject, resolveArguments);
+  const mLodash = lodash(fibonacciMultipleObject, resolveMultipleArguments);
   const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleObject);
-  const mMem = mem(fibonacciMultipleObject);
+  const mMem = mem(fibonacciMultipleObject, resolveMultipleArguments);
   const mMemoizee = memoizee(fibonacciMultipleObject);
   const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
   const mMoize = moize(fibonacciMultipleObject);
-  const mRamda = ramda(resolveArguments, fibonacciMultipleObject);
-  const mUnderscore = underscore(fibonacciMultipleObject, resolveArguments);
+  const mRamda = ramda(resolveMultipleArguments, fibonacciMultipleObject);
+  const mUnderscore = underscore(fibonacciMultipleObject, resolveMultipleArguments);
 
   return new Promise((resolve) => {
     new Benchmark.Suite(getSuiteOptions('multiple object parameters', resolve))
@@ -526,8 +531,8 @@ const runAlternativeOptionsSuite = () => {
 
   const mMoizeSpecificArgs = moize(chooseSpecificArgs, {
     transformArgs(args) {
-      let index = args.length,
-          newKey = [];
+      const newKey = [];
+      let index = args.length;
 
       while (--index) {
         newKey[index - 1] = args[index];
@@ -612,7 +617,7 @@ const runAlternativeOptionsSuite = () => {
 };
 
 const writeCsv = () => {
-  let invidualResultsHeaders = ['Name', 'Overall (average)', 'Single (average)', 'Multiple (average)'];
+  const invidualResultsHeaders = ['Name', 'Overall (average)', 'Single (average)', 'Multiple (average)'];
 
   const individualTableMap = Object.keys(csvResults).reduce((rows, key) => {
     const header = key.replace(/ (parameters|parameter)/, '');
