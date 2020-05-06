@@ -37,6 +37,30 @@ export const clearExpiration: Function = (expirations: Array<Expiration>, key: a
   }
 };
 
+/**
+ * @private
+ * 
+ * @function createTimeout
+ * 
+ * @description
+ * Create the timeout for the given expiration method. If the ability to `unref`
+ * exists, then apply it to avoid process locks in NodeJS.
+ * 
+ * @param {function} expirationMethod the method to fire upon expiration
+ * @param {number} maxAge the time to expire after
+ * @returns {TimeoutID} the timeout ID
+ */
+export const createTimeout = (expirationMethod: Function, maxAge: number) => {
+  const timeoutId = setTimeout(expirationMethod, maxAge);
+
+  // $FlowIgnore check that `unref` is a property on `timeoutId`
+  if (typeof timeoutId.unref === 'function') {
+    timeoutId.unref();
+  }
+
+  return timeoutId;
+};
+
 export const createOnCacheAddSetExpiration: Function = (
   expirations: Array<Expiration>,
   options: Options,
@@ -97,7 +121,7 @@ export const createOnCacheAddSetExpiration: Function = (
         expirationMethod,
         key,
         // $FlowIgnore maxAge is an number
-        timeoutId: setTimeout(expirationMethod, maxAge),
+        timeoutId: createTimeout(expirationMethod, maxAge),
       });
     }
   };
@@ -129,7 +153,8 @@ export const createOnCacheHitResetExpiration: Function = (
     if (~expirationIndex) {
       clearExpiration(expirations, key, false);
 
-      expirations[expirationIndex].timeoutId = setTimeout(expirations[expirationIndex].expirationMethod, maxAge);
+      // $FlowIgnore maxAge is a number
+      expirations[expirationIndex].timeoutId = createTimeout(expirations[expirationIndex].expirationMethod, maxAge);
     }
   };
 };

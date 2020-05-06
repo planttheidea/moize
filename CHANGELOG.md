@@ -1,5 +1,13 @@
 # moize CHANGELOG
 
+## 5.4.6
+
+- Fix issue where `setTimeout` causes processes to hang in NodeJS [#122](https://github.com/planttheidea/moize/issues/122)
+
+## 5.4.5
+
+- Improve TypeScript typings
+
 ## 5.4.4
 
 - Fix export in TypeScript declarations([#105](https://github.com/planttheidea/moize/pull/105))
