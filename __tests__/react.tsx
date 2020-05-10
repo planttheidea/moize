@@ -4,30 +4,30 @@ import ReactDOM from 'react-dom';
 import moize, { Moized } from '../src';
 
 type Props = {
-  bar?: string;
-  fn: (...args: any[]) => any;
-  key?: string;
-  object?: object;
-  value?: any;
+    bar?: string;
+    fn: (...args: any[]) => any;
+    key?: string;
+    object?: object;
+    value?: any;
 };
 
 function _ValueBar({ bar, value }: Props) {
-  return (
-    <div>
-      {value} {bar}
-    </div>
-  );
+    return (
+        <div>
+            {value} {bar}
+        </div>
+    );
 }
 
 _ValueBar.propTypes = {
-  bar: PropTypes.string.isRequired,
-  fn: PropTypes.func.isRequired,
-  object: PropTypes.object.isRequired,
-  value: PropTypes.string.isRequired,
+    bar: PropTypes.string.isRequired,
+    fn: PropTypes.func.isRequired,
+    object: PropTypes.object.isRequired,
+    value: PropTypes.string.isRequired,
 };
 
 _ValueBar.defaultProps = {
-  bar: 'default',
+    bar: 'default',
 };
 
 const ValueBar = jest.fn(_ValueBar) as (props: Props) => JSX.Element;
@@ -42,90 +42,90 @@ const bar = 'bar';
 const baz = 'baz';
 
 const data = [
-  {
-    fn() {
-      return foo;
+    {
+        fn() {
+            return foo;
+        },
+        object: { value: foo },
+        value: foo,
     },
-    object: { value: foo },
-    value: foo,
-  },
-  {
-    bar,
-    fn() {
-      return bar;
+    {
+        bar,
+        fn() {
+            return bar;
+        },
+        object: { value: bar },
+        value: bar,
     },
-    object: { value: bar },
-    value: bar,
-  },
-  {
-    fn() {
-      return baz;
+    {
+        fn() {
+            return baz;
+        },
+        object: { value: baz },
+        value: baz,
     },
-    object: { value: baz },
-    value: baz,
-  },
 ];
 
 type SimpleAppProps = {
-  isRerender?: boolean;
+    isRerender?: boolean;
 };
 
 class SimpleApp extends React.Component<SimpleAppProps> {
-  MoizedComponent: Moized;
+    MoizedComponent: Moized;
 
-  componentDidMount() {
-    expect(ValueBar).toHaveBeenCalledTimes(3);
-  }
+    componentDidMount() {
+        expect(ValueBar).toHaveBeenCalledTimes(3);
+    }
 
-  componentDidUpdate() {
-    // only one component rerendered based on dynamic props
-    expect(ValueBar).toHaveBeenCalledTimes(4);
-  }
+    componentDidUpdate() {
+        // only one component rerendered based on dynamic props
+        expect(ValueBar).toHaveBeenCalledTimes(4);
+    }
 
-  setMoizedComponent = (Ref: { MoizedComponent: Moized }) => {
-    this.MoizedComponent = Ref.MoizedComponent;
-  };
+    setMoizedComponent = (Ref: { MoizedComponent: Moized }) => {
+        this.MoizedComponent = Ref.MoizedComponent;
+    };
 
-  render() {
-    const { isRerender } = this.props;
+    render() {
+        const { isRerender } = this.props;
 
-    return (
-      <div>
-        <h1 style={{ margin: 0 }}>App</h1>
+        return (
+            <div>
+                <h1 style={{ margin: 0 }}>App</h1>
 
-        <div>
-          <h3>Memoized data list</h3>
+                <div>
+                    <h3>Memoized data list</h3>
 
-          {data.map((values, index) => (
-            <Memoized
-              key={`called-${values.value}`}
-              {...values}
-              isDynamic={index === 2 && isRerender}
-              ref={this.setMoizedComponent}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
+                    {data.map((values, index) => (
+                        <Memoized
+                            key={`called-${values.value}`}
+                            {...values}
+                            isDynamic={index === 2 && isRerender}
+                            ref={this.setMoizedComponent}
+                        />
+                    ))}
+                </div>
+            </div>
+        );
+    }
 }
 
 describe('moize.react', () => {
-  it('should have the correct static values', () => {
-    expect(Memoized.propTypes).toBe(_ValueBar.propTypes);
-    expect(Memoized.defaultProps).toBe(_ValueBar.defaultProps);
-    expect(Memoized.displayName).toBe(`Moized(${ValueBar.name})`);
-  });
+    it('should have the correct static values', () => {
+        expect(Memoized.propTypes).toBe(_ValueBar.propTypes);
+        expect(Memoized.defaultProps).toBe(_ValueBar.defaultProps);
+        expect(Memoized.displayName).toBe(`Moized(${ValueBar.name})`);
+    });
 
-  it('should memoize on a per-instance basis on render', (done) => {
-    const simpleAppContainer = document.createElement('div');
+    it('should memoize on a per-instance basis on render', (done) => {
+        const simpleAppContainer = document.createElement('div');
 
-    document.body.appendChild(simpleAppContainer);
-  
-    ReactDOM.render(<SimpleApp />, simpleAppContainer);
-  
-    setTimeout(() => {
-      ReactDOM.render(<SimpleApp isRerender />, simpleAppContainer, done);
-    }, 1000);
-  });
+        document.body.appendChild(simpleAppContainer);
+
+        ReactDOM.render(<SimpleApp />, simpleAppContainer);
+
+        setTimeout(() => {
+            ReactDOM.render(<SimpleApp isRerender />, simpleAppContainer, done);
+        }, 1000);
+    });
 });
