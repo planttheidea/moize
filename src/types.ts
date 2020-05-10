@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { MicroMemoize } from 'micro-memoize';
+import { MicroMemoize } from 'micro-memoize/src/types';
 
 export type Fn<Arg extends any = any, Result extends any = any> = (
     ...args: Arg[]
@@ -10,7 +10,7 @@ export type FunctionalComponent<Props extends object> = Fn<Props> & {
     displayName?: string;
 };
 
-export type Key = any[];
+export type Key<Arg extends any = any> = Arg[];
 export type Value = any;
 
 export type Cache = MicroMemoize.Cache;
