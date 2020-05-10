@@ -109,12 +109,7 @@ export function createOnCacheAddSetExpiration(
                     cache.keys.unshift(key);
                     cache.values.unshift(value);
 
-                    createOnCacheAddSetExpiration(
-                        expirations,
-                        options,
-                        isEqual,
-                        isMatchingKey
-                    )(cache, moizedOptions, moized);
+                    onCacheAdd(cache, moizedOptions, moized);
 
                     if (typeof options.onCacheChange === 'function') {
                         options.onCacheChange(cache, moizedOptions, moized);
