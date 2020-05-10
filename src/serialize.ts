@@ -11,36 +11,36 @@ import { Key, Options } from './types';
  * @returns if function then toString of it, else the value itself
  */
 export function createDefaultReplacer() {
-  const keys: string[] = [];
-  const values: any[] = [];
+    const keys: string[] = [];
+    const values: any[] = [];
 
-  return function defaultReplacer(key: string, value: any) {
-    switch (typeof value) {
-      case 'function':
-      case 'symbol':
-        return value.toString();
+    return function defaultReplacer(key: string, value: any) {
+        switch (typeof value) {
+            case 'function':
+            case 'symbol':
+                return value.toString();
 
-      case 'object': {
-        if (!value) {
-          return '' + value;
+            case 'object': {
+                if (!value) {
+                    return '' + value;
+                }
+
+                const index = values.indexOf(value);
+
+                if (index !== -1) {
+                    return `[Circular~${index}]`;
+                }
+
+                keys.push(key);
+                values.push(value);
+
+                return value;
+            }
+
+            default:
+                return '' + value;
         }
-
-        const index = values.indexOf(value);
-
-        if (index !== -1) {
-          return `[Circular~${index}]`;
-        }
-
-        keys.push(key);
-        values.push(value);
-
-        return value;
-      }
-
-      default:
-        return '' + value;
-    }
-  };
+    };
 }
 
 /**
@@ -53,11 +53,11 @@ export function createDefaultReplacer() {
  * @returns the stringified argument
  */
 export function getStringifiedArgument(arg: any) {
-  const typeOfArg = typeof arg;
+    const typeOfArg = typeof arg;
 
-  return arg && (typeOfArg === 'object' || typeOfArg === 'function')
-    ? JSON.stringify(arg, createDefaultReplacer())
-    : arg;
+    return arg && (typeOfArg === 'object' || typeOfArg === 'function')
+        ? JSON.stringify(arg, createDefaultReplacer())
+        : arg;
 }
 
 /**
@@ -71,13 +71,13 @@ export function getStringifiedArgument(arg: any) {
  * @returns argument serialization method
  */
 export function defaultArgumentSerializer(args: Key) {
-  let key = '|';
+    let key = '|';
 
-  for (let index = 0; index < args.length; index++) {
-    key += getStringifiedArgument(args[index]) + '|';
-  }
+    for (let index = 0; index < args.length; index++) {
+        key += getStringifiedArgument(args[index]) + '|';
+    }
 
-  return [key];
+    return [key];
 }
 
 /**
@@ -90,7 +90,9 @@ export function defaultArgumentSerializer(args: Key) {
  * @returns the function to use in serializing the arguments
  */
 export function getSerializerFunction(options: Options) {
-  return typeof options.serializer === 'function' ? options.serializer : defaultArgumentSerializer;
+    return typeof options.serializer === 'function'
+        ? options.serializer
+        : defaultArgumentSerializer;
 }
 
 /**
@@ -104,5 +106,5 @@ export function getSerializerFunction(options: Options) {
  * @returns are the keys equal
  */
 export function getIsSerializedKeyEqual(cacheKey: Key, key: Key) {
-  return cacheKey[0] === key[0];
+    return cacheKey[0] === key[0];
 }

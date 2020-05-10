@@ -3,27 +3,32 @@ import { createMoizedComponent } from './component';
 import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
 import { getMaxAgeOptions } from './maxAge';
-import { createOnCacheOperation, getIsEqual, getIsMatchingKey, getTransformKey } from './options';
 import {
-  clearStats,
-  collectStats,
-  getDefaultProfileName,
-  getStats,
-  getStatsOptions,
-  statsCache,
+    createOnCacheOperation,
+    getIsEqual,
+    getIsMatchingKey,
+    getTransformKey,
+} from './options';
+import {
+    clearStats,
+    collectStats,
+    getDefaultProfileName,
+    getStats,
+    getStatsOptions,
+    statsCache,
 } from './stats';
 import {
-  Expiration,
-  IsEqual,
-  IsMatchingKey,
-  Key,
-  MicroMemoizeOptions,
-  Moize,
-  Moizeable,
-  Moized,
-  OnExpire,
-  Options,
-  Serialize,
+    Expiration,
+    IsEqual,
+    IsMatchingKey,
+    Key,
+    MicroMemoizeOptions,
+    Moize,
+    Moizeable,
+    Moized,
+    OnExpire,
+    Options,
+    Serialize,
 } from './types';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
@@ -56,119 +61,141 @@ export * from './types';
  * @param [options=DEFAULT_OPTIONS] the options to apply
  * @returns the memoized function
  */
-const moize: Moize = function<Fn extends Moizeable, PassedOptions extends Options>(
-  fn: Fn | PassedOptions,
-  passedOptions?: PassedOptions
-) {
-  type CombinedOptions = Options & PassedOptions;
+const moize: Moize = function <
+    Fn extends Moizeable,
+    PassedOptions extends Options
+>(fn: Fn | PassedOptions, passedOptions?: PassedOptions) {
+    type CombinedOptions = Options & PassedOptions;
 
-  const options: Options = passedOptions || DEFAULT_OPTIONS;
+    const options: Options = passedOptions || DEFAULT_OPTIONS;
 
-  if (isMoized(fn)) {
-    const moizeable = fn.originalFunction as Fn;
-    const mergedOptions = mergeOptions(fn.options, options) as CombinedOptions;
-
-    return moize<Fn, CombinedOptions>(moizeable, mergedOptions);
-  }
-
-  if (typeof fn === 'object') {
-    return function<CurriedFn extends Moizeable, CurriedOptions extends Options>(
-      curriedFn: CurriedFn | CurriedOptions,
-      curriedOptions: CurriedOptions
-    ) {
-      type CombinedCurriedOptions = CombinedOptions & CurriedOptions;
-
-      if (typeof curriedFn === 'function') {
+    if (isMoized(fn)) {
+        const moizeable = fn.originalFunction as Fn;
         const mergedOptions = mergeOptions(
-          fn as CombinedOptions,
-          curriedOptions
-        ) as CombinedCurriedOptions;
+            fn.options,
+            options
+        ) as CombinedOptions;
 
-        return moize(curriedFn, mergedOptions);
-      }
+        return moize<Fn, CombinedOptions>(moizeable, mergedOptions);
+    }
 
-      const mergedOptions = mergeOptions(fn as CombinedOptions, curriedFn as CurriedOptions);
+    if (typeof fn === 'object') {
+        return function <
+            CurriedFn extends Moizeable,
+            CurriedOptions extends Options
+        >(
+            curriedFn: CurriedFn | CurriedOptions,
+            curriedOptions: CurriedOptions
+        ) {
+            type CombinedCurriedOptions = CombinedOptions & CurriedOptions;
 
-      return moize(mergedOptions);
+            if (typeof curriedFn === 'function') {
+                const mergedOptions = mergeOptions(
+                    fn as CombinedOptions,
+                    curriedOptions
+                ) as CombinedCurriedOptions;
+
+                return moize(curriedFn, mergedOptions);
+            }
+
+            const mergedOptions = mergeOptions(
+                fn as CombinedOptions,
+                curriedFn as CurriedOptions
+            );
+
+            return moize(mergedOptions);
+        };
+    }
+
+    if (options.isReact) {
+        return createMoizedComponent(moize, fn, options);
+    }
+
+    const coalescedOptions: Options = {
+        ...DEFAULT_OPTIONS,
+        ...options,
+        maxAge:
+            typeof options.maxAge === 'number' && options.maxAge >= 0
+                ? options.maxAge
+                : DEFAULT_OPTIONS.maxAge,
+        maxArgs:
+            typeof options.maxArgs === 'number' && options.maxArgs >= 0
+                ? options.maxArgs
+                : DEFAULT_OPTIONS.maxArgs,
+        maxSize:
+            typeof options.maxSize === 'number' && options.maxSize >= 0
+                ? options.maxSize
+                : DEFAULT_OPTIONS.maxSize,
+        profileName: options.profileName || getDefaultProfileName(fn),
     };
-  }
+    const expirations: Array<Expiration> = [];
 
-  if (options.isReact) {
-    return createMoizedComponent(moize, fn, options);
-  }
+    const {
+        matchesArg: equalsIgnored,
+        isDeepEqual: isDeepEqualIgnored,
+        isPromise,
+        isReact: isReactIgnored,
+        isSerialized: isSerialzedIgnored,
+        isShallowEqual: isShallowEqualIgnored,
+        matchesKey: matchesKeyIgnored,
+        maxAge: maxAgeIgnored,
+        maxArgs: maxArgsIgnored,
+        maxSize,
+        onCacheAdd,
+        onCacheChange,
+        onCacheHit,
+        onExpire: onExpireIgnored,
+        profileName: profileNameIgnored,
+        serializer: serializerIgnored,
+        transformArgs: transformArgsIgnored,
+        updateExpire: updateExpireIgnored,
+        ...customOptions
+    } = coalescedOptions;
 
-  const coalescedOptions: Options = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-    maxAge:
-      typeof options.maxAge === 'number' && options.maxAge >= 0
-        ? options.maxAge
-        : DEFAULT_OPTIONS.maxAge,
-    maxArgs:
-      typeof options.maxArgs === 'number' && options.maxArgs >= 0
-        ? options.maxArgs
-        : DEFAULT_OPTIONS.maxArgs,
-    maxSize:
-      typeof options.maxSize === 'number' && options.maxSize >= 0
-        ? options.maxSize
-        : DEFAULT_OPTIONS.maxSize,
-    profileName: options.profileName || getDefaultProfileName(fn),
-  };
-  const expirations: Array<Expiration> = [];
+    const isEqual = getIsEqual(coalescedOptions);
+    const isMatchingKey = getIsMatchingKey(coalescedOptions);
 
-  const {
-    matchesArg: equalsIgnored,
-    isDeepEqual: isDeepEqualIgnored,
-    isPromise,
-    isReact: isReactIgnored,
-    isSerialized: isSerialzedIgnored,
-    isShallowEqual: isShallowEqualIgnored,
-    matchesKey: matchesKeyIgnored,
-    maxAge: maxAgeIgnored,
-    maxArgs: maxArgsIgnored,
-    maxSize,
-    onCacheAdd,
-    onCacheChange,
-    onCacheHit,
-    onExpire: onExpireIgnored,
-    profileName: profileNameIgnored,
-    serializer: serializerIgnored,
-    transformArgs: transformArgsIgnored,
-    updateExpire: updateExpireIgnored,
-    ...customOptions
-  } = coalescedOptions;
+    const maxAgeOptions = getMaxAgeOptions(
+        expirations,
+        coalescedOptions,
+        isEqual,
+        isMatchingKey
+    );
+    const statsOptions = getStatsOptions(coalescedOptions);
 
-  const isEqual = getIsEqual(coalescedOptions);
-  const isMatchingKey = getIsMatchingKey(coalescedOptions);
+    const transformKey = getTransformKey(coalescedOptions);
 
-  const maxAgeOptions = getMaxAgeOptions(expirations, coalescedOptions, isEqual, isMatchingKey);
-  const statsOptions = getStatsOptions(coalescedOptions);
+    const microMemoizeOptions: MicroMemoizeOptions = {
+        ...customOptions,
+        isEqual,
+        isMatchingKey,
+        isPromise,
+        maxSize,
+        onCacheAdd: createOnCacheOperation(
+            combine(
+                onCacheAdd,
+                maxAgeOptions.onCacheAdd,
+                statsOptions.onCacheAdd
+            )
+        ),
+        onCacheChange: createOnCacheOperation(onCacheChange),
+        onCacheHit: createOnCacheOperation(
+            combine(
+                onCacheHit,
+                maxAgeOptions.onCacheHit,
+                statsOptions.onCacheHit
+            )
+        ),
+        transformKey,
+    };
 
-  const transformKey = getTransformKey(coalescedOptions);
+    const memoized = memoize(fn, microMemoizeOptions);
 
-  const microMemoizeOptions: MicroMemoizeOptions = {
-    ...customOptions,
-    isEqual,
-    isMatchingKey,
-    isPromise,
-    maxSize,
-    onCacheAdd: createOnCacheOperation(
-      combine(onCacheAdd, maxAgeOptions.onCacheAdd, statsOptions.onCacheAdd)
-    ),
-    onCacheChange: createOnCacheOperation(onCacheChange),
-    onCacheHit: createOnCacheOperation(
-      combine(onCacheHit, maxAgeOptions.onCacheHit, statsOptions.onCacheHit)
-    ),
-    transformKey,
-  };
-
-  const memoized = memoize(fn, microMemoizeOptions);
-
-  return createMoizeInstance<Fn, CombinedOptions>(memoized, {
-    expirations,
-    options: coalescedOptions,
-    originalFunction: fn,
-  });
+    return createMoizeInstance<Fn, CombinedOptions>(memoized, {
+        expirations,
+        options: coalescedOptions,
+        originalFunction: fn,
+    });
 };
 
 /**
@@ -205,8 +232,8 @@ moize.collectStats = collectStats;
  * @param moized the functions to compose
  * @returns the composed function
  */
-moize.compose = function(...moized: Moize[]) {
-  return compose<Moize>(...moized) || moize;
+moize.compose = function (...moized: Moize[]) {
+    return compose<Moize>(...moized) || moize;
 };
 
 /**
@@ -260,7 +287,7 @@ moize.infinite = moize({ maxSize: Infinity });
  * @returns are stats being collected
  */
 moize.isCollectingStats = function isCollectingStats(): boolean {
-  return statsCache.isCollectingStats;
+    return statsCache.isCollectingStats;
 };
 
 /**
@@ -276,7 +303,7 @@ moize.isCollectingStats = function isCollectingStats(): boolean {
  * @returns is fn a moized function
  */
 moize.isMoized = function isMoized(fn: any): fn is Moized {
-  return typeof fn === 'function' && !!fn.isMoized;
+    return typeof fn === 'function' && !!fn.isMoized;
 };
 
 /**
@@ -291,8 +318,8 @@ moize.isMoized = function isMoized(fn: any): fn is Moized {
  * @param keyMatcher the method to compare against those in cache
  * @returns the moizer function
  */
-moize.matchesArg = function(argMatcher: IsEqual) {
-  return moize({ matchesArg: argMatcher });
+moize.matchesArg = function (argMatcher: IsEqual) {
+    return moize({ matchesArg: argMatcher });
 };
 
 /**
@@ -307,8 +334,8 @@ moize.matchesArg = function(argMatcher: IsEqual) {
  * @param keyMatcher the method to compare against those in cache
  * @returns the moizer function
  */
-moize.matchesKey = function(keyMatcher: IsMatchingKey) {
-  return moize({ matchesKey: keyMatcher });
+moize.matchesKey = function (keyMatcher: IsMatchingKey) {
+    return moize({ matchesKey: keyMatcher });
 };
 
 /**
@@ -323,34 +350,37 @@ moize.matchesKey = function(keyMatcher: IsMatchingKey) {
  * @param maxAge the TTL of the value in cache
  * @returns the moizer function
  */
-moize.maxAge = function maxAge<ExpireHandler>(maxAge: number, expireOptions?: ExpireHandler) {
-  const type = typeof expireOptions;
+moize.maxAge = function maxAge<ExpireHandler>(
+    maxAge: number,
+    expireOptions?: ExpireHandler
+) {
+    const type = typeof expireOptions;
 
-  if (type === 'object') {
-    const { onExpire, updateExpire } = expireOptions as {
-      onExpire?: OnExpire;
-      updateExpire?: boolean;
-    };
+    if (type === 'object') {
+        const { onExpire, updateExpire } = expireOptions as {
+            onExpire?: OnExpire;
+            updateExpire?: boolean;
+        };
 
-    return moize({
-      maxAge,
-      onExpire,
-      updateExpire,
-    });
-  }
+        return moize({
+            maxAge,
+            onExpire,
+            updateExpire,
+        });
+    }
 
-  if (type === 'function') {
-    return moize({ maxAge, onExpire: expireOptions, updateExpire: true });
-  }
+    if (type === 'function') {
+        return moize({ maxAge, onExpire: expireOptions, updateExpire: true });
+    }
 
-  if (type === 'boolean') {
-    return moize({
-      maxAge,
-      updateExpire: expireOptions,
-    });
-  }
+    if (type === 'boolean') {
+        return moize({
+            maxAge,
+            updateExpire: expireOptions,
+        });
+    }
 
-  return moize({ maxAge });
+    return moize({ maxAge });
 };
 
 /**
@@ -366,7 +396,7 @@ moize.maxAge = function maxAge<ExpireHandler>(maxAge: number, expireOptions?: Ex
  * @returns the moizer function
  */
 moize.maxArgs = function maxArgs(maxArgs: number) {
-  return moize({ maxArgs });
+    return moize({ maxArgs });
 };
 
 /**
@@ -382,7 +412,7 @@ moize.maxArgs = function maxArgs(maxArgs: number) {
  * @returns the moizer function
  */
 moize.maxSize = function maxSize(maxSize: number) {
-  return moize({ maxSize });
+    return moize({ maxSize });
 };
 
 /**
@@ -396,8 +426,8 @@ moize.maxSize = function maxSize(maxSize: number) {
  *
  * @returns the moizer function
  */
-moize.profile = function(profileName: string) {
-  return moize({ profileName });
+moize.profile = function (profileName: string) {
+    return moize({ profileName });
 };
 
 /**
@@ -412,8 +442,8 @@ moize.profile = function(profileName: string) {
  * @returns the moizer function
  */
 moize.promise = moize({
-  isPromise: true,
-  updateExpire: true,
+    isPromise: true,
+    updateExpire: true,
 });
 
 /**
@@ -454,8 +484,8 @@ moize.serialize = moize({ isSerialized: true });
  *
  * @returns the moizer function
  */
-moize.serializeWith = function(serializer: Serialize) {
-  return moize({ isSerialized: true, serializer });
+moize.serializeWith = function (serializer: Serialize) {
+    return moize({ isSerialized: true, serializer });
 };
 
 /**
@@ -483,7 +513,8 @@ moize.shallow = moize({ isShallowEqual: true });
  * @param transformArgs the args transformer
  * @returns the moizer function
  */
-moize.transformArgs = <Transformer extends (key: Key) => Key>(transformArgs: Transformer) =>
-  moize({ transformArgs });
+moize.transformArgs = <Transformer extends (key: Key) => Key>(
+    transformArgs: Transformer
+) => moize({ transformArgs });
 
 export default moize;

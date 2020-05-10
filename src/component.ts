@@ -7,7 +7,10 @@ import { Moize, Moizeable, Moized as MoizedResult, Options } from './types';
  * inline in the `render` methods, avoiding the need to make React
  * a dependency.
  */
-const $$typeof = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
+const $$typeof =
+    typeof Symbol === 'function' && Symbol.for
+        ? Symbol.for('react.element')
+        : 0xeac7;
 
 /**
  * @private
@@ -26,69 +29,73 @@ const $$typeof = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.
  * @returns the memoized component
  */
 export function createMoizedComponent<OriginalFn extends Moizeable>(
-  moizer: Moize,
-  fn: OriginalFn,
-  options: Options
+    moizer: Moize,
+    fn: OriginalFn,
+    options: Options
 ) {
-  /**
-   * This is a hack override setting the necessary options
-   * for a React component to be memoized. In the main `moize`
-   * method, if the `isReact` option is set it is short-circuited
-   * to call this function, and these overrides allow the
-   * necessary transformKey method to be derived.
-   *
-   * The order is based on:
-   * 1) Set the necessary aspects of transformKey for React components.
-   * 2) Allow setting of other options and overrides of those aspects
-   *    if desired (for example, `isDeepEqual` will use deep equality).
-   * 3) Always set `isReact` to false to prevent infinite loop.
-   */
-  const reactMoizer = moizer({
-    maxArgs: 2,
-    isShallowEqual: true,
-    ...options,
-    isReact: false,
-  });
+    /**
+     * This is a hack override setting the necessary options
+     * for a React component to be memoized. In the main `moize`
+     * method, if the `isReact` option is set it is short-circuited
+     * to call this function, and these overrides allow the
+     * necessary transformKey method to be derived.
+     *
+     * The order is based on:
+     * 1) Set the necessary aspects of transformKey for React components.
+     * 2) Allow setting of other options and overrides of those aspects
+     *    if desired (for example, `isDeepEqual` will use deep equality).
+     * 3) Always set `isReact` to false to prevent infinite loop.
+     */
+    const reactMoizer = moizer({
+        maxArgs: 2,
+        isShallowEqual: true,
+        ...options,
+        isReact: false,
+    });
 
-  if (!fn.displayName) {
-    // @ts-ignore - allow setting of displayName
-    fn.displayName = fn.name || 'Component';
-  }
+    if (!fn.displayName) {
+        // @ts-ignore - allow setting of displayName
+        fn.displayName = fn.name || 'Component';
+    }
 
-  function Moized(this: any, props: object, context: any, updater: any) {
-    this.props = props;
-    this.context = context;
-    this.updater = updater;
+    function Moized(this: any, props: object, context: any, updater: any) {
+        this.props = props;
+        this.context = context;
+        this.updater = updater;
 
-    this.MoizedComponent = reactMoizer(fn);
-  }
+        this.MoizedComponent = reactMoizer(fn);
+    }
 
-  Moized.prototype.isReactComponent = {};
+    Moized.prototype.isReactComponent = {};
 
-  type MoizedElementType = {
-    $$typeof: symbol | number;
-    type: MoizedResult;
-    props: Record<string, any>;
-    ref: null;
-    key: null;
-    _owner: null;
-  };
-
-  // eslint-disable-next-line react/display-name
-  Moized.prototype.render = function(): MoizedElementType {
-    return {
-      $$typeof,
-      type: this.MoizedComponent,
-      props: this.props,
-      ref: null,
-      key: null,
-      _owner: null,
+    type MoizedElementType = {
+        $$typeof: symbol | number;
+        type: MoizedResult;
+        props: Record<string, any>;
+        ref: null;
+        key: null;
+        _owner: null;
     };
-  };
 
-  copyStaticProperties(fn, Moized, ['contextTypes', 'contextType', 'displayName']);
+    // eslint-disable-next-line react/display-name
+    Moized.prototype.render = function (): MoizedElementType {
+        return {
+            $$typeof,
+            type: this.MoizedComponent,
+            props: this.props,
+            ref: null,
+            key: null,
+            _owner: null,
+        };
+    };
 
-  Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
+    copyStaticProperties(fn, Moized, [
+        'contextTypes',
+        'contextType',
+        'displayName',
+    ]);
 
-  return Moized;
+    Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
+
+    return Moized;
 }
