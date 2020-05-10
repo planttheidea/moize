@@ -2,11 +2,11 @@
 
 ## 5.4.6
 
--   Fix issue where `setTimeout` causes processes to hang in NodeJS [#122](https://github.com/planttheidea/moize/issues/122)
+- Fix issue where `setTimeout` causes processes to hang in NodeJS [#122](https://github.com/planttheidea/moize/issues/122)
 
 ## 5.4.5
 
--   Improve TypeScript typings
+- Improve TypeScript typings
 
 ## 5.4.4
 
