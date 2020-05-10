@@ -6,11 +6,7 @@
 
 `moize` is a [consistently blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
 
-## Table of contents
-
 -   [moize](#moize)
-    -   [Table of contents](#table-of-contents)
-    -   [Installation](#installation)
     -   [Importing](#importing)
     -   [Usage](#usage)
     -   [Configuration options](#configuration-options)
@@ -69,7 +65,7 @@
     -   [Benchmarks](#benchmarks)
     -   [Filesize](#filesize)
     -   [Browser support](#browser-support)
-    -   [Development](#development)## Installation
+    -   [Development](#development)
 
 ```
 $ npm i moize --save
