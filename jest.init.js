@@ -1,1 +1,2 @@
-require('@babel/polyfill');
+require('core-js');
+require('regenerator-runtime/runtime');

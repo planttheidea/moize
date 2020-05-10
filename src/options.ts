@@ -1,21 +1,28 @@
-import { deepEqual, shallowEqual } from 'fast-equals';
+import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
 import { createGetInitialArgs } from './maxArgs';
 import { getIsSerializedKeyEqual, getSerializerFunction } from './serialize';
-import { Cache, IsEqual, IsMatchingKey, MicroMemoizeOptions, Moized, OnCacheOperation, Options, TransformKey } from './types';
+import {
+    Cache,
+    IsEqual,
+    IsMatchingKey,
+    MicroMemoizeOptions,
+    Moized,
+    OnCacheOperation,
+    Options,
+    TransformKey,
+} from './types';
 import { compose } from './utils';
 
-export function createOnCacheOperation(fn?: OnCacheOperation): OnCacheOperation {
-  if (typeof fn === 'function') {
-    return (
-      _cacheIgnored: Cache,
-      _microMemoizeOptionsIgnored: MicroMemoizeOptions,
-      memoized: Moized
-    ): void => fn(memoized.cache, memoized.options, memoized);
-  }
-}
-
-function isStrictlyEqual(a: any, b: any) {
-  return a === b;
+export function createOnCacheOperation(
+    fn?: OnCacheOperation
+): OnCacheOperation {
+    if (typeof fn === 'function') {
+        return (
+            _cacheIgnored: Cache,
+            _microMemoizeOptionsIgnored: MicroMemoizeOptions,
+            memoized: Moized
+        ): void => fn(memoized.cache, memoized.options, memoized);
+    }
 }
 
 /**
@@ -28,12 +35,12 @@ function isStrictlyEqual(a: any, b: any) {
  * @returns the isEqual method to apply
  */
 export function getIsEqual(options: Options): IsEqual {
-  return (
-    options.matchesArg ||
-    (options.isDeepEqual && deepEqual) ||
-    (options.isShallowEqual && shallowEqual) ||
-    isStrictlyEqual
-  );
+    return (
+        options.matchesArg ||
+        (options.isDeepEqual && deepEqual) ||
+        (options.isShallowEqual && shallowEqual) ||
+        sameValueZeroEqual
+    );
 }
 
 /**
@@ -46,7 +53,11 @@ export function getIsEqual(options: Options): IsEqual {
  * @returns the isEqual method to apply
  */
 export function getIsMatchingKey(options: Options): IsMatchingKey | undefined {
-  return options.matchesKey || (options.isSerialized && getIsSerializedKeyEqual) || undefined;
+    return (
+        options.matchesKey ||
+        (options.isSerialized && getIsSerializedKeyEqual) ||
+        undefined
+    );
 }
 
 /**
@@ -59,9 +70,10 @@ export function getIsMatchingKey(options: Options): IsMatchingKey | undefined {
  * @returns the function to transform the key with
  */
 export function getTransformKey(options: Options): TransformKey | undefined {
-  return compose(
-    options.isSerialized && getSerializerFunction(options),
-    typeof options.transformArgs === 'function' && options.transformArgs,
-    typeof options.maxArgs === 'number' && createGetInitialArgs(options.maxArgs)
-  ) as TransformKey;
+    return compose(
+        options.isSerialized && getSerializerFunction(options),
+        typeof options.transformArgs === 'function' && options.transformArgs,
+        typeof options.maxArgs === 'number' &&
+            createGetInitialArgs(options.maxArgs)
+    ) as TransformKey;
 }
