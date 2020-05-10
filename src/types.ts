@@ -14,6 +14,7 @@ export type Key<Arg extends any = any> = Arg[];
 export type Value = any;
 
 export type Cache = MicroMemoize.Cache;
+export type MicroMemoizeOptions = MicroMemoize.Options;
 
 export type Expiration = {
     expirationMethod: () => void;
@@ -30,11 +31,9 @@ export type OnCacheOperation = (
 export type IsEqual = (cacheKeyArg: any, keyArg: any) => boolean;
 export type IsMatchingKey = (cacheKey: Key, key: Key) => boolean;
 export type OnExpire = (key: Key) => any;
-export type TransformKey = (key: Key) => Key;
-
-export type MicroMemoizeOptions = MicroMemoize.Options;
-
 export type Serialize = (key: Key) => string[];
+export type TransformArgs = (key: Key) => Key;
+export type TransformKey = (key: Key) => Key;
 
 export type Options = Partial<{
     isDeepEqual: boolean;
@@ -52,8 +51,8 @@ export type Options = Partial<{
     onCacheHit: OnCacheOperation;
     onExpire: OnExpire;
     profileName: string;
-    serializer: (key: Key) => string[];
-    transformArgs: Serialize;
+    serializer: Serialize;
+    transformArgs: TransformArgs;
     updateExpire: boolean;
 }>;
 
@@ -196,7 +195,7 @@ export interface Moize<DefaultOptions extends Options = Options>
         serializer: Serializer
     ) => Moize<{ isSerialized: true; serializer: Serializer }>;
     shallow: Moize<{ isShallowEqual: true }>;
-    transformArgs: <Transformer extends (key: Key) => Key>(
+    transformArgs: <Transformer extends TransformArgs>(
         transformer: Transformer
     ) => Moize<{ transformArgs: Transformer }>;
 }
