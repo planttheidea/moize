@@ -2,17 +2,6 @@ import { copyStaticProperties } from './instance';
 import { Moize, Moizeable, Moized as MoizedResult, Options } from './types';
 
 /**
- * Copying React internals for the internal $$typeof value used
- * for React.createElement. This allows us to declare the objects
- * inline in the `render` methods, avoiding the need to make React
- * a dependency.
- */
-const $$typeof =
-    typeof Symbol === 'function' && Symbol.for
-        ? Symbol.for('react.element')
-        : 0xeac7;
-
-/**
  * @private
  *
  * @description
@@ -79,14 +68,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
 
     // eslint-disable-next-line react/display-name
     Moized.prototype.render = function (): MoizedElementType {
-        return {
-            $$typeof,
-            type: this.MoizedComponent,
-            props: this.props,
-            ref: null,
-            key: null,
-            _owner: null,
-        };
+        return this.MoizedComponent(this.props, this.context);
     };
 
     copyStaticProperties(fn, Moized, [
