@@ -1,50 +1,52 @@
+import resolve from '@rollup/plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
-import resolve from 'rollup-plugin-node-resolve';
-import {uglify} from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
+import pkg from './package.json';
+
+const EXTERNALS = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {}),
+];
+
+const EXTENSIONS = ['.js', '.ts', '.tsx'];
+
+const DEFAULT_OUTPUT = {
+  exports: 'default',
+  globals: {
+    'fast-equals': 'fe',
+    'fast-stringify': 'stringify',
+    'micro-memoize': 'memoize',
+  },
+  name: pkg.name,
+  sourcemap: true,
+};
+
+const DEFAULT_CONFIG = {
+  external: EXTERNALS,
+  input: 'src/index.ts',
+  output: [
+    { ...DEFAULT_OUTPUT, file: pkg.browser, format: 'umd' },
+    { ...DEFAULT_OUTPUT, file: pkg.main, format: 'cjs' },
+    { ...DEFAULT_OUTPUT, file: pkg.module, format: 'es' },
+  ],
+  plugins: [
+    resolve({
+      extensions: EXTENSIONS,
+      mainFields: ['module', 'jsnext:main', 'main'],
+    }),
+    babel({
+      exclude: 'node_modules/**',
+      extensions: EXTENSIONS,
+      include: ['src/*'],
+    }),
+  ],
+};
 
 export default [
+  DEFAULT_CONFIG,
   {
-    input: 'src/index.js',
-    output: {
-      exports: 'named',
-      file: 'dist/moize.js',
-      format: 'umd',
-      name: 'moize',
-      sourcemap: true,
-    },
-    plugins: [
-      resolve({
-        mainFields: ['module', 'jsnext:main', 'main'],
-      }),
-      commonjs({
-        include: 'node_modules/micro-memoize/**',
-      }),
-      babel({
-        exclude: 'node_modules/**',
-      }),
-    ],
-  },
-  {
-    input: 'src/index.js',
-    output: {
-      exports: 'named',
-      file: 'dist/moize.min.js',
-      format: 'umd',
-      name: 'moize',
-    },
-    plugins: [
-      resolve({
-        mainFields: ['module', 'jsnext:main', 'main'],
-      }),
-      commonjs({
-        include: 'node_modules/micro-memoize/**',
-        sourceMap: false,
-      }),
-      babel({
-        exclude: 'node_modules/**',
-      }),
-      uglify(),
-    ],
+    ...DEFAULT_CONFIG,
+    output: { ...DEFAULT_OUTPUT, file: pkg.browser.replace('.js', '.min.js'), format: 'umd' },
+    plugins: [...DEFAULT_CONFIG.plugins, terser()],
   },
 ];

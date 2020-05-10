@@ -1,46 +1,6 @@
 {
   "env": {
-    "development": {
-      "plugins": [
-        "@babel/plugin-syntax-flow",
-        "@babel/plugin-transform-flow-strip-types"
-      ],
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
-        ]
-      ]
-    },
-    "es": {
-      "plugins": [
-        "@babel/plugin-syntax-flow",
-        "@babel/plugin-transform-flow-strip-types"
-      ],
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
-        ]
-      ]
-    },
     "lib": {
-      "plugins": [
-        "@babel/plugin-syntax-flow",
-        "@babel/plugin-transform-flow-strip-types",
-        [
-          "./plugins/search-and-replace.js",
-          {
-            "micro-memoize/es/utils": "micro-memoize/lib/utils"
-          }
-        ]
-      ],
       "presets": [
         [
           "@babel/preset-env",
@@ -50,56 +10,8 @@
         ]
       ]
     },
-    "mjs": {
-      "plugins": [
-        "@babel/plugin-syntax-flow",
-        "@babel/plugin-transform-flow-strip-types",
-        [
-          "./plugins/search-and-replace.js",
-          {
-            "micro-memoize/es/utils": "micro-memoize/mjs/utils",
-            "micro-memoize": "micro-memoize/mjs",
-            "fast-equals": "fast-equals/mjs",
-            "fast-stringify": "fast-stringify/mjs"
-          }
-        ]
-      ],
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
-        ]
-      ]
-    },
-    "production": {
-      "plugins": [
-        "@babel/plugin-syntax-flow",
-        "@babel/plugin-transform-flow-strip-types"
-      ],
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
-        ]
-      ]
-    },
     "test": {
-      "plugins": [
-        "@babel/plugin-syntax-flow",
-        "@babel/plugin-transform-flow-strip-types",
-        [
-          "./plugins/search-and-replace.js",
-          {
-            "micro-memoize/es/utils": "micro-memoize/lib/utils"
-          }
-        ]
-      ],
+      "plugins": ["@babel/plugin-proposal-class-properties"],
       "presets": [
         [
           "@babel/preset-env",
@@ -110,5 +22,15 @@
         "@babel/preset-react"
       ]
     }
-  }
+  },
+  "presets": [
+    "@babel/preset-typescript",
+    [
+      "@babel/preset-env",
+      {
+        "loose": true,
+        "modules": false
+      }
+    ]
+  ]
 }

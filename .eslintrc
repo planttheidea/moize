@@ -1,26 +1,40 @@
 {
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "es6": true
   },
-  "extends": ["eslint:recommended"],
-  "globals": {
-    "__dirname": true,
-    "global": true,
-    "module": true,
-    "process": true,
-    "require": true,
-    "TimeoutID": true
-  },
-  "parser": "babel-eslint",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2019,
     "sourceType": "module"
   },
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "no-unused-vars": [2, {
-      "ignoreRestSiblings": true
-    }],
-    "prefer-spread": 0
+    "no-prototype-builtins": 0,
+    "prefer-rest-params": 0,
+    "prefer-spread": 0,
+
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unused-vars": [
+      2,
+      {
+        "ignoreRestSiblings": true
+      }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
