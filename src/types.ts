@@ -32,7 +32,6 @@ export type IsEqual = (cacheKeyArg: any, keyArg: any) => boolean;
 export type IsMatchingKey = (cacheKey: Key, key: Key) => boolean;
 export type OnExpire = (key: Key) => any;
 export type Serialize = (key: Key) => string[];
-export type TransformArgs = (key: Key) => Key;
 export type TransformKey = (key: Key) => Key;
 
 export type Options = Partial<{
@@ -52,7 +51,7 @@ export type Options = Partial<{
     onExpire: OnExpire;
     profileName: string;
     serializer: Serialize;
-    transformArgs: TransformArgs;
+    transformArgs: TransformKey;
     updateExpire: boolean;
 }>;
 
@@ -195,7 +194,7 @@ export interface Moize<DefaultOptions extends Options = Options>
         serializer: Serializer
     ) => Moize<{ isSerialized: true; serializer: Serializer }>;
     shallow: Moize<{ isShallowEqual: true }>;
-    transformArgs: <Transformer extends TransformArgs>(
+    transformArgs: <Transformer extends TransformKey>(
         transformer: Transformer
     ) => Moize<{ transformArgs: Transformer }>;
 }
