@@ -57,10 +57,10 @@
         [
           "./plugins/search-and-replace.js",
           {
-            "micro-memoize/es/utils": "micro-memoize/mjs/utils",
-            "micro-memoize": "micro-memoize/mjs",
-            "fast-equals": "fast-equals/mjs",
-            "fast-stringify": "fast-stringify/mjs"
+            "micro-memoize/es/utils": "micro-memoize/mjs/utils.mjs",
+            "micro-memoize": "micro-memoize/mjs/index.mjs",
+            "fast-equals": "fast-equals/mjs/index.mjs",
+            "fast-stringify": "fast-stringify/mjs/index.mjs"
           }
         ]
       ],
