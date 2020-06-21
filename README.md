@@ -6,6 +6,8 @@
 
 `moize` is a [consistently blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
 
+**NOTE**: This documentation is for the next major version of `moize`, please go to the [`v5` branch](https://github.com/planttheidea/moize/tree/v5) to see documentation on the current major version.
+
 -   [Importing](#importing)
     -   [ESM in browsers](#esm-in-browsers)
     -   [ESM in NodeJS](#esm-in-nodejs)
@@ -70,7 +72,7 @@
 -   [Development](#development)
 
 ```
-$ npm i moize --save
+$ npm i moize@next --save
 ```
 
 # Importing
