@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 5.4.7
+
+- Fix ESM usage in NodeJS 14 [#128](https://github.com/planttheidea/moize/issues/128) (thanks [@tozz](https://github.com/tozz))
+
 ## 5.4.6
 
 - Fix issue where `setTimeout` causes processes to hang in NodeJS [#122](https://github.com/planttheidea/moize/issues/122)
