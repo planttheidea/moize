@@ -126,6 +126,7 @@
         "lint:fix": "npm run lint -- --fix",
         "release": "release-it",
         "release:beta": "release-it --config=.release-it.beta.json",
+        "release:scripts": "npm run lint && npm run typecheck && npm run test:coverage && npm run dist && npm run copy:mjs",
         "start": "npm run dev",
         "test": "NODE_ENV=test NODE_PATH=. jest",
         "test:coverage": "npm test -- --coverage",

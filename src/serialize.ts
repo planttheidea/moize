@@ -34,8 +34,6 @@ export function createDefaultReplacer() {
     const cache: any[] = [];
     const keys: string[] = [];
 
-    let index;
-
     return function defaultReplacer(key: string, value: any) {
         const type = typeof value;
 
