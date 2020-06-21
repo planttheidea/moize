@@ -26,8 +26,8 @@ try {
   const contents = fs
     .readFileSync(DESTINATION, { encoding: 'utf8' })
     .replace('fast-equals', 'fast-equals/dist/fast-equals.mjs')
-    .replace('fast-stringify', 'fast-stringify/mjs')
-    .replace('micro-memoize', 'micro-memoize/mjs')
+    .replace('fast-stringify', 'fast-stringify/mjs/index.mjs')
+    .replace('micro-memoize', 'micro-memoize/mjs/index.mjs')
     .replace(/\/\/# sourceMappingURL=(.*)/, (match, value) => {
       return match.replace(value, 'index.mjs.map');
     });
