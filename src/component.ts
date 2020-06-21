@@ -47,7 +47,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
         fn.displayName = fn.name || 'Component';
     }
 
-    function Moized(this: any, props: object, context: any, updater: any) {
+    function Moized(this: any, props: Record<string, any>, context: any, updater: any) {
         this.props = props;
         this.context = context;
         this.updater = updater;
