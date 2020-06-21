@@ -81,7 +81,7 @@ import moize from 'moize';
 ESM syntax in NodeJS:
 
 ```js
-import moize from 'moize/mjs';
+import moize from 'moize/mjs/index.mjs';
 ```
 
 CommonJS:
