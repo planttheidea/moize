@@ -1,5 +1,31 @@
 # moize CHANGELOG
 
+## 6.0.0
+
+**BREAKING CHANGES**
+
+- By default, `moize` will now only keep a cache size of 1 instead of infinite. If you want to have history, it is recommended to use `moize.maxSize` to set the size of history desired, or for backwards compatibility use `moize.infinite`.
+- `moize.react` will now memoize on a per-instance basis instead of a per-declaration basis.
+- `moize.simple` and `moize.reactSimple` have been removed due to default cache size being 1.
+- `moize.serialize` will now serialize functions by default.
+- `equals` option has been renamed to `matchesArg` for alignment with `matchesKey`.
+- `shouldSerializeFunctions` option has been removed.
+
+**ENHANCEMENTS**
+
+- All options now have corresponding shorthand methods. New methods added:
+  - `moize.matchesArg` (shorthand for `matchesArg` option)
+  - `moize.matchesKey` (shorthand for `matchesKey` option)
+  - `moize.serializeWith` (shorthand for `serializer` option)
+- New options / shorthand methods:
+  - `isShallowEqual` / `moize.shallow`
+- Rewritten in TypeScript, with much better type declarations.
+
+**INTERNALS**:
+
+- Changed unit test framework to `jest`
+- Used latest external dependencies for better ESM support in Node 14
+
 ## 5.4.7
 
 - Fix ESM usage in NodeJS 14 [#128](https://github.com/planttheidea/moize/issues/128) (thanks [@tozz](https://github.com/tozz))
