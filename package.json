@@ -136,6 +136,7 @@
     "lint:fix": "NODE_ENV=test eslint src --fix",
     "release": "release-it",
     "release:beta": "release-it --config=.release-it.beta.json",
+    "release:scripts": "npm run lint && npm run flow && npm run copy:types && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run transpile:mjs && npm run rename:mjs && npm run dist",
     "rename:mjs": "node ./js-to-mjs.js",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
