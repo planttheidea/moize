@@ -19,7 +19,7 @@
   - `moize.infinite` (shorthand for `maxSize` option set to `Infinity`)
   - `moize.matchesArg` (shorthand for `matchesArg` option)
   - `moize.matchesKey` (shorthand for `matchesKey` option)
-  - `moize.serializeWith` (shorthand for `serializer` option)
+  - `moize.serializeWith` (shorthand for `isSerialized` and `serializer` option)
   - `moize.shallow` (shorthand for `isShallowEqual` option)
 
 **INTERNALS**

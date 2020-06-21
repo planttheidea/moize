@@ -813,10 +813,10 @@ const fn = (one: Record<string, any>, two: Record<string, any>) => ({
 export default moize.serializeWith(JSON.stringify)(fn);
 ```
 
-**NOTE**: If you want to use the default [`serializer`](#serializer), you should use `moize.serialize`:
+**NOTE**: If you want to use the default [`serializer`](#serializer), you should use [`moize.serialize`](#moizeserialize):
 
 ```ts
-moize.serializeWith(customSerializer)(fn);
+moize.serialize(customSerializer)(fn);
 ```
 
 ## moize.shallow
