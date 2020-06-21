@@ -1,0 +1,580 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Cache | micro-memoize</title>
+	<meta name="description" content="Documentation for micro-memoize">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">micro-memoize</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="cache.html">Cache</a>
+				</li>
+			</ul>
+			<h1>Class Cache</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Cache</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-external"><a href="cache.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#cantransformkey" class="tsd-kind-icon">can<wbr>Transform<wbr>Key</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#getkeyindex" class="tsd-kind-icon">get<wbr>Key<wbr>Index</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#keys" class="tsd-kind-icon">keys</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#shouldclonearguments" class="tsd-kind-icon">should<wbr>Clone<wbr>Arguments</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#shouldupdateonadd" class="tsd-kind-icon">should<wbr>Update<wbr>OnAdd</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#shouldupdateonchange" class="tsd-kind-icon">should<wbr>Update<wbr>OnChange</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#shouldupdateonhit" class="tsd-kind-icon">should<wbr>Update<wbr>OnHit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="cache.html#values" class="tsd-kind-icon">values</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="cache.html#size" class="tsd-kind-icon">size</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="cache.html#snapshot" class="tsd-kind-icon">snapshot</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="cache.html#_getkeyindexformany" class="tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>For<wbr>Many</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="cache.html#_getkeyindexforsingle" class="tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>For<wbr>Single</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="cache.html#_getkeyindexfrommatchingkey" class="tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>From<wbr>Matching<wbr>Key</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="cache.html#orderbylru" class="tsd-kind-icon">order<wbr>ByLru</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="cache.html#updateasynccache" class="tsd-kind-icon">update<wbr>Async<wbr>Cache</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Cache<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#normalizedoptions" class="tsd-signature-type">NormalizedOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="cache.html" class="tsd-signature-type">Cache</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:23</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>options: <a href="../modules/micromemoize.html#normalizedoptions" class="tsd-signature-type">NormalizedOptions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="cache.html" class="tsd-signature-type">Cache</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="cantransformkey" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> can<wbr>Transform<wbr>Key</h3>
+					<div class="tsd-signature tsd-kind-icon">can<wbr>Transform<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:7</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="getkeyindex" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> get<wbr>Key<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">get<wbr>Key<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="../modules/micromemoize.html#keyindexgetter" class="tsd-signature-type">KeyIndexGetter</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:9</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="keys" class="tsd-anchor"></a>
+					<h3>keys</h3>
+					<div class="tsd-signature tsd-kind-icon">keys<span class="tsd-signature-symbol">:</span> <a href="../modules/micromemoize.html#key" class="tsd-signature-type">Key</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:21</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="options" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../modules/micromemoize.html#normalizedoptions" class="tsd-signature-type">NormalizedOptions</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:11</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="shouldclonearguments" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> should<wbr>Clone<wbr>Arguments</h3>
+					<div class="tsd-signature tsd-kind-icon">should<wbr>Clone<wbr>Arguments<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:13</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="shouldupdateonadd" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> should<wbr>Update<wbr>OnAdd</h3>
+					<div class="tsd-signature tsd-kind-icon">should<wbr>Update<wbr>OnAdd<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:15</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="shouldupdateonchange" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> should<wbr>Update<wbr>OnChange</h3>
+					<div class="tsd-signature tsd-kind-icon">should<wbr>Update<wbr>OnChange<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:17</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="shouldupdateonhit" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> should<wbr>Update<wbr>OnHit</h3>
+					<div class="tsd-signature tsd-kind-icon">should<wbr>Update<wbr>OnHit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:19</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="values" class="tsd-anchor"></a>
+					<h3>values</h3>
+					<div class="tsd-signature tsd-kind-icon">values<span class="tsd-signature-symbol">:</span> <a href="../modules/micromemoize.html#value" class="tsd-signature-type">Value</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/micro-memoize/src/Cache.ts:23</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="size" class="tsd-anchor"></a>
+					<h3>size</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> size<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:48</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+					<a name="snapshot" class="tsd-anchor"></a>
+					<h3>snapshot</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> snapshot<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>values<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:52</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>values<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter">
+									<h5>keys<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>values<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="_getkeyindexformany" class="tsd-anchor"></a>
+					<h3>_get<wbr>Key<wbr>Index<wbr>For<wbr>Many</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>For<wbr>Many<span class="tsd-signature-symbol">(</span>keyToMatch<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#rawkey" class="tsd-signature-type">RawKey</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:106</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>function</dt>
+									<dd><p>_getKeyIndexForMany</p>
+									</dd>
+									<dt>description</dt>
+									<dd><p>gets the matching key index when multiple keys are used</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>keyToMatch: <a href="../modules/micromemoize.html#rawkey" class="tsd-signature-type">RawKey</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the key to match</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the index of the matching key, or -1</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="_getkeyindexforsingle" class="tsd-anchor"></a>
+					<h3>_get<wbr>Key<wbr>Index<wbr>For<wbr>Single</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>For<wbr>Single<span class="tsd-signature-symbol">(</span>keyToMatch<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#rawkey" class="tsd-signature-type">RawKey</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">-1</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:168</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>function</dt>
+									<dd><p>_getKeyIndexForSingle</p>
+									</dd>
+									<dt>description</dt>
+									<dd><p>gets the matching key index when a single key is used</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>keyToMatch: <a href="../modules/micromemoize.html#rawkey" class="tsd-signature-type">RawKey</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the key to match</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">-1</span></h4>
+							<p>the index of the matching key, or -1</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="_getkeyindexfrommatchingkey" class="tsd-anchor"></a>
+					<h3>_get<wbr>Key<wbr>Index<wbr>From<wbr>Matching<wbr>Key</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>From<wbr>Matching<wbr>Key<span class="tsd-signature-symbol">(</span>keyToMatch<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#rawkey" class="tsd-signature-type">RawKey</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:69</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>function</dt>
+									<dd><p>_getKeyIndexFromMatchingKey</p>
+									</dd>
+									<dt>description</dt>
+									<dd><p>gets the matching key index when a custom key matcher is used</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>keyToMatch: <a href="../modules/micromemoize.html#rawkey" class="tsd-signature-type">RawKey</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the key to match</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>the index of the matching key, or -1</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="orderbylru" class="tsd-anchor"></a>
+					<h3>order<wbr>ByLru</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">order<wbr>ByLru<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#key" class="tsd-signature-type">Key</a>, value<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#value" class="tsd-signature-type">Value</a>, startingIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:207</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>function</dt>
+									<dd><p>orderByLru</p>
+									</dd>
+									<dt>description</dt>
+									<dd><p>order the array based on a Least-Recently-Used basis</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>key: <a href="../modules/micromemoize.html#key" class="tsd-signature-type">Key</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the new key to move to the front</p>
+									</div>
+								</li>
+								<li>
+									<h5>value: <a href="../modules/micromemoize.html#value" class="tsd-signature-type">Value</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the new value to move to the front</p>
+									</div>
+								</li>
+								<li>
+									<h5>startingIndex: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the index of the item to move to the front</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="updateasynccache" class="tsd-anchor"></a>
+					<h3>update<wbr>Async<wbr>Cache</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Async<wbr>Cache<span class="tsd-signature-symbol">(</span>memoized<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#memoized" class="tsd-signature-type">Memoized</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/micro-memoize/src/Cache.ts:247</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>function</dt>
+									<dd><p>updateAsyncCache</p>
+									</dd>
+									<dt>description</dt>
+									<dd><p>update the promise method to auto-remove from cache if rejected, and
+										if resolved then fire cache hit / changed</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>memoized: <a href="../modules/micromemoize.html#memoized" class="tsd-signature-type">Memoized</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the memoized function</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-is-external">
+						<a href="cache.html" class="tsd-kind-icon">Cache</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#cantransformkey" class="tsd-kind-icon">can<wbr>Transform<wbr>Key</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#getkeyindex" class="tsd-kind-icon">get<wbr>Key<wbr>Index</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#keys" class="tsd-kind-icon">keys</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#options" class="tsd-kind-icon">options</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#shouldclonearguments" class="tsd-kind-icon">should<wbr>Clone<wbr>Arguments</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#shouldupdateonadd" class="tsd-kind-icon">should<wbr>Update<wbr>OnAdd</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#shouldupdateonchange" class="tsd-kind-icon">should<wbr>Update<wbr>OnChange</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#shouldupdateonhit" class="tsd-kind-icon">should<wbr>Update<wbr>OnHit</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#values" class="tsd-kind-icon">values</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#size" class="tsd-kind-icon">size</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#snapshot" class="tsd-kind-icon">snapshot</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#_getkeyindexformany" class="tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>For<wbr>Many</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#_getkeyindexforsingle" class="tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>For<wbr>Single</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#_getkeyindexfrommatchingkey" class="tsd-kind-icon">_get<wbr>Key<wbr>Index<wbr>From<wbr>Matching<wbr>Key</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#orderbylru" class="tsd-kind-icon">order<wbr>ByLru</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="cache.html#updateasynccache" class="tsd-kind-icon">update<wbr>Async<wbr>Cache</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

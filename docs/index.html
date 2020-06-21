@@ -1,1228 +1,961 @@
-<!DOCTYPE html>
-
-<html lang="en">
+<!doctype html>
+<html class="default no-js">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>moize Index</title>
-
-	<!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
-
-	<link type="text/css" rel="stylesheet" href="styles/site.paper.css">
-
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>micro-memoize</title>
+	<meta name="description" content="Documentation for micro-memoize">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
 </head>
-
 <body>
-
-<div class="navbar navbar-default navbar-fixed-top ">
-<div class="container">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="index.html">moize</a>
-		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-        </button>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">micro-memoize</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="navbar-collapse collapse" id="topNavigation">
-		<ul class="nav navbar-nav">
-			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu inline">
-					<li><a href="global.html#moize">moize</a></li>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>micro-memoize</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#micro-memoize" id="micro-memoize" style="color: inherit; text-decoration: none;">
+					<h1>micro-memoize</h1>
+				</a>
+				<p>A tiny, crazy <a href="#benchmarks">fast</a> memoization library for the 95% use-case</p>
+				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+					<h2>Table of contents</h2>
+				</a>
+				<ul>
+					<li><a href="#micro-memoize">micro-memoize</a><ul>
+							<li><a href="#table-of-contents">Table of contents</a></li>
+							<li><a href="#summary">Summary</a></li>
+							<li><a href="#importing">Importing</a></li>
+							<li><a href="#usage">Usage</a><ul>
+									<li><a href="#types">Types</a></li>
+									<li><a href="#composition">Composition</a></li>
+								</ul>
+							</li>
+							<li><a href="#options">Options</a><ul>
+									<li><a href="#isequal">isEqual</a></li>
+									<li><a href="#ismatchingkey">isMatchingKey</a></li>
+									<li><a href="#ispromise">isPromise</a></li>
+									<li><a href="#maxsize">maxSize</a></li>
+									<li><a href="#oncacheadd">onCacheAdd</a></li>
+									<li><a href="#oncachechange">onCacheChange</a></li>
+									<li><a href="#oncachehit">onCacheHit</a></li>
+									<li><a href="#transformkey">transformKey</a></li>
+								</ul>
+							</li>
+							<li><a href="#additional-properties">Additional properties</a><ul>
+									<li><a href="#memoizedcache">memoized.cache</a><ul>
+											<li><a href="#memoizedcachesnapshot">memoized.cache.snapshot</a></li>
+										</ul>
+									</li>
+									<li><a href="#memoizedfn">memoized.fn</a></li>
+									<li><a href="#memoizedismemoized">memoized.isMemoized</a></li>
+									<li><a href="#memoizedoptions">memoized.options</a></li>
+								</ul>
+							</li>
+							<li><a href="#benchmarks">Benchmarks</a><ul>
+									<li><a href="#single-parameter-primitive-only">Single parameter (primitive only)</a></li>
+									<li><a href="#single-parameter-complex-object">Single parameter (complex object)</a></li>
+									<li><a href="#multiple-parameters-primitives-only">Multiple parameters (primitives only)</a></li>
+									<li><a href="#multiple-parameters-complex-objects">Multiple parameters (complex objects)</a></li>
+								</ul>
+							</li>
+							<li><a href="#browser-support">Browser support</a></li>
+							<li><a href="#node-support">Node support</a></li>
+							<li><a href="#development">Development</a></li>
+						</ul>
+					</li>
 				</ul>
-			</li>
-			
-		</ul>
-        
-            <div class="col-sm-3 col-md-3">
-                <form class="navbar-form" role="search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        
-	</div>
+				<a href="#summary" id="summary" style="color: inherit; text-decoration: none;">
+					<h2>Summary</h2>
+				</a>
+				<p>As the author of <a href="https://github.com/planttheidea/moize"><code>moize</code></a>, I created a consistently fast memoization library, but <code>moize</code> has a lot of features to satisfy a large number of edge cases. <code>micro-memoize</code> is a simpler approach, focusing on the core feature set with a much smaller footprint (~1.5kB minified+gzipped). Stripping out these edge cases also allows <code>micro-memoize</code> to be faster across the board than <code>moize</code>.</p>
+				<a href="#importing" id="importing" style="color: inherit; text-decoration: none;">
+					<h2>Importing</h2>
+				</a>
+				<p>ESM in browsers:</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> memoize <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;micro-memoize&quot;</span>;</code></pre>
+				<p>ESM in NodeJS:</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> memoize <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;micro-memoize/mjs&quot;</span>;</code></pre>
+				<p>CommonJS:</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> memoize = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;micro-memoize&quot;</span>);</code></pre>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> assembleToObject = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> ({ one, two });
 
-</div>
-</div>
+<span class="hljs-keyword">const</span> memoized = memoize(assembleToObject);
 
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>)); <span class="hljs-comment">// {one: &#x27;one&#x27;, two: &#x27;two&#x27;}</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>)); <span class="hljs-comment">// pulled from cache, {one: &#x27;one&#x27;, two: &#x27;two&#x27;}</span></code></pre>
+				<a href="#types" id="types" style="color: inherit; text-decoration: none;">
+					<h3>Types</h3>
+				</a>
+				<p>If you need them, all types are available under the <code>MicroMemoize</code> namespace.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { MicroMemoize } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;micro-memoize&quot;</span>;</code></pre>
+				<a href="#composition" id="composition" style="color: inherit; text-decoration: none;">
+					<h3>Composition</h3>
+				</a>
+				<p>Starting in <code>4.0.0</code>, you can compose memoized functions if you want to have multiple types of memoized versions based on different options.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> simple = memoized(fn); <span class="hljs-comment">// { maxSize: 1 }</span>
+<span class="hljs-keyword">const</span> upToFive = memoized(simple, { maxSize: <span class="hljs-number">5</span> }); <span class="hljs-comment">// { maxSize: 5 }</span>
+<span class="hljs-keyword">const</span> withCustomEquals = memoized(upToFive, { isEqual: deepEqual }); <span class="hljs-comment">// { maxSize: 5, isEqual: deepEqual }</span></code></pre>
+				<p><strong>NOTE</strong>: The original function is the function used in the composition, the composition only applies to the options. In the example above, <code>upToFive</code> does not call <code>simple</code>, it calls <code>fn</code>.</p>
+				<a href="#options" id="options" style="color: inherit; text-decoration: none;">
+					<h2>Options</h2>
+				</a>
+				<a href="#isequal" id="isequal" style="color: inherit; text-decoration: none;">
+					<h3>isEqual</h3>
+				</a>
+				<p><code>function(object1: any, object2: any): boolean</code>, <em>defaults to <code>isSameValueZero</code></em></p>
+				<p>Custom method to compare equality of keys, determining whether to pull from cache or not, by comparing each argument in order.</p>
+				<p>Common use-cases:</p>
+				<ul>
+					<li>Deep equality comparison</li>
+					<li>Limiting the arguments compared</li>
+				</ul>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { deepEqual } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;fast-equals&quot;</span>;
 
-<div class="container" id="toc-content">
-<div class="row">
+<span class="hljs-keyword">type</span> ContrivedObject = {
+  deep: <span class="hljs-built_in">string</span>;
+};
 
-	
-	<div class="col-md-8">
-	
-		<div id="main">
-			
-
-	
-	
-
-
-
-    <h3>moize 5.4.6</h3>
-
-
-
-
-
-
-
-
-
-	
-	
-
-
-
-
-
-    <section class="readme-section">
-        <article><h1 id="moize">moize</h1>
-<img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
-<img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
-<p><code>moize</code> is a <a href="#benchmarks">consistently blazing fast</a> memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.</p>
-<h2 id="table-of-contents">Table of contents</h2>
-<ul>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#importing">Importing</a></li>
-<li><a href="#usage">Usage</a></li>
-<li><a href="#configuration-options">Configuration options</a>
-<ul>
-<li><a href="#equals">equals</a></li>
-<li><a href="#isdeepequal">isDeepEqual</a></li>
-<li><a href="#ispromise">isPromise</a></li>
-<li><a href="#isreact">isReact</a></li>
-<li><a href="#isserialized">isSerialized</a></li>
-<li><a href="#matcheskey">matchesKey</a></li>
-<li><a href="#maxage">maxAge</a></li>
-<li><a href="#maxargs">maxArgs</a></li>
-<li><a href="#maxsize">maxSize</a></li>
-<li><a href="#oncacheadd">onCacheAdd</a></li>
-<li><a href="#oncachechange">onCacheChange</a></li>
-<li><a href="#oncachehit">onCacheHit</a></li>
-<li><a href="#onexpire">onExpire</a></li>
-<li><a href="#profilename">profileName</a></li>
-<li><a href="#serializefunctions">shouldSerializeFunctions</a></li>
-<li><a href="#serializer">serializer</a></li>
-<li><a href="#transformargs">transformArgs</a></li>
-<li><a href="#updateexpire">updateExpire</a></li>
-</ul>
-</li>
-<li><a href="#usage-with-shortcut-methods">Usage with shortcut methods</a>
-<ul>
-<li><a href="#moizedeep">moize.deep</a></li>
-<li><a href="#moizemaxage">moize.maxAge</a></li>
-<li><a href="#moizemaxargs">moize.maxArgs</a></li>
-<li><a href="#moizemaxsize">moize.maxSize</a></li>
-<li><a href="#moizepromise">moize.promise</a></li>
-<li><a href="#moizereact">moize.react</a></li>
-<li><a href="#moizereactsimple">moize.reactSimple</a></li>
-<li><a href="#moizeserialize">moize.serialize</a></li>
-<li><a href="#moizesimple">moize.simple</a></li>
-</ul>
-</li>
-<li><a href="#usemoize-hook">useMoize hook</a></li>
-<li><a href="#composition">Composition</a></li>
-<li><a href="#introspection">Introspection</a>
-<ul>
-<li><a href="#getstatsprofilename">getStats</a></li>
-<li><a href="#iscollectingstats">isCollectingStats</a></li>
-<li><a href="#ismoized">isMoized</a></li>
-</ul>
-</li>
-<li><a href="#collecting-statistics">Collecting statistics</a></li>
-<li><a href="#direct-cache-manipulation">Direct cache manipulation</a>
-<ul>
-<li><a href="#cache">cache</a></li>
-<li><a href="#cachesnapshot">cacheSnapshot</a></li>
-<li><a href="#addkey-value">add</a></li>
-<li><a href="#clear">clear</a></li>
-<li><a href="#getkey">get</a></li>
-<li><a href="#getstats">getStats</a></li>
-<li><a href="#hasargs">has</a></li>
-<li><a href="#keys">keys</a></li>
-<li><a href="#removekey">remove</a></li>
-<li><a href="#updatekey-value">update</a></li>
-<li><a href="#values">values</a></li>
-</ul>
-</li>
-<li><a href="#benchmarks">Benchmarks</a></li>
-<li><a href="#filesize">Filesize</a></li>
-<li><a href="#browser-support">Browser support</a></li>
-<li><a href="#development">Development</a></li>
-</ul>
-<h2 id="installation">Installation</h2>
-<pre class="prettyprint source"><code>$ npm i moize --save
-</code></pre>
-<h2 id="importing">Importing</h2>
-<p>ESM syntax in browsers:</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-</code></pre>
-<p>ESM syntax in NodeJS:</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize/mjs';
-</code></pre>
-<p>CommonJS:</p>
-<pre class="prettyprint source lang-js"><code>const moize = require('moize').default;
-</code></pre>
-<h2 id="usage">Usage</h2>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const method = (a, b) => a + b;
-
-const memoized = moize(method);
-
-memoized(2, 4); // 6
-memoized(2, 4); // 6, pulled from cache
-</code></pre>
-<p>All parameter types are supported, including circular objects, functions, etc. There are also a number of <a href="#usage-with-shortcut-methods">shortcut methods</a> to memoize for unique use-cases.</p>
-<h2 id="configuration-options">Configuration options</h2>
-<p><code>moize</code> optionally accepts an object of options as either the second parameter or as the first step in a curried function:</p>
-<pre class="prettyprint source lang-js"><code>// inline
-moize(fn, options);
-
-// curried
-moize(options)(fn);
-</code></pre>
-<p>The full shape of these options:</p>
-<pre class="prettyprint source lang-ts"><code>{
-  // custom method to compare equality between two objects
-  equals: (cachedKeyArg: any, keyArg: any) => boolean,
-  // is the cache based on deep equality of keys
-  isDeepEqual: boolean,
-  // is the result a promise
-  isPromise: boolean,
-  // is the result a React component
-  isReact: boolean,
-  // should the parameters be serialized instead of directly referenced
-  isSerialized: boolean,
-  // amount of time in milliseconds before the cache will expire
-  maxAge: number,
-  // maximum number of arguments to use as key for caching
-  maxArgs: number,
-  // maximum size of cache for this method 
-  maxSize: number,
-  // method fired when a new entry is added to cache
-  onCacheAdd: (cache: moize.Cache, options: moize.Options, moized: Function) => void,
-  // method fire when either a new entry is added to cache or the LRU ordering of the cache has changed
-  onCacheChange: (cache: moize.Cache, options: moize.Options, moized: Function) => void,
-  // method fired when an existing entry in cache is used
-  onCacheHit: (cache: moize.Cache, options: moize.Options, moized: Function) => void,
-  // method to fire when a cache entry expires (in combination with maxAge)
-  onExpire: (key: any[]) => void,
-  // the unique identifier to give the memoized method when collecting statistics
-  profileName: string,
-  // should functions be included in the serialization of multiple parameters
-  shouldSerializeFunctions: boolean,
-  // method to serialize the arguments to build a unique cache key
-  serializer: (key: any[]) => string,
-  // method to transform the args into a custom format for key storage in cache
-  transformArgs: (key: any[]) => any[],
-  // should the cache entry's expiration be refreshed when the cache entry is hit (in combination with maxAge)
-  updateExpire: boolean
-}
-</code></pre>
-<h4 id="equals">equals</h4>
-<p><em>defaults to <a href="http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero">SameValueZero</a> equality</em></p>
-<p>Custom method used to compare equality of keys for cache purposes by comparing each argument.</p>
-<pre class="prettyprint source lang-js"><code>const fn = ({ foo, bar }) => [foo, bar];
-
-const memoized = moize(fn, {
-  equals(cacheKeyArgument, keyArgument) {
-    return cacheKeyArgument.foo === 'bar' && keyArgument.foo === 'bar';
-  },
+<span class="hljs-keyword">const</span> deepObject = <span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">object</span>: {
+  foo: ContrivedObject;
+  bar: ContrivedObject;
+}</span>) =&gt;</span> ({
+  foo: <span class="hljs-built_in">object</span>.foo,
+  bar: <span class="hljs-built_in">object</span>.bar
 });
 
-memoized({ foo: 'bar' });
-memoized({ foo: 'bar', bar: 'baz' }); // pulls from cache
-</code></pre>
-<p>The <code>equals</code> method receives two parameters (cache key arguments) and should return a <code>boolean</code>.</p>
-<p><strong>NOTE</strong>: This comparison is used iteratively on each argument, rather than comparing the two keys as a whole. If you want to compare the key as a whole, you should use <a href="#matcheskey"><code>matchesKey</code></a>.</p>
-<h4 id="isdeepequal">isDeepEqual</h4>
-<p><em>defaults to false</em></p>
-<p>Should deep equality be used to compare cache keys.</p>
-<pre class="prettyprint source lang-js"><code>const fn = ({ foo, bar }) => [foo, bar];
+<span class="hljs-keyword">const</span> memoizedDeepObject = memoize(deepObject, { isEqual: deepEqual });
 
-const memoized = moize(fn, { isDeepEqual: true });
+<span class="hljs-built_in">console</span>.log(
+  memoizedDeepObject({
+    foo: {
+      deep: <span class="hljs-string">&quot;foo&quot;</span>
+    },
+    bar: {
+      deep: <span class="hljs-string">&quot;bar&quot;</span>
+    },
+    baz: {
+      deep: <span class="hljs-string">&quot;baz&quot;</span>
+    }
+  })
+); <span class="hljs-comment">// {foo: {deep: &#x27;foo&#x27;}, bar: {deep: &#x27;bar&#x27;}}</span>
 
-memoized({ foo: 'foo', bar: 'bar' });
-memoized({ foo: 'foo', bar: 'bar' }); // pulls from cache
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizedeep"><code>moize.deep</code></a></p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize.deep(fn);
-</code></pre>
-<h4 id="ispromise">isPromise</h4>
-<p><em>defaults to false</em></p>
-<p>Is the computed value in the function a <code>Promise</code>.</p>
-<pre class="prettyprint source lang-js"><code>const fn = async item => await item;
+<span class="hljs-built_in">console</span>.log(
+  memoizedDeepObject({
+    foo: {
+      deep: <span class="hljs-string">&quot;foo&quot;</span>
+    },
+    bar: {
+      deep: <span class="hljs-string">&quot;bar&quot;</span>
+    },
+    baz: {
+      deep: <span class="hljs-string">&quot;baz&quot;</span>
+    }
+  })
+); <span class="hljs-comment">// pulled from cache</span></code></pre>
+				<p><strong>NOTE</strong>: The default method tests for <a href="http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero">SameValueZero</a> equality, which is summarized as strictly equal while also considering <code>NaN</code> equal to <code>NaN</code>.</p>
+				<a href="#ismatchingkey" id="ismatchingkey" style="color: inherit; text-decoration: none;">
+					<h3>isMatchingKey</h3>
+				</a>
+				<p><code>function(object1: any[], object2: any[]): boolean</code></p>
+				<p>Custom method to compare equality of keys, determining whether to pull from cache or not, by comparing the entire key.</p>
+				<p>Common use-cases:</p>
+				<ul>
+					<li>Comparing the shape of the key</li>
+					<li>Matching on values regardless of order</li>
+					<li>Serialization of arguments</li>
+				</ul>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { deepEqual } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;fast-equals&quot;</span>;
 
-const memoized = moize(fn, { isPromise: true });
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizepromise"><code>moize.promise</code></a>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized =- moize.promise(fn);
-</code></pre>
-<p>The <code>Promise</code> itself will be stored in cache, so that cached returns will always maintain the <code>Promise</code> contract. For common usage reasons, if the <code>Promise</code> is rejected, the cache entry will be deleted.</p>
-<h4 id="isreact">isReact</h4>
-<p><em>defaults to false</em></p>
-<p>Is the function passed a stateless functional <code>React</code> component.</p>
-<pre class="prettyprint source lang-js"><code>const Foo = ({ bar, baz }) => (
-  &lt;div>
-    {bar}: {baz}
-  &lt;/div>
-);
+<span class="hljs-keyword">type</span> ContrivedObject = { foo: <span class="hljs-built_in">string</span>; bar: <span class="hljs-built_in">number</span> };
 
-const MemoizedFoo = moize(Foo, { isReact: true });
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizereact"><code>moize.react</code></a>.</p>
-<pre class="prettyprint source lang-js"><code>const MemoizedFoo = moize.react(Foo);
-</code></pre>
-<p>The method will do a shallow equal comparison of both <code>props</code> and legacy <code>context</code> of the component based on strict equality. If you want to do a deep equals comparison, set <a href="#isdeepequal"><code>isDeepEqual</code></a> to true.</p>
-<p><strong>NOTE</strong>: This will memoize <em>all</em> instances of the component passed. This is different from something like <code>PureComponent</code> or <code>React.memo(Component)</code>, which memoize on a per-instance basis but also do not take legacy <code>context</code> into account.</p>
-<h4 id="isserialized">isSerialized</h4>
-<p><em>defaults to false</em></p>
-<p>Serializes the parameters passed into a string and uses this as the key for cache comparison.</p>
-<pre class="prettyprint source lang-js"><code>const fn = mutableObject => mutableObject.foo;
+<span class="hljs-keyword">const</span> deepObject = <span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">object</span>: ContrivedObject</span>) =&gt;</span> ({
+  foo: <span class="hljs-built_in">object</span>.foo,
+  bar: <span class="hljs-built_in">object</span>.bar
+});
 
-const memoized = moize(fn, { isSerialized: true });
-
-const object = { foo: 'foo' };
-
-memoized(object); // 'foo'
-
-object.foo = 'bar';
-
-memoized(object); // 'bar'
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizeserialize"><code>moize.serialize</code></a>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize.serialize(fn);
-</code></pre>
-<p>If <code>serialize</code> is combined with either <code>maxArgs</code> or <code>transformArgs</code>, the following order is used:</p>
-<ol>
-<li>limit by <code>maxArgs</code> (if applicable)</li>
-<li>transform by <code>transformArgs</code> (if applicable)</li>
-<li>serialize by <code>serializer</code></li>
-</ol>
-<p><strong>NOTE</strong>: This is much slower than the default key storage, and usually the same requirements can be meet with <code>isDeepEqual</code>, so use at your discretion.</p>
-<h4 id="matcheskey">matchesKey</h4>
-<p>Custom method used to compare equality of keys for cache purposes by comparing the entire key.</p>
-<pre class="prettyprint source lang-js"><code>const fn = ({ foo, bar }) => [foo, bar];
-
-const memoized = moize(fn, {
-  matchesKey(cacheKey, key) {
-    return (
-      cacheKey[0].foo === key[0].foo &&
-      cacheKey[1].hasOwnProperty('bar') &&
-      key[1].hasOwnProperty('bar')
+<span class="hljs-keyword">const</span> memoizedShape = memoize(deepObject, {
+  <span class="hljs-comment">// receives the full key in cache and the full key of the most recent call</span>
+  isMatchingKey([object1]: [ContrivedObject], [object2]: [ContrivedObject]) {
+    <span class="hljs-keyword">return</span> (
+      object1.hasOwnProperty(<span class="hljs-string">&quot;foo&quot;</span>) &amp;&amp;
+      object2.hasOwnProperty(<span class="hljs-string">&quot;foo&quot;</span>) &amp;&amp;
+      object1.bar === object2.bar
     );
-  },
+  }
 });
 
-memoized({ foo: 'bar' }, { bar: null });
-memoized({ foo: 'bar' }, { bar: 'baz' }); // pulls from cache
-</code></pre>
-<p>The <code>matchesKey</code> method receives two parameters (cache keys) and should return a <code>boolean</code>.</p>
-<p><strong>NOTE</strong>: This comparison uses the two keys as a whole, which is usually less performant than the <code>equals</code> comparison used iteratively on each argument. Generally speaking you should use the <a href="#equals"><code>equals</code></a> option for equality comparison.</p>
-<h4 id="maxage">maxAge</h4>
-<p>The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.</p>
-<pre class="prettyprint source lang-js"><code>const fn = item => item;
+<span class="hljs-built_in">console</span>.log(
+  memoizedShape({
+    foo: <span class="hljs-string">&quot;foo&quot;</span>,
+    bar: <span class="hljs-string">&quot;bar&quot;</span>,
+    baz: <span class="hljs-string">&quot;baz&quot;</span>
+  })
+); <span class="hljs-comment">// {foo: {deep: &#x27;foo&#x27;}, bar: {deep: &#x27;bar&#x27;}}</span>
 
-const MAX_AGE = 1000 * 60 * 5 // five minutes;
-
-const memoized = moize(fn, { maxAge: MAX_AGE });
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizemaxage"><code>moize.maxAge</code></a>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize.maxAge(MAX_AGE)(fn);
-</code></pre>
-<p><strong>TIP</strong>: A common usage of this is in tandom with <code>isPromise</code> for AJAX calls, and in that scenario the expected behavior is usually to have the <code>maxAge</code> countdown begin upon resolution of the promise. If this is your intended use case, you should also apply the <code>updateExpire</code> option.</p>
-<h4 id="maxargs">maxArgs</h4>
-<p>The maximum number of arguments (starting from the first) used in creating the key for the cache.</p>
-<pre class="prettyprint source lang-js"><code>const fn = (item1, item2, item3) => item1 + item2 + item3;
-
-const memoized = moize(fn, { maxArgs: 2 });
-
-memoize('foo', 'bar', 'baz');
-memoize('foo', 'bar', 'quz'); // pulls from cache, as the first two args are the same
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizemaxargs"><code>moize.maxArgs</code></a>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize.maxArgs(2)(fn);
-</code></pre>
-<p>If <code>maxArgs</code> is combined with either <code>serialize</code> or <code>transformArgs</code>, the following order is used:</p>
-<ol>
-<li>limit by <code>maxArgs</code></li>
-<li>transform by <code>transformArgs</code> (if applicable)</li>
-<li>serialize by <code>serializer</code> (if applicable)</li>
-</ol>
-<h4 id="maxsize">maxSize</h4>
-<p><em>defaults to Infinity</em></p>
-<p>The maximum number of values you want stored in cache for this method. Clearance of the cache once the <code>maxSize</code> is reached is on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis.</p>
-<pre class="prettyprint source lang-js"><code>const fn = item => item;
-
-const memoized = moize(fn, { maxSize: 5 });
-</code></pre>
-<p>This is also available via the shortcut method of <a href="#moizemaxsize"><code>moize.maxSize</code></a>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize.maxSize(5)(fn);
-</code></pre>
-<h4 id="oncacheadd">onCacheAdd</h4>
-<p>Method to fire when an item has been added to cache. Receives the cache, options, and memoized function as a parameters.</p>
-<pre class="prettyprint source lang-js"><code>const fn = (foo, bar) => [foo, bar];
-
-const moized = moize(fn, {
-  onCacheAdd(cache, options, moized) {
-    console.log(cache.keys);
-  },
-});
-
-moized('foo', 'bar'); // [[&quot;foo&quot;,&quot;bar&quot;]]
-moized('foo', 'bar');
-moized('bar', 'foo'); // [[&quot;bar&quot;,&quot;foo&quot;], [&quot;foo&quot;,&quot;bar&quot;]]
-moized('foo', 'bar');
-</code></pre>
-<p><strong>NOTE</strong>: When combined with <code>onCacheChange</code>, this method will always fire first.</p>
-<h4 id="oncachechange">onCacheChange</h4>
-<p>Method to fire when an item has been either added to cache, or existing cache was reordered based on a cache hit. Receives the cache, options, and memoized function as a parameters.</p>
-<pre class="prettyprint source lang-js"><code>const fn = (foo, bar) => [foo, bar];
-
-const moized = moize(fn, {
-  onCacheChange(cache, options, moized) {
-    console.log(cache.keys);
-  },
-});
-
-moized('foo', 'bar'); // [[&quot;foo&quot;,&quot;bar&quot;]]
-moized('foo', 'bar');
-moized('bar', 'foo'); // [[&quot;bar&quot;,&quot;foo&quot;], [&quot;foo&quot;,&quot;bar&quot;]]
-moized('foo', 'bar'); // [[&quot;foo&quot;,&quot;bar&quot;], [&quot;bar&quot;,&quot;foo&quot;]]
-</code></pre>
-<p><strong>NOTE</strong>: When combined with <code>onCacheAdd</code> or <code>onCacheHit</code>, this method will always fire last.</p>
-<h4 id="oncachehit">onCacheHit</h4>
-<p>Method to fire when an existing cache item is found. Receives the cache, options, and memoized function as a parameters.</p>
-<pre class="prettyprint source lang-js"><code>const fn = (foo, bar) => [foo, bar];
-
-const moized = moize(fn, {
-  onCacheHit(cache, options, moized) {
-    console.log(cache.keys);
-  },
-});
-
-moized('foo', 'bar');
-moized('foo', 'bar'); // [[&quot;foo&quot;,&quot;bar&quot;]]
-moized('bar', 'foo');
-moized('foo', 'bar'); // [[&quot;bar&quot;,&quot;foo&quot;], [&quot;foo&quot;,&quot;bar&quot;]]
-</code></pre>
-<p><strong>NOTE</strong>: When combined with <code>onCacheChange</code>, this method will always fire first.</p>
-<h4 id="onexpire">onExpire</h4>
-<p>A callback that is called when the cached entry expires.</p>
-<pre class="prettyprint source lang-js"><code>const fn = item => item;
-
-const memoized = moize(fn, {
-  maxAge: 10000,
-  onExpire(key) {
-    console.log(key);
-  },
-});
-</code></pre>
-<p>If you return <code>false</code> from this method, it will prevent the key's removal and refresh the expiration in the same vein as <code>updateExpire</code> based on <code>maxAge</code>:</p>
-<pre class="prettyprint source lang-js"><code>const fn = item => item;
-
-let expirationAttempts = 0;
-
-const memoized = moize(fn, {
-  maxAge: 1000 * 10, // 10 seconds
-  onExpire(key) {
-    expirationAttempts++;
-
-    return expirationAttempts &lt; 2;
-  },
-});
-
-memoized('foo'); // will expire key after 30 seconds, or 3 expiration attempts
-</code></pre>
-<p><strong>NOTE</strong>: You must set a <a href="#maxage"><code>maxAge</code></a> for this option to take effect.</p>
-<h4 id="profilename">profileName</h4>
-<p><em>defaults to function name and file/line location</em></p>
-<p>Name to use as unique identifier for the function when collecting statistics.</p>
-<pre class="prettyprint source lang-js"><code>collectStats();
-
-const fn = item => item;
-
-const memoized = moize(fn, { profileName: 'my fancy identity' });
-</code></pre>
-<p><strong>NOTE</strong>: You must be collecting statistics for this option to take effect.</p>
-<h4 id="shouldserializefunctions">shouldSerializeFunctions</h4>
-<p><em>defaults to false</em></p>
-<p>A <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">custom replacer</a> is used when serializing to ensure functions are included in the key serialization.</p>
-<pre class="prettyprint source lang-js"><code>const FunctionalComponent = ({ onClickFoo }) => (
-  &lt;button onClick={onClickFoo} type=&quot;button&quot;>
-    Click me!
-  &lt;/button>
-);
-
-const MemoizedFunctionalComponent = moize(FunctionalComponent, {
-  isReact: true,
-  isSerialized: true,
-  shouldSerializeFunctions: true,
-});
-</code></pre>
-<p><strong>NOTE</strong>: You must set <a href="#isserialized"><code>isSerialized</code></a> for this option to take effect.</p>
-<h4 id="serializer">serializer</h4>
-<p><em>defaults to serializeArguments in utils.js</em></p>
-<p>Method used in place of the internal serializer when serializing the parameters for cache key comparison. The function accepts a single argument, the <code>Array</code> of <code>args</code>, and must also return an <code>Array</code>.</p>
-<pre class="prettyprint source lang-js"><code>const serializer = args => [JSON.stringify(args[0])];
-
-const memoized = moize(fn, {
-  isSerialized: true,
-  serializer,
-});
-</code></pre>
-<p><strong>NOTE</strong>: You must set <a href="#isserialized"><code>isSerialized</code></a> for this option to take effect.</p>
-<h4 id="transformargs">transformArgs</h4>
-<p>Transform the arguments passed before it is used as a key. The function accepts a single argument, the <code>Array</code> of <code>args</code>, and must also return an <code>Array</code>.</p>
-<pre class="prettyprint source lang-js"><code>const fn = (one, two, three) => [two, three];
-
-const ignoreFirstArg = args => args.slice(1);
-
-const moized = moize(fn, { transformArgs: ignoreFirstArg });
-
-moize('foo', 'bar', 'baz');
-moize(null, 'bar', 'baz'); // pulled from cache
-</code></pre>
-<p>If <code>transformArgs</code> is combined with either <code>maxArgs</code> or <code>serialize</code>, the following order is used:</p>
-<ol>
-<li>limit by <code>maxArgs</code> (if applicable)</li>
-<li>transform by <code>transformArgs</code></li>
-<li>serialize by <code>serializer</code> (if applicable)</li>
-</ol>
-<h4 id="updateexpire">updateExpire</h4>
-<p>When a <code>maxAge</code> is set, clear the scheduled expiration of the key when that key is retrieved, setting a new expiration based on the most recent retrieval from cache.</p>
-<pre class="prettyprint source lang-js"><code>const fn = item => item;
-
-const MAX_AGE = 1000 * 60 * 5; // five minutes
-
-const memoized = moize(fn, {
-  maxAge: MAX_AGE,
-  updateExpire: true,
-});
-
-memoized('foo');
-
-setTimeout(() => {
-  memoized('foo'); // hits cache, which updates the expire to be 5 minutes from this run instead of the first
-}, 1000 * 60);
-</code></pre>
-<h2 id="usage-with-shortcut-methods">Usage with shortcut methods</h2>
-<h4 id="moize.deep">moize.deep</h4>
-<p>Pre-applies the <code>isDeepEqual</code> option.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = (bar, baz) => `${bar} ${baz}`;
-
-export default moize.deep(foo);
-</code></pre>
-<h4 id="moize.maxage">moize.maxAge</h4>
-<p>Pre-applies the <code>maxAge</code> option as a curriable method.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = (bar, baz) => `${bar} ${baz}`;
-
-export default moize.maxAge(5000)(foo);
-</code></pre>
-<h4 id="moize.maxargs">moize.maxArgs</h4>
-<p>Pre-applies the <code>maxArgs</code> option as a curriable method.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = (bar, baz) => `${bar} ${baz}`;
-
-export default moize.maxArgs(1)(foo);
-</code></pre>
-<h4 id="moize.maxsize">moize.maxSize</h4>
-<p>Pre-applies the <code>maxSize</code> option as a curriable method.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = (bar, baz) => `${bar} ${baz}`;
-
-export default moize.maxSize(5)(foo);
-</code></pre>
-<h4 id="moize.promise">moize.promise</h4>
-<p>Pre-applies the <code>isPromise</code> and <code>updateExpire</code> options. The <code>updateExpire</code> option does nothing if <code>maxAge</code> is not also applied, but ensures that the expiration begins at the resolution of the promise rather than the instantiation of it.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = async (bar, baz) => await someApiCall(bar, baz);
-
-export default moize.promise(foo);
-</code></pre>
-<p><strong>NOTE</strong>: If you do not want the promise to update its expiration when the cache is hit, then you should use the <code>isPromise</code> option directly instead.</p>
-<h4 id="moize.react">moize.react</h4>
-<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>. Key comparisons are based on a shallow equal comparison of both props and context.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const Foo = ({ bar, baz }) => (
-  &lt;div>
-    {bar} {baz}
-  &lt;/div>
-);
-
-export default moize.react(Foo);
-</code></pre>
-<p><strong>NOTE</strong>: This method will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
-<p><strong>TIP</strong>: In usages that involve a lot of variety in the parameter changes, this has the potential for excessive memory consumption, as the cache will retain the history of all elements. It is therefore recommended to apply a <code>maxSize</code>, or to use the shortcut method <a href="#moizereactsimple"><code>moize.reactSimple</code></a>, which automatically sets the <code>maxSize</code> to <code>1</code>.</p>
-<h4 id="moize.reactsimple">moize.reactSimple</h4>
-<p>Shortcut for memoizing functional components in <a href="https://github.com/facebook/react">React</a>, with the cache size limited to a single entry.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const Foo = ({ bar, baz }) => (
-  &lt;div>
-    {bar} {baz}
-  &lt;/div>
-);
-
-export default moize.reactSimple(Foo);
-</code></pre>
-<p><strong>NOTE</strong>: This method will not operate with components made via the <code>class</code> instantiation, as they do not offer the same <a href="https://en.wikipedia.org/wiki/Referential_transparency">referential transparency</a>.</p>
-<h4 id="moize.serialize">moize.serialize</h4>
-<p>Pre-applies the <code>serialize</code> option.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = (bar, baz) => `${bar} ${baz}`;
-
-export default moize.serialize(foo);
-</code></pre>
-<p>Please note that if you want to apply <code>shouldSerializeFunctions</code> or provide a custom <code>serializer</code>, you must do so with additional options:</p>
-<pre class="prettyprint source lang-js"><code>moize.serialize({ shouldSerializeFunctions: true })(fn);
-</code></pre>
-<h4 id="moize.simple">moize.simple</h4>
-<p>Pre-applies the <code>maxSize</code> option with <code>1</code>.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
-
-const foo = (bar, baz) => `${bar} ${baz}`;
-
-export default moize.simple(foo);
-</code></pre>
-<h2 id="usemoize-hook">useMoize hook</h2>
-<p>If you are using React 16.8+ and are using hooks, you can easily create a custom <code>useMoize</code> hook for your project:</p>
-<pre class="prettyprint source lang-js"><code>import { useRef } from 'react';
-
-export function useMoize(fn, args, options) {
-  const moizedFn = useRef(moize(fn, options));
-
-  return moizedFn.current(...args);
-}
-</code></pre>
-<p>Which can then be used as such:</p>
-<pre class="prettyprint source lang-js"><code>import React from 'react';
-
-import { useMoize } from './moize-hooks';
-
-function MyComponent({ first, second, object }) {
-  // standard usage
-  const sum = useMoize((a, b) => a + b, [first, second]);
-  // with options
-  const deepSum = useMoize(obj => obj.a + obj.b, [object], {
-    isDeepEqual: true,
+<span class="hljs-built_in">console</span>.log(
+  memoizedShape({
+    foo: <span class="hljs-string">&quot;not foo&quot;</span>,
+    bar: <span class="hljs-string">&quot;bar&quot;</span>,
+    baz: <span class="hljs-string">&quot;baz&quot;</span>
+  })
+); <span class="hljs-comment">// pulled from cache</span></code></pre>
+				<a href="#ispromise" id="ispromise" style="color: inherit; text-decoration: none;">
+					<h3>isPromise</h3>
+				</a>
+				<p><code>boolean</code>, <em>defaults to <code>false</code></em></p>
+				<p>Identifies the value returned from the method as a <code>Promise</code>, which will result in one of two possible scenarios:</p>
+				<ul>
+					<li>If the promise is resolved, it will fire the <code>onCacheHit</code> and <code>onCacheChange</code> options</li>
+					<li>If the promise is rejected, it will trigger auto-removal from cache</li>
+				</ul>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-keyword">async</span> (one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span>) =&gt; {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
+      reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>({ one, two }));
+    }, <span class="hljs-number">500</span>);
   });
+};
 
-  return `Sum of ${first} and ${second} is ${sum}. Sum of ${object.a} and ${
-    object.b
-  } is ${deepSum}.`;
-}
-</code></pre>
-<p>Naturally you can tweak as needed for your project (default options, option-specific hooks, etc).</p>
-<p><strong>NOTE</strong>: This is very similar to <a href="https://reactjs.org/docs/hooks-reference.html#usecallback"><code>useCallback</code></a> built-in hook, with two main differences:</p>
-<ul>
-<li>There is a third parameter passed (the <a href="#configuration-options"><code>options</code></a> passed to <code>moize</code>)</li>
-<li>The second argument array is the list of arguments passed to the memoized function</li>
-</ul>
-<p>In both <code>useCallback</code> and <code>useMemo</code>, the array is a list of <em>dependencies</em> which determine whether the funciton is called. These can be different than the arguments, although in general practice they are equivalent. The decision to use them directly was both for this common use-case reasons, but also because the implementation complexity would have increased substantially if not.</p>
-<h2 id="composition">Composition</h2>
-<p>Starting with version <code>2.3.0</code>, you can compose <code>moize</code> methods. This will create a new memoized method with the original function that shallowly merges the options of the two setups. Example:</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
+<span class="hljs-keyword">const</span> memoized = memoize(fn, { isPromise: <span class="hljs-literal">true</span> });
 
-const Foo = props => &lt;div {...props} />;
+memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>);
 
-// memoizing with react, as since 2.0.0
-const MemoizedFoo = moize.react(Foo);
+<span class="hljs-built_in">console</span>.log(memoized.cache.snapshot.keys); <span class="hljs-comment">// [[&#x27;one&#x27;, &#x27;two&#x27;]]</span>
+<span class="hljs-built_in">console</span>.log(memoized.cache.snapshot.values); <span class="hljs-comment">// [Promise]</span>
 
-// creating a separately-memoized method that has maxSize of 5
-const LastFiveFoo = moize.maxSize(5)(MemoizedFoo);
-</code></pre>
-<p>You can also create an options-first curriable version of <code>moize</code> if you only pass the options:</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
+<span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(memoized.cache.snapshot.keys); <span class="hljs-comment">// []</span>
+  <span class="hljs-built_in">console</span>.log(memoized.cache.snapshot.values); <span class="hljs-comment">// []</span>
+}, <span class="hljs-number">1000</span>);</code></pre>
+				<p><strong>NOTE</strong>: If you don&#39;t want rejections to auto-remove the entry from cache, set <code>isPromise</code> to <code>false</code> (or simply do not set it), but be aware this will also remove the cache listeners that fire on successful resolution.</p>
+				<a href="#maxsize" id="maxsize" style="color: inherit; text-decoration: none;">
+					<h3>maxSize</h3>
+				</a>
+				<p><code>number</code>, <em>defaults to <code>1</code></em></p>
+				<p>The number of values to store in cache, based on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This operates the same as <a href="https://github.com/planttheidea/moize#maxsize"><code>maxSize</code></a> on <code>moize</code>, with the exception of the default being different.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> manyPossibleArgs = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
-// creates a function that will memoize what is passed
-const limitedSerializedMoize = moize({
-  maxSize: 5,
-  serialize: true,
+<span class="hljs-keyword">const</span> memoized = memoize(manyPossibleArgs, { maxSize: <span class="hljs-number">3</span> });
+
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>)); <span class="hljs-comment">// [&#x27;one&#x27;, &#x27;two&#x27;]</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;two&quot;</span>, <span class="hljs-string">&quot;three&quot;</span>)); <span class="hljs-comment">// [&#x27;two&#x27;, &#x27;three&#x27;]</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;three&quot;</span>, <span class="hljs-string">&quot;four&quot;</span>)); <span class="hljs-comment">// [&#x27;three&#x27;, &#x27;four&#x27;]</span>
+
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>)); <span class="hljs-comment">// pulled from cache</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;two&quot;</span>, <span class="hljs-string">&quot;three&quot;</span>)); <span class="hljs-comment">// pulled from cache</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;three&quot;</span>, <span class="hljs-string">&quot;four&quot;</span>)); <span class="hljs-comment">// pulled from cache</span>
+
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;four&quot;</span>, <span class="hljs-string">&quot;five&quot;</span>)); <span class="hljs-comment">// [&#x27;four&#x27;, &#x27;five&#x27;], drops [&#x27;one&#x27;, &#x27;two&#x27;] from cache</span></code></pre>
+				<p><strong>NOTE</strong>: The default for <code>micro-memoize</code> differs from the default implementation of <code>moize</code>. <code>moize</code> will store an infinite number of results unless restricted, whereas <code>micro-memoize</code> will only store the most recent result. In this way, the default implementation of <code>micro-memoize</code> operates more like <a href="https://github.com/planttheidea/moize#moizesimple"><code>moize.simple</code></a>.</p>
+				<a href="#oncacheadd" id="oncacheadd" style="color: inherit; text-decoration: none;">
+					<h3>onCacheAdd</h3>
+				</a>
+				<p><code>function(cache: Cache, options: Options): void</code></p>
+				<p>Callback method that executes whenever the cache is added to. This is mainly to allow for higher-order caching managers that use <code>micro-memoize</code> to perform superset functionality on the <code>cache</code> object.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
+
+<span class="hljs-keyword">const</span> memoized = memoize(fn, {
+  onCacheAdd(cache: Cache, options: Options) {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;cache has been added to: &quot;</span>, cache);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;memoized method has the following options applied: &quot;</span>, options);
+  }
 });
 
-const getWord = bird => `${bird} is the word`;
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache has been added to</span>
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
 
-const moizedFoo = limitedSerializedMoize(getWord);
-</code></pre>
-<p>You can also combine all of these options with <code>moize.compose</code> to create <code>moize</code> wrappers with pre-defined options.</p>
-<pre class="prettyprint source lang-js"><code>import moize from 'moize';
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>); <span class="hljs-comment">// cache has been added to</span>
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>);
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>);
 
-// creates a moizer that will have the options of
-// {isReact: true, maxAge: 5000, maxSize: 5}
-const superLimitedReactMoize = moize.compose(
-  moize.react,
-  moize.maxSize(5),
-  moize.maxAge(5000),
-);
-</code></pre>
-<h2 id="collecting-statistics">Collecting statistics</h2>
-<p>As-of version 5, you can collect statistics of moize to determine if your cached methods are effective.</p>
-<pre class="prettyprint source lang-js"><code>import moize, { collectStats } from 'moize';
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);</code></pre>
+				<p><strong>NOTE</strong>: This method is not executed when the <code>cache</code> is manually manipulated, only when changed via calling the memoized method.</p>
+				<a href="#oncachechange" id="oncachechange" style="color: inherit; text-decoration: none;">
+					<h3>onCacheChange</h3>
+				</a>
+				<p><code>function(cache: Cache, options: Options): void</code></p>
+				<p>Callback method that executes whenever the cache is added to or the order is updated. This is mainly to allow for higher-order caching managers that use <code>micro-memoize</code> to perform superset functionality on the <code>cache</code> object.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
-collectStats();
+<span class="hljs-keyword">const</span> memoized = memoize(fn, {
+  onCacheChange(cache: Cache, options: Options) {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;cache has changed: &quot;</span>, cache);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;memoized method has the following options applied: &quot;</span>, options);
+  }
+});
 
-const fn = (foo, bar) => [foo, bar];
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache has changed</span>
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
 
-const moized = moize(fn);
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>); <span class="hljs-comment">// cache has changed</span>
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>);
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>);
 
-moized('foo', 'bar');
-moized('foo', 'bar');
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache has changed</span>
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);</code></pre>
+				<p><strong>NOTE</strong>: This method is not executed when the <code>cache</code> is manually manipulated, only when changed via calling the memoized method. When the execution of other cache listeners (<code>onCacheAdd</code>, <code>onCacheHit</code>) is applicable, this method will execute after those methods.</p>
+				<a href="#oncachehit" id="oncachehit" style="color: inherit; text-decoration: none;">
+					<h3>onCacheHit</h3>
+				</a>
+				<p><code>function(cache: Cache, options: Options): void</code></p>
+				<p>Callback method that executes whenever the cache is hit, whether the order is updated or not. This is mainly to allow for higher-order caching managers that use <code>micro-memoize</code> to perform superset functionality on the <code>cache</code> object.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
-moized.getStats(); // {&quot;calls&quot;: 2, &quot;hits&quot;: 1, &quot;usage&quot;: &quot;50%&quot;}
-</code></pre>
-<p><strong>NOTE</strong>: It is recommended not to activate this in production, as it will have a performance decrease.</p>
-<h2 id="introspection">Introspection</h2>
-<h4 id="collectstats">collectStats</h4>
-<p>Start collecting statistics on <code>moize</code>d functions. The same function as if you were to import <code>collectStats</code> directly and call it, just placed on the default object as a convenience.</p>
-<pre class="prettyprint source lang-js"><code>moize.collectStats();
-</code></pre>
-<h4 id="getstats(%5Bprofilename%5D)">getStats([profileName])</h4>
-<p>Get the statistics for a specific function, or globally.</p>
-<pre class="prettyprint source lang-js"><code>collectStats();
+<span class="hljs-keyword">const</span> memoized = memoize(fn, {
+  maxSize: <span class="hljs-number">2</span>,
+  onCacheHit(cache: Cache, options: Options) {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;cache was hit: &quot;</span>, cache);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;memoized method has the following options applied: &quot;</span>, options);
+  }
+});
 
-const fn = (foo, bar) => [foo, bar];
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache was hit</span>
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache was hit</span>
 
-const moized = moize(fn);
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>);
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>); <span class="hljs-comment">// cache was hit</span>
+memoized(<span class="hljs-string">&quot;bar&quot;</span>, <span class="hljs-string">&quot;foo&quot;</span>); <span class="hljs-comment">// cache was hit</span>
 
-const otherFn = bar => bar.slice(0, 1);
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache was hit</span>
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache was hit</span>
+memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>); <span class="hljs-comment">// cache was hit</span></code></pre>
+				<p><strong>NOTE</strong>: This method is not executed when the <code>cache</code> is manually manipulated, only when changed via calling the memoized method.</p>
+				<a href="#transformkey" id="transformkey" style="color: inherit; text-decoration: none;">
+					<h3>transformKey</h3>
+				</a>
+				<p><code>function(Array&lt;any&gt;): any</code></p>
+				<p>A method that allows you transform the key that is used for caching, if you want to use something other than the pure arguments.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> ignoreFunctionArgs = (one: <span class="hljs-built_in">string</span>, two: <span class="hljs-function">() =&gt;</span> {}) =&gt; [one, two];
 
-const otherMoized = moize(otherFn, { profileName: 'otherMoized' });
+<span class="hljs-keyword">const</span> memoized = memoize(ignoreFunctionArgs, {
+  transformKey: <span class="hljs-built_in">JSON</span>.stringify
+});
 
-moized('foo', 'bar');
-moized('foo', 'bar');
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-function">() =&gt;</span> {})); <span class="hljs-comment">// [&#x27;one&#x27;, () =&gt; {}]</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-function">() =&gt;</span> {})); <span class="hljs-comment">// pulled from cache, [&#x27;one&#x27;, () =&gt; {}]</span></code></pre>
+				<p>If your transformed keys require something other than <code>SameValueZero</code> equality, you can combine <code>transformKey</code> with <a href="#isequal"><code>isEqual</code></a> for completely custom key creation and comparison.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> ignoreFunctionArgs = (one: <span class="hljs-built_in">string</span>, two: <span class="hljs-function">() =&gt;</span> {}) =&gt; [one, two];
 
-moized.getStats(); // {&quot;calls&quot;: 2, &quot;hits&quot;: 1, &quot;usage&quot;: &quot;50%&quot;}
+<span class="hljs-keyword">const</span> memoized = memoize(ignoreFunctionArgs, {
+  isEqual(key1: <span class="hljs-built_in">string</span>, key2: <span class="hljs-built_in">string</span>) {
+    <span class="hljs-keyword">return</span> key1.args === key2.args;
+  },
+  transformKey(args: <span class="hljs-built_in">any</span>[]) {
+    <span class="hljs-keyword">return</span> {
+      args: <span class="hljs-built_in">JSON</span>.stringify(args)
+    };
+  }
+});
 
-otherMoized(['baz']);
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-function">() =&gt;</span> {})); <span class="hljs-comment">// [&#x27;one&#x27;, () =&gt; {}]</span>
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-function">() =&gt;</span> {})); <span class="hljs-comment">// pulled from cache, [&#x27;one&#x27;, () =&gt; {}]</span></code></pre>
+				<a href="#additional-properties" id="additional-properties" style="color: inherit; text-decoration: none;">
+					<h2>Additional properties</h2>
+				</a>
+				<a href="#memoizedcache" id="memoizedcache" style="color: inherit; text-decoration: none;">
+					<h3>memoized.cache</h3>
+				</a>
+				<p><code>Object</code></p>
+				<p>The <code>cache</code> object that is used internally. The shape of this structure:</p>
+				<pre><code class="language-ts">{
+  keys: <span class="hljs-built_in">any</span>[][], <span class="hljs-comment">// available as MicroMemoize.Key[]</span>
+  values: <span class="hljs-built_in">any</span>[] <span class="hljs-comment">// available as MicroMemoize.Value[]</span>
+}</code></pre>
+				<p>The exposure of this object is to allow for manual manipulation of keys/values (injection, removal, expiration, etc).</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> method = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> ({ one, two });
 
-moize.getStats('otherMoized'); // {&quot;calls&quot;: 1, &quot;hits&quot;: 0, &quot;usage&quot;: &quot;0%&quot;}
+<span class="hljs-keyword">const</span> memoized = memoize(method);
 
-moize.getStats();
-/*
- {
-   &quot;calls&quot;: 3,
-   &quot;hits&quot;: 1,
-   &quot;profiles&quot;: {
-     &quot;fn at Object..src/utils.js (http://localhost:3000/app.js:153:68)&quot;: {
-       &quot;calls&quot;: 2,
-       &quot;hits&quot;: 1,
-       &quot;usage&quot;: &quot;50%&quot;
-     },
-     &quot;otherMoized&quot;: {
-       &quot;calls&quot;: 1,
-       &quot;hits&quot;: 0,
-       &quot;usage&quot;: &quot;0%&quot;
-     }
-   },
-   &quot;usage&quot;: &quot;33.3333%&quot;
- }
- */
-</code></pre>
-<h4 id="iscollectingstats">isCollectingStats</h4>
-<p>Are statistics being collected on memoization usage.</p>
-<pre class="prettyprint source lang-js"><code>moize.isCollectingStats(); // false
+memoized.cache.keys.push([<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>]);
+memoized.cache.values.push(<span class="hljs-string">&quot;cached&quot;</span>);
 
-collectStats();
-
-moize.isCollectingStats(); // true
-</code></pre>
-<h4 id="ismoized">isMoized</h4>
-<p>Is the function passed a moized function.</p>
-<pre class="prettyprint source lang-js"><code>const fn = () => {};
-const moizedFn = moize(fn);
-
-moize.isMoized(fn); // false
-moize.isMoized(moizedFn); // true
-</code></pre>
-<h2 id="direct-cache-manipulation">Direct cache manipulation</h2>
-<p>The cache is available on the <code>moize</code>d function as a property, and while it is not recommended to modify it directly, that option is available for edge cases.</p>
-<h4 id="cache">cache</h4>
-<p>The shape of the <code>cache</code> is as follows:</p>
-<pre class="prettyprint source lang-js"><code>{
-  keys: Array&lt;Array&lt;any>>,
-  size: number,
-  values: Array&lt;any>
-}
-</code></pre>
-<p>Regardless of how the key is transformed, it is always stored as an array (if the value returned is not an array, it is coalesced to one).</p>
-<p><strong>NOTE</strong>: The order of <code>keys</code> and <code>values</code> should always align, so be aware when manually manipulating the cache that you need to manually keep in sync any changes to those arrays.</p>
-<h4 id="cachesnapshot">cacheSnapshot</h4>
-<p>The <code>cache</code> is mutated internally for performance reasons, so logging out the cache at a specific step in the workflow may not give you the information you need. As such, to help with debugging you can request the <code>cacheSnapshot</code>, which has the same shape as the <code>cache</code> but is a shallow clone of each property for persistence.</p>
-<p>There are also convenience methods provided on the <code>moize</code>d function which allow for programmatic manipulation of the cache.</p>
-<h4 id="add(key%2C-value)">add(key, value)</h4>
-<p>This will manually add the <em>value</em> at <em>key</em> in cache if <em>key</em> does not already exist. <em>key</em> should be an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
-<pre class="prettyprint source lang-js"><code>// single parameter is straightforward
-const memoized = moize(item => item);
-
-memoized.add(['foo'], 'bar');
-
-// pulls from cache
-memoized('foo');
-</code></pre>
-<p><strong>NOTE</strong>: This will only add <code>key</code>s that do not exist in the cache, and will do nothing if the <code>key</code> already exists. If you want to update keys that already exist, use <a href="#updatekey-value"><code>update</code></a>.</p>
-<h4 id="clear()">clear()</h4>
-<p>This will clear all values in the cache, resetting it to an empty state.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize(item => item);
-
-memoized.clear();
-</code></pre>
-<h4 id="get(key)">get(key)</h4>
-<p>Returns the value in cache if the key matches, else returns <code>undefined</code>. <em>key</em> should be an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize((first, second) => [first, second]);
-
-memoized('foo', 'bar');
-
-console.log(memoized.get(['foo', 'bar'])); // [&quot;foo&quot;,&quot;bar&quot;]
-console.log(memoized.get(['bar', 'baz'])); // undefined
-</code></pre>
-<h4 id="getstats()">getStats()</h4>
-<p>Returns the statistics for the function.</p>
-<pre class="prettyprint source lang-js"><code>collectStats();
-
-const memoized = moize((first, second) => [first, second]);
-
-memoized('foo', 'bar');
-memoized('foo', 'bar');
-
-console.log(memoized.getStats()); // {&quot;calls&quot;: 2, &quot;hits&quot;: 1, &quot;usage&quot;: &quot;50%&quot;}
-</code></pre>
-<p><strong>NOTE</strong>: You must be collecting statistics for this to be populated.</p>
-<h4 id="has(key)">has(key)</h4>
-<p>This will return <code>true</code> if a cache entry exists for the <em>key</em> passed, else will return <code>false</code>. <em>key</em> should be an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize((first, second) => [first, second]);
-
-memoized('foo', 'bar');
-
-console.log(memoized.has(['foo', 'bar'])); // true
-console.log(memoized.has(['bar', 'baz'])); // false
-</code></pre>
-<h4 id="keys()">keys()</h4>
-<p>This will return a list of the current keys in <code>cache</code>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize(item => item);
-
-const foo = 'foo';
-
-memoized(foo);
-
-const bar = { baz: 'baz' };
-
-memoized(bar);
-
-const keys = memoized.keys(); // [['foo'], [{baz: 'baz'}]]
-</code></pre>
-<h4 id="remove(key)">remove(key)</h4>
-<p>This will remove the provided <em>key</em> from cache. <em>key</em> should be an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize(item => item);
-
-const foo = { bar: 'baz' };
-
-memoized(foo);
-
-memoized.remove([foo]);
-
-// will re-execute, as it is no longer in cache
-memoized(foo);
-</code></pre>
-<p><strong>NOTE</strong>: This will only remove <code>key</code>s that exist in the cache, and will do nothing if the <code>key</code> does not exist.</p>
-<h4 id="update(key%2C-value)">update(key, value)</h4>
-<p>This will manually update the <em>value</em> at <em>key</em> in cache if <em>key</em> exists. <em>key</em> should be an <code>Array</code> of values, meant to reflect the arguments passed to the method.</p>
-<pre class="prettyprint source lang-js"><code>// single parameter is straightforward
-const memoized = moize(item => item);
-
-memoized.add(['foo'], 'bar');
-
-// pulls from cache
-memoized('foo');
-</code></pre>
-<p><strong>NOTE</strong>: This will only update <code>key</code>s that exist in the cache, and will do nothing if the <code>key</code> does not exist. If you want to add keys that do not already exist, use <a href="#addkey-value"><code>add</code></a>.</p>
-<h4 id="values()">values()</h4>
-<p>This will return a list of the current values in <code>cache</code>.</p>
-<pre class="prettyprint source lang-js"><code>const memoized = moize(item => ({ item }));
-
-const foo = 'foo';
-
-memoized(foo);
-
-const bar = { baz: 'baz' };
-
-memoized(bar);
-
-const values = memoized.values(); // [{item: 'foo'}, {item: {baz: 'baz'}}]
-</code></pre>
-<h2 id="benchmarks">Benchmarks</h2>
-<p>All values provided are the number of operations per second calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>, where a higher value is better. Each benchmark was performed using the default configuration of the library, with a fibonacci calculation based on a starting parameter of <code>35</code>, using single and multiple parameters with different object types. The results were averaged to determine overall speed across possible usage.</p>
-<p><strong>NOTE</strong>: <code>lodash</code>, <code>ramda</code>, and <code>underscore</code> do not support mulitple-parameter memoization without use of a <code>resolver</code> function. For consistency in comparison, each use the same <code>resolver</code> that returns the result of <code>JSON.stringify</code> on the arguments.</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Overall (average)</th>
-<th>Single (average)</th>
-<th>Multiple (average)</th>
-<th>single primitive</th>
-<th>single array</th>
-<th>single object</th>
-<th>multiple primitive</th>
-<th>multiple array</th>
-<th>multiple object</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>moize</strong></td>
-<td><strong>54,174,185</strong></td>
-<td><strong>63,114,600</strong></td>
-<td><strong>45,233,770</strong></td>
-<td><strong>71,543,826</strong></td>
-<td><strong>58,764,177</strong></td>
-<td><strong>59,035,797</strong></td>
-<td><strong>59,035,797</strong></td>
-<td><strong>44,978,364</strong></td>
-<td><strong>45,017,968</strong></td>
-</tr>
-<tr>
-<td>fast-memoize</td>
-<td>37,591,552</td>
-<td>74,183,948</td>
-<td>999,155</td>
-<td>219,504,451</td>
-<td>1,582,247</td>
-<td>1,465,147</td>
-<td>1,210,230</td>
-<td>972,741</td>
-<td>814,496</td>
-</tr>
-<tr>
-<td>memoizee</td>
-<td>10,953,206</td>
-<td>13,429,670</td>
-<td>8,476,743</td>
-<td>16,114,807</td>
-<td>12,226,505</td>
-<td>11,947,699</td>
-<td>10,238,867</td>
-<td>7,615,024</td>
-<td>7,576,339</td>
-</tr>
-<tr>
-<td>lodash</td>
-<td>7,760,981</td>
-<td>14,392,042</td>
-<td>1,129,921</td>
-<td>27,195,493</td>
-<td>8,059,276</td>
-<td>7,921,357</td>
-<td>1,396,024</td>
-<td>1,106,101</td>
-<td>887,640</td>
-</tr>
-<tr>
-<td>lru-memoize</td>
-<td>6,818,881</td>
-<td>7,216,322</td>
-<td>6,421,440</td>
-<td>7,761,636</td>
-<td>7,016,605</td>
-<td>6,870,726</td>
-<td>6,472,962</td>
-<td>6,323,183</td>
-<td>6,468,176</td>
-</tr>
-<tr>
-<td>underscore</td>
-<td>5,140,473</td>
-<td>9,073,217</td>
-<td>1,207,730</td>
-<td>22,750,266</td>
-<td>2,419,458</td>
-<td>2,049,928</td>
-<td>1,490,129</td>
-<td>1,181,751</td>
-<td>951,310</td>
-</tr>
-<tr>
-<td>memoizerific</td>
-<td>4,320,437</td>
-<td>4,784,512</td>
-<td>3,856,362</td>
-<td>5,608,168</td>
-<td>4,374,440</td>
-<td>4,370,928</td>
-<td>4,568,332</td>
-<td>3,455,887</td>
-<td>3,544,867</td>
-</tr>
-<tr>
-<td>ramda</td>
-<td>3,831,370</td>
-<td>6,470,175</td>
-<td>1,192,564</td>
-<td>15,012,589</td>
-<td>2,380,971</td>
-<td>2,016,966</td>
-<td>1,470,378</td>
-<td>1,161,390</td>
-<td>945,926</td>
-</tr>
-<tr>
-<td>mem</td>
-<td>2,679,860</td>
-<td>4,138,450</td>
-<td>1,221,271</td>
-<td>9,431,005</td>
-<td>1,554,267</td>
-<td>1,430,078</td>
-<td>1,537,629</td>
-<td>1,197,269</td>
-<td>928,915</td>
-</tr>
-<tr>
-<td>addy-osmani</td>
-<td>2,504,948</td>
-<td>3,224,227</td>
-<td>1,785,669</td>
-<td>6,430,710</td>
-<td>1,560,466</td>
-<td>1,681,506</td>
-<td>3,215,093</td>
-<td>1,184,364</td>
-<td>957,550</td>
-</tr>
-</tbody>
-</table>
-<p><img src="img/overall-average.png" alt="Overall average image"></p>
-<p><img src="img/single-parameter.png" alt="Single parameter image"></p>
-<p><img src="img/multiple-parameters.png" alt="Multiple parameters image"></p>
-<h2 id="filesize">Filesize</h2>
-<p><code>moize</code> is fairly small (about 4.5KB when minified and gzipped), however it provides a large number of configuration options to satisfy a number of edge cases. If filesize is a concern, you may consider using <a href="https://github.com/planttheidea/micro-memoize"><code>micro-memoize</code></a>. This is the memoization library that powers <code>moize</code> under-the-hood, and will handle most common use cases at 1/4 the size of <code>moize</code>.</p>
-<h2 id="browser-support">Browser support</h2>
-<ul>
-<li>Chrome (all versions)</li>
-<li>Firefox (all versions)</li>
-<li>Edge (all versions)</li>
-<li>Opera 15+</li>
-<li>IE 9+</li>
-<li>Safari 6+</li>
-<li>iOS 8+</li>
-<li>Android 4+</li>
-</ul>
-<h2 id="development">Development</h2>
-<p>Standard stuff, clone the repo and <code>npm install</code> dependencies. The npm scripts available:</p>
-<ul>
-<li><code>benchmark</code> =&gt; run the benchmark suite pitting <code>moize</code> against other libraries in common use-cases</li>
-<li><code>benchmark:alternative</code> =&gt; run the benchmark suite for alternative forms of caching in <code>moize</code></li>
-<li><code>build</code> =&gt; run rollup to build the distributed files in <code>dist</code></li>
-<li><code>clean</code> =&gt; run <code>clean:lib</code>, <code>clean:es</code>, <code>clean:dist</code>, and <code>clean:docs</code></li>
-<li><code>clean:dist</code> =&gt; run <code>rimraf</code> on the <code>dist</code> folder</li>
-<li><code>clean:docs</code> =&gt; run <code>rimraf</code> on the <code>docs</code> folder</li>
-<li><code>clean:es</code> =&gt; run <code>rimraf</code> on the <code>es</code> folder</li>
-<li><code>clean:lib</code> =&gt; run <code>rimraf</code> on the <code>lib</code> folder</li>
-<li><code>dev</code> =&gt; run webpack dev server to run example app (playground!)</li>
-<li><code>dist</code> =&gt; runs <code>clean:dist</code> and <code>build</code></li>
-<li><code>docs</code> =&gt; runs <code>clean:docs</code> and builds the docs via <code>jsdoc</code></li>
-<li><code>flow</code> =&gt; runs <code>flow check</code> on the files in <code>src</code></li>
-<li><code>lint</code> =&gt; runs ESLint against all files in the <code>src</code> folder</li>
-<li><code>lint:fix</code> =&gt; runs `lint``, fixing any errors if possible</li>
-<li><code>postpublish</code> =&gt; runs <code>docs</code></li>
-<li><code>prepublish</code> =&gt; runs <code>compile-for-publish</code></li>
-<li><code>prepublish:compile</code> =&gt; run <code>lint</code>, <code>flow</code>, <code>test:coverage</code>, <code>transpile:lib</code>, <code>transpile:es</code>, and <code>dist</code></li>
-<li><code>test</code> =&gt; run AVA test functions with <code>NODE_ENV=test</code></li>
-<li><code>test:coverage</code> =&gt; run <code>test</code> but with <code>nyc</code> for coverage checker</li>
-<li><code>test:watch</code> =&gt; run <code>test</code>, but with persistent watcher</li>
-<li><code>transpile:es</code> =&gt; run babel against all files in <code>src</code> to create files in <code>es</code>, preserving ES2015 modules (for <a href="https://github.com/rollup/rollup/wiki/pkg.module"><code>pkg.module</code></a>)</li>
-<li><code>transpile:lib</code> =&gt; run babel against all files in <code>src</code> to create files in <code>lib</code></li>
-</ul></article>
-    </section>
-
-
-
-
-
-
-
+<span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>)); <span class="hljs-comment">// &#x27;cached&#x27;</span></code></pre>
+				<p><strong>NOTE</strong>: <code>moize</code> offers a variety of convenience methods for this manual <code>cache</code> manipulation, and while <code>micro-memoize</code> allows all the same capabilities by exposing the <code>cache</code>, it does not provide any convenience methods.</p>
+				<a href="#memoizedcachesnapshot" id="memoizedcachesnapshot" style="color: inherit; text-decoration: none;">
+					<h4>memoized.cache.snapshot</h4>
+				</a>
+				<p><code>Object</code></p>
+				<p>This is identical to the <code>cache</code> object referenced above, but it is a deep clone created at request, which will provide a persistent snapshot of the values at that time. This is useful when tracking the cache changes over time, as the <code>cache</code> object is mutated internally for performance reasons.</p>
+				<a href="#memoizedfn" id="memoizedfn" style="color: inherit; text-decoration: none;">
+					<h3>memoized.fn</h3>
+				</a>
+				<p><code>function</code></p>
+				<p>The original function passed to be memoized.</p>
+				<a href="#memoizedismemoized" id="memoizedismemoized" style="color: inherit; text-decoration: none;">
+					<h3>memoized.isMemoized</h3>
+				</a>
+				<p><code>boolean</code></p>
+				<p>Hard-coded to <code>true</code> when the function is memoized. This is useful for introspection, to identify if a method has been memoized or not.</p>
+				<a href="#memoizedoptions" id="memoizedoptions" style="color: inherit; text-decoration: none;">
+					<h3>memoized.options</h3>
+				</a>
+				<p><code>Object</code></p>
+				<p>The <a href="#options"><code>options</code></a> passed when creating the memoized method.</p>
+				<a href="#benchmarks" id="benchmarks" style="color: inherit; text-decoration: none;">
+					<h2>Benchmarks</h2>
+				</a>
+				<p>All values provided are the number of operations per second (ops/sec) calculated by the <a href="https://benchmarkjs.com/">Benchmark suite</a>. Note that <code>underscore</code>, <code>lodash</code>, and <code>ramda</code> do not support mulitple-parameter memoization (which is where <code>micro-memoize</code> really shines), so they are not included in those benchmarks.</p>
+				<p>Benchmarks was performed on an i7 8-core Arch Linux laptop with 16GB of memory using NodeJS version <code>10.15.0</code>. The default configuration of each library was tested with a fibonacci calculation based on the following parameters:</p>
+				<ul>
+					<li>Single primitive = <code>35</code></li>
+					<li>Single object = <code>{number: 35}</code></li>
+					<li>Multiple primitives = <code>35, true</code></li>
+					<li>Multiple objects = <code>{number: 35}, {isComplete: true}</code></li>
+				</ul>
+				<p><strong>NOTE</strong>: Not all libraries tested support multiple parameters out of the box, but support the ability to pass a custom <code>resolver</code>. Because these often need to resolve to a string value, <a href="https://github.com/lodash/lodash/issues/2115">a common suggestion</a> is to just <code>JSON.stringify</code> the arguments, so that is what is used when needed.</p>
+				<a href="#single-parameter-primitive-only" id="single-parameter-primitive-only" style="color: inherit; text-decoration: none;">
+					<h3>Single parameter (primitive only)</h3>
+				</a>
+				<p>This is usually what benchmarks target for ... its the least-likely use-case, but the easiest to optimize, often at the expense of more common use-cases.</p>
+				<table>
+					<thead>
+						<tr>
+							<th></th>
+							<th>Operations / second</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td>fast-memoize</td>
+							<td>59,069,204</td>
+						</tr>
+						<tr>
+							<td><strong>micro-memoize</strong></td>
+							<td><strong>48,267,295</strong></td>
+						</tr>
+						<tr>
+							<td>lru-memoize</td>
+							<td>46,781,143</td>
+						</tr>
+						<tr>
+							<td>Addy Osmani</td>
+							<td>32,372,414</td>
+						</tr>
+						<tr>
+							<td>lodash</td>
+							<td>29,297,916</td>
+						</tr>
+						<tr>
+							<td>ramda</td>
+							<td>25,054,838</td>
+						</tr>
+						<tr>
+							<td>mem</td>
+							<td>24,848,072</td>
+						</tr>
+						<tr>
+							<td>underscore</td>
+							<td>24,847,818</td>
+						</tr>
+						<tr>
+							<td>memoizee</td>
+							<td>18,272,987</td>
+						</tr>
+						<tr>
+							<td>memoizerific</td>
+							<td>7,302,835</td>
+						</tr>
+				</tbody></table>
+				<a href="#single-parameter-complex-object" id="single-parameter-complex-object" style="color: inherit; text-decoration: none;">
+					<h3>Single parameter (complex object)</h3>
+				</a>
+				<p>This is what most memoization libraries target as the primary use-case, as it removes the complexities of multiple arguments but allows for usage with one to many values.</p>
+				<table>
+					<thead>
+						<tr>
+							<th></th>
+							<th>Operations / second</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><strong>micro-memoize</strong></td>
+							<td><strong>40,360,621</strong></td>
+						</tr>
+						<tr>
+							<td>lodash</td>
+							<td>30,862,028</td>
+						</tr>
+						<tr>
+							<td>lru-memoize</td>
+							<td>25,740,572</td>
+						</tr>
+						<tr>
+							<td>memoizee</td>
+							<td>12,058,375</td>
+						</tr>
+						<tr>
+							<td>memoizerific</td>
+							<td>6,854,855</td>
+						</tr>
+						<tr>
+							<td>ramda</td>
+							<td>2,287,030</td>
+						</tr>
+						<tr>
+							<td>underscore</td>
+							<td>2,270,574</td>
+						</tr>
+						<tr>
+							<td>Addy Osmani</td>
+							<td>2,076,031</td>
+						</tr>
+						<tr>
+							<td>mem</td>
+							<td>2,001,984</td>
+						</tr>
+						<tr>
+							<td>fast-memoize</td>
+							<td>1,591,019</td>
+						</tr>
+				</tbody></table>
+				<a href="#multiple-parameters-primitives-only" id="multiple-parameters-primitives-only" style="color: inherit; text-decoration: none;">
+					<h3>Multiple parameters (primitives only)</h3>
+				</a>
+				<p>This is a very common use-case for function calls, but can be more difficult to optimize because you need to account for multiple possibilities ... did the number of arguments change, are there default arguments, etc.</p>
+				<table>
+					<thead>
+						<tr>
+							<th></th>
+							<th>Operations / second</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><strong>micro-memoize</strong></td>
+							<td><strong>33,546,353</strong></td>
+						</tr>
+						<tr>
+							<td>lru-memoize</td>
+							<td>20,884,669</td>
+						</tr>
+						<tr>
+							<td>memoizee</td>
+							<td>7,831,161</td>
+						</tr>
+						<tr>
+							<td>Addy Osmani</td>
+							<td>6,447,448</td>
+						</tr>
+						<tr>
+							<td>memoizerific</td>
+							<td>5,587,779</td>
+						</tr>
+						<tr>
+							<td>mem</td>
+							<td>2,620,943</td>
+						</tr>
+						<tr>
+							<td>underscore</td>
+							<td>1,617,687</td>
+						</tr>
+						<tr>
+							<td>ramda</td>
+							<td>1,569,167</td>
+						</tr>
+						<tr>
+							<td>lodash</td>
+							<td>1,512,515</td>
+						</tr>
+						<tr>
+							<td>fast-memoize</td>
+							<td>1,376,665</td>
+						</tr>
+				</tbody></table>
+				<a href="#multiple-parameters-complex-objects" id="multiple-parameters-complex-objects" style="color: inherit; text-decoration: none;">
+					<h3>Multiple parameters (complex objects)</h3>
+				</a>
+				<p>This is the most robust use-case, with the same complexities as multiple primitives but managing bulkier objects with additional edge scenarios (destructured with defaults, for example).</p>
+				<table>
+					<thead>
+						<tr>
+							<th></th>
+							<th>Operations / second</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><strong>micro-memoize</strong></td>
+							<td><strong>34,857,438</strong></td>
+						</tr>
+						<tr>
+							<td>lru-memoize</td>
+							<td>20,838,330</td>
+						</tr>
+						<tr>
+							<td>memoizee</td>
+							<td>7,820,066</td>
+						</tr>
+						<tr>
+							<td>memoizerific</td>
+							<td>5,761,357</td>
+						</tr>
+						<tr>
+							<td>mem</td>
+							<td>1,184,550</td>
+						</tr>
+						<tr>
+							<td>ramda</td>
+							<td>1,034,937</td>
+						</tr>
+						<tr>
+							<td>underscore</td>
+							<td>1,021,480</td>
+						</tr>
+						<tr>
+							<td>Addy Osmani</td>
+							<td>1,014,642</td>
+						</tr>
+						<tr>
+							<td>lodash</td>
+							<td>1,014,060</td>
+						</tr>
+						<tr>
+							<td>fast-memoize</td>
+							<td>949,213</td>
+						</tr>
+				</tbody></table>
+				<a href="#browser-support" id="browser-support" style="color: inherit; text-decoration: none;">
+					<h2>Browser support</h2>
+				</a>
+				<ul>
+					<li>Chrome (all versions)</li>
+					<li>Firefox (all versions)</li>
+					<li>Edge (all versions)</li>
+					<li>Opera 15+</li>
+					<li>IE 9+</li>
+					<li>Safari 6+</li>
+					<li>iOS 8+</li>
+					<li>Android 4+</li>
+				</ul>
+				<a href="#node-support" id="node-support" style="color: inherit; text-decoration: none;">
+					<h2>Node support</h2>
+				</a>
+				<ul>
+					<li>4+</li>
+				</ul>
+				<a href="#development" id="development" style="color: inherit; text-decoration: none;">
+					<h2>Development</h2>
+				</a>
+				<p>Standard stuff, clone the repo and <code>npm install</code> dependencies. The npm scripts available:</p>
+				<ul>
+					<li><code>build</code> =&gt; run webpack to build development <code>dist</code> file with NODE_ENV=development</li>
+					<li><code>build:minifed</code> =&gt; run webpack to build production <code>dist</code> file with NODE_ENV=production</li>
+					<li><code>dev</code> =&gt; run webpack dev server to run example app (playground!)</li>
+					<li><code>dist</code> =&gt; runs <code>build</code> and <code>build-minified</code></li>
+					<li><code>lint</code> =&gt; run ESLint against all files in the <code>src</code> folder</li>
+					<li><code>prepublish</code> =&gt; runs <code>compile-for-publish</code></li>
+					<li><code>prepublish:compile</code> =&gt; run <code>lint</code>, <code>test</code>, <code>transpile:es</code>, <code>transpile:lib</code>, <code>dist</code></li>
+					<li><code>test</code> =&gt; run AVA test functions with <code>NODE_ENV=test</code></li>
+					<li><code>test:coverage</code> =&gt; run <code>test</code> but with <code>nyc</code> for coverage checker</li>
+					<li><code>test:watch</code> =&gt; run <code>test</code>, but with persistent watcher</li>
+					<li><code>transpile:lib</code> =&gt; run babel against all files in <code>src</code> to create files in <code>lib</code></li>
+					<li><code>transpile:es</code> =&gt; run babel against all files in <code>src</code> to create files in <code>es</code>, preserving ES2015 modules (for <a href="https://github.com/rollup/rollup/wiki/pkg.module"><code>pkg.module</code></a>)</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Externals</span>
+					</li>
+					<li class=" tsd-kind-namespace tsd-is-external">
+						<a href="modules/micromemoize.html">Micro<wbr>Memoize</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/cache.html" class="tsd-kind-icon">Cache</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/moize.html" class="tsd-kind-icon">Moize</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#curriedmoize" class="tsd-kind-icon">Curried<wbr>Moize</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
+						<a href="globals.html#dictionary" class="tsd-kind-icon">Dictionary</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#expiration" class="tsd-kind-icon">Expiration</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#fn" class="tsd-kind-icon">Fn</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#functionalcomponent" class="tsd-kind-icon">Functional<wbr>Component</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#globalstatsobject" class="tsd-kind-icon">Global<wbr>Stats<wbr>Object</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#isequal" class="tsd-kind-icon">Is<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#ismatchingkey" class="tsd-kind-icon">Is<wbr>Matching<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#key" class="tsd-kind-icon">Key</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#memoized" class="tsd-kind-icon">Memoized</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#micromemoizeoptions" class="tsd-kind-icon">Micro<wbr>Memoize<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#moizeconfiguration" class="tsd-kind-icon">Moize<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#moizeable" class="tsd-kind-icon">Moizeable</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#moized" class="tsd-kind-icon">Moized</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#oncacheoperation" class="tsd-kind-icon">On<wbr>Cache<wbr>Operation</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#onexpire" class="tsd-kind-icon">On<wbr>Expire</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#options" class="tsd-kind-icon">Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#serialize" class="tsd-kind-icon">Serialize</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#statscache" class="tsd-kind-icon">Stats<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#statsobject" class="tsd-kind-icon">Stats<wbr>Object</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#statsprofile" class="tsd-kind-icon">Stats<wbr>Profile</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#transformkey" class="tsd-kind-icon">Transform<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#value" class="tsd-kind-icon">Value</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#hasownproperty" class="tsd-kind-icon">has<wbr>Own<wbr>Property</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#haswarningdisplayed" class="tsd-kind-icon">has<wbr>Warning<wbr>Displayed</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#slice" class="tsd-kind-icon">slice</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
+						<a href="globals.html#addinstancemethods" class="tsd-kind-icon">add<wbr>Instance<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
+						<a href="globals.html#addinstanceproperties" class="tsd-kind-icon">add<wbr>Instance<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#clearexpiration" class="tsd-kind-icon">clear<wbr>Expiration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#clearstats" class="tsd-kind-icon">clear<wbr>Stats</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#clonearray" class="tsd-kind-icon">clone<wbr>Array</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#collectstats" class="tsd-kind-icon">collect<wbr>Stats</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
+						<a href="globals.html#combine" class="tsd-kind-icon">combine</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
+						<a href="globals.html#compose" class="tsd-kind-icon">compose</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#copystaticproperties" class="tsd-kind-icon">copy<wbr>Static<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createdefaultreplacer" class="tsd-kind-icon">create<wbr>Default<wbr>Replacer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createfindkeyindex" class="tsd-kind-icon">create<wbr>Find<wbr>Key<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#creategetinitialargs" class="tsd-kind-icon">create<wbr>Get<wbr>Initial<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
+						<a href="globals.html#createmoizeinstance" class="tsd-kind-icon">create<wbr>Moize<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-private">
+						<a href="globals.html#createmoizedcomponent" class="tsd-kind-icon">create<wbr>Moized<wbr>Component</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createoncacheaddincrementcalls" class="tsd-kind-icon">create<wbr>OnCache<wbr>Add<wbr>Increment<wbr>Calls</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createoncacheaddsetexpiration" class="tsd-kind-icon">create<wbr>OnCache<wbr>Add<wbr>Set<wbr>Expiration</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createoncachehitincrementcallsandhits" class="tsd-kind-icon">create<wbr>OnCache<wbr>Hit<wbr>Increment<wbr>Calls<wbr>And<wbr>Hits</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createoncachehitresetexpiration" class="tsd-kind-icon">create<wbr>OnCache<wbr>Hit<wbr>Reset<wbr>Expiration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createoncacheoperation" class="tsd-kind-icon">create<wbr>OnCache<wbr>Operation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#createtimeout" class="tsd-kind-icon">create<wbr>Timeout</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#defaultargumentserializer" class="tsd-kind-icon">default<wbr>Argument<wbr>Serializer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#findexpirationindex" class="tsd-kind-icon">find<wbr>Expiration<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#getcustomoptions" class="tsd-kind-icon">get<wbr>Custom<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getdefaultprofilename" class="tsd-kind-icon">get<wbr>Default<wbr>Profile<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getisequal" class="tsd-kind-icon">get<wbr>IsEqual</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getismatchingkey" class="tsd-kind-icon">get<wbr>IsMatching<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getisserializedkeyequal" class="tsd-kind-icon">get<wbr>IsSerialized<wbr>Key<wbr>Equal</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getmaxageoptions" class="tsd-kind-icon">get<wbr>Max<wbr>Age<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getserializerfunction" class="tsd-kind-icon">get<wbr>Serializer<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getstats" class="tsd-kind-icon">get<wbr>Stats</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getstatsoptions" class="tsd-kind-icon">get<wbr>Stats<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getstringifiedargument" class="tsd-kind-icon">get<wbr>Stringified<wbr>Argument</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#gettransformkey" class="tsd-kind-icon">get<wbr>Transform<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private">
+						<a href="globals.html#getusagepercentage" class="tsd-kind-icon">get<wbr>Usage<wbr>Percentage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#ismemoized" class="tsd-kind-icon">is<wbr>Memoized</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ismoized" class="tsd-kind-icon">is<wbr>Moized</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#issamevaluezero" class="tsd-kind-icon">is<wbr>Same<wbr>Value<wbr>Zero</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-private tsd-is-external">
+						<a href="globals.html#mergeoptions" class="tsd-kind-icon">merge<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#moize" class="tsd-kind-icon">moize</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-private">
+						<a href="globals.html#default_options" class="tsd-kind-icon">DEFAULT_<wbr>OPTIONS</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-external">
+						<a href="globals.html#default_options_keys" class="tsd-kind-icon">DEFAULT_<wbr>OPTIONS_<wbr>KEYS</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#statscache" class="tsd-kind-icon">stats<wbr>Cache</a>
+					</li>
+				</ul>
+			</nav>
 		</div>
 	</div>
-
-	<div class="clearfix"></div>
-
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
 		</div>
-	
-
-</div>
-</div>
-
-
-    <div class="modal fade" id="searchResults">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Search results</h4>
-          </div>
-          <div class="modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
-
-
-<footer>
-
-
-<span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a>
-	
-	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
-</span>
+	</div>
 </footer>
-
-<script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/toc.js"></script>
-
-    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
-
-
-<script>
-$( function () {
-	$( "[id*='$']" ).each( function () {
-		var $this = $( this );
-
-		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
-	} );
-
-	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
-		var $this = $( this );
-
-		var example = $this.find( "code" );
-		exampleText = example.html();
-		var lang = /{@lang (.*?)}/.exec( exampleText );
-		if ( lang && lang[1] ) {
-			exampleText = exampleText.replace( lang[0], "" );
-			example.html( exampleText );
-			lang = lang[1];
-		} else {
-			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
-			lang = langClassMatch ? langClassMatch[1] : "javascript";
-		}
-
-		if ( lang ) {
-
-			$this
-			.addClass( "sunlight-highlight-" + lang )
-			.addClass( "linenums" )
-			.html( example.html() );
-
-		}
-	} );
-
-	Sunlight.highlightAll( {
-		lineNumbers : true,
-		showMenu : true,
-		enableDoclinks : true
-	} );
-
-	$.catchAnchorLinks( {
-        navbarOffset: 10
-	} );
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
-		showAndHide : false,
-		smoothScrolling: true
-	} );
-
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-
-    $( "table" ).each( function () {
-      var $this = $( this );
-      $this.addClass('table');
-    } );
-
-} );
-</script>
-
-
-
-<!--Navigation and Symbol Display-->
-
-<script>
-	$( function () {
-		$( '#main' ).localScroll( {
-			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
-		} );
-		$( "dt.name" ).each( function () {
-			var $this = $( this ).find("h4");
-			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
-			var dt = $(this);
-			var children = dt.next( "dd" );
-
-			dt.prepend( icon ).css( {cursor : "pointer"} );
-			dt.addClass( "member-collapsed" ).addClass( "member" );
-
-
-			children.hide();
-
-			dt.children().on( "click", function () {
-				children = dt.next( "dd" );
-				children.slideToggle( "fast", function () {
-
-					if ( children.is( ":visible" ) ) {
-						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
-						dt.addClass( "member-open" ).animate( "member-collapsed" );
-					} else {
-						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
-						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
-					}
-				} );
-			} );
-
-		} );
-	} );
-</script>
-
-
-<!--Google Analytics-->
-
-
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            SearcherDisplay.init();
-        });
-    </script>
-
-
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

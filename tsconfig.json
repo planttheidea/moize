@@ -13,5 +13,10 @@
     "target": "es5"
   },
   "exclude": ["node_modules"],
-  "include": ["src/*", "__tests__/*"]
+  "include": ["src/*", "__tests__/*"],
+  "typedocOptions": {
+    "mode": "file",
+    "out": "docs",
+    "inputFiles": ["src"]
+  }
 }
