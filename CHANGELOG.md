@@ -13,16 +13,18 @@
 
 **ENHANCEMENTS**
 
-- All options now have corresponding shorthand methods. New methods added:
+- New options:
+  - `isShallowEqual` (compares each arg in the `key` based on shallow equality)
+- New shorthand methods:
+  - `moize.infinite` (shorthand for `maxSize` option set to `Infinity`)
   - `moize.matchesArg` (shorthand for `matchesArg` option)
   - `moize.matchesKey` (shorthand for `matchesKey` option)
   - `moize.serializeWith` (shorthand for `serializer` option)
-- New options / shorthand methods:
-  - `isShallowEqual` / `moize.shallow`
+  - `moize.shallow` (shorthand for `isShallowEqual` option)
+
+**INTERNALS**
+
 - Rewritten in TypeScript, with much better type declarations.
-
-**INTERNALS**:
-
 - Changed unit test framework to `jest`
 - Used latest external dependencies for better ESM support in Node 14
 
