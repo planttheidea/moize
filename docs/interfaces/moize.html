@@ -1,0 +1,854 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Moize | micro-memoize</title>
+	<meta name="description" content="Documentation for micro-memoize">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">micro-memoize</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="moize.html">Moize</a>
+				</li>
+			</ul>
+			<h1>Interface Moize&lt;DefaultOptions&gt;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>DefaultOptions<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Arg</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{}</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">Moize</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3 class="tsd-before-signature">Callable</h3>
+				<ul class="tsd-signatures tsd-kind-interface tsd-has-type-parameter">
+					<li class="tsd-signature tsd-kind-icon">__call&lt;Fn, PassedOptions&gt;<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Fn</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#moized" class="tsd-signature-type">Moized</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Fn</span><span class="tsd-signature-symbol">, </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">DefaultOptions</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;Fn, PassedOptions&gt;<span class="tsd-signature-symbol">(</span>fn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Fn</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#moized" class="tsd-signature-type">Moized</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Fn</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">"fn"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">, </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">DefaultOptions</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;PassedOptions&gt;<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Arg</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Result</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L142">src/types.ts:142</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>Fn<span class="tsd-signature-symbol">: </span><a href="../globals.html#moizeable" class="tsd-signature-type">Moizeable</a></h4>
+							</li>
+							<li>
+								<h4>PassedOptions<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>fn: <span class="tsd-signature-type">Fn</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">PassedOptions</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../globals.html#moized" class="tsd-signature-type">Moized</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Fn</span><span class="tsd-signature-symbol">, </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">DefaultOptions</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L146">src/types.ts:146</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>Fn<span class="tsd-signature-symbol">: </span><a href="../globals.html#moized" class="tsd-signature-type">Moized</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#moizeable" class="tsd-signature-type">Moizeable</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+							<li>
+								<h4>PassedOptions<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>fn: <span class="tsd-signature-type">Fn</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">PassedOptions</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../globals.html#moized" class="tsd-signature-type">Moized</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Fn</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">"fn"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">, </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">DefaultOptions</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L150">src/types.ts:150</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>PassedOptions<span class="tsd-signature-symbol">: </span><a href="../modules/micromemoize.html#options" class="tsd-signature-type">Options</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>options: <span class="tsd-signature-type">PassedOptions</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PassedOptions</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L5">src/types.ts:5</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">Arg</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Result</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#clearstats" class="tsd-kind-icon">clear<wbr>Stats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#collectstats" class="tsd-kind-icon">collect<wbr>Stats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#compose" class="tsd-kind-icon">compose</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#deep" class="tsd-kind-icon">deep</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#getstats" class="tsd-kind-icon">get<wbr>Stats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#infinite" class="tsd-kind-icon">infinite</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#iscollectingstats" class="tsd-kind-icon">is<wbr>Collecting<wbr>Stats</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#ismoized" class="tsd-kind-icon">is<wbr>Moized</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#matchesarg" class="tsd-kind-icon">matches<wbr>Arg</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#matcheskey" class="tsd-kind-icon">matches<wbr>Key</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#maxage" class="tsd-kind-icon">max<wbr>Age</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#maxargs" class="tsd-kind-icon">max<wbr>Args</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#maxsize" class="tsd-kind-icon">max<wbr>Size</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#profile" class="tsd-kind-icon">profile</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#promise" class="tsd-kind-icon">promise</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#react" class="tsd-kind-icon">react</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#serialize" class="tsd-kind-icon">serialize</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#serializewith" class="tsd-kind-icon">serialize<wbr>With</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#shallow" class="tsd-kind-icon">shallow</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="moize.html#transformargs" class="tsd-kind-icon">transform<wbr>Args</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="clearstats" class="tsd-anchor"></a>
+					<h3>clear<wbr>Stats</h3>
+					<div class="tsd-signature tsd-kind-icon">clear<wbr>Stats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>profileName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L155">src/types.ts:155</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>profileName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> profileName: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="collectstats" class="tsd-anchor"></a>
+					<h3>collect<wbr>Stats</h3>
+					<div class="tsd-signature tsd-kind-icon">collect<wbr>Stats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>isCollectingStats<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L156">src/types.ts:156</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>isCollectingStats<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> isCollectingStats: <span class="tsd-signature-type">boolean</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="compose" class="tsd-anchor"></a>
+					<h3>compose</h3>
+					<div class="tsd-signature tsd-kind-icon">compose<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>moizers<span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L157">src/types.ts:157</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>moizers<span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>moizers: <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="deep" class="tsd-anchor"></a>
+					<h3>deep</h3>
+					<div class="tsd-signature tsd-kind-icon">deep<span class="tsd-signature-symbol">:</span> <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isDeepEqual<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L158">src/types.ts:158</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="getstats" class="tsd-anchor"></a>
+					<h3>get<wbr>Stats</h3>
+					<div class="tsd-signature tsd-kind-icon">get<wbr>Stats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>profileName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../globals.html#statsobject" class="tsd-signature-type">StatsObject</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L159">src/types.ts:159</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>profileName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#statsobject" class="tsd-signature-type">StatsObject</a></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> profileName: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="../globals.html#statsobject" class="tsd-signature-type">StatsObject</a></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="infinite" class="tsd-anchor"></a>
+					<h3>infinite</h3>
+					<div class="tsd-signature tsd-kind-icon">infinite<span class="tsd-signature-symbol">:</span> <a href="moize.html" class="tsd-signature-type">Moize</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L160">src/types.ts:160</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="iscollectingstats" class="tsd-anchor"></a>
+					<h3>is<wbr>Collecting<wbr>Stats</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Collecting<wbr>Stats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L161">src/types.ts:161</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="ismoized" class="tsd-anchor"></a>
+					<h3>is<wbr>Moized</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Moized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">Moized</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L162">src/types.ts:162</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">Moized</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>value: <span class="tsd-signature-type">any</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">value</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">Moized</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="matchesarg" class="tsd-anchor"></a>
+					<h3>matches<wbr>Arg</h3>
+					<div class="tsd-signature tsd-kind-icon">matches<wbr>Arg<span class="tsd-signature-symbol">:</span> &lt;Matcher&gt;<span class="tsd-signature-symbol">(</span>argMatcher<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>matchesArg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L163">src/types.ts:163</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-has-type-parameter">
+									<li class="tsd-signature tsd-kind-icon">&lt;Matcher&gt;<span class="tsd-signature-symbol">(</span>argMatcher<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>matchesArg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-type-parameters-title">Type parameters</h4>
+										<ul class="tsd-type-parameters">
+											<li>
+												<h4>Matcher<span class="tsd-signature-symbol">: </span><a href="../globals.html#isequal" class="tsd-signature-type">IsEqual</a></h4>
+											</li>
+										</ul>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>argMatcher: <span class="tsd-signature-type">Matcher</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>matchesArg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="matcheskey" class="tsd-anchor"></a>
+					<h3>matches<wbr>Key</h3>
+					<div class="tsd-signature tsd-kind-icon">matches<wbr>Key<span class="tsd-signature-symbol">:</span> &lt;Matcher&gt;<span class="tsd-signature-symbol">(</span>keyMatcher<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>matchesKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L166">src/types.ts:166</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-has-type-parameter">
+									<li class="tsd-signature tsd-kind-icon">&lt;Matcher&gt;<span class="tsd-signature-symbol">(</span>keyMatcher<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>matchesKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-type-parameters-title">Type parameters</h4>
+										<ul class="tsd-type-parameters">
+											<li>
+												<h4>Matcher<span class="tsd-signature-symbol">: </span><a href="../globals.html#ismatchingkey" class="tsd-signature-type">IsMatchingKey</a></h4>
+											</li>
+										</ul>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>keyMatcher: <span class="tsd-signature-type">Matcher</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>matchesKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Matcher</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="maxage" class="tsd-anchor"></a>
+					<h3>max<wbr>Age</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Age<span class="tsd-signature-symbol">:</span> &lt;ExpireHandler, UpdateExpire, ExpireOptions, _OnExpire&gt;<span class="tsd-signature-symbol">(</span>age<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, onExpire<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>onExpire<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">_OnExpire</a><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Moize</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L169">src/types.ts:169</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-has-type-parameter">
+									<li class="tsd-signature tsd-kind-icon">&lt;ExpireHandler, UpdateExpire, ExpireOptions, _OnExpire&gt;<span class="tsd-signature-symbol">(</span>age<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, onExpire<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>onExpire<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">_OnExpire</a><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Moize</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-type-parameters-title">Type parameters</h4>
+										<ul class="tsd-type-parameters">
+											<li>
+												<h4>ExpireHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onexpire" class="tsd-signature-type">OnExpire</a></h4>
+											</li>
+											<li>
+												<h4>UpdateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h4>
+											</li>
+											<li>
+												<h4>ExpireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>onExpire<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span></h4>
+											</li>
+											<li>
+												<h4>_OnExpire</h4>
+											</li>
+										</ul>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>age: <span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> onExpire: <span class="tsd-signature-type">_OnExpire</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>onExpire<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">_OnExpire</a><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">_OnExpire</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">Moize</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">Moize</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="maxargs" class="tsd-anchor"></a>
+					<h3>max<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L187">src/types.ts:187</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>args: <span class="tsd-signature-type">number</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="maxsize" class="tsd-anchor"></a>
+					<h3>max<wbr>Size</h3>
+					<div class="tsd-signature tsd-kind-icon">max<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L188">src/types.ts:188</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>size: <span class="tsd-signature-type">number</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="profile" class="tsd-anchor"></a>
+					<h3>profile</h3>
+					<div class="tsd-signature tsd-kind-icon">profile<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>profileName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L189">src/types.ts:189</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>profileName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>profileName: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="promise" class="tsd-anchor"></a>
+					<h3>promise</h3>
+					<div class="tsd-signature tsd-kind-icon">promise<span class="tsd-signature-symbol">:</span> <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isPromise<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L190">src/types.ts:190</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="react" class="tsd-anchor"></a>
+					<h3>react</h3>
+					<div class="tsd-signature tsd-kind-icon">react<span class="tsd-signature-symbol">:</span> <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isReact<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L191">src/types.ts:191</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="serialize" class="tsd-anchor"></a>
+					<h3>serialize</h3>
+					<div class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">:</span> <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isSerialized<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L192">src/types.ts:192</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="serializewith" class="tsd-anchor"></a>
+					<h3>serialize<wbr>With</h3>
+					<div class="tsd-signature tsd-kind-icon">serialize<wbr>With<span class="tsd-signature-symbol">:</span> &lt;Serializer&gt;<span class="tsd-signature-symbol">(</span>serializer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Serializer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isSerialized<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>serializer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Serializer</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L193">src/types.ts:193</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-has-type-parameter">
+									<li class="tsd-signature tsd-kind-icon">&lt;Serializer&gt;<span class="tsd-signature-symbol">(</span>serializer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Serializer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isSerialized<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>serializer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Serializer</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-type-parameters-title">Type parameters</h4>
+										<ul class="tsd-type-parameters">
+											<li>
+												<h4>Serializer<span class="tsd-signature-symbol">: </span><a href="../globals.html#serialize" class="tsd-signature-type">Serialize</a></h4>
+											</li>
+										</ul>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>serializer: <span class="tsd-signature-type">Serializer</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isSerialized<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>serializer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Serializer</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="shallow" class="tsd-anchor"></a>
+					<h3>shallow</h3>
+					<div class="tsd-signature tsd-kind-icon">shallow<span class="tsd-signature-symbol">:</span> <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>isShallowEqual<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L196">src/types.ts:196</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="transformargs" class="tsd-anchor"></a>
+					<h3>transform<wbr>Args</h3>
+					<div class="tsd-signature tsd-kind-icon">transform<wbr>Args<span class="tsd-signature-symbol">:</span> &lt;Transformer&gt;<span class="tsd-signature-symbol">(</span>transformer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transformer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>transformArgs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transformer</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/planttheidea/moize/blob/64f577c/src/types.ts#L197">src/types.ts:197</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-has-type-parameter">
+									<li class="tsd-signature tsd-kind-icon">&lt;Transformer&gt;<span class="tsd-signature-symbol">(</span>transformer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transformer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>transformArgs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transformer</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-type-parameters-title">Type parameters</h4>
+										<ul class="tsd-type-parameters">
+											<li>
+												<h4>Transformer<span class="tsd-signature-symbol">: </span><a href="../globals.html#transformkey" class="tsd-signature-type">TransformKey</a></h4>
+											</li>
+										</ul>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>transformer: <span class="tsd-signature-type">Transformer</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>transformArgs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transformer</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-has-type-parameter">
+						<a href="moize.html" class="tsd-kind-icon">Moize</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#clearstats" class="tsd-kind-icon">clear<wbr>Stats</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#collectstats" class="tsd-kind-icon">collect<wbr>Stats</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#compose" class="tsd-kind-icon">compose</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#deep" class="tsd-kind-icon">deep</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#getstats" class="tsd-kind-icon">get<wbr>Stats</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#infinite" class="tsd-kind-icon">infinite</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#iscollectingstats" class="tsd-kind-icon">is<wbr>Collecting<wbr>Stats</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#ismoized" class="tsd-kind-icon">is<wbr>Moized</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#matchesarg" class="tsd-kind-icon">matches<wbr>Arg</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#matcheskey" class="tsd-kind-icon">matches<wbr>Key</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#maxage" class="tsd-kind-icon">max<wbr>Age</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#maxargs" class="tsd-kind-icon">max<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#maxsize" class="tsd-kind-icon">max<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#profile" class="tsd-kind-icon">profile</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#promise" class="tsd-kind-icon">promise</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#react" class="tsd-kind-icon">react</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#serialize" class="tsd-kind-icon">serialize</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#serializewith" class="tsd-kind-icon">serialize<wbr>With</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#shallow" class="tsd-kind-icon">shallow</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="moize.html#transformargs" class="tsd-kind-icon">transform<wbr>Args</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
