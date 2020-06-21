@@ -44,6 +44,7 @@
     -   [moize.react](#moizereact)
     -   [moize.serialize](#moizeserialize)
     -   [moize.serializeWith](#moizeserializewith)
+    -   [moize.shallow](#moizeshallow)
 -   [useMoize hook](#usemoize-hook)
 -   [Composition](#composition)
 -   [Collecting statistics](#collecting-statistics)
@@ -816,6 +817,18 @@ export default moize.serializeWith(JSON.stringify)(fn);
 
 ```ts
 moize.serializeWith(customSerializer)(fn);
+```
+
+## moize.shallow
+
+Pre-applies the [`isShallowEqual`](#isshallowequal) option.
+
+```ts
+import moize from 'moize';
+
+const fn = (one: string, two: string) => `${one} ${two}`;
+
+export default moize.shallow(fn);
 ```
 
 # useMoize hook
