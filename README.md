@@ -84,7 +84,7 @@ import moize from 'moize';
 ## ESM in NodeJS
 
 ```ts
-import moize from 'moize/mjs';
+import moize from 'moize/mjs/index.mjs';
 ```
 
 ## CommonJS
