@@ -67,7 +67,7 @@ describe('moize.serialize', () => {
         expect(circularMethod).toHaveBeenCalledTimes(1);
 
         expect(circularMemoized.cache.keys).toEqual([
-            ['|{"deeply":{"nested":{"circular":"[Circular~0]"}}}|'],
+            ['|{"deeply":{"nested":{"circular":"[ref=.]"}}}|'],
         ]);
     });
 });

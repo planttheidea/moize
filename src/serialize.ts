@@ -1,45 +1,75 @@
 import { Key, Options } from './types';
 
 /**
+ * @function getCutoff
+ *
+ * @description
+ * faster `Array.prototype.indexOf` implementation build for slicing / splicing
+ *
+ * @param array the array to match the value in
+ * @param value the value to match
+ * @returns the matching index, or -1
+ */
+function getCutoff(array: any[], value: any) {
+    const { length } = array;
+
+    for (let index = 0; index < length; ++index) {
+        if (array[index] === value) {
+            return index + 1;
+        }
+    }
+
+    return 0;
+}
+
+/**
  * @private
  *
  * @description
  * custom replacer for the stringify function
  *
- * @param key key in json object
- * @param value value in json object
  * @returns if function then toString of it, else the value itself
  */
 export function createDefaultReplacer() {
+    const cache: any[] = [];
     const keys: string[] = [];
-    const values: any[] = [];
+
+    let index;
 
     return function defaultReplacer(key: string, value: any) {
-        switch (typeof value) {
-            case 'function':
-            case 'symbol':
-                return value.toString();
+        const type = typeof value;
 
-            case 'object': {
-                if (!value) {
-                    return '' + value;
+        if (type === 'function' || type === 'symbol') {
+            return value.toString();
+        }
+
+        if (typeof value === 'object') {
+            if (cache.length) {
+                const thisCutoff = getCutoff(cache, this);
+        
+                if (thisCutoff === 0) {
+                    cache[cache.length] = this;
+                } else {
+                    cache.splice(thisCutoff);
+                    keys.splice(thisCutoff);
                 }
-
-                const index = values.indexOf(value);
-
-                if (index !== -1) {
-                    return `[Circular~${index}]`;
+        
+                keys[keys.length] = key;
+        
+                const valueCutoff = getCutoff(cache, value);
+        
+                if (valueCutoff !== 0) {
+                    return `[ref=${keys.slice(0, valueCutoff).join('.') || '.'}]`;
                 }
-
-                keys.push(key);
-                values.push(value);
-
-                return value;
+            } else {
+                cache[0] = value;
+                keys[0] = key;
             }
 
-            default:
-                return '' + value;
+            return value;
         }
+
+        return '' + value;
     };
 }
 
@@ -52,7 +82,7 @@ export function createDefaultReplacer() {
  * @param arg argument to stringify
  * @returns the stringified argument
  */
-export function getStringifiedArgument(arg: any) {
+export function getStringifiedArgument<Type>(arg: Type) {
     const typeOfArg = typeof arg;
 
     return arg && (typeOfArg === 'object' || typeOfArg === 'function')
