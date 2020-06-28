@@ -15,8 +15,8 @@ const methodDefaulted = jest.fn(function (one: string, two = _default) {
     return { one, two };
 });
 
-const memoized = moize(method);
-const memoizedDefaulted = moize(methodDefaulted);
+const memoized = moize.infinite(method);
+const memoizedDefaulted = moize.infinite(methodDefaulted);
 
 describe('moize', () => {
     afterEach(() => {
@@ -108,9 +108,12 @@ describe('moize', () => {
             memoized.set([bar, foo], value);
 
             expect(memoized.cacheSnapshot).toEqual({
-                keys: [[bar, foo]],
-                size: 1,
-                values: [value],
+                keys: [
+                    [bar, foo],
+                    [foo, bar],
+                ],
+                size: 2,
+                values: [value, { one: foo, two: bar }],
             });
         });
 
@@ -152,9 +155,12 @@ describe('moize', () => {
             withNotifiers.set([bar, foo], value);
 
             expect(withNotifiers.cacheSnapshot).toEqual({
-                keys: [[bar, foo]],
-                size: 1,
-                values: [value],
+                keys: [
+                    [bar, foo],
+                    [foo, bar],
+                ],
+                size: 2,
+                values: [value, { one: foo, two: bar }],
             });
 
             expect(withNotifiers.options.onCacheAdd).toHaveBeenCalled();
@@ -172,6 +178,36 @@ describe('moize', () => {
                 keys: [[foo, bar]],
                 size: 1,
                 values: [value],
+            });
+        });
+
+        it('should order the cache by LRU when updating', () => {
+            memoized(foo, bar);
+            memoized(bar, foo);
+
+            expect(memoized.cacheSnapshot).toEqual({
+                keys: [
+                    [bar, foo],
+                    [foo, bar],
+                ],
+                size: 2,
+                values: [
+                    { one: bar, two: foo },
+                    { one: foo, two: bar },
+                ],
+            });
+
+            const value = 'something else';
+
+            memoized.set([foo, bar], value);
+
+            expect(memoized.cacheSnapshot).toEqual({
+                keys: [
+                    [foo, bar],
+                    [bar, foo],
+                ],
+                size: 2,
+                values: [value, { one: bar, two: foo }],
             });
         });
 
@@ -263,14 +299,17 @@ describe('moize', () => {
 
         it('should clear the cache', () => {
             memoized(foo, bar);
+            memoized(bar, baz);
 
             expect(memoized.has([foo, bar])).toBe(true);
+            expect(memoized.has([bar, baz])).toBe(true);
 
             const result = memoized.clear();
 
             expect(memoized.cache.size).toBe(0);
 
             expect(memoized.has([foo, bar])).toBe(false);
+            expect(memoized.has([bar, baz])).toBe(false);
             expect(result).toBe(true);
         });
 
@@ -334,7 +373,7 @@ describe('moize', () => {
 
     describe('properties', () => {
         it('should have the micro-memoize options', () => {
-            const mmResult = microMemoize(method, { maxSize: 1 });
+            const mmResult = microMemoize(method, { maxSize: Infinity });
 
             const { isEqual, ...options } = memoized._microMemoizeOptions;
             const {
