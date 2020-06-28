@@ -446,9 +446,9 @@ moize.maxAge = maxAge;
  * @alias moize.maxArgs
  *
  * @description
- * a moized method where the number of args used as a cache key is limited to the number passed
+ * a moized method where the number of arguments used for determining cache is limited to the value passed
  *
- * @param maxArgs the number of args to use as a cache key
+ * @param maxArgs the number of args to base the key on
  * @returns the moizer function
  */
 moize.maxArgs = function maxArgs(maxArgs: number) {
@@ -462,9 +462,9 @@ moize.maxArgs = function maxArgs(maxArgs: number) {
  * @alias moize.maxSize
  *
  * @description
- * a moized method where the number of arguments used for determining cache is limited to the value passed
+ * a moized method where the total size of the cache is limited to the value passed
  *
- * @param maxArgs the number of args to base the key on
+ * @param maxSize the maximum size of the cache
  * @returns the moizer function
  */
 moize.maxSize = function maxSize(maxSize: number) {
