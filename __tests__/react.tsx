@@ -7,7 +7,7 @@ type Props = {
     bar?: string;
     fn: (...args: any[]) => any;
     key?: string;
-    object?: object;
+    object?: Record<string, unknown>;
     value?: any;
 };
 

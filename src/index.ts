@@ -9,6 +9,7 @@ import {
     getIsMatchingKey,
     getTransformKey,
 } from './options';
+import { createRefreshableMoized } from './refreshCache';
 import {
     clearStats,
     collectStats,
@@ -147,6 +148,7 @@ const moize: Moize = function <
         onExpire: onExpireIgnored,
         profileName: profileNameIgnored,
         serializer: serializerIgnored,
+        shouldRefreshCache,
         transformArgs: transformArgsIgnored,
         updateExpire: updateExpireIgnored,
         ...customOptions
@@ -191,11 +193,17 @@ const moize: Moize = function <
 
     const memoized = memoize(fn, microMemoizeOptions);
 
-    return createMoizeInstance<Fn, CombinedOptions>(memoized, {
+    const moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
         expirations,
         options: coalescedOptions,
         originalFunction: fn,
     });
+
+    if (shouldRefreshCache) {
+        return createRefreshableMoized<typeof moized>(moized);
+    }
+
+    return moized;
 };
 
 /**

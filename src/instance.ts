@@ -12,7 +12,12 @@ import {
 } from './types';
 import { createFindKeyIndex } from './utils';
 
-const hasOwnProperty = Object.prototype.hasOwnProperty;
+const ALWAYS_SKIPPED_PROPERTIES = {
+    constructor: true,
+    length: true,
+    name: true,
+    prototype: true,
+};
 
 /**
  * @private
@@ -30,15 +35,36 @@ export function copyStaticProperties(
     newFn: Fn,
     skippedProperties: string[] = []
 ) {
-    for (const property in originalFn) {
+    Object.getOwnPropertyNames(originalFn).forEach((property) => {
         if (
-            skippedProperties.indexOf(property) === -1 &&
-            hasOwnProperty.call(originalFn, property)
+            !ALWAYS_SKIPPED_PROPERTIES[
+                property as keyof typeof ALWAYS_SKIPPED_PROPERTIES
+            ] &&
+            skippedProperties.indexOf(property) === -1
         ) {
-            newFn[property as keyof typeof newFn] =
-                originalFn[property as keyof typeof originalFn];
+            const descriptor = Object.getOwnPropertyDescriptor(
+                originalFn,
+                property
+            );
+
+            if (descriptor.get || descriptor.set) {
+                Object.defineProperty(newFn, property, descriptor);
+            } else {
+                newFn[property as keyof typeof newFn] =
+                    originalFn[property as keyof typeof originalFn];
+            }
         }
-    }
+    });
+
+    // for (const property in originalFn) {
+    //     if (
+    //         skippedProperties.indexOf(property) === -1 &&
+    //         hasOwnProperty.call(originalFn, property)
+    //     ) {
+    //         newFn[property as keyof typeof newFn] =
+    //             originalFn[property as keyof typeof originalFn];
+    //     }
+    // }
 }
 
 /**
@@ -160,6 +186,10 @@ export function addInstanceMethods<OriginalFn extends Fn>(
 
             cache.keys.unshift(cacheKey);
             cache.values.unshift(value);
+
+            if (options.isPromise) {
+                cache.updateAsyncCache(moized);
+            }
 
             if (onCacheAdd) {
                 onCacheAdd(cache, options, moized);
