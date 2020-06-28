@@ -240,4 +240,7 @@ export interface Moize<DefaultOptions extends Options = Options> {
     transformArgs: <Transformer extends TransformKey>(
         transformer: Transformer
     ) => Moize<{ transformArgs: Transformer }>;
+    updateCacheForKey: <UpdateWhen extends UpdateCacheForKey>(
+        updateCacheForKey: UpdateWhen
+    ) => Moize<{ updateCacheForKey: UpdateWhen }>;
 }
