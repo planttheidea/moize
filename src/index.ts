@@ -9,7 +9,6 @@ import {
     getIsMatchingKey,
     getTransformKey,
 } from './options';
-import { createRefreshableMoized } from './refreshCache';
 import {
     clearStats,
     collectStats,
@@ -32,6 +31,7 @@ import {
     TransformKey,
     UpdateCacheForKey,
 } from './types';
+import { createRefreshableMoized } from './updateCacheForKey';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
 export * from './types';
