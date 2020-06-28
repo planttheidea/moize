@@ -350,17 +350,74 @@ moize.matchesKey = function (keyMatcher: IsMatchingKey) {
  * @param maxAge the TTL of the value in cache
  * @returns the moizer function
  */
-moize.maxAge = function maxAge<ExpireHandler>(
-    maxAge: number,
-    expireOptions?: ExpireHandler
+function maxAge<MaxAge extends number>(
+    maxAge: MaxAge
+): Moize<{ maxAge: MaxAge }>;
+function maxAge<MaxAge extends number, UpdateExpire extends boolean>(
+    maxAge: MaxAge,
+    expireOptions: UpdateExpire
+): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+function maxAge<MaxAge extends number, ExpireHandler extends OnExpire>(
+    maxAge: MaxAge,
+    expireOptions: ExpireHandler
+): Moize<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
+function maxAge<
+    MaxAge extends number,
+    ExpireHandler extends OnExpire,
+    ExpireOptions extends {
+        onExpire: ExpireHandler;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions: ExpireOptions
+): Moize<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
+function maxAge<
+    MaxAge extends number,
+    UpdateExpire extends boolean,
+    ExpireOptions extends {
+        updateExpire: UpdateExpire;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions: ExpireOptions
+): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+function maxAge<
+    MaxAge extends number,
+    ExpireHandler extends OnExpire,
+    UpdateExpire extends boolean,
+    ExpireOptions extends {
+        onExpire: ExpireHandler;
+        updateExpire: UpdateExpire;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions: ExpireOptions
+): Moize<{
+    maxAge: MaxAge;
+    onExpire: ExpireHandler;
+    updateExpire: UpdateExpire;
+}>;
+function maxAge<
+    MaxAge extends number,
+    ExpireHandler extends OnExpire,
+    UpdateExpire extends boolean,
+    ExpireOptions extends {
+        onExpire?: ExpireHandler;
+        updateExpire?: UpdateExpire;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions?: ExpireHandler | UpdateExpire | ExpireOptions
 ) {
-    const type = typeof expireOptions;
+    if (expireOptions === true) {
+        return moize({
+            maxAge,
+            updateExpire: expireOptions,
+        });
+    }
 
-    if (type === 'object') {
-        const { onExpire, updateExpire } = expireOptions as {
-            onExpire?: OnExpire;
-            updateExpire?: boolean;
-        };
+    if (typeof expireOptions === 'object') {
+        const { onExpire, updateExpire } = expireOptions;
 
         return moize({
             maxAge,
@@ -369,32 +426,19 @@ moize.maxAge = function maxAge<ExpireHandler>(
         });
     }
 
-    if (type === 'function') {
-        return moize({ maxAge, onExpire: expireOptions, updateExpire: true });
-    }
-
-    if (type === 'boolean') {
+    if (typeof expireOptions === 'function') {
         return moize({
             maxAge,
-            updateExpire: expireOptions,
+            onExpire: expireOptions,
+            updateExpire: true,
         });
     }
 
     return moize({ maxAge });
-};
+}
 
-/**
- * @function
- * @name maxArgs
- * @memberof module:moize
- * @alias moize.maxArgs
- *
- * @description
- * a moized method where the number of arguments used for determining cache is limited to the value passed
- *
- * @param maxArgs the number of args to base the key on
- * @returns the moizer function
- */
+moize.maxAge = maxAge;
+
 moize.maxArgs = function maxArgs(maxArgs: number) {
     return moize({ maxArgs });
 };

@@ -138,15 +138,67 @@ export type CurriedMoize<OriginalOptions> = <
     | Moized<CurriedFn, OriginalOptions & CurriedOptions>
     | CurriedMoize<OriginalOptions & CurriedOptions>;
 
-export interface Moize<DefaultOptions extends Options = Options>
-    extends Moizeable {
+export interface MaxAge {
+    <MaxAge extends number>(maxAge: MaxAge): Moize<{ maxAge: MaxAge }>;
+    <MaxAge extends number, UpdateExpire extends boolean>(
+        maxAge: MaxAge,
+        expireOptions: UpdateExpire
+    ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+    <MaxAge extends number, ExpireHandler extends OnExpire>(
+        maxAge: MaxAge,
+        expireOptions: ExpireHandler
+    ): Moize<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
+    <
+        MaxAge extends number,
+        ExpireHandler extends OnExpire,
+        ExpireOptions extends {
+            onExpire: ExpireHandler;
+        }
+    >(
+        maxAge: MaxAge,
+        expireOptions: ExpireOptions
+    ): Moize<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
+    <
+        MaxAge extends number,
+        UpdateExpire extends boolean,
+        ExpireOptions extends {
+            updateExpire: UpdateExpire;
+        }
+    >(
+        maxAge: MaxAge,
+        expireOptions: ExpireOptions
+    ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+    <
+        MaxAge extends number,
+        ExpireHandler extends OnExpire,
+        UpdateExpire extends boolean,
+        ExpireOptions extends {
+            onExpire: ExpireHandler;
+            updateExpire: UpdateExpire;
+        }
+    >(
+        maxAge: MaxAge,
+        expireOptions: ExpireOptions
+    ): Moize<{
+        maxAge: MaxAge;
+        onExpire: ExpireHandler;
+        updateExpire: UpdateExpire;
+    }>;
+}
+
+export interface Moize<DefaultOptions extends Options = Options> {
+    <Fn extends Moizeable>(fn: Fn): Moized<Fn, Options & DefaultOptions>;
     <Fn extends Moizeable, PassedOptions extends Options>(
         fn: Fn,
-        options?: PassedOptions
+        options: PassedOptions
     ): Moized<Fn, Options & DefaultOptions & PassedOptions>;
+    <Fn extends Moized<Moizeable>>(fn: Fn): Moized<
+        Fn['fn'],
+        Options & DefaultOptions
+    >;
     <Fn extends Moized<Moizeable>, PassedOptions extends Options>(
         fn: Fn,
-        options?: PassedOptions
+        options: PassedOptions
     ): Moized<Fn['fn'], Options & DefaultOptions & PassedOptions>;
     <PassedOptions extends Options>(options: PassedOptions): Moize<
         PassedOptions
@@ -166,27 +218,16 @@ export interface Moize<DefaultOptions extends Options = Options>
     matchesKey: <Matcher extends IsMatchingKey>(
         keyMatcher: Matcher
     ) => Moize<{ matchesKey: Matcher }>;
-    maxAge: <
-        ExpireHandler extends OnExpire,
-        UpdateExpire extends boolean,
-        ExpireOptions extends {
-            onExpire?: ExpireHandler;
-            updateExpire?: UpdateExpire;
-        },
-        _OnExpire = ExpireHandler | UpdateExpire | ExpireOptions
-    >(
-        age: number,
-        onExpire?: _OnExpire
-    ) => _OnExpire extends ExpireHandler
-        ? Moize<{ onExpire: _OnExpire; updateExpire: true }>
-        : _OnExpire extends true
-        ? Moize<{ updateExpire: true }>
-        : _OnExpire extends UpdateExpire
-        ? Moize<ExpireOptions>
-        : Moize;
-    maxArgs: (args: number) => Moize;
-    maxSize: (size: number) => Moize;
-    profile: (profileName: string) => Moize;
+    maxAge: MaxAge;
+    maxArgs: <MaxArgs extends number>(
+        args: MaxArgs
+    ) => Moize<{ maxArgs: MaxArgs }>;
+    maxSize: <MaxSize extends number>(
+        size: MaxSize
+    ) => Moize<{ maxSize: MaxSize }>;
+    profile: <ProfileName extends string>(
+        profileName: ProfileName
+    ) => Moize<{ profileName: ProfileName }>;
     promise: Moize<{ isPromise: true }>;
     react: Moize<{ isReact: true }>;
     serialize: Moize<{ isSerialized: true }>;
