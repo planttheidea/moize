@@ -462,9 +462,9 @@ moize.maxArgs = function maxArgs(maxArgs: number) {
  * @alias moize.maxSize
  *
  * @description
- * a moized method where the total size of the cache is limited to the value passed
+ * a moized method where the number of arguments used for determining cache is limited to the value passed
  *
- * @param maxSize the maximum size of the cache
+ * @param maxArgs the number of args to base the key on
  * @returns the moizer function
  */
 moize.maxSize = function maxSize(maxSize: number) {
