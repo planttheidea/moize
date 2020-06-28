@@ -239,3 +239,7 @@ export interface Moize<DefaultOptions extends Options = Options> {
         transformer: Transformer
     ) => Moize<{ transformArgs: Transformer }>;
 }
+
+declare const moize: Moize;
+
+export default moize;

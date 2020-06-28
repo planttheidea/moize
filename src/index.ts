@@ -338,6 +338,93 @@ moize.matchesKey = function (keyMatcher: IsMatchingKey) {
     return moize({ matchesKey: keyMatcher });
 };
 
+function maxAge<MaxAge extends number>(
+    maxAge: MaxAge
+): Moize<{ maxAge: MaxAge }>;
+function maxAge<MaxAge extends number, UpdateExpire extends boolean>(
+    maxAge: MaxAge,
+    expireOptions: UpdateExpire
+): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+function maxAge<MaxAge extends number, ExpireHandler extends OnExpire>(
+    maxAge: MaxAge,
+    expireOptions: ExpireHandler
+): Moize<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
+function maxAge<
+    MaxAge extends number,
+    ExpireHandler extends OnExpire,
+    ExpireOptions extends {
+        onExpire: ExpireHandler;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions: ExpireOptions
+): Moize<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
+function maxAge<
+    MaxAge extends number,
+    UpdateExpire extends boolean,
+    ExpireOptions extends {
+        updateExpire: UpdateExpire;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions: ExpireOptions
+): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+function maxAge<
+    MaxAge extends number,
+    ExpireHandler extends OnExpire,
+    UpdateExpire extends boolean,
+    ExpireOptions extends {
+        onExpire: ExpireHandler;
+        updateExpire: UpdateExpire;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions: ExpireOptions
+): Moize<{
+    maxAge: MaxAge;
+    onExpire: ExpireHandler;
+    updateExpire: UpdateExpire;
+}>;
+function maxAge<
+    MaxAge extends number,
+    ExpireHandler extends OnExpire,
+    UpdateExpire extends boolean,
+    ExpireOptions extends {
+        onExpire?: ExpireHandler;
+        updateExpire?: UpdateExpire;
+    }
+>(
+    maxAge: MaxAge,
+    expireOptions?: ExpireHandler | UpdateExpire | ExpireOptions
+) {
+    if (expireOptions === true) {
+        return moize({
+            maxAge,
+            updateExpire: expireOptions,
+        });
+    }
+
+    if (typeof expireOptions === 'object') {
+        const { onExpire, updateExpire } = expireOptions;
+
+        return moize({
+            maxAge,
+            onExpire,
+            updateExpire,
+        });
+    }
+
+    if (typeof expireOptions === 'function') {
+        return moize({
+            maxAge,
+            onExpire: expireOptions,
+            updateExpire: true,
+        });
+    }
+
+    return moize({ maxAge });
+}
+
 /**
  * @function
  * @name maxAge
@@ -350,38 +437,7 @@ moize.matchesKey = function (keyMatcher: IsMatchingKey) {
  * @param maxAge the TTL of the value in cache
  * @returns the moizer function
  */
-moize.maxAge = function maxAge<ExpireHandler>(
-    maxAge: number,
-    expireOptions?: ExpireHandler
-) {
-    const type = typeof expireOptions;
-
-    if (type === 'object') {
-        const { onExpire, updateExpire } = expireOptions as {
-            onExpire?: OnExpire;
-            updateExpire?: boolean;
-        };
-
-        return moize({
-            maxAge,
-            onExpire,
-            updateExpire,
-        });
-    }
-
-    if (type === 'function') {
-        return moize({ maxAge, onExpire: expireOptions, updateExpire: true });
-    }
-
-    if (type === 'boolean') {
-        return moize({
-            maxAge,
-            updateExpire: expireOptions,
-        });
-    }
-
-    return moize({ maxAge });
-};
+moize.maxAge = maxAge;
 
 /**
  * @function
