@@ -4,24 +4,16 @@ type Type = {
     number: number;
 };
 
-const method = jest.fn((one: number, two: Type) => one + two.number);
-const promiseMethodResolves = jest.fn(
-    (one: number, two: Type) =>
-        new Promise((resolve) =>
-            setTimeout(() => resolve(one + two.number), 1000)
-        )
-);
-const promiseMethodRejects = jest.fn(
+const method = (one: number, two: Type) => one + two.number;
+const promiseMethodResolves = (one: number, two: Type) =>
+    new Promise((resolve) => setTimeout(() => resolve(one + two.number), 1000));
+const promiseMethodRejects =
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (one: number, two: Type) =>
         new Promise((resolve, reject) =>
             setTimeout(() => reject(new Error('boom')), 1000)
-        )
-);
-
+        );
 describe('moize.updateCacheForKey', () => {
-    afterEach(jest.clearAllMocks);
-
     it('will call the underlying method to refresh the cache', () => {
         const moized = moize.maxSize(2)(method, {
             updateCacheForKey(args) {
@@ -59,6 +51,7 @@ describe('moize.updateCacheForKey', () => {
 
     it('will call the underlying method to refresh the cache when a promise', async () => {
         const moized = moize.maxSize(2)(promiseMethodResolves, {
+            isPromise: true,
             updateCacheForKey(args) {
                 return args[1].number % 2 === 0;
             },
@@ -94,6 +87,7 @@ describe('moize.updateCacheForKey', () => {
 
     it('surfaces the error if it rejects', async () => {
         const moized = moize.maxSize(2)(promiseMethodRejects, {
+            isPromise: true,
             updateCacheForKey(args) {
                 return args[1].number % 2 === 0;
             },
@@ -110,10 +104,68 @@ describe('moize.updateCacheForKey', () => {
         }
     });
 
-    it.todo(
-        'should have all the static properties of a standard moized method',
-        () => {}
-    );
+    it('should have all the static properties of a standard moized method', () => {
+        const moized = moize.maxSize(2)(promiseMethodResolves, {
+            updateCacheForKey(args) {
+                return args[1].number % 2 === 0;
+            },
+        });
+        const standardMoized = moize.maxSize(2)(promiseMethodResolves);
 
-    it.todo('should have nothing in cache if rejected', () => {});
+        expect(Object.getOwnPropertyNames(moized)).toEqual(
+            Object.getOwnPropertyNames(standardMoized)
+        );
+    });
+
+    it('should have nothing in cache if rejected and never was present', async () => {
+        const moized = moize.maxSize(2)(promiseMethodRejects, {
+            isPromise: true,
+            updateCacheForKey(args) {
+                return args[1].number % 2 === 0;
+            },
+        });
+
+        const mutated = { number: 5 };
+
+        try {
+            await moized(6, mutated);
+
+            throw new Error('should fail');
+        } catch (error) {
+            expect(error).toEqual(new Error('boom'));
+
+            expect(moized.keys()).toEqual([]);
+            expect(moized.values()).toEqual([]);
+        }
+    });
+
+    // Skipped for now because a bugfix to `micro-memoize` is required to have `Cache.updateAsyncCache`
+    // work on keys that previously existed.
+    it.skip('should have nothing in cache if rejected and was present', async () => {
+        const moized = moize.maxSize(2)(promiseMethodRejects, {
+            isPromise: true,
+            updateCacheForKey(args) {
+                return args[1].number % 2 === 0;
+            },
+        });
+
+        const mutated = { number: 5 };
+
+        moized.set([6, mutated], Promise.resolve(11));
+
+        expect(moized.get([6, mutated])).toEqual(Promise.resolve(11));
+
+        mutated.number = 10;
+
+        try {
+            await moized(6, mutated);
+
+            throw new Error('should fail');
+        } catch (error) {
+            expect(error).toEqual(new Error('boom'));
+
+            expect(moized.keys()).toEqual([]);
+            expect(moized.values()).toEqual([]);
+        }
+    });
 });
