@@ -76,7 +76,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
         return this.MoizedComponent(this.props, this.context);
     };
 
-    copyStaticProperties(fn, Moized, ['contextType', 'length', 'name']);
+    copyStaticProperties(fn, Moized, ['contextType']);
 
     Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
 
