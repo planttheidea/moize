@@ -338,18 +338,6 @@ moize.matchesKey = function (keyMatcher: IsMatchingKey) {
     return moize({ matchesKey: keyMatcher });
 };
 
-/**
- * @function
- * @name maxAge
- * @memberof module:moize
- * @alias moize.maxAge
- *
- * @description
- * a moized method where the age of the cache is limited to the number of milliseconds passed
- *
- * @param maxAge the TTL of the value in cache
- * @returns the moizer function
- */
 function maxAge<MaxAge extends number>(
     maxAge: MaxAge
 ): Moize<{ maxAge: MaxAge }>;
@@ -437,8 +425,32 @@ function maxAge<
     return moize({ maxAge });
 }
 
+/**
+ * @function
+ * @name maxAge
+ * @memberof module:moize
+ * @alias moize.maxAge
+ *
+ * @description
+ * a moized method where the age of the cache is limited to the number of milliseconds passed
+ *
+ * @param maxAge the TTL of the value in cache
+ * @returns the moizer function
+ */
 moize.maxAge = maxAge;
 
+/**
+ * @function
+ * @name maxArgs
+ * @memberof module:moize
+ * @alias moize.maxArgs
+ *
+ * @description
+ * a moized method where the number of args used as a cache key is limited to the number passed
+ *
+ * @param maxArgs the number of args to use as a cache key
+ * @returns the moizer function
+ */
 moize.maxArgs = function maxArgs(maxArgs: number) {
     return moize({ maxArgs });
 };
