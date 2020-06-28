@@ -19,12 +19,12 @@ const promiseMethodRejects = jest.fn(
         )
 );
 
-describe('moize.shouldRefreshCache', () => {
+describe('moize.updateCacheForKey', () => {
     afterEach(jest.clearAllMocks);
 
     it('will call the underlying method to refresh the cache', () => {
         const moized = moize.maxSize(2)(method, {
-            shouldRefreshCache(args) {
+            updateCacheForKey(args) {
                 return args[1].number % 2 === 0;
             },
         });
@@ -39,7 +39,7 @@ describe('moize.shouldRefreshCache', () => {
 
         const mutatedResult = moized(6, mutated);
 
-        // Result was not recalculated because `shouldRefreshCache` returned `false` and the values are
+        // Result was not recalculated because `updateCacheForKey` returned `false` and the values are
         // seen as unchanged.
         expect(mutatedResult).toBe(result);
 
@@ -47,7 +47,7 @@ describe('moize.shouldRefreshCache', () => {
 
         const refreshedResult = moized(6, mutated);
 
-        // Result was recalculated because `shouldRefreshCache` returned `true`.
+        // Result was recalculated because `updateCacheForKey` returned `true`.
         expect(refreshedResult).not.toBe(result);
         expect(refreshedResult).toBe(16);
 
@@ -59,7 +59,7 @@ describe('moize.shouldRefreshCache', () => {
 
     it('will call the underlying method to refresh the cache when a promise', async () => {
         const moized = moize.maxSize(2)(promiseMethodResolves, {
-            shouldRefreshCache(args) {
+            updateCacheForKey(args) {
                 return args[1].number % 2 === 0;
             },
         });
@@ -74,7 +74,7 @@ describe('moize.shouldRefreshCache', () => {
 
         const mutatedResult = await moized(6, mutated);
 
-        // Result was not recalculated because `shouldRefreshCache` returned `false` and the values are
+        // Result was not recalculated because `updateCacheForKey` returned `false` and the values are
         // seen as unchanged.
         expect(mutatedResult).toBe(result);
 
@@ -82,7 +82,7 @@ describe('moize.shouldRefreshCache', () => {
 
         const refreshedResult = await moized(6, mutated);
 
-        // Result was recalculated because `shouldRefreshCache` returned `true`.
+        // Result was recalculated because `updateCacheForKey` returned `true`.
         expect(refreshedResult).not.toBe(result);
         expect(refreshedResult).toBe(16);
 
@@ -94,7 +94,7 @@ describe('moize.shouldRefreshCache', () => {
 
     it('surfaces the error if it rejects', async () => {
         const moized = moize.maxSize(2)(promiseMethodRejects, {
-            shouldRefreshCache(args) {
+            updateCacheForKey(args) {
                 return args[1].number % 2 === 0;
             },
         });

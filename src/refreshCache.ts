@@ -6,7 +6,7 @@ export function createRefreshableMoized<MoizedFn extends Moized>(
     moized: MoizedFn
 ) {
     const {
-        options: { shouldRefreshCache },
+        options: { updateCacheForKey },
     } = moized;
 
     /**
@@ -25,7 +25,7 @@ export function createRefreshableMoized<MoizedFn extends Moized>(
         this: any,
         ...args: Parameters<typeof moized.fn>
     ) {
-        if (!shouldRefreshCache(args)) {
+        if (!updateCacheForKey(args)) {
             return moized.apply(this, args);
         }
 

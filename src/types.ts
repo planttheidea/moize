@@ -31,9 +31,9 @@ export type OnCacheOperation = (
 export type IsEqual = (cacheKeyArg: any, keyArg: any) => boolean;
 export type IsMatchingKey = (cacheKey: Key, key: Key) => boolean;
 export type OnExpire = (key: Key) => any;
-export type ShouldRefreshCache = (key: Key) => boolean;
 export type Serialize = (key: Key) => string[];
 export type TransformKey = (key: Key) => Key;
+export type UpdateCacheForKey = (key: Key) => boolean;
 
 export type Options = Partial<{
     isDeepEqual: boolean;
@@ -52,8 +52,8 @@ export type Options = Partial<{
     onExpire: OnExpire;
     profileName: string;
     serializer: Serialize;
-    shouldRefreshCache: ShouldRefreshCache;
     transformArgs: TransformKey;
+    updateCacheForKey: UpdateCacheForKey;
     updateExpire: boolean;
 }>;
 

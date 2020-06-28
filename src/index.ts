@@ -148,7 +148,7 @@ const moize: Moize = function <
         onExpire: onExpireIgnored,
         profileName: profileNameIgnored,
         serializer: serializerIgnored,
-        shouldRefreshCache,
+        updateCacheForKey,
         transformArgs: transformArgsIgnored,
         updateExpire: updateExpireIgnored,
         ...customOptions
@@ -199,7 +199,7 @@ const moize: Moize = function <
         originalFunction: fn,
     });
 
-    if (shouldRefreshCache) {
+    if (updateCacheForKey) {
         return createRefreshableMoized<typeof moized>(moized);
     }
 
