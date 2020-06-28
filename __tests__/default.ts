@@ -4,7 +4,6 @@ import moize, { Moized } from '../src/index';
 
 const foo = 'foo';
 const bar = 'bar';
-const baz = 'baz';
 const _default = 'default';
 
 const method = jest.fn(function (one: string, two: string) {
