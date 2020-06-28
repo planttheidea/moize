@@ -139,9 +139,7 @@ describe('moize.updateCacheForKey', () => {
         }
     });
 
-    // Skipped for now because a bugfix to `micro-memoize` is required to have `Cache.updateAsyncCache`
-    // work on keys that previously existed.
-    it.skip('should have nothing in cache if rejected and was present', async () => {
+    it('should have nothing in cache if rejected and was present', async () => {
         const moized = moize.maxSize(2)(promiseMethodRejects, {
             isPromise: true,
             updateCacheForKey(args) {

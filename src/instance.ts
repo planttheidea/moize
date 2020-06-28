@@ -207,6 +207,10 @@ export function addInstanceMethods<OriginalFn extends Fn>(
                 cache.orderByLru(existingKey, value, keyIndex);
             }
 
+            if (options.isPromise) {
+                cache.updateAsyncCache(moized);
+            }
+
             if (typeof onCacheChange === 'function') {
                 onCacheChange(cache, options, moized);
             }
