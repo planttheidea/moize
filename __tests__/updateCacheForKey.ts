@@ -109,4 +109,11 @@ describe('moize.updateCacheForKey', () => {
             expect(error).toEqual(new Error('boom'));
         }
     });
+
+    it.todo(
+        'should have all the static properties of a standard moized method',
+        () => {}
+    );
+
+    it.todo('should have nothing in cache if rejected', () => {});
 });
