@@ -5,13 +5,9 @@ import type { Moized } from './types';
 export function createRefreshableMoized<MoizedFn extends Moized>(
     moized: MoizedFn
 ) {
-    const { cache, options } = moized;
     const {
-        isPromise,
-        onCacheChange,
-        onCacheHit,
-        shouldRefreshCache,
-    } = options;
+        options: { shouldRefreshCache },
+    } = moized;
 
     /**
      * @private
