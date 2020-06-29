@@ -47,12 +47,11 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
         fn.displayName = fn.name || 'Component';
     }
 
-    function Moized(
-        this: any,
-        props: Record<string, any>,
-        context: any,
-        updater: any
-    ) {
+    function Moized<
+        Props extends Record<string, unknown>,
+        Context extends any,
+        Updater extends any
+    >(this: any, props: Props, context: Context, updater: Updater) {
         this.props = props;
         this.context = context;
         this.updater = updater;
@@ -65,7 +64,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
     type MoizedElementType = {
         $$typeof: symbol | number;
         type: MoizedResult;
-        props: Record<string, any>;
+        props: Record<string, unknown>;
         ref: null;
         key: null;
         _owner: null;

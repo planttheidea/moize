@@ -104,7 +104,7 @@ export type Moized<
 
     // react-specific values
     contextTypes?: Record<string, Function>;
-    defaultProps?: Record<string, any>;
+    defaultProps?: Record<string, unknown>;
     displayName?: string;
     propTypes: Record<string, Function>;
 
