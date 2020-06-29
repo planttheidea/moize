@@ -15,7 +15,7 @@ const promiseMethodRejects =
         );
 describe('moize.updateCacheForKey', () => {
     describe('success', () => {
-        it('will call the underlying method to refresh the cache', () => {
+        it('will refresh the cache', () => {
             const moized = moize.maxSize(2)(method, {
                 updateCacheForKey(args) {
                     return args[1].number % 2 === 0;
@@ -50,7 +50,7 @@ describe('moize.updateCacheForKey', () => {
             expect(values).toEqual([16]);
         });
 
-        it('will call the underlying method to refresh the cache when a promise', async () => {
+        it('will refresh the cache when used with promises', async () => {
             const moized = moize.maxSize(2)(promiseMethodResolves, {
                 isPromise: true,
                 updateCacheForKey(args) {
@@ -85,10 +85,125 @@ describe('moize.updateCacheForKey', () => {
             expect(keys).toEqual([[6, mutated]]);
             expect(values).toEqual([Promise.resolve(16)]);
         });
+
+        it('will refresh the cache when used with custom key transformers', () => {
+            type ConditionalIncrement = {
+                force?: boolean;
+            };
+
+            let count = 0;
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const increment = (_?: ConditionalIncrement) => ++count;
+
+            const moized = moize.maxSize(2)(increment, {
+                isSerialized: true,
+                updateCacheForKey: (args: [ConditionalIncrement]) =>
+                    args[0] && args[0].force === true,
+                serializer: () => ['always same'],
+            });
+
+            expect(moized()).toBe(1);
+            expect(moized()).toBe(1);
+            expect(moized({ force: true })).toBe(2);
+            expect(moized()).toBe(2);
+        });
+
+        it('will refresh the cache with shorthand', () => {
+            const moized = moize.updateCacheForKey(
+                (args) => args[1].number % 2 === 0
+            )(method);
+
+            const mutated = { number: 5 };
+
+            const result = moized(6, mutated);
+
+            expect(result).toBe(11);
+
+            mutated.number = 11;
+
+            const mutatedResult = moized(6, mutated);
+
+            // Result was not recalculated because `updateCacheForKey` returned `false` and the values are
+            // seen as unchanged.
+            expect(mutatedResult).toBe(result);
+
+            mutated.number = 10;
+
+            const refreshedResult = moized(6, mutated);
+
+            // Result was recalculated because `updateCacheForKey` returned `true`.
+            expect(refreshedResult).not.toBe(result);
+            expect(refreshedResult).toBe(16);
+
+            const { keys, values } = moized.cacheSnapshot;
+
+            expect(keys).toEqual([[6, mutated]]);
+            expect(values).toEqual([16]);
+        });
+
+        it('will refresh the cache with composed shorthand', () => {
+            const moizer = moize.compose(
+                moize.maxSize(2),
+                moize.updateCacheForKey((args) => args[1].number % 2 === 0)
+            );
+            const moized = moizer(method);
+
+            const mutated = { number: 5 };
+
+            const result = moized(6, mutated);
+
+            expect(result).toBe(11);
+
+            mutated.number = 11;
+
+            const mutatedResult = moized(6, mutated);
+
+            // Result was not recalculated because `updateCacheForKey` returned `false` and the values are
+            // seen as unchanged.
+            expect(mutatedResult).toBe(result);
+
+            mutated.number = 10;
+
+            const refreshedResult = moized(6, mutated);
+
+            // Result was recalculated because `updateCacheForKey` returned `true`.
+            expect(refreshedResult).not.toBe(result);
+            expect(refreshedResult).toBe(16);
+
+            const { keys, values } = moized.cacheSnapshot;
+
+            expect(keys).toEqual([[6, mutated]]);
+            expect(values).toEqual([16]);
+        });
     });
 
     describe('fail', () => {
-        it('surfaces the error if it rejects', async () => {
+        it('surfaces the error if the function fails', () => {
+            const moized = moize.maxSize(2)(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                (_1: number, _2: Type) => {
+                    throw new Error('boom');
+                },
+                {
+                    updateCacheForKey(args) {
+                        return args[1].number % 2 === 0;
+                    },
+                }
+            );
+
+            const mutated = { number: 5 };
+
+            try {
+                moized(6, mutated);
+
+                throw new Error('should fail');
+            } catch (error) {
+                expect(error).toEqual(new Error('boom'));
+            }
+        });
+
+        it('surfaces the error if the promise rejects', async () => {
             const moized = moize.maxSize(2)(promiseMethodRejects, {
                 isPromise: true,
                 updateCacheForKey(args) {
@@ -107,7 +222,7 @@ describe('moize.updateCacheForKey', () => {
             }
         });
 
-        it('should have nothing in cache if rejected and never was present', async () => {
+        it('should have nothing in cache if promise is rejected and key was never present', async () => {
             const moized = moize.maxSize(2)(promiseMethodRejects, {
                 isPromise: true,
                 updateCacheForKey(args) {
@@ -129,7 +244,7 @@ describe('moize.updateCacheForKey', () => {
             }
         });
 
-        it('should have nothing in cache if rejected and was present', async () => {
+        it('should have nothing in cache if promise is rejected and key was present', async () => {
             const moized = moize.maxSize(2)(promiseMethodRejects, {
                 isPromise: true,
                 updateCacheForKey(args) {
