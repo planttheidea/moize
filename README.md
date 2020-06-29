@@ -176,6 +176,9 @@ type Options = {
     serializer: (key: any[]) => string;
     // method to transform the args into a custom format for key storage in cache
     transformArgs: (key: any[]) => any[];
+    // should the cache entry be refreshed by calling the underlying function with the same parameters and
+    // updating the value stored in cache to be the new result
+    updateCacheForKey: (key: any[]) => boolean;
     // should the cache entry's expiration be refreshed when the cache entry is hit (in combination with maxAge)
     updateExpire: boolean;
 };
@@ -1285,7 +1288,7 @@ All values provided are the number of operations per second calculated by the [B
 
 # Filesize
 
-`moize` is fairly small (about 4.5KB when minified and gzipped), however it provides a large number of configuration options to satisfy a number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
+`moize` is fairly small (about 3.7KB when minified and gzipped), however it provides a large number of configuration options to satisfy a number of edge cases. If filesize is a concern, you may consider using [`micro-memoize`](https://github.com/planttheidea/micro-memoize). This is the memoization library that powers `moize` under-the-hood, and will handle most common use cases at 1/4 the size of `moize`.
 
 # Browser support
 
