@@ -176,6 +176,9 @@ type Options = {
     serializer: (key: any[]) => string;
     // method to transform the args into a custom format for key storage in cache
     transformArgs: (key: any[]) => any[];
+    // should the cache entry be refreshed by calling the underlying function with the same parameters and
+    // updating the value stored in cache to be the new result
+    updateCacheForKey: (key: any[]) => boolean;
     // should the cache entry's expiration be refreshed when the cache entry is hit (in combination with maxAge)
     updateExpire: boolean;
 };
