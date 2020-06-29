@@ -50,6 +50,37 @@ describe('moize.updateCacheForKey', () => {
             expect(values).toEqual([16]);
         });
 
+        it('will refresh the cache based on external values', async () => {
+            const mockMethod = jest.fn(method);
+
+            let lastUpdate = Date.now();
+
+            const moized = moize.maxSize(2)(mockMethod, {
+                updateCacheForKey() {
+                    const now = Date.now();
+                    const last = lastUpdate;
+
+                    lastUpdate = now;
+
+                    return last + 1000 < now;
+                },
+            });
+
+            const mutated = { number: 5 };
+
+            moized(6, mutated);
+            moized(6, mutated);
+            moized(6, mutated);
+
+            expect(mockMethod).toHaveBeenCalledTimes(1);
+
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            moized(6, mutated);
+
+            expect(mockMethod).toHaveBeenCalledTimes(2);
+        });
+
         it('will refresh the cache when used with promises', async () => {
             const moized = moize.maxSize(2)(promiseMethodResolves, {
                 isPromise: true,
