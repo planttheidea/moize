@@ -21,7 +21,6 @@ import {
     Expiration,
     IsEqual,
     IsMatchingKey,
-    Key,
     MicroMemoizeOptions,
     Moize,
     Moizeable,
@@ -29,7 +28,10 @@ import {
     OnExpire,
     Options,
     Serialize,
+    TransformKey,
+    UpdateCacheForKey,
 } from './types';
+import { createRefreshableMoized } from './updateCacheForKey';
 import { combine, compose, isMoized, mergeOptions } from './utils';
 
 export * from './types';
@@ -147,6 +149,7 @@ const moize: Moize = function <
         onExpire: onExpireIgnored,
         profileName: profileNameIgnored,
         serializer: serializerIgnored,
+        updateCacheForKey,
         transformArgs: transformArgsIgnored,
         updateExpire: updateExpireIgnored,
         ...customOptions
@@ -191,11 +194,17 @@ const moize: Moize = function <
 
     const memoized = memoize(fn, microMemoizeOptions);
 
-    return createMoizeInstance<Fn, CombinedOptions>(memoized, {
+    const moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
         expirations,
         options: coalescedOptions,
         originalFunction: fn,
     });
+
+    if (updateCacheForKey) {
+        return createRefreshableMoized<typeof moized>(moized);
+    }
+
+    return moized;
 };
 
 /**
@@ -569,8 +578,24 @@ moize.shallow = moize({ isShallowEqual: true });
  * @param transformArgs the args transformer
  * @returns the moizer function
  */
-moize.transformArgs = <Transformer extends (key: Key) => Key>(
+moize.transformArgs = <Transformer extends TransformKey>(
     transformArgs: Transformer
 ) => moize({ transformArgs });
+
+/**
+ * @function
+ * @name updateCacheForKey
+ * @memberof module:moize
+ * @alias moize.updateCacheForKey
+ *
+ * @description
+ * update the cache for a given key when the method passed returns truthy
+ *
+ * @param updateCacheForKey the method to determine when to update cache
+ * @returns the moizer function
+ */
+moize.updateCacheForKey = <UpdateWhen extends UpdateCacheForKey>(
+    updateCacheForKey: UpdateWhen
+) => moize({ updateCacheForKey });
 
 export default moize;

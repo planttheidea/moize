@@ -19,6 +19,7 @@ export const DEFAULT_OPTIONS: Options = {
     onExpire: undefined,
     profileName: undefined,
     serializer: undefined,
+    updateCacheForKey: undefined,
     transformArgs: undefined,
     updateExpire: false,
 };

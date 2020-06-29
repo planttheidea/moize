@@ -8,69 +8,72 @@
 
 **NOTE**: This documentation is for the next major version of `moize`, please go to the [`v5` branch](https://github.com/planttheidea/moize/tree/v5) to see documentation on the current major version. To learn about changes that may impact your code when migrating to v6, please see the [changelog](CHANGELOG.md#600).
 
--   [Importing](#importing)
-    -   [ESM in browsers](#esm-in-browsers)
-    -   [ESM in NodeJS](#esm-in-nodejs)
-    -   [CommonJS](#commonjs)
--   [Usage](#usage)
--   [Configuration options](#configuration-options)
-    -   [isDeepEqual](#isdeepequal)
-    -   [isPromise](#ispromise)
-    -   [isReact](#isreact)
-    -   [isSerialized](#isserialized)
-    -   [isShallowEqual](#isshallowequal)
-    -   [matchesArg](#matchesarg)
-    -   [matchesKey](#matcheskey)
-    -   [maxAge](#maxage)
-    -   [maxArgs](#maxargs)
-    -   [maxSize](#maxsize)
-    -   [onCacheAdd](#oncacheadd)
-    -   [onCacheChange](#oncachechange)
-    -   [onCacheHit](#oncachehit)
-    -   [onExpire](#onexpire)
-    -   [profileName](#profilename)
-    -   [serializer](#serializer)
-    -   [transformArgs](#transformargs)
-    -   [updateExpire](#updateexpire)
--   [Usage with shortcut methods](#usage-with-shortcut-methods)
-    -   [moize.deep](#moizedeep)
-    -   [moize.infinite](#moizeinfinite)
-    -   [moize.matchesArg](#moizematchesarg)
-    -   [moize.matchesKey](#moizematcheskey)
-    -   [moize.maxAge](#moizemaxage)
-    -   [moize.maxArgs](#moizemaxargs)
-    -   [moize.maxSize](#moizemaxsize)
-    -   [moize.promise](#moizepromise)
-    -   [moize.react](#moizereact)
-    -   [moize.serialize](#moizeserialize)
-    -   [moize.serializeWith](#moizeserializewith)
-    -   [moize.shallow](#moizeshallow)
--   [useMoize hook](#usemoize-hook)
--   [Composition](#composition)
--   [Collecting statistics](#collecting-statistics)
-    -   [Stats methods](#stats-methods)
-        -   [clearStats](#clearstats)
-        -   [collectStats](#collectstats)
-        -   [getStats([profileName])](#getstatsprofilename)
--   [Introspection](#introspection)
-    -   [isCollectingStats](#iscollectingstats)
-    -   [isMoized](#ismoized)
--   [Direct cache manipulation](#direct-cache-manipulation)
-    -   [cache](#cache)
-    -   [cacheSnapshot](#cachesnapshot)
-    -   [add(key, value)](#addkey-value)
-    -   [clear()](#clear)
-    -   [get(key)](#getkey)
-    -   [getStats()](#getstats)
-    -   [has(key)](#haskey)
-    -   [keys()](#keys)
-    -   [remove(key)](#removekey)
-    -   [update(key, value)](#updatekey-value)
-    -   [values()](#values)
--   [Benchmarks](#benchmarks)
--   [Filesize](#filesize)
--   [Browser support](#browser-support)
--   [Development](#development)
+- [Importing](#importing)
+  - [ESM in browsers](#esm-in-browsers)
+  - [ESM in NodeJS](#esm-in-nodejs)
+  - [CommonJS](#commonjs)
+- [Usage](#usage)
+- [Configuration options](#configuration-options)
+  - [isDeepEqual](#isdeepequal)
+  - [isPromise](#ispromise)
+  - [isReact](#isreact)
+  - [isSerialized](#isserialized)
+  - [isShallowEqual](#isshallowequal)
+  - [matchesArg](#matchesarg)
+  - [matchesKey](#matcheskey)
+  - [maxAge](#maxage)
+  - [maxArgs](#maxargs)
+  - [maxSize](#maxsize)
+  - [onCacheAdd](#oncacheadd)
+  - [onCacheChange](#oncachechange)
+  - [onCacheHit](#oncachehit)
+  - [onExpire](#onexpire)
+  - [profileName](#profilename)
+  - [serializer](#serializer)
+  - [transformArgs](#transformargs)
+  - [updateCacheForKey](#updatecacheforkey)
+  - [updateExpire](#updateexpire)
+- [Usage with shortcut methods](#usage-with-shortcut-methods)
+  - [moize.deep](#moizedeep)
+  - [moize.infinite](#moizeinfinite)
+  - [moize.matchesArg](#moizematchesarg)
+  - [moize.matchesKey](#moizematcheskey)
+  - [moize.maxAge](#moizemaxage)
+  - [moize.maxArgs](#moizemaxargs)
+  - [moize.maxSize](#moizemaxsize)
+  - [moize.promise](#moizepromise)
+  - [moize.react](#moizereact)
+  - [moize.serialize](#moizeserialize)
+  - [moize.serializeWith](#moizeserializewith)
+  - [moize.shallow](#moizeshallow)
+  - [moize.transformArgs](#moizetransformargs)
+  - [moize.updateCacheForKey](#moizeupdatecacheforkey)
+- [useMoize hook](#usemoize-hook)
+- [Composition](#composition)
+- [Collecting statistics](#collecting-statistics)
+  - [Stats methods](#stats-methods)
+  - [clearStats](#clearstats)
+  - [collectStats](#collectstats)
+  - [getStats([profileName])](#getstatsprofilename)
+- [Introspection](#introspection)
+  - [isCollectingStats](#iscollectingstats)
+  - [isMoized](#ismoized)
+- [Direct cache manipulation](#direct-cache-manipulation)
+  - [cache](#cache)
+  - [cacheSnapshot](#cachesnapshot)
+  - [add(key, value)](#addkey-value)
+  - [clear()](#clear)
+  - [get(key)](#getkey)
+  - [getStats()](#getstats)
+  - [has(key)](#haskey)
+  - [keys()](#keys)
+  - [remove(key)](#removekey)
+  - [update(key, value)](#updatekey-value)
+  - [values()](#values)
+- [Benchmarks](#benchmarks)
+- [Filesize](#filesize)
+- [Browser support](#browser-support)
+- [Development](#development)
 
 ```
 $ npm i moize@next --save
@@ -610,7 +613,7 @@ moize('one', 'two', 'three');
 moize(null, 'two', 'three'); // pulled from cache
 ```
 
-This is also available via the shortcut method of [`moize.transformArgs`](#moizetransformArgs).
+This is also available via the shortcut method of [`moize.transformArgs`](#moizetransformargs).
 
 ```ts
 const memoized = moize.transformArgs(argTransformer)(fn);
@@ -621,6 +624,41 @@ If `transformArgs` is combined with either `maxArgs` or `serialize`, the followi
 1.  limit by `maxArgs` (if applicable)
 1.  transform by `transformArgs`
 1.  serialize by `serializer` (if applicable)
+
+## updateCacheForKey
+
+If you want to update the cache for a given key instead of leverage the value currently stored in cache.
+
+```ts
+const fn = (item: string) => item;
+
+let lastUpdate = Date.now();
+
+const memoized = moize(fn, {
+    updateCacheForKey([item]: [string]) {
+        const now = Date.now();
+        const last = lastUpdated;
+
+        lastUpdate = now;
+
+        // its been more than 5 minutes since last update
+        return last + 300000 < now;
+    },
+});
+
+memoized('one');
+memoized('one'); // pulled from cache
+
+// 5 minutes later
+
+memoized('one'); // re-calls method and updates cache
+```
+
+This is also available via the shortcut method of [`moize.updateCacheForKey`](#moizeupdatecacheforkey).
+
+```ts
+const memoized = moize.updateCacheForKey(shouldCacheUpdate)(fn);
+```
 
 ## updateExpire
 
@@ -829,6 +867,40 @@ import moize from 'moize';
 const fn = (one: string, two: string) => `${one} ${two}`;
 
 export default moize.shallow(fn);
+```
+
+## moize.transformArgs
+
+Pre-applies the [`transformArgs`](#transformargs) option.
+
+```ts
+import moize from 'moize';
+
+const fn = ([one, two]: string[]) => [`${one} ${two}`];
+
+export default moize.transformArgs(fn);
+```
+
+## moize.updateCacheForKey
+
+Pre-applies the [`updateCacheForKey`](#updatecacheforkey) option.
+
+```ts
+import moize from 'moize';
+
+let lastUpdated = Date.now();
+
+const fn = () => {
+    const now = Date.now();
+    const last = lastUpdated;
+
+    lastUpdate = now;
+
+    // its been more than 5 minutes since last update
+    return last + 300000 < now;
+};
+
+export default moize.updateCacheForKey(fn);
 ```
 
 # useMoize hook

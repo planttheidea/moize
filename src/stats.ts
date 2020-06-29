@@ -89,10 +89,12 @@ export function createOnCacheHitIncrementCallsAndHits(options: Options) {
  * @param fn the function to be memoized
  * @returns the derived profileName for the function
  */
-export function getDefaultProfileName(fn: Fn | FunctionalComponent<Record<string, any>>) {
+export function getDefaultProfileName(
+    fn: Fn | FunctionalComponent<Record<string, unknown>>
+) {
     const stack = new Error().stack;
     const fnName =
-        (fn as FunctionalComponent<Record<string, any>>).displayName ||
+        (fn as FunctionalComponent<Record<string, unknown>>).displayName ||
         fn.name ||
         `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
 
