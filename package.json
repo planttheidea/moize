@@ -57,7 +57,7 @@
         "jsdoc-babel": "0.5.0",
         "jsdom": "16.2.2",
         "jsdom-global": "3.0.2",
-        "lodash": "4.17.15",
+        "lodash": "4.17.19",
         "lru-memoize": "1.1.0",
         "mem": "6.1.0",
         "memoizee": "0.4.14",
