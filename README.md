@@ -184,6 +184,8 @@ type Options = {
 };
 ```
 
+All default values can be found [here](src/constants.ts).
+
 ## isDeepEqual
 
 _defaults to false_
@@ -309,7 +311,7 @@ type Arg = {
 
 const fn = ({ one, two }: Arg) => [one, two];
 
-const memoized = moize(fn, { isDeepEqual: true });
+const memoized = moize(fn, { isShallowEqual: true });
 
 memoized({ one: 'one', two: 'two' });
 memoized({ one: 'one', two: 'two' }); // pulls from cache
@@ -431,7 +433,7 @@ If `maxArgs` is combined with either `serialize` or `transformArgs`, the followi
 
 ## maxSize
 
-_defaults to Infinity_
+_defaults to 1_
 
 The maximum number of values you want stored in cache for this method. Clearance of the cache once the `maxSize` is reached is on a [Least Recently Used](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29) basis.
 
