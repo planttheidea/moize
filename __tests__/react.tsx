@@ -117,15 +117,49 @@ describe('moize.react', () => {
         expect(Memoized.displayName).toBe(`Moized(${ValueBar.name})`);
     });
 
-    it('should memoize on a per-instance basis on render', (done) => {
-        const simpleAppContainer = document.createElement('div');
+    it('should memoize on a per-instance basis on render', async (done) => {
+        const app = document.createElement('div');
 
-        document.body.appendChild(simpleAppContainer);
+        document.body.appendChild(app);
 
-        ReactDOM.render(<SimpleApp />, simpleAppContainer);
+        ReactDOM.render(<SimpleApp />, app);
 
-        setTimeout(() => {
-            ReactDOM.render(<SimpleApp isRerender />, simpleAppContainer, done);
-        }, 1000);
+        expect(ValueBar).toHaveBeenCalledTimes(data.length);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        ReactDOM.render(<SimpleApp isRerender />, app, () => {
+            expect(ValueBar).toHaveBeenCalledTimes(data.length + 1);
+            done();
+        });
+    });
+
+    it('should allow use of hooks', async () => {
+        const timing = 1000;
+        const app = document.createElement('div');
+
+        document.body.appendChild(app);
+
+        const spy = jest.fn();
+        const TestComponent = moize.react(() => {
+            const [txt, setTxt] = React.useState(0);
+
+            React.useEffect(() => {
+                setTimeout(() => {
+                    setTxt(Date.now());
+                    spy();
+                }, timing);
+            }, []);
+
+            return <span>{txt}</span>;
+        });
+
+        ReactDOM.render(<TestComponent />, app);
+
+        expect(spy).not.toHaveBeenCalled();
+
+        await new Promise((resolve) => setTimeout(resolve, timing + 200));
+
+        expect(spy).toHaveBeenCalled();
     });
 });

@@ -55,16 +55,6 @@ export function copyStaticProperties(
             }
         }
     });
-
-    // for (const property in originalFn) {
-    //     if (
-    //         skippedProperties.indexOf(property) === -1 &&
-    //         hasOwnProperty.call(originalFn, property)
-    //     ) {
-    //         newFn[property as keyof typeof newFn] =
-    //             originalFn[property as keyof typeof originalFn];
-    //     }
-    // }
 }
 
 /**
