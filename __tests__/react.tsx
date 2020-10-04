@@ -117,7 +117,112 @@ describe('moize.react', () => {
         expect(Memoized.displayName).toBe(`Moized(${ValueBar.name})`);
     });
 
-    it('should memoize on a per-instance basis on render', async (done) => {
+    it('should memoize the component renders', () => {
+        type Props = { id: string; unused?: boolean };
+
+        const Component = ({ id }: Props) => <div id={id} />;
+        const ComponentSpy = jest.fn(Component) as typeof Component;
+        const MoizedComponent = moize.react(ComponentSpy);
+        const App = ({ id, unused }: Props) => (
+            <MoizedComponent id={id} unused={unused} />
+        );
+
+        const app = document.createElement('div');
+
+        document.body.appendChild(app);
+
+        new Array(100).fill('id').forEach((id, index) => {
+            ReactDOM.render(<App id={id} unused={index === 53} />, app);
+        });
+
+        // The number of calls is 3 because cache breaks twice, when `unused` prop toggled on the single element.
+        expect(ComponentSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should memoize the component renders with custom options', () => {
+        type Props = { id: string; unused?: boolean };
+
+        const Component = ({ id }: Props) => <div id={id} />;
+        const ComponentSpy = jest.fn(Component) as typeof Component;
+        const MoizedComponent = moize.react(ComponentSpy, { maxSize: 2 });
+        const App = ({ id, unused }: Props) => (
+            <MoizedComponent id={id} unused={unused} />
+        );
+
+        const app = document.createElement('div');
+
+        document.body.appendChild(app);
+
+        new Array(100).fill('id').forEach((id, index) => {
+            ReactDOM.render(<App id={id} unused={index === 53} />, app);
+        });
+
+        // The number of calls is 2 because both `unused` values are stored in cache.
+        expect(ComponentSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should memoize the component renders including legacy context', () => {
+        type Props = { id: string; unused?: boolean };
+
+        const Component = ({ id }: Props) => <div id={id} />;
+        const ComponentSpy = (jest.fn(
+            Component
+        ) as unknown) as typeof Component & {
+            contextTypes: Record<string, any>;
+        };
+
+        ComponentSpy.contextTypes = { unused: PropTypes.bool.isRequired };
+
+        const MoizedComponent = moize.react(ComponentSpy);
+
+        class App extends React.Component<Props> {
+            static childContextTypes = {
+                unused: PropTypes.bool.isRequired,
+            };
+
+            getChildContext() {
+                return {
+                    unused: this.props.unused,
+                };
+            }
+
+            render() {
+                return <MoizedComponent id={this.props.id} />;
+            }
+        }
+
+        const app = document.createElement('div');
+
+        document.body.appendChild(app);
+
+        new Array(100).fill('id').forEach((id, index) => {
+            ReactDOM.render(<App id={id} unused={index === 53} />, app);
+        });
+
+        // The number of calls is 3 because cache breaks twice, when `unused` context value is toggled on the single element.
+        expect(ComponentSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should memoize the component renders', () => {
+        type Props = { id: string };
+
+        const Component = ({ id }: Props) => <div id={id} />;
+        const ComponentSpy = jest.fn(Component) as typeof Component;
+        const MoizedComponent = moize.react(ComponentSpy);
+        const App = ({ id }: Props) => <MoizedComponent id={id} />;
+
+        const app = document.createElement('div');
+
+        document.body.appendChild(app);
+
+        new Array(100).fill('id').forEach((id) => {
+            ReactDOM.render(<App id={id} />, app);
+        });
+
+        expect(ComponentSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should memoize on a per-instance basis on render', async () => {
         const app = document.createElement('div');
 
         document.body.appendChild(app);
@@ -126,12 +231,13 @@ describe('moize.react', () => {
 
         expect(ValueBar).toHaveBeenCalledTimes(data.length);
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) =>
+            setTimeout(() => {
+                ReactDOM.render(<SimpleApp isRerender />, app, resolve);
+            }, 1000)
+        );
 
-        ReactDOM.render(<SimpleApp isRerender />, app, () => {
-            expect(ValueBar).toHaveBeenCalledTimes(data.length + 1);
-            done();
-        });
+        expect(ValueBar).toHaveBeenCalledTimes(data.length + 1);
     });
 
     it('should allow use of hooks', async () => {
