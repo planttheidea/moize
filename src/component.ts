@@ -1,5 +1,5 @@
 import { copyStaticProperties } from './instance';
-import { Moize, Moizeable, Moized as MoizedResult, Options } from './types';
+import { Moize, Moizeable, Options } from './types';
 
 // This was stolen from React internals, which allows us to create React elements without needing
 // a dependency on the React library itself.
@@ -68,17 +68,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
 
     Moized.prototype.isReactComponent = {};
 
-    type MoizedElementType = {
-        $$typeof: symbol | number;
-        type: MoizedResult;
-        props: Record<string, unknown>;
-        ref: null;
-        key: null;
-        _owner: null;
-    };
-
-    // eslint-disable-next-line react/display-name
-    Moized.prototype.render = function (): MoizedElementType {
+    Moized.prototype.render = function () {
         return {
             $$typeof: REACT_ELEMENT_TYPE,
             type: this.MoizedComponent,
@@ -86,7 +76,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
             ref: null,
             key: null,
             _owner: null,
-        };
+        } as JSX.Element;
     };
 
     copyStaticProperties(fn, Moized, ['contextType', 'contextTypes']);
