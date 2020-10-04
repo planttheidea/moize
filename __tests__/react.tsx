@@ -135,7 +135,7 @@ describe('moize.react', () => {
             ReactDOM.render(<App id={id} unused={index === 53} />, app);
         });
 
-        // The number of calls is 3 because cache breaks twice, when `unused` prop toggled on the single element.
+        // The number of calls is 3 because cache breaks twice, when `unused` prop is toggled.
         expect(ComponentSpy).toHaveBeenCalledTimes(3);
     });
 
@@ -199,27 +199,8 @@ describe('moize.react', () => {
             ReactDOM.render(<App id={id} unused={index === 53} />, app);
         });
 
-        // The number of calls is 3 because cache breaks twice, when `unused` context value is toggled on the single element.
+        // The number of calls is 3 because cache breaks twice, when `unused` context value is toggled.
         expect(ComponentSpy).toHaveBeenCalledTimes(3);
-    });
-
-    it('should memoize the component renders', () => {
-        type Props = { id: string };
-
-        const Component = ({ id }: Props) => <div id={id} />;
-        const ComponentSpy = jest.fn(Component) as typeof Component;
-        const MoizedComponent = moize.react(ComponentSpy);
-        const App = ({ id }: Props) => <MoizedComponent id={id} />;
-
-        const app = document.createElement('div');
-
-        document.body.appendChild(app);
-
-        new Array(100).fill('id').forEach((id) => {
-            ReactDOM.render(<App id={id} />, app);
-        });
-
-        expect(ComponentSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should memoize on a per-instance basis on render', async () => {
