@@ -35,6 +35,7 @@ const DEFAULT_CONFIG = {
             mainFields: ['module', 'jsnext:main', 'main'],
         }),
         babel({
+            babelHelpers: 'bundled',
             exclude: 'node_modules/**',
             extensions: EXTENSIONS,
             include: ['src/*'],
