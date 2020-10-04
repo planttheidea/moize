@@ -2,115 +2,45 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import moize, { Moized } from '../src';
+import { copyStaticProperties } from '../src/instance';
 
-type Props = {
-    bar?: string;
-    fn: (...args: any[]) => any;
-    key?: string;
-    object?: Record<string, unknown>;
-    value?: any;
-};
-
-function _ValueBar({ bar, value }: Props) {
-    return (
-        <div>
-            {value} {bar}
-        </div>
-    );
-}
-
-_ValueBar.propTypes = {
-    bar: PropTypes.string.isRequired,
-    fn: PropTypes.func.isRequired,
-    object: PropTypes.object.isRequired,
-    value: PropTypes.string.isRequired,
-};
-
-_ValueBar.defaultProps = {
-    bar: 'default',
-};
-
-const ValueBar = jest.fn(_ValueBar) as (props: Props) => JSX.Element;
-
-// force static properties to be passed to mock
-Object.assign(ValueBar, _ValueBar);
-
-const Memoized = moize.react(ValueBar);
-
-const foo = 'foo';
-const bar = 'bar';
-const baz = 'baz';
-
-const data = [
-    {
-        fn() {
-            return foo;
-        },
-        object: { value: foo },
-        value: foo,
-    },
-    {
-        bar,
-        fn() {
-            return bar;
-        },
-        object: { value: bar },
-        value: bar,
-    },
-    {
-        fn() {
-            return baz;
-        },
-        object: { value: baz },
-        value: baz,
-    },
-];
-
-type SimpleAppProps = {
-    isRerender?: boolean;
-};
-
-class SimpleApp extends React.Component<SimpleAppProps> {
-    MoizedComponent: Moized;
-
-    componentDidMount() {
-        expect(ValueBar).toHaveBeenCalledTimes(3);
-    }
-
-    componentDidUpdate() {
-        // only one component rerendered based on dynamic props
-        expect(ValueBar).toHaveBeenCalledTimes(4);
-    }
-
-    setMoizedComponent = (Ref: { MoizedComponent: Moized }) => {
-        this.MoizedComponent = Ref.MoizedComponent;
+describe('moize.react', () => {
+    type ValueBarProps = {
+        bar?: string;
+        fn: (...args: any[]) => any;
+        key?: string;
+        object?: Record<string, unknown>;
+        value?: any;
     };
 
-    render() {
-        const { isRerender } = this.props;
-
+    function _ValueBar({ bar, value }: ValueBarProps) {
         return (
             <div>
-                <h1 style={{ margin: 0 }}>App</h1>
-
-                <div>
-                    <h3>Memoized data list</h3>
-
-                    {data.map((values, index) => (
-                        <Memoized
-                            key={`called-${values.value}`}
-                            {...values}
-                            isDynamic={index === 2 && isRerender}
-                            ref={this.setMoizedComponent}
-                        />
-                    ))}
-                </div>
+                {value} {bar}
             </div>
         );
     }
-}
 
-describe('moize.react', () => {
+    _ValueBar.propTypes = {
+        bar: PropTypes.string.isRequired,
+        fn: PropTypes.func.isRequired,
+        object: PropTypes.object.isRequired,
+        value: PropTypes.string.isRequired,
+    };
+
+    _ValueBar.defaultProps = {
+        bar: 'default',
+    };
+
+    const ValueBar = jest.fn(_ValueBar) as (
+        props: ValueBarProps
+    ) => JSX.Element;
+
+    // force static properties to be passed to mock
+    copyStaticProperties(_ValueBar, ValueBar);
+
+    const Memoized = moize.react(ValueBar);
+
     it('should have the correct static values', () => {
         expect(Memoized.propTypes).toBe(_ValueBar.propTypes);
         expect(Memoized.defaultProps).toBe(_ValueBar.defaultProps);
@@ -204,17 +134,86 @@ describe('moize.react', () => {
     });
 
     it('should memoize on a per-instance basis on render', async () => {
+        const foo = 'foo';
+        const bar = 'bar';
+        const baz = 'baz';
+
+        const data = [
+            {
+                fn() {
+                    return foo;
+                },
+                object: { value: foo },
+                value: foo,
+            },
+            {
+                bar,
+                fn() {
+                    return bar;
+                },
+                object: { value: bar },
+                value: bar,
+            },
+            {
+                fn() {
+                    return baz;
+                },
+                object: { value: baz },
+                value: baz,
+            },
+        ];
+
+        class App extends React.Component<{ isRerender?: boolean }> {
+            MoizedComponent: Moized;
+
+            componentDidMount() {
+                expect(ValueBar).toHaveBeenCalledTimes(3);
+            }
+
+            componentDidUpdate() {
+                // only one component rerendered based on dynamic props
+                expect(ValueBar).toHaveBeenCalledTimes(4);
+            }
+
+            setMoizedComponent = (Ref: { MoizedComponent: Moized }) => {
+                this.MoizedComponent = Ref.MoizedComponent;
+            };
+
+            render() {
+                const { isRerender } = this.props;
+
+                return (
+                    <div>
+                        <h1 style={{ margin: 0 }}>App</h1>
+
+                        <div>
+                            <h3>Memoized data list</h3>
+
+                            {data.map((values, index) => (
+                                <Memoized
+                                    key={`called-${values.value}`}
+                                    {...values}
+                                    isDynamic={index === 2 && isRerender}
+                                    ref={this.setMoizedComponent}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+        }
+
         const app = document.createElement('div');
 
         document.body.appendChild(app);
 
-        ReactDOM.render(<SimpleApp />, app);
+        ReactDOM.render(<App />, app);
 
         expect(ValueBar).toHaveBeenCalledTimes(data.length);
 
         await new Promise((resolve) =>
             setTimeout(() => {
-                ReactDOM.render(<SimpleApp isRerender />, app, resolve);
+                ReactDOM.render(<App isRerender />, app, resolve);
             }, 1000)
         );
 
