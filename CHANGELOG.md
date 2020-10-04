@@ -4,12 +4,12 @@
 
 **BREAKING CHANGES**
 
--   By default, `moize` will now only keep a cache size of 1 instead of infinite. If you want to have history, it is recommended to use `moize.maxSize` to set the size of history desired, or for backwards compatibility use `moize.infinite`.
+-   `moize` v5 and below had a default cache size of `Infinity`, however starting with v6 the default cache size will be `1`. If you want to maintain a cache history of multiple entries, it is recommended to use `moize.maxSize` to set the size of history desired. To replicate usage from v5 and below, use `moize.infinite`.
 -   `isReact` option and `moize.react` shorthand method now memoizes on a per-instance basis (previously shared cache across all instances).
 -   `moize.simple` and `moize.reactSimple` have been removed due to default cache size being 1.
 -   `isSerialized` option and `moize.serialize` shorthand method will now serialize functions by default.
+-   `shouldSerializeFunctions` option has been removed, as serializing functions is now the default.
 -   `equals` option has been renamed to `matchesArg` for alignment with `matchesKey`.
--   `shouldSerializeFunctions` option has been removed.
 
 **ENHANCEMENTS**
 
