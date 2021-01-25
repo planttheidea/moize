@@ -1,0 +1,291 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>MaxAge | micro-memoize</title>
+	<meta name="description" content="Documentation for micro-memoize">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">micro-memoize</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="maxage.html">MaxAge</a>
+				</li>
+			</ul>
+			<h1>Interface MaxAge</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">MaxAge</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3 class="tsd-before-signature">Callable</h3>
+				<ul class="tsd-signatures tsd-kind-interface tsd-has-type-parameter">
+					<li class="tsd-signature tsd-kind-icon">__call&lt;MaxAge&gt;<span class="tsd-signature-symbol">(</span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;MaxAge, UpdateExpire&gt;<span class="tsd-signature-symbol">(</span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span>, expireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;MaxAge, ExpireHandler&gt;<span class="tsd-signature-symbol">(</span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span>, expireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;MaxAge, ExpireHandler, ExpireOptions&gt;<span class="tsd-signature-symbol">(</span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span>, expireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">"onExpire"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;MaxAge, UpdateExpire, ExpireOptions&gt;<span class="tsd-signature-symbol">(</span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span>, expireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">__call&lt;MaxAge, ExpireHandler, UpdateExpire, ExpireOptions&gt;<span class="tsd-signature-symbol">(</span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span>, expireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/72dda7a/src/types.ts#L143">src/types.ts:143</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>MaxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>maxAge: <span class="tsd-signature-type">MaxAge</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/72dda7a/src/types.ts#L144">src/types.ts:144</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>MaxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h4>
+							</li>
+							<li>
+								<h4>UpdateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>maxAge: <span class="tsd-signature-type">MaxAge</span></h5>
+							</li>
+							<li>
+								<h5>expireOptions: <span class="tsd-signature-type">UpdateExpire</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/72dda7a/src/types.ts#L148">src/types.ts:148</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>MaxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h4>
+							</li>
+							<li>
+								<h4>ExpireHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onexpire" class="tsd-signature-type">OnExpire</a></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>maxAge: <span class="tsd-signature-type">MaxAge</span></h5>
+							</li>
+							<li>
+								<h5>expireOptions: <span class="tsd-signature-type">ExpireHandler</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/72dda7a/src/types.ts#L152">src/types.ts:152</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>MaxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h4>
+							</li>
+							<li>
+								<h4>ExpireHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onexpire" class="tsd-signature-type">OnExpire</a></h4>
+							</li>
+							<li>
+								<h4>ExpireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol"> }</span></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>maxAge: <span class="tsd-signature-type">MaxAge</span></h5>
+							</li>
+							<li>
+								<h5>expireOptions: <span class="tsd-signature-type">ExpireOptions</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireOptions</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">"onExpire"</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/72dda7a/src/types.ts#L162">src/types.ts:162</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>MaxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h4>
+							</li>
+							<li>
+								<h4>UpdateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h4>
+							</li>
+							<li>
+								<h4>ExpireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>maxAge: <span class="tsd-signature-type">MaxAge</span></h5>
+							</li>
+							<li>
+								<h5>expireOptions: <span class="tsd-signature-type">ExpireOptions</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/planttheidea/moize/blob/72dda7a/src/types.ts#L172">src/types.ts:172</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>MaxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h4>
+							</li>
+							<li>
+								<h4>ExpireHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onexpire" class="tsd-signature-type">OnExpire</a></h4>
+							</li>
+							<li>
+								<h4>UpdateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h4>
+							</li>
+							<li>
+								<h4>ExpireOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span></h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>maxAge: <span class="tsd-signature-type">MaxAge</span></h5>
+							</li>
+							<li>
+								<h5>expireOptions: <span class="tsd-signature-type">ExpireOptions</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="moize.html" class="tsd-signature-type">Moize</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>maxAge<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MaxAge</span><span class="tsd-signature-symbol">; </span>onExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ExpireHandler</span><span class="tsd-signature-symbol">; </span>updateExpire<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UpdateExpire</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-has-type-parameter">
+						<a href="maxage.html" class="tsd-kind-icon">Max<wbr>Age</a>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
