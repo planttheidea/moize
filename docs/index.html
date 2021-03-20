@@ -147,8 +147,8 @@
 				</a>
 				<p>Starting in <code>4.0.0</code>, you can compose memoized functions if you want to have multiple types of memoized versions based on different options.</p>
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> simple = memoized(fn); <span class="hljs-comment">// { maxSize: 1 }</span>
-<span class="hljs-keyword">const</span> upToFive = memoized(simple, { maxSize: <span class="hljs-number">5</span> }); <span class="hljs-comment">// { maxSize: 5 }</span>
-<span class="hljs-keyword">const</span> withCustomEquals = memoized(upToFive, { isEqual: deepEqual }); <span class="hljs-comment">// { maxSize: 5, isEqual: deepEqual }</span></code></pre>
+<span class="hljs-keyword">const</span> upToFive = memoized(simple, { <span class="hljs-attr">maxSize</span>: <span class="hljs-number">5</span> }); <span class="hljs-comment">// { maxSize: 5 }</span>
+<span class="hljs-keyword">const</span> withCustomEquals = memoized(upToFive, { <span class="hljs-attr">isEqual</span>: deepEqual }); <span class="hljs-comment">// { maxSize: 5, isEqual: deepEqual }</span></code></pre>
 				<p><strong>NOTE</strong>: The original function is the function used in the composition, the composition only applies to the options. In the example above, <code>upToFive</code> does not call <code>simple</code>, it calls <code>fn</code>.</p>
 				<a href="#options" id="options" style="color: inherit; text-decoration: none;">
 					<h2>Options</h2>
@@ -166,43 +166,43 @@
 				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { deepEqual } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;fast-equals&quot;</span>;
 
 <span class="hljs-keyword">type</span> ContrivedObject = {
-  deep: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">deep</span>: <span class="hljs-built_in">string</span>;
 };
 
 <span class="hljs-keyword">const</span> deepObject = <span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">object</span>: {
   foo: ContrivedObject;
   bar: ContrivedObject;
 }</span>) =&gt;</span> ({
-  foo: <span class="hljs-built_in">object</span>.foo,
-  bar: <span class="hljs-built_in">object</span>.bar
+  <span class="hljs-attr">foo</span>: <span class="hljs-built_in">object</span>.foo,
+  <span class="hljs-attr">bar</span>: <span class="hljs-built_in">object</span>.bar
 });
 
-<span class="hljs-keyword">const</span> memoizedDeepObject = memoize(deepObject, { isEqual: deepEqual });
+<span class="hljs-keyword">const</span> memoizedDeepObject = memoize(deepObject, { <span class="hljs-attr">isEqual</span>: deepEqual });
 
 <span class="hljs-built_in">console</span>.log(
   memoizedDeepObject({
-    foo: {
-      deep: <span class="hljs-string">&quot;foo&quot;</span>
+    <span class="hljs-attr">foo</span>: {
+      <span class="hljs-attr">deep</span>: <span class="hljs-string">&quot;foo&quot;</span>
     },
-    bar: {
-      deep: <span class="hljs-string">&quot;bar&quot;</span>
+    <span class="hljs-attr">bar</span>: {
+      <span class="hljs-attr">deep</span>: <span class="hljs-string">&quot;bar&quot;</span>
     },
-    baz: {
-      deep: <span class="hljs-string">&quot;baz&quot;</span>
+    <span class="hljs-attr">baz</span>: {
+      <span class="hljs-attr">deep</span>: <span class="hljs-string">&quot;baz&quot;</span>
     }
   })
 ); <span class="hljs-comment">// {foo: {deep: &#x27;foo&#x27;}, bar: {deep: &#x27;bar&#x27;}}</span>
 
 <span class="hljs-built_in">console</span>.log(
   memoizedDeepObject({
-    foo: {
-      deep: <span class="hljs-string">&quot;foo&quot;</span>
+    <span class="hljs-attr">foo</span>: {
+      <span class="hljs-attr">deep</span>: <span class="hljs-string">&quot;foo&quot;</span>
     },
-    bar: {
-      deep: <span class="hljs-string">&quot;bar&quot;</span>
+    <span class="hljs-attr">bar</span>: {
+      <span class="hljs-attr">deep</span>: <span class="hljs-string">&quot;bar&quot;</span>
     },
-    baz: {
-      deep: <span class="hljs-string">&quot;baz&quot;</span>
+    <span class="hljs-attr">baz</span>: {
+      <span class="hljs-attr">deep</span>: <span class="hljs-string">&quot;baz&quot;</span>
     }
   })
 ); <span class="hljs-comment">// pulled from cache</span></code></pre>
@@ -220,16 +220,16 @@
 				</ul>
 				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { deepEqual } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;fast-equals&quot;</span>;
 
-<span class="hljs-keyword">type</span> ContrivedObject = { foo: <span class="hljs-built_in">string</span>; bar: <span class="hljs-built_in">number</span> };
+<span class="hljs-keyword">type</span> ContrivedObject = { <span class="hljs-attr">foo</span>: <span class="hljs-built_in">string</span>; bar: <span class="hljs-built_in">number</span> };
 
 <span class="hljs-keyword">const</span> deepObject = <span class="hljs-function">(<span class="hljs-params"><span class="hljs-built_in">object</span>: ContrivedObject</span>) =&gt;</span> ({
-  foo: <span class="hljs-built_in">object</span>.foo,
-  bar: <span class="hljs-built_in">object</span>.bar
+  <span class="hljs-attr">foo</span>: <span class="hljs-built_in">object</span>.foo,
+  <span class="hljs-attr">bar</span>: <span class="hljs-built_in">object</span>.bar
 });
 
 <span class="hljs-keyword">const</span> memoizedShape = memoize(deepObject, {
   <span class="hljs-comment">// receives the full key in cache and the full key of the most recent call</span>
-  isMatchingKey([object1]: [ContrivedObject], [object2]: [ContrivedObject]) {
+  <span class="hljs-function"><span class="hljs-title">isMatchingKey</span>(<span class="hljs-params">[object1]: [ContrivedObject], [object2]: [ContrivedObject]</span>)</span> {
     <span class="hljs-keyword">return</span> (
       object1.hasOwnProperty(<span class="hljs-string">&quot;foo&quot;</span>) &amp;&amp;
       object2.hasOwnProperty(<span class="hljs-string">&quot;foo&quot;</span>) &amp;&amp;
@@ -240,17 +240,17 @@
 
 <span class="hljs-built_in">console</span>.log(
   memoizedShape({
-    foo: <span class="hljs-string">&quot;foo&quot;</span>,
-    bar: <span class="hljs-string">&quot;bar&quot;</span>,
-    baz: <span class="hljs-string">&quot;baz&quot;</span>
+    <span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;foo&quot;</span>,
+    <span class="hljs-attr">bar</span>: <span class="hljs-string">&quot;bar&quot;</span>,
+    <span class="hljs-attr">baz</span>: <span class="hljs-string">&quot;baz&quot;</span>
   })
 ); <span class="hljs-comment">// {foo: {deep: &#x27;foo&#x27;}, bar: {deep: &#x27;bar&#x27;}}</span>
 
 <span class="hljs-built_in">console</span>.log(
   memoizedShape({
-    foo: <span class="hljs-string">&quot;not foo&quot;</span>,
-    bar: <span class="hljs-string">&quot;bar&quot;</span>,
-    baz: <span class="hljs-string">&quot;baz&quot;</span>
+    <span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;not foo&quot;</span>,
+    <span class="hljs-attr">bar</span>: <span class="hljs-string">&quot;bar&quot;</span>,
+    <span class="hljs-attr">baz</span>: <span class="hljs-string">&quot;baz&quot;</span>
   })
 ); <span class="hljs-comment">// pulled from cache</span></code></pre>
 				<a href="#ispromise" id="ispromise" style="color: inherit; text-decoration: none;">
@@ -262,7 +262,7 @@
 					<li>If the promise is resolved, it will fire the <code>onCacheHit</code> and <code>onCacheChange</code> options</li>
 					<li>If the promise is rejected, it will trigger auto-removal from cache</li>
 				</ul>
-				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-keyword">async</span> (one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span>) =&gt; {
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-keyword">async</span> (one: <span class="hljs-built_in">string</span>, <span class="hljs-attr">two</span>: <span class="hljs-built_in">string</span>) =&gt; {
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
     <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> {
       reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>({ one, two }));
@@ -270,7 +270,7 @@
   });
 };
 
-<span class="hljs-keyword">const</span> memoized = memoize(fn, { isPromise: <span class="hljs-literal">true</span> });
+<span class="hljs-keyword">const</span> memoized = memoize(fn, { <span class="hljs-attr">isPromise</span>: <span class="hljs-literal">true</span> });
 
 memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>);
 
@@ -289,7 +289,7 @@ memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-str
 				<p>The number of values to store in cache, based on a <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_Recently_Used_.28LRU.29">Least Recently Used</a> basis. This operates the same as <a href="https://github.com/planttheidea/moize#maxsize"><code>maxSize</code></a> on <code>moize</code>, with the exception of the default being different.</p>
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> manyPossibleArgs = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
-<span class="hljs-keyword">const</span> memoized = memoize(manyPossibleArgs, { maxSize: <span class="hljs-number">3</span> });
+<span class="hljs-keyword">const</span> memoized = memoize(manyPossibleArgs, { <span class="hljs-attr">maxSize</span>: <span class="hljs-number">3</span> });
 
 <span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-string">&quot;two&quot;</span>)); <span class="hljs-comment">// [&#x27;one&#x27;, &#x27;two&#x27;]</span>
 <span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;two&quot;</span>, <span class="hljs-string">&quot;three&quot;</span>)); <span class="hljs-comment">// [&#x27;two&#x27;, &#x27;three&#x27;]</span>
@@ -309,7 +309,7 @@ memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-str
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
 <span class="hljs-keyword">const</span> memoized = memoize(fn, {
-  onCacheAdd(cache: Cache, options: Options) {
+  <span class="hljs-function"><span class="hljs-title">onCacheAdd</span>(<span class="hljs-params">cache: Cache, options: Options</span>)</span> {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;cache has been added to: &quot;</span>, cache);
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;memoized method has the following options applied: &quot;</span>, options);
   }
@@ -335,7 +335,7 @@ memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-str
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
 <span class="hljs-keyword">const</span> memoized = memoize(fn, {
-  onCacheChange(cache: Cache, options: Options) {
+  <span class="hljs-function"><span class="hljs-title">onCacheChange</span>(<span class="hljs-params">cache: Cache, options: Options</span>)</span> {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;cache has changed: &quot;</span>, cache);
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;memoized method has the following options applied: &quot;</span>, options);
   }
@@ -361,8 +361,8 @@ memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-str
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> fn = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> [one, two];
 
 <span class="hljs-keyword">const</span> memoized = memoize(fn, {
-  maxSize: <span class="hljs-number">2</span>,
-  onCacheHit(cache: Cache, options: Options) {
+  <span class="hljs-attr">maxSize</span>: <span class="hljs-number">2</span>,
+  <span class="hljs-function"><span class="hljs-title">onCacheHit</span>(<span class="hljs-params">cache: Cache, options: Options</span>)</span> {
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;cache was hit: &quot;</span>, cache);
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;memoized method has the following options applied: &quot;</span>, options);
   }
@@ -385,24 +385,24 @@ memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-str
 				</a>
 				<p><code>function(Array&lt;any&gt;): any</code></p>
 				<p>A method that allows you transform the key that is used for caching, if you want to use something other than the pure arguments.</p>
-				<pre><code class="language-ts"><span class="hljs-keyword">const</span> ignoreFunctionArgs = (one: <span class="hljs-built_in">string</span>, two: <span class="hljs-function">() =&gt;</span> {}) =&gt; [one, two];
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> ignoreFunctionArgs = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: () =&gt; {}</span>) =&gt;</span> [one, two];
 
 <span class="hljs-keyword">const</span> memoized = memoize(ignoreFunctionArgs, {
-  transformKey: <span class="hljs-built_in">JSON</span>.stringify
+  <span class="hljs-attr">transformKey</span>: <span class="hljs-built_in">JSON</span>.stringify
 });
 
 <span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-function">() =&gt;</span> {})); <span class="hljs-comment">// [&#x27;one&#x27;, () =&gt; {}]</span>
 <span class="hljs-built_in">console</span>.log(memoized(<span class="hljs-string">&quot;one&quot;</span>, <span class="hljs-function">() =&gt;</span> {})); <span class="hljs-comment">// pulled from cache, [&#x27;one&#x27;, () =&gt; {}]</span></code></pre>
 				<p>If your transformed keys require something other than <code>SameValueZero</code> equality, you can combine <code>transformKey</code> with <a href="#isequal"><code>isEqual</code></a> for completely custom key creation and comparison.</p>
-				<pre><code class="language-ts"><span class="hljs-keyword">const</span> ignoreFunctionArgs = (one: <span class="hljs-built_in">string</span>, two: <span class="hljs-function">() =&gt;</span> {}) =&gt; [one, two];
+				<pre><code class="language-ts"><span class="hljs-keyword">const</span> ignoreFunctionArgs = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: () =&gt; {}</span>) =&gt;</span> [one, two];
 
 <span class="hljs-keyword">const</span> memoized = memoize(ignoreFunctionArgs, {
-  isEqual(key1: <span class="hljs-built_in">string</span>, key2: <span class="hljs-built_in">string</span>) {
+  <span class="hljs-function"><span class="hljs-title">isEqual</span>(<span class="hljs-params">key1: <span class="hljs-built_in">string</span>, key2: <span class="hljs-built_in">string</span></span>)</span> {
     <span class="hljs-keyword">return</span> key1.args === key2.args;
   },
-  transformKey(args: <span class="hljs-built_in">any</span>[]) {
+  <span class="hljs-function"><span class="hljs-title">transformKey</span>(<span class="hljs-params">args: <span class="hljs-built_in">any</span>[]</span>)</span> {
     <span class="hljs-keyword">return</span> {
-      args: <span class="hljs-built_in">JSON</span>.stringify(args)
+      <span class="hljs-attr">args</span>: <span class="hljs-built_in">JSON</span>.stringify(args)
     };
   }
 });
@@ -418,8 +418,8 @@ memoized(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-str
 				<p><code>Object</code></p>
 				<p>The <code>cache</code> object that is used internally. The shape of this structure:</p>
 				<pre><code class="language-ts">{
-  keys: <span class="hljs-built_in">any</span>[][], <span class="hljs-comment">// available as MicroMemoize.Key[]</span>
-  values: <span class="hljs-built_in">any</span>[] <span class="hljs-comment">// available as MicroMemoize.Value[]</span>
+  <span class="hljs-attr">keys</span>: <span class="hljs-built_in">any</span>[][], <span class="hljs-comment">// available as MicroMemoize.Key[]</span>
+  <span class="hljs-attr">values</span>: <span class="hljs-built_in">any</span>[] <span class="hljs-comment">// available as MicroMemoize.Value[]</span>
 }</code></pre>
 				<p>The exposure of this object is to allow for manual manipulation of keys/values (injection, removal, expiration, etc).</p>
 				<pre><code class="language-ts"><span class="hljs-keyword">const</span> method = <span class="hljs-function">(<span class="hljs-params">one: <span class="hljs-built_in">string</span>, two: <span class="hljs-built_in">string</span></span>) =&gt;</span> ({ one, two });
