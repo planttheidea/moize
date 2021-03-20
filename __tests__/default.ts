@@ -96,6 +96,16 @@ describe('moize', () => {
                 maxSize: 5,
             });
         });
+
+        it('should copy static properties from the source function', () => {
+            const fn = (a: any, b: any) => [a, b];
+
+            fn.foo = 'bar';
+
+            const memoized = moize(fn);
+
+            expect(memoized.foo).toBe(fn.foo);
+        });
     });
 
     describe('cache manipulation', () => {

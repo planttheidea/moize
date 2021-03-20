@@ -1,4 +1,6 @@
-# moize CHANGELOG
+## 6.0.1
+
+-   [#146](https://github.com/planttheidea/moize/issues/146) - Fix reading deprecated properties on function object
 
 ## 6.0.0
 

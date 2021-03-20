@@ -12,7 +12,10 @@ import {
 } from './types';
 import { createFindKeyIndex } from './utils';
 
-const ALWAYS_SKIPPED_PROPERTIES = {
+const ALWAYS_SKIPPED_PROPERTIES: Record<string, boolean> = {
+    arguments: true,
+    callee: true,
+    caller: true,
     constructor: true,
     length: true,
     name: true,
@@ -37,9 +40,7 @@ export function copyStaticProperties(
 ) {
     Object.getOwnPropertyNames(originalFn).forEach((property) => {
         if (
-            !ALWAYS_SKIPPED_PROPERTIES[
-                property as keyof typeof ALWAYS_SKIPPED_PROPERTIES
-            ] &&
+            !ALWAYS_SKIPPED_PROPERTIES[property] &&
             skippedProperties.indexOf(property) === -1
         ) {
             const descriptor = Object.getOwnPropertyDescriptor(
