@@ -1,3 +1,7 @@
+## 6.0.2
+
+-   Update dependencies to latest (`fast-equals` in particular to prevent surfacing of [an issue it faced](https://github.com/planttheidea/fast-equals/pull/41))
+
 ## 6.0.1
 
 -   [#146](https://github.com/planttheidea/moize/issues/146) - Fix reading deprecated properties on function object
