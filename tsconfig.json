@@ -1,22 +1,21 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "baseUrl": "src",
-    "esModuleInterop": true,
-    "jsx": "react",
-    "lib": ["dom", "es2015"],
-    "module": "esNext",
-    "moduleResolution": "node",
-    "noImplicitAny": true,
-    "outDir": "./dist",
-    "sourceMap": true,
-    "target": "es5"
-  },
-  "exclude": ["node_modules"],
-  "include": ["src/*", "__tests__/*"],
-  "typedocOptions": {
-    "mode": "file",
-    "out": "docs",
-    "inputFiles": ["src"]
-  }
+    "compilerOptions": {
+        "allowJs": true,
+        "baseUrl": "src",
+        "esModuleInterop": true,
+        "jsx": "react",
+        "lib": ["dom", "es2015"],
+        "module": "esNext",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "outDir": "./dist",
+        "sourceMap": true,
+        "target": "es5"
+    },
+    "exclude": ["node_modules"],
+    "include": ["src/*", "__tests__/*"],
+    "typedocOptions": {
+        "out": "docs",
+        "entryPoints": ["src/index.ts"]
+    }
 }
