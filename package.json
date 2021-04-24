@@ -96,12 +96,6 @@
     "main": "dist/moize.cjs.js",
     "module": "dist/moize.esm.js",
     "name": "moize",
-    "nyc": {
-        "exclude": [
-            "**/plugins/*.js",
-            "**/test/*.js"
-        ]
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/planttheidea/moize.git"
