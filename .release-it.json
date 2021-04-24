@@ -1,16 +1,21 @@
 {
-  "github": {
-    "release": true,
-    "tagName": "v${version}"
-  },
-  "hooks": {
-    "before:init": [
-      "npm run lint",
-      "npm run typecheck",
-      "npm run test:coverage",
-      "npm run dist",
-      "npm run copy:mjs"
-    ],
-    "before:release": ["npm run docs", "git add .", "git commit -m 'Update docs'", "git push"]
-  }
+    "github": {
+        "release": true,
+        "tagName": "v${version}"
+    },
+    "hooks": {
+        "before:init": [
+            "npm run lint",
+            "npm run typecheck",
+            "npm run test",
+            "npm run dist",
+            "npm run copy:mjs"
+        ],
+        "before:release": [
+            "npm run docs",
+            "git add .",
+            "git commit -m 'Update docs'",
+            "git push"
+        ]
+    }
 }
