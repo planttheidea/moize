@@ -203,17 +203,24 @@ describe('moize.react', () => {
             }
         }
 
+        function renderApp(
+            isRerender?: boolean,
+            onRender?: (value?: unknown) => void
+        ) {
+            ReactDOM.render(<App isRerender={isRerender} />, app, onRender);
+        }
+
         const app = document.createElement('div');
 
         document.body.appendChild(app);
 
-        ReactDOM.render(<App />, app);
+        renderApp();
 
         expect(ValueBar).toHaveBeenCalledTimes(data.length);
 
         await new Promise((resolve) =>
             setTimeout(() => {
-                ReactDOM.render(<App isRerender />, app, resolve);
+                renderApp(true, resolve);
             }, 1000)
         );
 
