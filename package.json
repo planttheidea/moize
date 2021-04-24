@@ -119,7 +119,7 @@
         "clean:mjs": "rimraf mjs",
         "copy:mjs": "npm run clean:mjs && node ./es-to-mjs.js",
         "copy:types": "cp src/types.ts index.d.ts",
-        "dev": "NODE_ENV=development webpack-dev-server --colors --progress --config=webpack/webpack.config.js",
+        "dev": "NODE_ENV=development webpack serve --progress --config=webpack/webpack.config.js",
         "dist": "npm run clean:dist && npm run build",
         "docs": "npm run clean:docs && typedoc",
         "lint": "NODE_ENV=test eslint src/*.ts",
