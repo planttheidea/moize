@@ -355,7 +355,9 @@ const runMultiplePrimitiveSuite = () => {
         resolveMultipleArguments
     );
     const mLruMemoize = lruMemoize(Infinity)(fibonacciMultiplePrimitive);
-    const mMem = mem(fibonacciMultiplePrimitive, resolveMultipleArguments);
+    const mMem = mem(fibonacciMultiplePrimitive, {
+        cacheKey: resolveMultipleArguments,
+    });
     const mMemoizee = memoizee(fibonacciMultiplePrimitive);
     const mMemoizerific = memoizerific(Infinity)(fibonacciMultiplePrimitive);
     const mMoize = moize(fibonacciMultiplePrimitive);
@@ -414,7 +416,9 @@ const runMultipleArraySuite = () => {
     const mFastMemoize = fastMemoize(fibonacciMultipleArray);
     const mLodash = lodash(fibonacciMultipleArray, resolveMultipleArguments);
     const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleArray);
-    const mMem = mem(fibonacciMultipleArray, resolveMultipleArguments);
+    const mMem = mem(fibonacciMultipleArray, {
+        cacheKey: resolveMultipleArguments,
+    });
     const mMemoizee = memoizee(fibonacciMultipleArray);
     const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleArray);
     const mMoize = moize(fibonacciMultipleArray);
@@ -473,7 +477,9 @@ const runMultipleObjectSuite = () => {
     const mFastMemoize = fastMemoize(fibonacciMultipleObject);
     const mLodash = lodash(fibonacciMultipleObject, resolveMultipleArguments);
     const mLruMemoize = lruMemoize(Infinity)(fibonacciMultipleObject);
-    const mMem = mem(fibonacciMultipleObject, resolveMultipleArguments);
+    const mMem = mem(fibonacciMultipleObject, {
+        cacheKey: resolveMultipleArguments,
+    });
     const mMemoizee = memoizee(fibonacciMultipleObject);
     const mMemoizerific = memoizerific(Infinity)(fibonacciMultipleObject);
     const mMoize = moize(fibonacciMultipleObject);
