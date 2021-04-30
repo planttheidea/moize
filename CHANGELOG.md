@@ -1,3 +1,9 @@
+# moize CHANGELOG
+
+## 6.0.3
+
+-   [#153](https://github.com/planttheidea/moize/issues/153) - Fix ESM/CommonJS cross-compatibility issues in NextJS
+
 ## 6.0.2
 
 -   Update dependencies to latest (`fast-equals` in particular to prevent surfacing of [an issue it faced](https://github.com/planttheidea/fast-equals/pull/41))

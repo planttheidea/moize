@@ -94,7 +94,7 @@ import moize from 'moize/mjs/index.mjs';
 ## CommonJS
 
 ```ts
-const moize = require('moize').default;
+const moize = require('moize');
 ```
 
 # Usage
