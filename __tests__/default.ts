@@ -403,4 +403,11 @@ describe('moize', () => {
             expect(memoized.originalFunction).toBe(method);
         });
     });
+
+    describe('edge cases', () => {
+        it('should have a self-referring `default` property for mixed ESM/CJS environments', () => {
+            // @ts-ignore - `default` is not surfaced because it exists invisibly for edge-case import cross-compatibility
+            expect(moize.default).toBe(moize);
+        });
+    });
 });
