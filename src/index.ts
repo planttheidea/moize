@@ -598,4 +598,7 @@ moize.updateCacheForKey = <UpdateWhen extends UpdateCacheForKey>(
     updateCacheForKey: UpdateWhen
 ) => moize({ updateCacheForKey });
 
+// @ts-ignore - Add self-referring `default` property for edge-case cross-compatibility of mixed ESM/CommonJS usage.
+moize.default = moize;
+
 export default moize;
