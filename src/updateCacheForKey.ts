@@ -1,5 +1,4 @@
 import { copyStaticProperties } from './instance';
-import { setName } from './utils';
 
 import type { Moized } from './types';
 
@@ -38,7 +37,6 @@ export function createRefreshableMoized<MoizedFn extends Moized>(
     } as typeof moized;
 
     copyStaticProperties(moized, refreshableMoized);
-    setName(refreshableMoized, moized.originalFunction);
 
     return refreshableMoized;
 }

@@ -193,17 +193,18 @@ const moize: Moize = function <
     };
 
     const memoized = memoize(fn, microMemoizeOptions);
-    const moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
+
+    let moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
         expirations,
         options: coalescedOptions,
         originalFunction: fn,
     });
 
-    setName(moized, fn);
-
     if (updateCacheForKey) {
-        return createRefreshableMoized<typeof moized>(moized);
+        moized = createRefreshableMoized<typeof moized>(moized);
     }
+
+    setName(moized, (fn as Moizeable).name, options.profileName);
 
     return moized;
 };

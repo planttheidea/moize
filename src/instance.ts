@@ -313,14 +313,5 @@ export function createMoizeInstance<
     addInstanceMethods<OriginalFn>(memoized, configuration);
     addInstanceProperties<OriginalFn>(memoized, configuration);
 
-    const originalName = configuration.originalFunction.name || 'anonymous';
-
-    Object.defineProperty(memoized, 'name', {
-        configurable: true,
-        enumerable: false,
-        value: `memoized(${originalName})`,
-        writable: false,
-    });
-
     return memoized as Moized<OriginalFn, CombinedOptions>;
 }

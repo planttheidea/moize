@@ -84,7 +84,7 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
 
     Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
 
-    setName(Moized as MoizedFunction, fn);
+    setName(Moized as MoizedFunction, fn.name, options.profileName);
 
     return Moized;
 }

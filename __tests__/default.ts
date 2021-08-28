@@ -416,7 +416,15 @@ describe('moize', () => {
             expect(memoized.name).toBe('moized(myNamedFunction)');
         });
 
-        it('should default the anonymous name', () => {
+        it('should fall back to the `profileName` when provided and function name is anonymous', () => {
+            const memoized = moize(() => {}, {
+                profileName: 'custom profile name',
+            });
+
+            expect(memoized.name).toBe('moized(custom profile name)');
+        });
+
+        it('should have an ultimate fallback for an anonymous function', () => {
             const memoized = moize(() => {});
 
             expect(memoized.name).toBe('moized(anonymous)');
