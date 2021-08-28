@@ -163,5 +163,16 @@ export function mergeOptions(
 }
 
 export function isMoized(fn: Moizeable | Moized | Options): fn is Moized {
-    return typeof fn === 'function' && fn.isMoized;
+    return typeof fn === 'function' && (fn as Moizeable).isMoized;
+}
+
+export function setName(fn: Moized, originalFn: Moizeable) {
+    const name = originalFn.name || 'anonymous';
+
+    Object.defineProperty(fn, 'name', {
+        configurable: true,
+        enumerable: false,
+        value: `moized(${name})`,
+        writable: true,
+    });
 }

@@ -95,9 +95,9 @@ describe('moize.react', () => {
         type Props = { id: string; unused?: boolean };
 
         const Component = ({ id }: Props) => <div id={id} />;
-        const ComponentSpy = (jest.fn(
+        const ComponentSpy = jest.fn(
             Component
-        ) as unknown) as typeof Component & {
+        ) as unknown as typeof Component & {
             contextTypes: Record<string, any>;
         };
 
@@ -254,5 +254,17 @@ describe('moize.react', () => {
         await new Promise((resolve) => setTimeout(resolve, timing + 200));
 
         expect(spy).toHaveBeenCalled();
+    });
+
+    describe('edge cases', () => {
+        it('should retain the original function name', () => {
+            function MyComponent(): null {
+                return null;
+            }
+
+            const memoized = moize.react(MyComponent);
+
+            expect(memoized.name).toBe('moized(MyComponent)');
+        });
     });
 });

@@ -77,7 +77,7 @@ export function addInstanceMethods<OriginalFn extends Fn>(
         options.isMatchingKey
     );
 
-    const moized = (memoized as unknown) as Moized<OriginalFn, Options>;
+    const moized = memoized as unknown as Moized<OriginalFn, Options>;
 
     moized.clear = function () {
         const {
@@ -158,11 +158,8 @@ export function addInstanceMethods<OriginalFn extends Fn>(
 
     moized.set = function (key: Key, value: any) {
         const { _microMemoizeOptions, cache, options } = moized;
-        const {
-            onCacheAdd,
-            onCacheChange,
-            transformKey,
-        } = _microMemoizeOptions;
+        const { onCacheAdd, onCacheChange, transformKey } =
+            _microMemoizeOptions;
 
         const cacheKey = transformKey ? transformKey(key) : key;
         const keyIndex = findKeyIndex(cache.keys, cacheKey);
@@ -291,7 +288,7 @@ export function addInstanceProperties<OriginalFn extends Moizeable>(
         },
     });
 
-    const moized = (memoized as unknown) as Moized<OriginalFn, Options>;
+    const moized = memoized as unknown as Moized<OriginalFn, Options>;
 
     copyStaticProperties(originalFunction, moized);
 }
@@ -315,6 +312,15 @@ export function createMoizeInstance<
 ) {
     addInstanceMethods<OriginalFn>(memoized, configuration);
     addInstanceProperties<OriginalFn>(memoized, configuration);
+
+    const originalName = configuration.originalFunction.name || 'anonymous';
+
+    Object.defineProperty(memoized, 'name', {
+        configurable: true,
+        enumerable: false,
+        value: `memoized(${originalName})`,
+        writable: false,
+    });
 
     return memoized as Moized<OriginalFn, CombinedOptions>;
 }
