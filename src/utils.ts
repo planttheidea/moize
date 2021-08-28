@@ -171,7 +171,7 @@ export function setName(
     originalFunctionName: string,
     profileName: string
 ) {
-    const name = originalFunctionName || profileName || 'anonymous';
+    const name = profileName || originalFunctionName || 'anonymous';
 
     Object.defineProperty(fn, 'name', {
         configurable: true,
