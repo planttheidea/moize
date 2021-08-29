@@ -54,8 +54,6 @@
         "jest": "27.1.0",
         "jsdoc": "3.6.6",
         "jsdoc-babel": "0.5.0",
-        "jsdom": "16.5.3",
-        "jsdom-global": "3.0.2",
         "lodash": "4.17.21",
         "lru-memoize": "1.1.0",
         "mem": "8.1.1",
