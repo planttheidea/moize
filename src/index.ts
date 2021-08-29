@@ -32,7 +32,7 @@ import {
     UpdateCacheForKey,
 } from './types';
 import { createRefreshableMoized } from './updateCacheForKey';
-import { combine, compose, isMoized, mergeOptions } from './utils';
+import { combine, compose, isMoized, mergeOptions, setName } from './utils';
 
 export * from './types';
 
@@ -194,15 +194,17 @@ const moize: Moize = function <
 
     const memoized = memoize(fn, microMemoizeOptions);
 
-    const moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
+    let moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
         expirations,
         options: coalescedOptions,
         originalFunction: fn,
     });
 
     if (updateCacheForKey) {
-        return createRefreshableMoized<typeof moized>(moized);
+        moized = createRefreshableMoized<typeof moized>(moized);
     }
+
+    setName(moized, (fn as Moizeable).name, options.profileName);
 
     return moized;
 };

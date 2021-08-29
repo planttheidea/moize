@@ -346,10 +346,8 @@ describe('moize', () => {
             const mmResult = microMemoize(method, { maxSize: 1 });
 
             const { isEqual, ...options } = memoized._microMemoizeOptions;
-            const {
-                isEqual: _isEqualIgnored,
-                ...resultOptions
-            } = mmResult.options;
+            const { isEqual: _isEqualIgnored, ...resultOptions } =
+                mmResult.options;
 
             expect(options).toEqual(resultOptions);
             expect(isEqual).toBe(sameValueZeroEqual);
@@ -408,6 +406,30 @@ describe('moize', () => {
         it('should have a self-referring `default` property for mixed ESM/CJS environments', () => {
             // @ts-ignore - `default` is not surfaced because it exists invisibly for edge-case import cross-compatibility
             expect(moize.default).toBe(moize);
+        });
+
+        it('should prefer the `profileName` when provided', () => {
+            function myNamedFunction() {}
+
+            const memoized = moize(myNamedFunction, {
+                profileName: 'custom profile name',
+            });
+
+            expect(memoized.name).toBe('moized(custom profile name)');
+        });
+
+        it('should wrap the original function name', () => {
+            function myNamedFunction() {}
+
+            const memoized = moize(myNamedFunction);
+
+            expect(memoized.name).toBe('moized(myNamedFunction)');
+        });
+
+        it('should have an ultimate fallback for an anonymous function', () => {
+            const memoized = moize(() => {});
+
+            expect(memoized.name).toBe('moized(anonymous)');
         });
     });
 });

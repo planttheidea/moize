@@ -1,5 +1,6 @@
 import { copyStaticProperties } from './instance';
-import { Moize, Moizeable, Options } from './types';
+import { Moize, Moized as MoizedFunction, Moizeable, Options } from './types';
+import { setName } from './utils';
 
 // This was stolen from React internals, which allows us to create React elements without needing
 // a dependency on the React library itself.
@@ -82,6 +83,8 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
     copyStaticProperties(fn, Moized, ['contextType', 'contextTypes']);
 
     Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
+
+    setName(Moized as MoizedFunction, fn.name, options.profileName);
 
     return Moized;
 }

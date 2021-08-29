@@ -21,7 +21,7 @@ export function createRefreshableMoized<MoizedFn extends Moized>(
      * reverts to the original value if the promise is rejected and there was already a cached
      * value.
      */
-    function refreshableMoized(
+    const refreshableMoized = function refreshableMoized(
         this: any,
         ...args: Parameters<typeof moized.fn>
     ) {
@@ -34,9 +34,9 @@ export function createRefreshableMoized<MoizedFn extends Moized>(
         moized.set(args, result);
 
         return result;
-    }
+    } as typeof moized;
 
     copyStaticProperties(moized, refreshableMoized);
 
-    return refreshableMoized as MoizedFn;
+    return refreshableMoized;
 }

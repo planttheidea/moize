@@ -318,4 +318,16 @@ describe('moize.updateCacheForKey', () => {
             );
         });
     });
+
+    describe('edge cases', () => {
+        it('should retain the original function name', () => {
+            function myNamedFunction() {}
+
+            const memoized = moize(myNamedFunction, {
+                updateCacheForKey: () => false,
+            });
+
+            expect(memoized.name).toBe('moized(myNamedFunction)');
+        });
+    });
 });
