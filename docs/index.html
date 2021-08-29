@@ -320,9 +320,9 @@
 </code></pre>
 				<p>If <code>serialize</code> is combined with either <code>maxArgs</code> or <code>transformArgs</code>, the following order is used:</p>
 				<ol>
-					<li> limit by <code>maxArgs</code> (if applicable)</li>
-					<li> transform by <code>transformArgs</code> (if applicable)</li>
-					<li> serialize by <code>serializer</code></li>
+					<li>limit by <code>maxArgs</code> (if applicable)</li>
+					<li>transform by <code>transformArgs</code> (if applicable)</li>
+					<li>serialize by <code>serializer</code></li>
 				</ol>
 				<p><strong>NOTE</strong>: This is much slower than the default key storage, and usually the same requirements can be meet with <code>isDeepEqual</code>, so use at your discretion.</p>
 				<a href="#isshallowequal" id="isshallowequal" style="color: inherit; text-decoration: none;">
@@ -425,9 +425,9 @@
 </code></pre>
 				<p>If <code>maxArgs</code> is combined with either <code>serialize</code> or <code>transformArgs</code>, the following order is used:</p>
 				<ol>
-					<li> limit by <code>maxArgs</code></li>
-					<li> transform by <code>transformArgs</code> (if applicable)</li>
-					<li> serialize by <code>serializer</code> (if applicable)</li>
+					<li>limit by <code>maxArgs</code></li>
+					<li>transform by <code>transformArgs</code> (if applicable)</li>
+					<li>serialize by <code>serializer</code> (if applicable)</li>
 				</ol>
 				<a href="#maxsize" id="maxsize" style="color: inherit; text-decoration: none;">
 					<h2>maxSize</h2>
@@ -584,9 +584,9 @@
 </code></pre>
 				<p>If <code>transformArgs</code> is combined with either <code>maxArgs</code> or <code>serialize</code>, the following order is used:</p>
 				<ol>
-					<li> limit by <code>maxArgs</code> (if applicable)</li>
-					<li> transform by <code>transformArgs</code></li>
-					<li> serialize by <code>serializer</code> (if applicable)</li>
+					<li>limit by <code>maxArgs</code> (if applicable)</li>
+					<li>transform by <code>transformArgs</code></li>
+					<li>serialize by <code>serializer</code> (if applicable)</li>
 				</ol>
 				<a href="#updatecacheforkey" id="updatecacheforkey" style="color: inherit; text-decoration: none;">
 					<h2>updateCacheForKey</h2>
@@ -859,8 +859,8 @@
 				<p>Naturally you can tweak as needed for your project (default options, option-specific hooks, etc).</p>
 				<p><strong>NOTE</strong>: This is very similar to <a href="https://reactjs.org/docs/hooks-reference.html#usecallback"><code>useCallback</code></a> built-in hook, with two main differences:</p>
 				<ul>
-					<li>  There is a third parameter passed (the <a href="#configuration-options"><code>options</code></a> passed to <code>moize</code>)</li>
-					<li>  The second argument array is the list of arguments passed to the memoized function</li>
+					<li>There is a third parameter passed (the <a href="#configuration-options"><code>options</code></a> passed to <code>moize</code>)</li>
+					<li>The second argument array is the list of arguments passed to the memoized function</li>
 				</ul>
 				<p>In both <code>useCallback</code> and <code>useMemo</code>, the array is a list of <em>dependencies</em> which determine whether the funciton is called. These can be different than the arguments, although in general practice they are equivalent. The decision to use them directly was both for this common use-case reasons, but also because the implementation complexity would have increased substantially if not.</p>
 				<a href="#composition" id="composition" style="color: inherit; text-decoration: none;">
@@ -1280,42 +1280,42 @@
 					<h1>Browser support</h1>
 				</a>
 				<ul>
-					<li>  Chrome (all versions)</li>
-					<li>  Firefox (all versions)</li>
-					<li>  Edge (all versions)</li>
-					<li>  Opera 15+</li>
-					<li>  IE 9+</li>
-					<li>  Safari 6+</li>
-					<li>  iOS 8+</li>
-					<li>  Android 4+</li>
+					<li>Chrome (all versions)</li>
+					<li>Firefox (all versions)</li>
+					<li>Edge (all versions)</li>
+					<li>Opera 15+</li>
+					<li>IE 9+</li>
+					<li>Safari 6+</li>
+					<li>iOS 8+</li>
+					<li>Android 4+</li>
 				</ul>
 				<a href="#development" id="development" style="color: inherit; text-decoration: none;">
 					<h1>Development</h1>
 				</a>
 				<p>Standard stuff, clone the repo and <code>npm install</code> dependencies. The npm scripts available:</p>
 				<ul>
-					<li>  <code>benchmark</code> =&gt; run the benchmark suite pitting <code>moize</code> against other libraries in common use-cases</li>
-					<li>  <code>benchmark:alternative</code> =&gt; run the benchmark suite for alternative forms of caching</li>
-					<li>  <code>benchmark:array</code> =&gt; run the benchmark suite for memoized methods using single and multiple <code>array</code> parameters</li>
-					<li>  <code>benchmark:object</code> =&gt; run the benchmark suite for memoized methods using single and multiple <code>object</code> parameters</li>
-					<li>  <code>benchmark:primitive</code> =&gt; run the benchmark suite for memoized methods using single and multiple <code>object</code> parameters</li>
-					<li>  <code>benchmark:react</code> =&gt; run the benchmark suite for memoized React components</li>
-					<li>  <code>build</code> =&gt; run rollup to build the distributed files in <code>dist</code></li>
-					<li>  <code>clean:dist</code> =&gt; run <code>rimraf</code> on the <code>dist</code> folder</li>
-					<li>  <code>clean:docs</code> =&gt; run <code>rimraf</code> on the <code>docs</code> folder</li>
-					<li>  <code>clean:mjs</code> =&gt; run <code>rimraf</code> on the <code>mjs</code> folder</li>
-					<li>  <code>copy:mjs</code> =&gt; run <code>clean:mjs</code> and the <code>es-to-mjs</code> script</li>
-					<li>  <code>copy:types</code> =&gt; copy internal types to be available for consumer</li>
-					<li>  <code>dev</code> =&gt; run webpack dev server to run example app (playground!)</li>
-					<li>  <code>dist</code> =&gt; runs <code>clean:dist</code> and <code>build</code></li>
-					<li>  <code>docs</code> =&gt; runs <code>clean:docs</code> and builds the docs via <code>jsdoc</code></li>
-					<li>  <code>flow</code> =&gt; runs <code>flow check</code> on the files in <code>src</code></li>
-					<li>  <code>lint</code> =&gt; runs ESLint against all files in the <code>src</code> folder</li>
-					<li>  <code>lint:fix</code> =&gt; runs `lint``, fixing any errors if possible</li>
-					<li>  <code>test</code> =&gt; run <code>jest</code> test functions with <code>NODE_ENV=test</code></li>
-					<li>  <code>test:coverage</code> =&gt; run <code>test</code> but with code coverage</li>
-					<li>  <code>test:watch</code> =&gt; run <code>test</code>, but with persistent watcher</li>
-					<li>  <code>typecheck</code> =&gt; run <code>tsc</code> against source code to validate TypeScript</li>
+					<li><code>benchmark</code> =&gt; run the benchmark suite pitting <code>moize</code> against other libraries in common use-cases</li>
+					<li><code>benchmark:alternative</code> =&gt; run the benchmark suite for alternative forms of caching</li>
+					<li><code>benchmark:array</code> =&gt; run the benchmark suite for memoized methods using single and multiple <code>array</code> parameters</li>
+					<li><code>benchmark:object</code> =&gt; run the benchmark suite for memoized methods using single and multiple <code>object</code> parameters</li>
+					<li><code>benchmark:primitive</code> =&gt; run the benchmark suite for memoized methods using single and multiple <code>object</code> parameters</li>
+					<li><code>benchmark:react</code> =&gt; run the benchmark suite for memoized React components</li>
+					<li><code>build</code> =&gt; run rollup to build the distributed files in <code>dist</code></li>
+					<li><code>clean:dist</code> =&gt; run <code>rimraf</code> on the <code>dist</code> folder</li>
+					<li><code>clean:docs</code> =&gt; run <code>rimraf</code> on the <code>docs</code> folder</li>
+					<li><code>clean:mjs</code> =&gt; run <code>rimraf</code> on the <code>mjs</code> folder</li>
+					<li><code>copy:mjs</code> =&gt; run <code>clean:mjs</code> and the <code>es-to-mjs</code> script</li>
+					<li><code>copy:types</code> =&gt; copy internal types to be available for consumer</li>
+					<li><code>dev</code> =&gt; run webpack dev server to run example app (playground!)</li>
+					<li><code>dist</code> =&gt; runs <code>clean:dist</code> and <code>build</code></li>
+					<li><code>docs</code> =&gt; runs <code>clean:docs</code> and builds the docs via <code>jsdoc</code></li>
+					<li><code>flow</code> =&gt; runs <code>flow check</code> on the files in <code>src</code></li>
+					<li><code>lint</code> =&gt; runs ESLint against all files in the <code>src</code> folder</li>
+					<li><code>lint:fix</code> =&gt; runs `lint``, fixing any errors if possible</li>
+					<li><code>test</code> =&gt; run <code>jest</code> test functions with <code>NODE_ENV=test</code></li>
+					<li><code>test:coverage</code> =&gt; run <code>test</code> but with code coverage</li>
+					<li><code>test:watch</code> =&gt; run <code>test</code>, but with persistent watcher</li>
+					<li><code>typecheck</code> =&gt; run <code>tsc</code> against source code to validate TypeScript</li>
 				</ul>
 			</div>
 		</div>
@@ -1333,82 +1333,82 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
-						<a href="interfaces/maxage.html" class="tsd-kind-icon">Max<wbr>Age</a>
+						<a href="interfaces/MaxAge.html" class="tsd-kind-icon">Max<wbr>Age</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-has-type-parameter">
-						<a href="interfaces/moize.html" class="tsd-kind-icon">Moize</a>
+						<a href="interfaces/Moize.html" class="tsd-kind-icon">Moize</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#cache" class="tsd-kind-icon">Cache</a>
+						<a href="modules.html#Cache" class="tsd-kind-icon">Cache</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#curriedmoize" class="tsd-kind-icon">Curried<wbr>Moize</a>
+						<a href="modules.html#CurriedMoize" class="tsd-kind-icon">Curried<wbr>Moize</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#expiration" class="tsd-kind-icon">Expiration</a>
+						<a href="modules.html#Expiration" class="tsd-kind-icon">Expiration</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#fn" class="tsd-kind-icon">Fn</a>
+						<a href="modules.html#Fn" class="tsd-kind-icon">Fn</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#functionalcomponent" class="tsd-kind-icon">Functional<wbr>Component</a>
+						<a href="modules.html#FunctionalComponent" class="tsd-kind-icon">Functional<wbr>Component</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#globalstatsobject" class="tsd-kind-icon">Global<wbr>Stats<wbr>Object</a>
+						<a href="modules.html#GlobalStatsObject" class="tsd-kind-icon">Global<wbr>Stats<wbr>Object</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#isequal" class="tsd-kind-icon">Is<wbr>Equal</a>
+						<a href="modules.html#IsEqual" class="tsd-kind-icon">Is<wbr>Equal</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#ismatchingkey" class="tsd-kind-icon">Is<wbr>Matching<wbr>Key</a>
+						<a href="modules.html#IsMatchingKey" class="tsd-kind-icon">Is<wbr>Matching<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#key" class="tsd-kind-icon">Key</a>
+						<a href="modules.html#Key" class="tsd-kind-icon">Key</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#memoized" class="tsd-kind-icon">Memoized</a>
+						<a href="modules.html#Memoized" class="tsd-kind-icon">Memoized</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#micromemoizeoptions" class="tsd-kind-icon">Micro<wbr>Memoize<wbr>Options</a>
+						<a href="modules.html#MicroMemoizeOptions" class="tsd-kind-icon">Micro<wbr>Memoize<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#moizeconfiguration" class="tsd-kind-icon">Moize<wbr>Configuration</a>
+						<a href="modules.html#MoizeConfiguration" class="tsd-kind-icon">Moize<wbr>Configuration</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#moizeable" class="tsd-kind-icon">Moizeable</a>
+						<a href="modules.html#Moizeable" class="tsd-kind-icon">Moizeable</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#moized" class="tsd-kind-icon">Moized</a>
+						<a href="modules.html#Moized" class="tsd-kind-icon">Moized</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#oncacheoperation" class="tsd-kind-icon">On<wbr>Cache<wbr>Operation</a>
+						<a href="modules.html#OnCacheOperation" class="tsd-kind-icon">On<wbr>Cache<wbr>Operation</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#onexpire" class="tsd-kind-icon">On<wbr>Expire</a>
+						<a href="modules.html#OnExpire" class="tsd-kind-icon">On<wbr>Expire</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#options" class="tsd-kind-icon">Options</a>
+						<a href="modules.html#Options" class="tsd-kind-icon">Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#serialize" class="tsd-kind-icon">Serialize</a>
+						<a href="modules.html#Serialize" class="tsd-kind-icon">Serialize</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#statscache" class="tsd-kind-icon">Stats<wbr>Cache</a>
+						<a href="modules.html#StatsCache" class="tsd-kind-icon">Stats<wbr>Cache</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#statsobject" class="tsd-kind-icon">Stats<wbr>Object</a>
+						<a href="modules.html#StatsObject" class="tsd-kind-icon">Stats<wbr>Object</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#statsprofile" class="tsd-kind-icon">Stats<wbr>Profile</a>
+						<a href="modules.html#StatsProfile" class="tsd-kind-icon">Stats<wbr>Profile</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#transformkey" class="tsd-kind-icon">Transform<wbr>Key</a>
+						<a href="modules.html#TransformKey" class="tsd-kind-icon">Transform<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#updatecacheforkey" class="tsd-kind-icon">Update<wbr>Cache<wbr>For<wbr>Key</a>
+						<a href="modules.html#UpdateCacheForKey" class="tsd-kind-icon">Update<wbr>Cache<wbr>For<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#value" class="tsd-kind-icon">Value</a>
+						<a href="modules.html#Value" class="tsd-kind-icon">Value</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="modules.html#default" class="tsd-kind-icon">default</a>
@@ -1424,6 +1424,7 @@
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 		</div>
 	</div>
