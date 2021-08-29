@@ -171,12 +171,16 @@ export function setName(
     originalFunctionName: string,
     profileName: string
 ) {
-    const name = profileName || originalFunctionName || 'anonymous';
+    try {
+        const name = profileName || originalFunctionName || 'anonymous';
 
-    Object.defineProperty(fn, 'name', {
-        configurable: true,
-        enumerable: false,
-        value: `moized(${name})`,
-        writable: true,
-    });
+        Object.defineProperty(fn, 'name', {
+            configurable: true,
+            enumerable: false,
+            value: `moized(${name})`,
+            writable: true,
+        });
+    } catch {
+        // For engines where `function.name` is not configurable, do nothing.
+    }
 }
