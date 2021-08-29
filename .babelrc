@@ -1,36 +1,39 @@
 {
-  "env": {
-    "lib": {
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true
-          }
-        ]
-      ]
+    "env": {
+        "lib": {
+            "plugins": [
+                ["@babel/plugin-proposal-private-methods", { "loose": false }]
+            ],
+            "presets": [
+                [
+                    "@babel/preset-env",
+                    {
+                        "loose": true
+                    }
+                ]
+            ]
+        },
+        "test": {
+            "plugins": ["@babel/plugin-proposal-class-properties"],
+            "presets": [
+                [
+                    "@babel/preset-env",
+                    {
+                        "loose": true
+                    }
+                ],
+                "@babel/preset-react"
+            ]
+        }
     },
-    "test": {
-      "plugins": ["@babel/plugin-proposal-class-properties"],
-      "presets": [
+    "presets": [
+        "@babel/preset-typescript",
         [
-          "@babel/preset-env",
-          {
-            "loose": true
-          }
-        ],
-        "@babel/preset-react"
-      ]
-    }
-  },
-  "presets": [
-    "@babel/preset-typescript",
-    [
-      "@babel/preset-env",
-      {
-        "loose": true,
-        "modules": false
-      }
+            "@babel/preset-env",
+            {
+                "loose": true,
+                "modules": false
+            }
+        ]
     ]
-  ]
 }
