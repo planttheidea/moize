@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 6.1.0
+
+-   [#161](https://github.com/planttheidea/moize/issues/161) - Provide custom function name when supported
+
 ## 6.0.3
 
 -   [#153](https://github.com/planttheidea/moize/issues/153) - Fix ESM/CommonJS cross-compatibility issues in NextJS
