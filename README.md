@@ -1322,7 +1322,7 @@ Standard stuff, clone the repo and `npm install` dependencies. The npm scripts a
 -   `docs` => runs `clean:docs` and builds the docs via `jsdoc`
 -   `flow` => runs `flow check` on the files in `src`
 -   `lint` => runs ESLint against all files in the `src` folder
--   `lint:fix` => runs `lint``, fixing any errors if possible
+-   `lint:fix` => runs `lint`, fixing any errors if possible
 -   `test` => run `jest` test functions with `NODE_ENV=test`
 -   `test:coverage` => run `test` but with code coverage
 -   `test:watch` => run `test`, but with persistent watcher
