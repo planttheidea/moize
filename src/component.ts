@@ -55,11 +55,12 @@ export function createMoizedComponent<OriginalFn extends Moizeable>(
         fn.displayName = fn.name || 'Component';
     }
 
-    function Moized<
-        Props extends Record<string, unknown>,
-        Context extends any,
-        Updater extends any
-    >(this: any, props: Props, context: Context, updater: Updater) {
+    function Moized<Props extends Record<string, unknown>, Context, Updater>(
+        this: any,
+        props: Props,
+        context: Context,
+        updater: Updater
+    ) {
         this.props = props;
         this.context = context;
         this.updater = updater;
