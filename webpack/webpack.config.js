@@ -1,5 +1,4 @@
-'use strict';
-
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
@@ -23,19 +22,6 @@ module.exports = {
 
     module: {
         rules: [
-            {
-                enforce: 'pre',
-                include: [path.resolve(ROOT, 'src')],
-                loader: 'eslint-loader',
-                options: {
-                    configFile: '.eslintrc',
-                    failOnError: true,
-                    failOnWarning: false,
-                    fix: true,
-                    formatter: require('eslint-friendly-formatter'),
-                },
-                test: /\.(js|ts)$/,
-            },
             {
                 include: [
                     path.resolve(ROOT, 'src'),
@@ -64,6 +50,7 @@ module.exports = {
     plugins: [
         new webpack.EnvironmentPlugin(['NODE_ENV']),
         new HtmlWebpackPlugin(),
+        new ESLintWebpackPlugin(),
     ],
 
     resolve: {
