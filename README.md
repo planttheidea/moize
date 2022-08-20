@@ -39,6 +39,7 @@
   - [moize.maxAge](#moizemaxage)
   - [moize.maxArgs](#moizemaxargs)
   - [moize.maxSize](#moizemaxsize)
+  - [moize.profile](#moizeprofile)
   - [moize.promise](#moizepromise)
   - [moize.react](#moizereact)
   - [moize.serialize](#moizeserialize)
@@ -780,6 +781,20 @@ const fn = (one: string, two: string) => `${one} ${two}`;
 export default moize.maxSize(5)(fn);
 ```
 
+## moize.profile
+
+Pre-applies the [`profileName`](#profilename) option as a curriable method.
+
+```ts
+import moize from 'moize';
+
+const fn = (one: string, two: string) => `${one} ${two}`;
+
+export default moize.profile('my fancy identity')(fn);
+```
+
+**NOTE**: You must be collecting statistics for this option to provide value, as it is the identifier used for statistics collection.
+
 ## moize.promise
 
 Pre-applies the [`isPromise`](#ispromise) and [`updateExpire`](#updateexpire) options. The `updateExpire` option does nothing if [`maxAge`](#maxage) is not also applied, but ensures that the expiration begins at the resolution of the promise rather than the instantiation of it.
@@ -1037,6 +1052,8 @@ moize.collectStats(true); // start collecting stats
 moize.collectStats(); // same as passing true
 moize.collectStats(false); // stop collecting stats
 ```
+
+**NOTE**: If collecting statistics, it is recommended to provide a custom [`profileName`](#profilename) or use [`moize.profile()`](#moizeprofile) for all memoized functions. This allows easier mapping of resulting statistics to their origin function when it has a common name or is anonymous.
 
 ## getStats([profileName])
 
