@@ -92,35 +92,11 @@ export function createOnCacheHitIncrementCallsAndHits(options: Options) {
 export function getDefaultProfileName(
     fn: Fn | FunctionalComponent<Record<string, unknown>>
 ) {
-    const stack = new Error().stack;
-    const fnName =
+    return (
         (fn as FunctionalComponent<Record<string, unknown>>).displayName ||
         fn.name ||
-        `Anonymous ${statsCache.anonymousProfileNameCounter++}`;
-
-    if (!stack) {
-        return fnName;
-    }
-
-    const lines = stack.split('\n').slice(3);
-
-    let line: string;
-    let profileNameLocation: string;
-
-    for (let index = 0; index < lines.length; index++) {
-        line = lines[index];
-
-        if (
-            line.indexOf('/moize/') === -1 &&
-            line.indexOf(' (native)') === -1 &&
-            line.indexOf(' Function.') === -1
-        ) {
-            profileNameLocation = line.replace(/\n/g, '\\n').trim();
-            break;
-        }
-    }
-
-    return profileNameLocation ? `${fnName} ${profileNameLocation}` : fnName;
+        `Anonymous ${statsCache.anonymousProfileNameCounter++}`
+    );
 }
 
 /**
@@ -212,9 +188,7 @@ export function getStats(profileName?: string): GlobalStatsObject {
  * @param {Options} options the options passed to the moizer
  * @returns {Object} the options specific to keeping stats
  */
-export function getStatsOptions(
-    options: Options
-): {
+export function getStatsOptions(options: Options): {
     onCacheAdd?: OnCacheOperation;
     onCacheHit?: OnCacheOperation;
 } {
