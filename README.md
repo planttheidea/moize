@@ -553,7 +553,7 @@ memoized('one'); // will expire key after 30 seconds, or 3 expiration attempts
 
 ## profileName
 
-_defaults to function name and file/line location_
+_defaults to function name when it exists, or `Anonymous {count}` otherwise_
 
 Name to use as unique identifier for the function when collecting statistics.
 
@@ -571,7 +571,7 @@ This is also available via the shortcut method of [`moize.profile`](#moizeprofil
 const memoized = moize.profile('profile-name')(fn);
 ```
 
-**NOTE**: You must be collecting statistics for this option to take effect.
+**NOTE**: You must be collecting statistics for this option to provide value, as it is the identifier used for statistics collection.
 
 ## serializer
 
