@@ -2,7 +2,7 @@
 
 ## 6.1.2
 
--   [#176](https://github.com/planttheidea/moize/issues/176`) - Remove use of `new Error().stack` in derivation of fallback `profileName`, due to potential for OOM crashes in specific scenarios
+-   [#176](https://github.com/planttheidea/moize/issues/176) - Remove use of `new Error().stack` in derivation of fallback `profileName`, due to potential for OOM crashes in specific scenarios
 
 ## 6.1.1
 
