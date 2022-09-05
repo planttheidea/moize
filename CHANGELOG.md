@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 6.1.3
+
+-   [#179](https://github.com/planttheidea/moize/issues/179) - Invalid types for namespace methods which give the impression that chaining of those methods is possible
+
 ## 6.1.2
 
 -   [#176](https://github.com/planttheidea/moize/issues/176) - Remove use of `new Error().stack` in derivation of fallback `profileName`, due to potential for OOM crashes in specific scenarios
