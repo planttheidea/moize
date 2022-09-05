@@ -140,15 +140,15 @@ export type CurriedMoize<OriginalOptions> = <
     | CurriedMoize<OriginalOptions & CurriedOptions>;
 
 export interface MaxAge {
-    <MaxAge extends number>(maxAge: MaxAge): Moize<{ maxAge: MaxAge }>;
+    <MaxAge extends number>(maxAge: MaxAge): Moizer<{ maxAge: MaxAge }>;
     <MaxAge extends number, UpdateExpire extends boolean>(
         maxAge: MaxAge,
         expireOptions: UpdateExpire
-    ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+    ): Moizer<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
     <MaxAge extends number, ExpireHandler extends OnExpire>(
         maxAge: MaxAge,
         expireOptions: ExpireHandler
-    ): Moize<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
+    ): Moizer<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
     <
         MaxAge extends number,
         ExpireHandler extends OnExpire,
@@ -158,7 +158,7 @@ export interface MaxAge {
     >(
         maxAge: MaxAge,
         expireOptions: ExpireOptions
-    ): Moize<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
+    ): Moizer<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
     <
         MaxAge extends number,
         UpdateExpire extends boolean,
@@ -168,7 +168,7 @@ export interface MaxAge {
     >(
         maxAge: MaxAge,
         expireOptions: ExpireOptions
-    ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+    ): Moizer<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
     <
         MaxAge extends number,
         ExpireHandler extends OnExpire,
@@ -180,7 +180,7 @@ export interface MaxAge {
     >(
         maxAge: MaxAge,
         expireOptions: ExpireOptions
-    ): Moize<{
+    ): Moizer<{
         maxAge: MaxAge;
         onExpire: ExpireHandler;
         updateExpire: UpdateExpire;
@@ -203,7 +203,7 @@ export interface Moizer<DefaultOptions extends Options = Options> {
     ): Moized<Fn['fn'], Options & DefaultOptions & PassedOptions>;
     <PassedOptions extends Options>(
         options: PassedOptions
-    ): Moize<PassedOptions>;
+    ): Moizer<PassedOptions>;
 }
 
 export interface Moize<DefaultOptions extends Options = Options>
