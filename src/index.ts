@@ -17,7 +17,10 @@ import {
     getStatsOptions,
     statsCache,
 } from './stats';
-import {
+import { createRefreshableMoized } from './updateCacheForKey';
+import { combine, compose, isMoized, mergeOptions, setName } from './utils';
+
+import type {
     Expiration,
     IsEqual,
     IsMatchingKey,
@@ -30,11 +33,7 @@ import {
     Serialize,
     TransformKey,
     UpdateCacheForKey,
-} from './types';
-import { createRefreshableMoized } from './updateCacheForKey';
-import { combine, compose, isMoized, mergeOptions, setName } from './utils';
-
-export * from './types';
+} from '../index.d';
 
 /**
  * @module moize

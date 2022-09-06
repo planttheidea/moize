@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import moize, { Moized } from '../src';
+import moize from '../src';
 import { copyStaticProperties } from '../src/instance';
+
+import type { Moized } from '../index.d';
 
 describe('moize.react', () => {
     type ValueBarProps = {

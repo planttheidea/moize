@@ -1,4 +1,4 @@
-import { Options } from './types';
+import type { Options } from '../index.d';
 
 /**
  * @private

@@ -1,4 +1,6 @@
-import moize, { Key } from '../src';
+import moize from '../src';
+
+import type { Key } from '../index.d';
 
 const method = jest.fn(function (one: string, two?: string, three?: string) {
     return { one, two, three };

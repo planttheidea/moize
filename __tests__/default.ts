@@ -1,6 +1,8 @@
 import { sameValueZeroEqual } from 'fast-equals';
 import microMemoize from 'micro-memoize';
-import moize, { Moized } from '../src/index';
+import moize from '../src';
+
+import type { Moized } from '../index.d';
 
 const foo = 'foo';
 const bar = 'bar';

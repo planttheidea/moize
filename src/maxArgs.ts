@@ -1,4 +1,4 @@
-import { Key } from './types';
+import type { Key } from '../index.d';
 
 export function createGetInitialArgs(size: number) {
     /**

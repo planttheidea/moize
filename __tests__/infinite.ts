@@ -1,6 +1,8 @@
 import { sameValueZeroEqual } from 'fast-equals';
 import microMemoize from 'micro-memoize';
-import moize, { Moized } from '../src/index';
+import moize from '../src';
+
+import type { Moized } from '../index.d';
 
 const foo = 'foo';
 const bar = 'bar';
@@ -376,10 +378,8 @@ describe('moize', () => {
             const mmResult = microMemoize(method, { maxSize: Infinity });
 
             const { isEqual, ...options } = memoized._microMemoizeOptions;
-            const {
-                isEqual: _isEqualIgnored,
-                ...resultOptions
-            } = mmResult.options;
+            const { isEqual: _isEqualIgnored, ...resultOptions } =
+                mmResult.options;
 
             expect(options).toEqual(resultOptions);
             expect(isEqual).toBe(sameValueZeroEqual);
