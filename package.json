@@ -13,7 +13,7 @@
         "url": "https://github.com/planttheidea/moize/issues"
     },
     "dependencies": {
-        "fast-equals": "^3.0.1",
+        "fast-equals": "^4.0.3",
         "micro-memoize": "^4.0.11"
     },
     "description": "Blazing fast memoization based on all parameters passed",
