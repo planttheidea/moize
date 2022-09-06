@@ -1,7 +1,9 @@
 import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
 import { createGetInitialArgs } from './maxArgs';
 import { getIsSerializedKeyEqual, getSerializerFunction } from './serialize';
-import {
+import { compose } from './utils';
+
+import type {
     Cache,
     IsEqual,
     IsMatchingKey,
@@ -10,8 +12,7 @@ import {
     OnCacheOperation,
     Options,
     TransformKey,
-} from './types';
-import { compose } from './utils';
+} from '../index.d';
 
 export function createOnCacheOperation(
     fn?: OnCacheOperation

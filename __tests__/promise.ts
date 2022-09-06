@@ -1,5 +1,7 @@
 import Bluebird from 'bluebird';
-import moize, { Moized } from '../src';
+import moize from '../src';
+
+import type { Moized } from '../index.d';
 
 function createMethod(
     type: string,
@@ -23,7 +25,7 @@ const bluebirdMemoizedResolve = moize.promise(
     createMethod(
         'bluebird',
         'resolve',
-        (Bluebird as unknown) as PromiseConstructor
+        Bluebird as unknown as PromiseConstructor
     ),
     { profileName: 'bluebird (reject)' }
 );
@@ -31,7 +33,7 @@ const bluebirdMemoizedReject = moize.promise(
     createMethod(
         'bluebird',
         'reject',
-        (Bluebird as unknown) as PromiseConstructor
+        Bluebird as unknown as PromiseConstructor
     ),
     { profileName: 'bluebird (reject)' }
 );
@@ -39,7 +41,7 @@ const bluebirdMemoizedExpiring = moize.promise(
     createMethod(
         'native',
         'resolve',
-        (Bluebird as unknown) as PromiseConstructor
+        Bluebird as unknown as PromiseConstructor
     ),
     {
         maxAge: 1500,

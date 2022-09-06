@@ -1,4 +1,4 @@
-import { Key, Options } from './types';
+import type { Key, Options } from '../index.d';
 
 /**
  * @function getCutoff
@@ -44,20 +44,22 @@ export function createDefaultReplacer() {
         if (typeof value === 'object') {
             if (cache.length) {
                 const thisCutoff = getCutoff(cache, this);
-        
+
                 if (thisCutoff === 0) {
                     cache[cache.length] = this;
                 } else {
                     cache.splice(thisCutoff);
                     keys.splice(thisCutoff);
                 }
-        
+
                 keys[keys.length] = key;
-        
+
                 const valueCutoff = getCutoff(cache, value);
-        
+
                 if (valueCutoff !== 0) {
-                    return `[ref=${keys.slice(0, valueCutoff).join('.') || '.'}]`;
+                    return `[ref=${
+                        keys.slice(0, valueCutoff).join('.') || '.'
+                    }]`;
                 }
             } else {
                 cache[0] = value;

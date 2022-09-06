@@ -80,9 +80,8 @@ export type StatsCache = {
 
 export type Moizeable = Fn & Record<string, any>;
 
-export type Memoized<OriginalFn extends Moizeable> = MicroMemoize.Memoized<
-    OriginalFn
->;
+export type Memoized<OriginalFn extends Moizeable> =
+    MicroMemoize.Memoized<OriginalFn>;
 
 export type Moized<
     OriginalFn extends Moizeable = Moizeable,
@@ -141,15 +140,15 @@ export type CurriedMoize<OriginalOptions> = <
     | CurriedMoize<OriginalOptions & CurriedOptions>;
 
 export interface MaxAge {
-    <MaxAge extends number>(maxAge: MaxAge): Moize<{ maxAge: MaxAge }>;
+    <MaxAge extends number>(maxAge: MaxAge): Moizer<{ maxAge: MaxAge }>;
     <MaxAge extends number, UpdateExpire extends boolean>(
         maxAge: MaxAge,
         expireOptions: UpdateExpire
-    ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+    ): Moizer<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
     <MaxAge extends number, ExpireHandler extends OnExpire>(
         maxAge: MaxAge,
         expireOptions: ExpireHandler
-    ): Moize<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
+    ): Moizer<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
     <
         MaxAge extends number,
         ExpireHandler extends OnExpire,
@@ -159,7 +158,7 @@ export interface MaxAge {
     >(
         maxAge: MaxAge,
         expireOptions: ExpireOptions
-    ): Moize<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
+    ): Moizer<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
     <
         MaxAge extends number,
         UpdateExpire extends boolean,
@@ -169,7 +168,7 @@ export interface MaxAge {
     >(
         maxAge: MaxAge,
         expireOptions: ExpireOptions
-    ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
+    ): Moizer<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
     <
         MaxAge extends number,
         ExpireHandler extends OnExpire,
@@ -181,14 +180,14 @@ export interface MaxAge {
     >(
         maxAge: MaxAge,
         expireOptions: ExpireOptions
-    ): Moize<{
+    ): Moizer<{
         maxAge: MaxAge;
         onExpire: ExpireHandler;
         updateExpire: UpdateExpire;
     }>;
 }
 
-export interface Moize<DefaultOptions extends Options = Options> {
+export interface Moizer<DefaultOptions extends Options = Options> {
     <Fn extends Moizeable>(fn: Fn): Moized<Fn, Options & DefaultOptions>;
     <Fn extends Moizeable, PassedOptions extends Options>(
         fn: Fn,
@@ -202,47 +201,50 @@ export interface Moize<DefaultOptions extends Options = Options> {
         fn: Fn,
         options: PassedOptions
     ): Moized<Fn['fn'], Options & DefaultOptions & PassedOptions>;
-    <PassedOptions extends Options>(options: PassedOptions): Moize<
-        PassedOptions
-    >;
+    <PassedOptions extends Options>(
+        options: PassedOptions
+    ): Moizer<PassedOptions>;
+}
 
+export interface Moize<DefaultOptions extends Options = Options>
+    extends Moizer<DefaultOptions> {
     clearStats: (profileName?: string) => void;
     collectStats: (isCollectingStats?: boolean) => void;
-    compose: (...moizers: Moize[]) => Moize;
-    deep: Moize<{ isDeepEqual: true }>;
+    compose: (...moizers: Array<Moize | Moizer>) => Moizer;
+    deep: Moizer<{ isDeepEqual: true }>;
     getStats: (profileName?: string) => StatsObject;
-    infinite: Moize;
+    infinite: Moizer;
     isCollectingStats: () => boolean;
     isMoized: (value: any) => value is Moized;
     matchesArg: <Matcher extends IsEqual>(
         argMatcher: Matcher
-    ) => Moize<{ matchesArg: Matcher }>;
+    ) => Moizer<{ matchesArg: Matcher }>;
     matchesKey: <Matcher extends IsMatchingKey>(
         keyMatcher: Matcher
-    ) => Moize<{ matchesKey: Matcher }>;
+    ) => Moizer<{ matchesKey: Matcher }>;
     maxAge: MaxAge;
     maxArgs: <MaxArgs extends number>(
         args: MaxArgs
-    ) => Moize<{ maxArgs: MaxArgs }>;
+    ) => Moizer<{ maxArgs: MaxArgs }>;
     maxSize: <MaxSize extends number>(
         size: MaxSize
-    ) => Moize<{ maxSize: MaxSize }>;
+    ) => Moizer<{ maxSize: MaxSize }>;
     profile: <ProfileName extends string>(
         profileName: ProfileName
-    ) => Moize<{ profileName: ProfileName }>;
-    promise: Moize<{ isPromise: true }>;
-    react: Moize<{ isReact: true }>;
-    serialize: Moize<{ isSerialized: true }>;
+    ) => Moizer<{ profileName: ProfileName }>;
+    promise: Moizer<{ isPromise: true }>;
+    react: Moizer<{ isReact: true }>;
+    serialize: Moizer<{ isSerialized: true }>;
     serializeWith: <Serializer extends Serialize>(
         serializer: Serializer
-    ) => Moize<{ isSerialized: true; serializer: Serializer }>;
-    shallow: Moize<{ isShallowEqual: true }>;
+    ) => Moizer<{ isSerialized: true; serializer: Serializer }>;
+    shallow: Moizer<{ isShallowEqual: true }>;
     transformArgs: <Transformer extends TransformKey>(
         transformer: Transformer
-    ) => Moize<{ transformArgs: Transformer }>;
+    ) => Moizer<{ transformArgs: Transformer }>;
     updateCacheForKey: <UpdateWhen extends UpdateCacheForKey>(
         updateCacheForKey: UpdateWhen
-    ) => Moize<{ updateCacheForKey: UpdateWhen }>;
+    ) => Moizer<{ updateCacheForKey: UpdateWhen }>;
 }
 
 declare const moize: Moize;

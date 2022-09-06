@@ -1,6 +1,6 @@
 import { copyStaticProperties } from './instance';
 
-import type { Moized } from './types';
+import type { Moized } from '../index.d';
 
 export function createRefreshableMoized<MoizedFn extends Moized>(
     moized: MoizedFn

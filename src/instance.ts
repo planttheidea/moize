@@ -1,6 +1,8 @@
 import { clearExpiration } from './maxAge';
 import { clearStats, getStats } from './stats';
-import {
+import { createFindKeyIndex } from './utils';
+
+import type {
     Fn,
     Key,
     Memoized,
@@ -9,8 +11,7 @@ import {
     Moized,
     Options,
     StatsProfile,
-} from './types';
-import { createFindKeyIndex } from './utils';
+} from '../index.d';
 
 const ALWAYS_SKIPPED_PROPERTIES: Record<string, boolean> = {
     arguments: true,

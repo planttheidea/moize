@@ -1,4 +1,4 @@
-import {
+import type {
     Fn,
     FunctionalComponent,
     GlobalStatsObject,
@@ -6,7 +6,7 @@ import {
     Options,
     StatsCache,
     StatsProfile,
-} from './types';
+} from '../index.d';
 
 export const statsCache: StatsCache = {
     anonymousProfileNameCounter: 1,

@@ -1,5 +1,6 @@
 import { DEFAULT_OPTIONS } from './constants';
-import {
+
+import type {
     Expiration,
     Fn,
     IsEqual,
@@ -8,7 +9,7 @@ import {
     Moizeable,
     Moized,
     Options,
-} from './types';
+} from '../index.d';
 
 /**
  * @private

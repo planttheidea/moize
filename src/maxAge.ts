@@ -1,4 +1,6 @@
-import {
+import { createFindKeyIndex, findExpirationIndex } from './utils';
+
+import type {
     Cache,
     Expiration,
     Fn,
@@ -7,8 +9,7 @@ import {
     Key,
     OnCacheOperation,
     Options,
-} from './types';
-import { createFindKeyIndex, findExpirationIndex } from './utils';
+} from '../index.d';
 
 /**
  * @private

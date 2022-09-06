@@ -1,6 +1,12 @@
 import { copyStaticProperties } from './instance';
-import { Moize, Moized as MoizedFunction, Moizeable, Options } from './types';
 import { setName } from './utils';
+
+import type {
+    Moize,
+    Moized as MoizedFunction,
+    Moizeable,
+    Options,
+} from '../index.d';
 
 // This was stolen from React internals, which allows us to create React elements without needing
 // a dependency on the React library itself.
