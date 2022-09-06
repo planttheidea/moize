@@ -10,7 +10,6 @@ DEV_ONLY
 docs
 img
 node_modules
-src
 test
 webpack
 jsdoc.config.json
