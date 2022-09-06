@@ -1,4 +1,10 @@
-import { deepEqual, sameValueZeroEqual, shallowEqual } from 'fast-equals';
+import {
+    deepEqual,
+    deepEqualCircular,
+    sameValueZeroEqual,
+    shallowEqual,
+    shallowEqualCircular,
+} from './equals';
 import { createGetInitialArgs } from './maxArgs';
 import { getIsSerializedKeyEqual, getSerializerFunction } from './serialize';
 import { compose } from './utils';
@@ -35,13 +41,25 @@ export function createOnCacheOperation(
  * @param options the options passed to the moizer
  * @returns the isEqual method to apply
  */
-export function getIsEqual(options: Options): IsEqual {
-    return (
-        options.matchesArg ||
-        (options.isDeepEqual && deepEqual) ||
-        (options.isShallowEqual && shallowEqual) ||
-        sameValueZeroEqual
-    );
+export function getIsEqual({
+    isCircularReference,
+    isDeepEqual,
+    isShallowEqual,
+    matchesArg,
+}: Options): IsEqual {
+    if (matchesArg) {
+        return matchesArg;
+    }
+
+    if (isDeepEqual) {
+        return isCircularReference ? deepEqualCircular : deepEqual;
+    }
+
+    if (isShallowEqual) {
+        return isCircularReference ? shallowEqualCircular : shallowEqual;
+    }
+
+    return sameValueZeroEqual;
 }
 
 /**

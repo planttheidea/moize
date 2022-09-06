@@ -36,6 +36,7 @@ export type TransformKey = (key: Key) => Key;
 export type UpdateCacheForKey = (key: Key) => boolean;
 
 export type Options = Partial<{
+    isCircularReference: boolean;
     isDeepEqual: boolean;
     isPromise: boolean;
     isReact: boolean;
@@ -212,6 +213,7 @@ export interface Moize<DefaultOptions extends Options = Options>
     collectStats: (isCollectingStats?: boolean) => void;
     compose: (...moizers: Array<Moize | Moizer>) => Moizer;
     deep: Moizer<{ isDeepEqual: true }>;
+    deepCircular: Moizer<{ isCircularReference: true; isDeepEqual: true }>;
     getStats: (profileName?: string) => StatsObject;
     infinite: Moizer;
     isCollectingStats: () => boolean;
@@ -239,6 +241,10 @@ export interface Moize<DefaultOptions extends Options = Options>
         serializer: Serializer
     ) => Moizer<{ isSerialized: true; serializer: Serializer }>;
     shallow: Moizer<{ isShallowEqual: true }>;
+    shallowCircular: Moizer<{
+        isCircularReference: true;
+        isShallowEqual: true;
+    }>;
     transformArgs: <Transformer extends TransformKey>(
         transformer: Transformer
     ) => Moizer<{ transformArgs: Transformer }>;

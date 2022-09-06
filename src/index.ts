@@ -133,6 +133,7 @@ const moize: Moize = function <
 
     const {
         matchesArg: equalsIgnored,
+        isCircularReference: isCircularReferenceIgnored,
         isDeepEqual: isDeepEqualIgnored,
         isPromise,
         isReact: isReactIgnored,
@@ -258,6 +259,19 @@ moize.compose = function (...moized: Moize[]) {
  * @returns the moizer function
  */
 moize.deep = moize({ isDeepEqual: true });
+
+/**
+ * @function
+ * @name deepCircular
+ * @memberof module:moize
+ * @alias moize.deepCircular
+ *
+ * @description
+ * should deep equality supporting circular refernces check be used
+ *
+ * @returns the moizer function
+ */
+moize.deepCircular = moize({ isCircularReference: true, isDeepEqual: true });
 
 /**
  * @function
@@ -566,6 +580,22 @@ moize.serializeWith = function (serializer: Serialize) {
  * @returns the moizer function
  */
 moize.shallow = moize({ isShallowEqual: true });
+
+/**
+ * @function
+ * @name shallowCircular
+ * @memberof module:moize
+ * @alias moize.shallowCircular
+ *
+ * @description
+ * should shallow equality supporting circular references check be used
+ *
+ * @returns the moizer function
+ */
+moize.shallowCircular = moize({
+    isCircularReference: true,
+    isShallowEqual: true,
+});
 
 /**
  * @function

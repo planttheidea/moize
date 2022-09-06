@@ -6,6 +6,7 @@ import type { Options } from '../index.d';
  * @constant DEFAULT_OPTIONS
  */
 export const DEFAULT_OPTIONS: Options = {
+    isCircularReference: false,
     isDeepEqual: false,
     isPromise: false,
     isReact: false,
