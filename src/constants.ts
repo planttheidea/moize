@@ -1,11 +1,11 @@
-import type { Options } from '../index.d';
+import type { AnyFn, Options } from '../index.d';
 
 /**
  * @private
  *
  * @constant DEFAULT_OPTIONS
  */
-export const DEFAULT_OPTIONS: Options = {
+export const DEFAULT_OPTIONS: Options<AnyFn> = {
     isDeepEqual: false,
     isPromise: false,
     isReact: false,

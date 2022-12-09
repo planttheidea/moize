@@ -1,7 +1,7 @@
 import type {
-    Fn,
     FunctionalComponent,
     GlobalStatsObject,
+    Moizeable,
     OnCacheOperation,
     Options,
     StatsCache,
@@ -42,7 +42,9 @@ export function collectStats(isCollectingStats = true) {
  * @description
  * create a function that increments the number of calls for the specific profile
  */
-export function createOnCacheAddIncrementCalls(options: Options) {
+export function createOnCacheAddIncrementCalls<MoizeableFn extends Moizeable>(
+    options: Options<MoizeableFn>
+) {
     const { profileName } = options;
 
     return function () {
@@ -63,7 +65,9 @@ export function createOnCacheAddIncrementCalls(options: Options) {
  * @description
  * create a function that increments the number of calls and cache hits for the specific profile
  */
-export function createOnCacheHitIncrementCallsAndHits(options: Options) {
+export function createOnCacheHitIncrementCallsAndHits<
+    MoizeableFn extends Moizeable
+>(options: Options<MoizeableFn>) {
     return function () {
         const { profiles } = statsCache;
         const { profileName } = options;
@@ -89,8 +93,8 @@ export function createOnCacheHitIncrementCallsAndHits(options: Options) {
  * @param fn the function to be memoized
  * @returns the derived profileName for the function
  */
-export function getDefaultProfileName(
-    fn: Fn | FunctionalComponent<Record<string, unknown>>
+export function getDefaultProfileName<MoizeableFn extends Moizeable>(
+    fn: MoizeableFn | FunctionalComponent<Record<string, unknown>>
 ) {
     return (
         (fn as FunctionalComponent<Record<string, unknown>>).displayName ||
@@ -188,9 +192,11 @@ export function getStats(profileName?: string): GlobalStatsObject {
  * @param {Options} options the options passed to the moizer
  * @returns {Object} the options specific to keeping stats
  */
-export function getStatsOptions(options: Options): {
-    onCacheAdd?: OnCacheOperation;
-    onCacheHit?: OnCacheOperation;
+export function getStatsOptions<MoizeableFn extends Moizeable>(
+    options: Options<MoizeableFn>
+): {
+    onCacheAdd?: OnCacheOperation<MoizeableFn>;
+    onCacheHit?: OnCacheOperation<MoizeableFn>;
 } {
     return statsCache.isCollectingStats
         ? {

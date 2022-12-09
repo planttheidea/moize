@@ -8,19 +8,20 @@ import type {
     IsEqual,
     IsMatchingKey,
     MicroMemoizeOptions,
+    Moizeable,
     Moized,
     OnCacheOperation,
     Options,
     TransformKey,
 } from '../index.d';
 
-export function createOnCacheOperation(
-    fn?: OnCacheOperation
-): OnCacheOperation {
+export function createOnCacheOperation<MoizeableFn extends Moizeable>(
+    fn?: OnCacheOperation<MoizeableFn>
+): OnCacheOperation<MoizeableFn> {
     if (typeof fn === 'function') {
         return (
-            _cacheIgnored: Cache,
-            _microMemoizeOptionsIgnored: MicroMemoizeOptions,
+            _cacheIgnored: Cache<MoizeableFn>,
+            _microMemoizeOptionsIgnored: MicroMemoizeOptions<MoizeableFn>,
             memoized: Moized
         ): void => fn(memoized.cache, memoized.options, memoized);
     }
@@ -35,7 +36,9 @@ export function createOnCacheOperation(
  * @param options the options passed to the moizer
  * @returns the isEqual method to apply
  */
-export function getIsEqual(options: Options): IsEqual {
+export function getIsEqual<MoizeableFn extends Moizeable>(
+    options: Options<MoizeableFn>
+): IsEqual {
     return (
         options.matchesArg ||
         (options.isDeepEqual && deepEqual) ||
@@ -53,7 +56,9 @@ export function getIsEqual(options: Options): IsEqual {
  * @param options the options passed to the moizer
  * @returns the isEqual method to apply
  */
-export function getIsMatchingKey(options: Options): IsMatchingKey | undefined {
+export function getIsMatchingKey<MoizeableFn extends Moizeable>(
+    options: Options<MoizeableFn>
+): IsMatchingKey | undefined {
     return (
         options.matchesKey ||
         (options.isSerialized && getIsSerializedKeyEqual) ||
@@ -70,7 +75,9 @@ export function getIsMatchingKey(options: Options): IsMatchingKey | undefined {
  * @param options the options passed to the moizer
  * @returns the function to transform the key with
  */
-export function getTransformKey(options: Options): TransformKey | undefined {
+export function getTransformKey<MoizeableFn extends Moizeable>(
+    options: Options<MoizeableFn>
+): TransformKey | undefined {
     return compose(
         options.isSerialized && getSerializerFunction(options),
         typeof options.transformArgs === 'function' && options.transformArgs,

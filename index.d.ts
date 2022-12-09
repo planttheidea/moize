@@ -2,19 +2,29 @@
 
 import { MicroMemoize } from 'micro-memoize/src/types';
 
+export type AnyFn = (...args: any[]) => any;
+export type Moizeable = AnyFn & Record<string, any>;
+
+/**
+ * @deprecated
+ */
 export type Fn<Arg extends any = any, Result extends any = any> = (
     ...args: Arg[]
 ) => Result;
 
-export type FunctionalComponent<Props extends object> = Fn<Props> & {
+export type FunctionalComponent<Props extends object> = ((
+    props: Props
+) => JSX.Element) & {
     displayName?: string;
 };
 
 export type Key<Arg extends any = any> = Arg[];
 export type Value = any;
 
-export type Cache = MicroMemoize.Cache;
-export type MicroMemoizeOptions = MicroMemoize.Options;
+export type Cache<MoizeableFn extends Moizeable> =
+    MicroMemoize.Cache<MoizeableFn>;
+export type MicroMemoizeOptions<MoizeableFn extends Moizeable> =
+    MicroMemoize.Options<MoizeableFn>;
 
 export type Expiration = {
     expirationMethod: () => void;
@@ -22,9 +32,9 @@ export type Expiration = {
     timeoutId: ReturnType<typeof setTimeout>;
 };
 
-export type OnCacheOperation = (
-    cache: Cache,
-    options: Options,
+export type OnCacheOperation<MoizeableFn extends Moizeable> = (
+    cache: Cache<MoizeableFn>,
+    options: Options<MoizeableFn>,
     moized: (...args: any[]) => any
 ) => void;
 
@@ -35,7 +45,7 @@ export type Serialize = (key: Key) => string[];
 export type TransformKey = (key: Key) => Key;
 export type UpdateCacheForKey = (key: Key) => boolean;
 
-export type Options = Partial<{
+export type Options<MoizeableFn extends AnyFn> = Partial<{
     isDeepEqual: boolean;
     isPromise: boolean;
     isReact: boolean;
@@ -46,9 +56,9 @@ export type Options = Partial<{
     maxAge: number;
     maxArgs: number;
     maxSize: number;
-    onCacheAdd: OnCacheOperation;
-    onCacheChange: OnCacheOperation;
-    onCacheHit: OnCacheOperation;
+    onCacheAdd: OnCacheOperation<MoizeableFn>;
+    onCacheChange: OnCacheOperation<MoizeableFn>;
+    onCacheHit: OnCacheOperation<MoizeableFn>;
     onExpire: OnExpire;
     profileName: string;
     serializer: Serialize;
@@ -78,15 +88,13 @@ export type StatsCache = {
     profiles: Record<string, StatsProfile>;
 };
 
-export type Moizeable = Fn & Record<string, any>;
-
-export type Memoized<OriginalFn extends Moizeable> =
-    MicroMemoize.Memoized<OriginalFn>;
+export type Memoized<MoizeableFn extends Moizeable> =
+    MicroMemoize.Memoized<MoizeableFn>;
 
 export type Moized<
-    OriginalFn extends Moizeable = Moizeable,
-    CombinedOptions extends Options = Options
-> = Memoized<OriginalFn> & {
+    MoizeableFn extends Moizeable = Moizeable,
+    CombinedOptions extends Options<MoizeableFn> = Options<MoizeableFn>
+> = Memoized<MoizeableFn> & {
     // values
     _microMemoizeOptions: Pick<
         CombinedOptions,
@@ -96,12 +104,12 @@ export type Moized<
         isMatchingKey: CombinedOptions['matchesKey'];
         transformKey: CombinedOptions['transformArgs'];
     };
-    cache: Cache;
-    cacheSnapshot: Cache;
+    cache: Cache<MoizeableFn>;
+    cacheSnapshot: Cache<MoizeableFn>;
     expirations: Expiration[];
     expirationsSnapshot: Expiration[];
     options: CombinedOptions;
-    originalFunction: OriginalFn;
+    originalFunction: MoizeableFn;
 
     // react-specific values
     contextTypes?: Record<string, Function>;
@@ -117,21 +125,21 @@ export type Moized<
     has: (key: Key) => boolean;
     isCollectingStats: () => boolean;
     isMoized: () => true;
-    keys: () => Cache['keys'];
+    keys: () => Cache<MoizeableFn>['keys'];
     remove: (key: Key) => void;
     set: (key: Key, value: any) => void;
-    values: () => Cache['values'];
+    values: () => Cache<MoizeableFn>['values'];
 };
 
-export type MoizeConfiguration<OriginalFn extends Moizeable> = {
+export type MoizeConfiguration<MoizeableFn extends Moizeable> = {
     expirations: Expiration[];
-    options: Options;
-    originalFunction: OriginalFn;
+    options: Options<MoizeableFn>;
+    originalFunction: MoizeableFn;
 };
 
 export type CurriedMoize<OriginalOptions> = <
     CurriedFn extends Moizeable,
-    CurriedOptions extends Options
+    CurriedOptions extends Options<CurriedFn>
 >(
     curriedFn: CurriedFn | CurriedOptions,
     curriedOptions?: CurriedOptions
@@ -187,26 +195,40 @@ export interface MaxAge {
     }>;
 }
 
-export interface Moizer<DefaultOptions extends Options = Options> {
-    <Fn extends Moizeable>(fn: Fn): Moized<Fn, Options & DefaultOptions>;
-    <Fn extends Moizeable, PassedOptions extends Options>(
-        fn: Fn,
-        options: PassedOptions
-    ): Moized<Fn, Options & DefaultOptions & PassedOptions>;
-    <Fn extends Moized<Moizeable>>(fn: Fn): Moized<
-        Fn['fn'],
-        Options & DefaultOptions
+export interface Moizer<
+    DefaultOptions extends Options<AnyFn> = Options<AnyFn>
+> {
+    <MoizeableFn extends Moizeable>(fn: MoizeableFn): Moized<
+        MoizeableFn,
+        Options<MoizeableFn> & DefaultOptions
     >;
-    <Fn extends Moized<Moizeable>, PassedOptions extends Options>(
-        fn: Fn,
+    <MoizeableFn extends Moizeable, PassedOptions extends Options<MoizeableFn>>(
+        fn: MoizeableFn,
         options: PassedOptions
-    ): Moized<Fn['fn'], Options & DefaultOptions & PassedOptions>;
-    <PassedOptions extends Options>(
+    ): Moized<
+        MoizeableFn,
+        Options<MoizeableFn> & DefaultOptions & PassedOptions
+    >;
+    <MoizedFn extends Moized<Moizeable>>(fn: MoizedFn): Moized<
+        MoizedFn['fn'],
+        Options<MoizedFn> & DefaultOptions
+    >;
+    <
+        MoizedFn extends Moized<Moizeable>,
+        PassedOptions extends Options<MoizedFn>
+    >(
+        fn: MoizedFn,
+        options: PassedOptions
+    ): Moized<
+        MoizedFn['fn'],
+        Options<MoizedFn> & DefaultOptions & PassedOptions
+    >;
+    <PassedOptions extends Options<AnyFn>>(
         options: PassedOptions
     ): Moizer<PassedOptions>;
 }
 
-export interface Moize<DefaultOptions extends Options = Options>
+export interface Moize<DefaultOptions extends Options<AnyFn> = Options<AnyFn>>
     extends Moizer<DefaultOptions> {
     clearStats: (profileName?: string) => void;
     collectStats: (isCollectingStats?: boolean) => void;

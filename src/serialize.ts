@@ -1,4 +1,4 @@
-import type { Key, Options } from '../index.d';
+import type { Key, Moizeable, Options } from '../index.d';
 
 /**
  * @function getCutoff
@@ -119,7 +119,9 @@ export function defaultArgumentSerializer(args: Key) {
  * @param options the options passed to the moized function
  * @returns the function to use in serializing the arguments
  */
-export function getSerializerFunction(options: Options) {
+export function getSerializerFunction<MoizeableFn extends Moizeable>(
+    options: Options<MoizeableFn>
+) {
     return typeof options.serializer === 'function'
         ? options.serializer
         : defaultArgumentSerializer;

@@ -63,32 +63,37 @@ import type {
  * @returns the memoized function
  */
 const moize: Moize = function <
-    Fn extends Moizeable,
-    PassedOptions extends Options
->(fn: Fn | PassedOptions, passedOptions?: PassedOptions) {
-    type CombinedOptions = Options & PassedOptions;
+    MoizeableFn extends Moizeable,
+    PassedOptions extends Options<MoizeableFn>
+>(fn: MoizeableFn | PassedOptions, passedOptions?: PassedOptions) {
+    type CombinedOptions = Omit<Options<MoizeableFn>, keyof PassedOptions> &
+        PassedOptions;
 
-    const options: Options = passedOptions || DEFAULT_OPTIONS;
+    const options: Options<MoizeableFn> = passedOptions || DEFAULT_OPTIONS;
 
     if (isMoized(fn)) {
-        const moizeable = fn.originalFunction as Fn;
+        const moizeable = fn.originalFunction as MoizeableFn;
         const mergedOptions = mergeOptions(
             fn.options,
             options
         ) as CombinedOptions;
 
-        return moize<Fn, CombinedOptions>(moizeable, mergedOptions);
+        return moize<MoizeableFn, CombinedOptions>(moizeable, mergedOptions);
     }
 
     if (typeof fn === 'object') {
         return function <
             CurriedFn extends Moizeable,
-            CurriedOptions extends Options
+            CurriedOptions extends Options<CurriedFn>
         >(
             curriedFn: CurriedFn | CurriedOptions,
             curriedOptions: CurriedOptions
         ) {
-            type CombinedCurriedOptions = CombinedOptions & CurriedOptions;
+            type CombinedCurriedOptions = Omit<
+                CombinedOptions,
+                keyof CurriedOptions
+            > &
+                CurriedOptions;
 
             if (typeof curriedFn === 'function') {
                 const mergedOptions = mergeOptions(
@@ -112,7 +117,7 @@ const moize: Moize = function <
         return createMoizedComponent(moize, fn, options);
     }
 
-    const coalescedOptions: Options = {
+    const coalescedOptions: Options<MoizeableFn> = {
         ...DEFAULT_OPTIONS,
         ...options,
         maxAge:
@@ -167,7 +172,7 @@ const moize: Moize = function <
 
     const transformKey = getTransformKey(coalescedOptions);
 
-    const microMemoizeOptions: MicroMemoizeOptions = {
+    const microMemoizeOptions: MicroMemoizeOptions<MoizeableFn> = {
         ...customOptions,
         isEqual,
         isMatchingKey,
@@ -193,7 +198,7 @@ const moize: Moize = function <
 
     const memoized = memoize(fn, microMemoizeOptions);
 
-    let moized = createMoizeInstance<Fn, CombinedOptions>(memoized, {
+    let moized = createMoizeInstance<MoizeableFn, CombinedOptions>(memoized, {
         expirations,
         options: coalescedOptions,
         originalFunction: fn,
