@@ -137,7 +137,7 @@ describe('moize', () => {
 
         it('should notify of cache manipulation when adding', () => {
             // eslint-disable-next-line prefer-const
-            let withNotifiers: Moized;
+            let withNotifiers: Moized<typeof memoized>;
 
             const onCacheOperation = jest.fn(function (cache, options, moized) {
                 expect(cache).toBe(withNotifiers.cache);

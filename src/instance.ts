@@ -3,7 +3,6 @@ import { clearStats, getStats } from './stats';
 import { createFindKeyIndex } from './utils';
 
 import type {
-    Fn,
     Key,
     Memoized,
     Moizeable,
@@ -34,9 +33,12 @@ const ALWAYS_SKIPPED_PROPERTIES: Record<string, boolean> = {
  * @param newFn the function copying to
  * @param skippedProperties the list of skipped properties, if any
  */
-export function copyStaticProperties(
-    originalFn: Fn,
-    newFn: Fn,
+export function copyStaticProperties<
+    OriginalMoizeableFn extends Moizeable,
+    NewMoizeableFn extends Moizeable
+>(
+    originalFn: OriginalMoizeableFn,
+    newFn: NewMoizeableFn,
     skippedProperties: string[] = []
 ) {
     Object.getOwnPropertyNames(originalFn).forEach((property) => {
@@ -52,8 +54,8 @@ export function copyStaticProperties(
             if (descriptor.get || descriptor.set) {
                 Object.defineProperty(newFn, property, descriptor);
             } else {
-                newFn[property as keyof typeof newFn] =
-                    originalFn[property as keyof typeof originalFn];
+                // @ts-expect-error - properites may not align
+                newFn[property] = originalFn[property];
             }
         }
     });
@@ -67,9 +69,9 @@ export function copyStaticProperties(
  *
  * @param memoized the memoized function from micro-memoize
  */
-export function addInstanceMethods<OriginalFn extends Fn>(
+export function addInstanceMethods<MoizeableFn extends Moizeable>(
     memoized: Moizeable,
-    { expirations }: MoizeConfiguration<OriginalFn>
+    { expirations }: MoizeConfiguration<MoizeableFn>
 ) {
     const { options } = memoized;
 
@@ -78,7 +80,10 @@ export function addInstanceMethods<OriginalFn extends Fn>(
         options.isMatchingKey
     );
 
-    const moized = memoized as unknown as Moized<OriginalFn, Options>;
+    const moized = memoized as unknown as Moized<
+        MoizeableFn,
+        Options<MoizeableFn>
+    >;
 
     moized.clear = function () {
         const {
@@ -222,13 +227,13 @@ export function addInstanceMethods<OriginalFn extends Fn>(
  * @param options the options passed to the moizer
  * @param originalFunction the function that is being memoized
  */
-export function addInstanceProperties<OriginalFn extends Moizeable>(
-    memoized: Memoized<OriginalFn>,
+export function addInstanceProperties<MoizeableFn extends Moizeable>(
+    memoized: Memoized<MoizeableFn>,
     {
         expirations,
         options: moizeOptions,
         originalFunction,
-    }: MoizeConfiguration<OriginalFn>
+    }: MoizeConfiguration<MoizeableFn>
 ) {
     const { options: microMemoizeOptions } = memoized;
 
@@ -289,7 +294,10 @@ export function addInstanceProperties<OriginalFn extends Moizeable>(
         },
     });
 
-    const moized = memoized as unknown as Moized<OriginalFn, Options>;
+    const moized = memoized as unknown as Moized<
+        MoizeableFn,
+        Options<MoizeableFn>
+    >;
 
     copyStaticProperties(originalFunction, moized);
 }
@@ -305,14 +313,14 @@ export function addInstanceProperties<OriginalFn extends Moizeable>(
  * @returns the memoized function passed
  */
 export function createMoizeInstance<
-    OriginalFn extends Moizeable,
-    CombinedOptions extends Options
+    MoizeableFn extends Moizeable,
+    CombinedOptions extends Options<MoizeableFn>
 >(
-    memoized: Memoized<OriginalFn>,
-    configuration: MoizeConfiguration<OriginalFn>
+    memoized: Memoized<MoizeableFn>,
+    configuration: MoizeConfiguration<MoizeableFn>
 ) {
-    addInstanceMethods<OriginalFn>(memoized, configuration);
-    addInstanceProperties<OriginalFn>(memoized, configuration);
+    addInstanceMethods<MoizeableFn>(memoized, configuration);
+    addInstanceProperties<MoizeableFn>(memoized, configuration);
 
-    return memoized as Moized<OriginalFn, CombinedOptions>;
+    return memoized as Moized<MoizeableFn, CombinedOptions>;
 }

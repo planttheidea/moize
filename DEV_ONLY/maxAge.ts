@@ -2,57 +2,57 @@ import moize from '../src';
 import { logCache, logStoredValue } from './environment';
 
 function method(one: string, two: string) {
-  console.log('max age fired', one, two);
+    console.log('max age fired', one, two);
 
-  return [one, two].join('|_|');
+    return [one, two].join('|_|');
 }
 
 const memoized = moize.maxAge(1000)(method, {
-  onExpire: (() => {
-    let count = 0;
+    onExpire: (() => {
+        let count = 0;
 
-    return () => {
-      if (count !== 0) {
-        console.log(
-          'Expired! This is the last time I will fire, and this should be empty:',
-          memoized.expirationsSnapshot
-        );
+        return () => {
+            if (count !== 0) {
+                console.log(
+                    'Expired! This is the last time I will fire, and this should be empty:',
+                    memoized.expirationsSnapshot
+                );
 
-        console.log(moize.getStats());
+                console.log(moize.getStats());
 
-        return true;
-      }
+                return true;
+            }
 
-      console.log(
-        'Expired! I will now reset the expiration, but this should be empty:',
-        memoized.expirationsSnapshot
-      );
+            console.log(
+                'Expired! I will now reset the expiration, but this should be empty:',
+                memoized.expirationsSnapshot
+            );
 
-      count++;
+            count++;
 
-      return false;
-    };
-  })(),
-  updateExpire: true,
+            return false;
+        };
+    })(),
+    updateExpire: true,
 });
 
 const foo = 'foo';
 const bar = 'bar';
 
 export function maxAge() {
-  memoized(foo, bar);
-  memoized(foo, bar);
-  memoized(foo, bar);
-  memoized(foo, bar);
-  memoized(foo, bar);
-  memoized(foo, bar);
-  memoized(foo, bar);
+    memoized(foo, bar);
+    memoized(foo, bar);
+    memoized(foo, bar);
+    memoized(foo, bar);
+    memoized(foo, bar);
+    memoized(foo, bar);
+    memoized(foo, bar);
 
-  console.log('existing expirations', memoized.expirationsSnapshot);
+    console.log('existing expirations', memoized.expirationsSnapshot);
 
-  logStoredValue(memoized, 'exists', [foo, bar]);
+    logStoredValue(memoized, 'exists', [foo, bar]);
 
-  logCache(memoized);
+    logCache(memoized);
 
-  return memoized;
+    return memoized;
 }

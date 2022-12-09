@@ -1,9 +1,9 @@
 import { createFindKeyIndex, findExpirationIndex } from './utils';
 
 import type {
+    AnyFn,
     Cache,
     Expiration,
-    Fn,
     IsEqual,
     IsMatchingKey,
     Key,
@@ -70,18 +70,18 @@ export function createTimeout(expirationMethod: () => void, maxAge: number) {
  * @param isMatchingKey the function to check complete key equality
  * @returns the onCacheAdd function to handle expirations
  */
-export function createOnCacheAddSetExpiration(
+export function createOnCacheAddSetExpiration<MoizeableFn extends AnyFn>(
     expirations: Expiration[],
-    options: Options,
+    options: Options<MoizeableFn>,
     isEqual: IsEqual,
     isMatchingKey: IsMatchingKey
-): OnCacheOperation {
+): OnCacheOperation<MoizeableFn> {
     const { maxAge } = options;
 
     return function onCacheAdd(
-        cache: Cache,
-        moizedOptions: Options,
-        moized: Fn
+        cache: Cache<MoizeableFn>,
+        moizedOptions: Options<MoizeableFn>,
+        moized: MoizeableFn
     ) {
         const key: any = cache.keys[0];
 
@@ -137,11 +137,11 @@ export function createOnCacheAddSetExpiration(
  * @param options the options passed on initialization
  * @returns the onCacheAdd function to handle expirations
  */
-export function createOnCacheHitResetExpiration(
+export function createOnCacheHitResetExpiration<MoizeableFn extends AnyFn>(
     expirations: Expiration[],
-    options: Options
-): OnCacheOperation {
-    return function onCacheHit(cache: Cache) {
+    options: Options<MoizeableFn>
+): OnCacheOperation<MoizeableFn> {
+    return function onCacheHit(cache: Cache<MoizeableFn>) {
         const key = cache.keys[0];
         const expirationIndex = findExpirationIndex(expirations, key);
 
@@ -168,14 +168,14 @@ export function createOnCacheHitResetExpiration(
  * @param isMatchingKey the function to test equality of the whole key
  * @returns the object of options based on the entries passed
  */
-export function getMaxAgeOptions(
+export function getMaxAgeOptions<MoizeableFn extends AnyFn>(
     expirations: Expiration[],
-    options: Options,
+    options: Options<MoizeableFn>,
     isEqual: IsEqual,
     isMatchingKey: IsMatchingKey
 ): {
-    onCacheAdd: OnCacheOperation | undefined;
-    onCacheHit: OnCacheOperation | undefined;
+    onCacheAdd: OnCacheOperation<MoizeableFn> | undefined;
+    onCacheHit: OnCacheOperation<MoizeableFn> | undefined;
 } {
     const onCacheAdd =
         typeof options.maxAge === 'number' && isFinite(options.maxAge)

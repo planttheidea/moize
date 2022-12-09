@@ -6,7 +6,7 @@ const method = jest.fn(function (one: string, two?: string, three?: string) {
     return { one, two, three };
 });
 
-function keyMatcher(cacheKey: Key, key: Key) {
+function keyMatcher(_cacheKey: Key, key: Key) {
     return key.includes('foo') && !key.includes('quz');
 }
 

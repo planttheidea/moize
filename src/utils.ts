@@ -1,8 +1,8 @@
 import { DEFAULT_OPTIONS } from './constants';
 
 import type {
+    AnyFn,
     Expiration,
-    Fn,
     IsEqual,
     IsMatchingKey,
     Key,
@@ -20,9 +20,9 @@ import type {
  * @param functions the functions to compose
  * @returns the composed function
  */
-export function combine<Arg, Result>(
-    ...functions: Fn<Arg>[]
-): Fn<Arg, Result> | undefined {
+export function combine<Args extends any[], Result>(
+    ...functions: Array<(...args: Args) => any>
+): ((...args: Args) => Result) | undefined {
     return functions.reduce(function (f: any, g: any) {
         if (typeof f === 'function') {
             return typeof g === 'function'
@@ -125,6 +125,11 @@ export function createFindKeyIndex(
     };
 }
 
+type MergedOptions<
+    OriginalOptions extends Options<Moizeable>,
+    NewOptions extends Options<Moizeable>
+> = Omit<OriginalOptions, keyof NewOptions> & NewOptions;
+
 /**
  * @private
  *
@@ -135,35 +140,39 @@ export function createFindKeyIndex(
  * @param newOptions the new options to merge
  * @returns the merged options
  */
-export function mergeOptions(
-    originalOptions: Options,
-    newOptions: Options
-): Options {
-    return !newOptions || newOptions === DEFAULT_OPTIONS
-        ? originalOptions
-        : {
-              ...originalOptions,
-              ...newOptions,
-              onCacheAdd: combine(
-                  originalOptions.onCacheAdd,
-                  newOptions.onCacheAdd
-              ),
-              onCacheChange: combine(
-                  originalOptions.onCacheChange,
-                  newOptions.onCacheChange
-              ),
-              onCacheHit: combine(
-                  originalOptions.onCacheHit,
-                  newOptions.onCacheHit
-              ),
-              transformArgs: compose(
-                  originalOptions.transformArgs,
-                  newOptions.transformArgs
-              ),
-          };
+export function mergeOptions<
+    OriginalOptions extends Options<Moizeable>,
+    NewOptions extends Options<Moizeable>
+>(
+    originalOptions: OriginalOptions,
+    newOptions: NewOptions | undefined
+): MergedOptions<OriginalOptions, NewOptions> {
+    if (!newOptions || newOptions === DEFAULT_OPTIONS) {
+        return originalOptions as unknown as MergedOptions<
+            OriginalOptions,
+            NewOptions
+        >;
+    }
+
+    return {
+        ...originalOptions,
+        ...newOptions,
+        onCacheAdd: combine(originalOptions.onCacheAdd, newOptions.onCacheAdd),
+        onCacheChange: combine(
+            originalOptions.onCacheChange,
+            newOptions.onCacheChange
+        ),
+        onCacheHit: combine(originalOptions.onCacheHit, newOptions.onCacheHit),
+        transformArgs: compose(
+            originalOptions.transformArgs,
+            newOptions.transformArgs
+        ),
+    };
 }
 
-export function isMoized(fn: Moizeable | Moized | Options): fn is Moized {
+export function isMoized(
+    fn: Moizeable | Moized | Options<AnyFn>
+): fn is Moized {
     return typeof fn === 'function' && (fn as Moizeable).isMoized;
 }
 

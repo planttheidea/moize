@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom';
 import moize from '../src';
 import { copyStaticProperties } from '../src/instance';
 
-import type { Moized } from '../index.d';
-
 describe('moize.react', () => {
     type ValueBarProps = {
         bar?: string;
@@ -166,7 +164,7 @@ describe('moize.react', () => {
         ];
 
         class App extends React.Component<{ isRerender?: boolean }> {
-            MoizedComponent: Moized;
+            MoizedComponent: typeof Memoized;
 
             componentDidMount() {
                 expect(ValueBar).toHaveBeenCalledTimes(3);
@@ -177,7 +175,9 @@ describe('moize.react', () => {
                 expect(ValueBar).toHaveBeenCalledTimes(4);
             }
 
-            setMoizedComponent = (Ref: { MoizedComponent: Moized }) => {
+            setMoizedComponent = (Ref: {
+                MoizedComponent: typeof Memoized;
+            }) => {
                 this.MoizedComponent = Ref.MoizedComponent;
             };
 

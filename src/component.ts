@@ -31,10 +31,10 @@ const REACT_ELEMENT_TYPE =
  * @param options the memoization options
  * @returns the memoized component
  */
-export function createMoizedComponent<OriginalFn extends Moizeable>(
+export function createMoizedComponent<MoizeableFn extends Moizeable>(
     moizer: Moize,
-    fn: OriginalFn,
-    options: Options
+    fn: MoizeableFn,
+    options: Options<MoizeableFn>
 ) {
     /**
      * This is a hack override setting the necessary options

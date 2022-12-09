@@ -1,7 +1,6 @@
 import Bluebird from 'bluebird';
 import moize from '../src';
-
-import type { Moized } from '../index.d';
+import { type Moizeable, type Moized } from '../index.d';
 
 function createMethod(
     type: string,
@@ -73,7 +72,11 @@ const nativeMemoizedExpiring = moize.promise(
     }
 );
 
-function testItem(key: number[], method: Moized, Constructor: any) {
+function testItem<MoizeableFn extends Moizeable>(
+    key: number[],
+    method: Moized<MoizeableFn>,
+    Constructor: any
+) {
     const [number, otherNumber] = key;
 
     return method(number, otherNumber).then((result: number) => {
