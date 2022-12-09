@@ -1,7 +1,8 @@
 import 'core-js';
 import 'regenerator-runtime/runtime';
 
-import moize, { Key, Moized } from '../src';
+import moize from '../src';
+import { type Key, type Moized } from '../index.d';
 
 moize.collectStats();
 

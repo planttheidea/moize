@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import moize, { Moized } from '../src';
+import moize from '../src';
+import { type Moized } from '../index.d';
 
 type Props = {
     bar?: string;
