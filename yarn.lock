@@ -5844,9 +5844,9 @@ methods@~1.1.2:
   integrity sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==
 
 micro-memoize@^4.0.11:
-  version "4.0.13"
-  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-4.0.13.tgz#bdee8377ca8c1817cbdb0a78a6e26eba1b2eae4b"
-  integrity sha512-/depGOsE3zDjE9qeabH6Qs2NJWpv1VNBJU09sDdMh2vKZIa8LyiOhj4TNe41PlTk2QrsRE1Gz8NDXSDhUFAwZg==
+  version "4.0.14"
+  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-4.0.14.tgz#d1239ce2e5831125ac518509f5a23b54e7ca3e17"
+  integrity sha512-2tzWP1w2Hh+r7kCYa4f//jpBEA6dAueiuLco38NxfjF9Py3KCCI7wVOTdCvOhmTC043t+ulclVBdl3v+s+UJIQ==
 
 micromatch@^4.0.2, micromatch@^4.0.4, micromatch@^4.0.5:
   version "4.0.5"
