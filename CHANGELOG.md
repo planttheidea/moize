@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 6.1.4
+
+-   [#184](https://github.com/planttheidea/moize/issues/184) - Fix pass-through typing for `micro-memoize` dependency
+
 ## 6.1.3
 
 -   [#179](https://github.com/planttheidea/moize/issues/179) - Invalid types for namespace methods which give the impression that chaining of those methods is possible
