@@ -21,9 +21,9 @@ export type FunctionalComponent<Props extends object> = ((
 export type Key<Arg extends any = any> = Arg[];
 export type Value = any;
 
-export type Cache<MoizeableFn extends Moizeable> =
+export type Cache<MoizeableFn extends Moizeable = Moizeable> =
     MicroMemoize.Cache<MoizeableFn>;
-export type MicroMemoizeOptions<MoizeableFn extends Moizeable> =
+export type MicroMemoizeOptions<MoizeableFn extends Moizeable = Moizeable> =
     MicroMemoize.Options<MoizeableFn>;
 
 export type Expiration = {
@@ -32,7 +32,7 @@ export type Expiration = {
     timeoutId: ReturnType<typeof setTimeout>;
 };
 
-export type OnCacheOperation<MoizeableFn extends Moizeable> = (
+export type OnCacheOperation<MoizeableFn extends Moizeable = Moizeable> = (
     cache: Cache<MoizeableFn>,
     options: Options<MoizeableFn>,
     moized: (...args: any[]) => any
@@ -45,7 +45,7 @@ export type Serialize = (key: Key) => string[];
 export type TransformKey = (key: Key) => Key;
 export type UpdateCacheForKey = (key: Key) => boolean;
 
-export type Options<MoizeableFn extends AnyFn> = Partial<{
+export type Options<MoizeableFn extends Moizeable = Moizeable> = Partial<{
     isDeepEqual: boolean;
     isPromise: boolean;
     isReact: boolean;
@@ -88,7 +88,7 @@ export type StatsCache = {
     profiles: Record<string, StatsProfile>;
 };
 
-export type Memoized<MoizeableFn extends Moizeable> =
+export type Memoized<MoizeableFn extends Moizeable = Moizeable> =
     MicroMemoize.Memoized<MoizeableFn>;
 
 export type Moized<
@@ -131,7 +131,7 @@ export type Moized<
     values: () => Cache<MoizeableFn>['values'];
 };
 
-export type MoizeConfiguration<MoizeableFn extends Moizeable> = {
+export type MoizeConfiguration<MoizeableFn extends Moizeable = Moizeable> = {
     expirations: Expiration[];
     options: Options<MoizeableFn>;
     originalFunction: MoizeableFn;
@@ -196,7 +196,7 @@ export interface MaxAge {
 }
 
 export interface Moizer<
-    DefaultOptions extends Options<AnyFn> = Options<AnyFn>
+    DefaultOptions extends Options<Moizeable> = Options<Moizeable>
 > {
     <MoizeableFn extends Moizeable>(fn: MoizeableFn): Moized<
         MoizeableFn,
@@ -223,13 +223,14 @@ export interface Moizer<
         MoizedFn['fn'],
         Options<MoizedFn> & DefaultOptions & PassedOptions
     >;
-    <PassedOptions extends Options<AnyFn>>(
+    <PassedOptions extends Options<Moizeable>>(
         options: PassedOptions
     ): Moizer<PassedOptions>;
 }
 
-export interface Moize<DefaultOptions extends Options<AnyFn> = Options<AnyFn>>
-    extends Moizer<DefaultOptions> {
+export interface Moize<
+    DefaultOptions extends Options<Moizeable> = Options<Moizeable>
+> extends Moizer<DefaultOptions> {
     clearStats: (profileName?: string) => void;
     collectStats: (isCollectingStats?: boolean) => void;
     compose: (...moizers: Array<Moize | Moizer>) => Moizer;
