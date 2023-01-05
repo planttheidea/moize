@@ -6,6 +6,12 @@ import { ReactElement } from 'react';
 export type AnyFn = (...args: any[]) => any;
 export type Moizeable = AnyFn & Record<string, any>;
 
+export interface MoizedReactElement {
+    type: any;
+    props: any;
+    key: string | number | null;
+}
+
 /**
  * @deprecated
  */
