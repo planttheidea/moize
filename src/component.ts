@@ -4,7 +4,6 @@ import { setName } from './utils';
 import type {
     Moize,
     Moized as MoizedFunction,
-    MoizedReactElement,
     Moizeable,
     Options,
 } from '../index.d';
@@ -77,7 +76,7 @@ export function createMoizedComponent<MoizeableFn extends Moizeable>(
 
     Moized.prototype.isReactComponent = {};
 
-    Moized.prototype.render = function (): MoizedReactElement {
+    Moized.prototype.render = function (): ReturnType<MoizeableFn> {
         return {
             $$typeof: REACT_ELEMENT_TYPE,
             type: this.MoizedComponent,
@@ -85,7 +84,7 @@ export function createMoizedComponent<MoizeableFn extends Moizeable>(
             ref: null,
             key: null,
             _owner: null,
-        } as MoizedReactElement;
+        } as ReturnType<MoizeableFn>;
     };
 
     copyStaticProperties(fn, Moized, ['contextType', 'contextTypes']);

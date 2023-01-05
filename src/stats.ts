@@ -1,5 +1,4 @@
 import type {
-    FunctionalComponent,
     GlobalStatsObject,
     Moizeable,
     OnCacheOperation,
@@ -94,10 +93,10 @@ export function createOnCacheHitIncrementCallsAndHits<
  * @returns the derived profileName for the function
  */
 export function getDefaultProfileName<MoizeableFn extends Moizeable>(
-    fn: MoizeableFn | FunctionalComponent<Record<string, unknown>>
+    fn: MoizeableFn
 ) {
     return (
-        (fn as FunctionalComponent<Record<string, unknown>>).displayName ||
+        fn.displayName ||
         fn.name ||
         `Anonymous ${statsCache.anonymousProfileNameCounter++}`
     );
