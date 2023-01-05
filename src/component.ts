@@ -1,6 +1,7 @@
 import { copyStaticProperties } from './instance';
 import { setName } from './utils';
 
+import type { ReactElement } from 'react';
 import type {
     Moize,
     Moized as MoizedFunction,
@@ -84,7 +85,7 @@ export function createMoizedComponent<MoizeableFn extends Moizeable>(
             ref: null,
             key: null,
             _owner: null,
-        } as JSX.Element;
+        } as ReactElement;
     };
 
     copyStaticProperties(fn, Moized, ['contextType', 'contextTypes']);

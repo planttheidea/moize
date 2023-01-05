@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import { MicroMemoize } from 'micro-memoize/src/types';
+import { ReactElement } from 'react';
 
 export type AnyFn = (...args: any[]) => any;
 export type Moizeable = AnyFn & Record<string, any>;
@@ -14,7 +15,7 @@ export type Fn<Arg extends any = any, Result extends any = any> = (
 
 export type FunctionalComponent<Props extends object> = ((
     props: Props
-) => JSX.Element) & {
+) => ReactElement) & {
     displayName?: string;
 };
 
