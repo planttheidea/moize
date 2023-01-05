@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 6.1.5
+
+-   [#186](https://github.com/planttheidea/moize/issues/186) - Avoid type issues when using in project where React is unused
+
 ## 6.1.4
 
 -   [#184](https://github.com/planttheidea/moize/issues/184) - Fix pass-through typing for `micro-memoize` dependency
