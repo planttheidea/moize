@@ -5,16 +5,30 @@ import { MicroMemoize } from 'micro-memoize/src/types';
 export type AnyFn = (...args: any[]) => any;
 export type Moizeable = AnyFn & Record<string, any>;
 
+interface MoizedReactElement {
+    type: any;
+    props: any;
+    key: string | number | null;
+}
+
 /**
  * @deprecated
+ *
+ * Use `AnyFn` instead, as it is more flexible and works better with type inference.
  */
 export type Fn<Arg extends any = any, Result extends any = any> = (
     ...args: Arg[]
 ) => Result;
 
+/**
+ * @deprecated
+ *
+ * This should not longer need to be explicitly used, as inference of the function
+ * returning the element should suffice.
+ */
 export type FunctionalComponent<Props extends object> = ((
     props: Props
-) => JSX.Element) & {
+) => MoizedReactElement) & {
     displayName?: string;
 };
 

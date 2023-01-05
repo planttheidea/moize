@@ -76,7 +76,7 @@ export function createMoizedComponent<MoizeableFn extends Moizeable>(
 
     Moized.prototype.isReactComponent = {};
 
-    Moized.prototype.render = function () {
+    Moized.prototype.render = function (): ReturnType<MoizeableFn> {
         return {
             $$typeof: REACT_ELEMENT_TYPE,
             type: this.MoizedComponent,
@@ -84,7 +84,7 @@ export function createMoizedComponent<MoizeableFn extends Moizeable>(
             ref: null,
             key: null,
             _owner: null,
-        } as JSX.Element;
+        } as ReturnType<MoizeableFn>;
     };
 
     copyStaticProperties(fn, Moized, ['contextType', 'contextTypes']);
