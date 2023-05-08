@@ -5906,10 +5906,10 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==
 
-micro-memoize@^4.0.11:
-  version "4.0.14"
-  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-4.0.14.tgz#d1239ce2e5831125ac518509f5a23b54e7ca3e17"
-  integrity sha512-2tzWP1w2Hh+r7kCYa4f//jpBEA6dAueiuLco38NxfjF9Py3KCCI7wVOTdCvOhmTC043t+ulclVBdl3v+s+UJIQ==
+micro-memoize@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/micro-memoize/-/micro-memoize-4.1.2.tgz#ce719c1ba1e41592f1cd91c64c5f41dcbf135f36"
+  integrity sha512-+HzcV2H+rbSJzApgkj0NdTakkC+bnyeiUxgT6/m7mjcz1CmM22KYFKp+EVj1sWe4UYcnriJr5uqHQD/gMHLD+g==
 
 micromatch@^4.0.2, micromatch@^4.0.4, micromatch@^4.0.5:
   version "4.0.5"
