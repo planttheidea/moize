@@ -1,6 +1,10 @@
 /* eslint-disable */
 
-import { MicroMemoize } from 'micro-memoize/src/types';
+import {
+    Cache as BaseCache,
+    Memoized as BaseMemoized,
+    Options as BaseOptions,
+} from 'micro-memoize';
 
 export type AnyFn = (...args: any[]) => any;
 export type Moizeable = AnyFn & Record<string, any>;
@@ -36,9 +40,9 @@ export type Key<Arg extends any = any> = Arg[];
 export type Value = any;
 
 export type Cache<MoizeableFn extends Moizeable = Moizeable> =
-    MicroMemoize.Cache<MoizeableFn>;
+    BaseCache<MoizeableFn>;
 export type MicroMemoizeOptions<MoizeableFn extends Moizeable = Moizeable> =
-    MicroMemoize.Options<MoizeableFn>;
+    BaseOptions<MoizeableFn>;
 
 export type Expiration = {
     expirationMethod: () => void;
@@ -103,7 +107,7 @@ export type StatsCache = {
 };
 
 export type Memoized<MoizeableFn extends Moizeable = Moizeable> =
-    MicroMemoize.Memoized<MoizeableFn>;
+    BaseMemoized<MoizeableFn>;
 
 export type Moized<
     MoizeableFn extends Moizeable = Moizeable,
