@@ -1,5 +1,9 @@
 # moize CHANGELOG
 
+## 6.1.6
+
+-   [#196](https://github.com/planttheidea/moize/issues/196) - Fix `mjs` typing not flowing through due to deep-linking ignoring `index.d.ts`
+
 ## 6.1.5
 
 -   [#186](https://github.com/planttheidea/moize/issues/186) - Avoid type issues when using in project where React is unused
