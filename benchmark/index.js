@@ -76,8 +76,9 @@ const onCycle = (event) => {
     }
 
     csvResults[currentTarget.name][target.name] = ~~event.target.hz;
-
-    ora(target.name).succeed();
+    const prevText = spinner.text;
+    spinner.succeed(target.name);
+    spinner.start(prevText);
 };
 
 const onComplete = () => {
@@ -184,7 +185,6 @@ const getSuiteOptions = (name, resolve) => {
 };
 
 const runSinglePrimitiveSuite = () => {
-    // const fibonacciSuite = new Benchmark.Suite('Single parameter (primitive)');
     const fibonacciNumber = 35;
 
     const mAddyOsmani = addyOsmani(fibonacciSinglePrimitive);
@@ -243,7 +243,7 @@ const runSingleArraySuite = () => {
     const mFastMemoize = fastMemoize(fibonacciSingleArray);
     const mLodash = lodash(fibonacciSingleArray);
     const mLruMemoize = lruMemoize(Infinity)(fibonacciSingleArray);
-    const mMem = mem(fibonacciSingleArray);
+    const mMem = mem(fibonacciSingleArray, { cacheKey: JSON.stringify });
     const mMemoizee = memoizee(fibonacciSingleArray);
     const mMemoizerific = memoizerific(Infinity)(fibonacciSingleArray);
     const mMoize = moize(fibonacciSingleArray);
@@ -298,7 +298,7 @@ const runSingleObjectSuite = () => {
     const mFastMemoize = fastMemoize(fibonacciSingleObject);
     const mLodash = lodash(fibonacciSingleObject);
     const mLruMemoize = lruMemoize(Infinity)(fibonacciSingleObject);
-    const mMem = mem(fibonacciSingleObject);
+    const mMem = mem(fibonacciSingleObject, { cacheKey: JSON.stringify });
     const mMemoizee = memoizee(fibonacciSingleObject);
     const mMemoizerific = memoizerific(Infinity)(fibonacciSingleObject);
     const mMoize = moize(fibonacciSingleObject);
