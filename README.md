@@ -402,7 +402,7 @@ This is also available via the shortcut method of [`moize.maxAge`](#moizemaxage)
 const memoized = moize.maxAge(MAX_AGE)(fn);
 ```
 
-**TIP**: A common usage of this is in tandom with `isPromise` for AJAX calls, and in that scenario the expected behavior is usually to have the `maxAge` countdown begin upon resolution of the promise. If this is your intended use case, you should also apply the `updateExpire` option.
+**TIP**: A common usage of this is in tandem with `isPromise` for AJAX calls, and in that scenario the expected behavior is usually to have the `maxAge` countdown begin upon resolution of the promise. If this is your intended use case, you should also apply the `updateExpire` option.
 
 ## maxArgs
 
