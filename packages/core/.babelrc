@@ -1,0 +1,44 @@
+{
+    "env": {
+        "lib": {
+            "presets": [
+                [
+                    "@babel/preset-env",
+                    {
+                        "loose": true
+                    }
+                ]
+            ]
+        },
+        "test": {
+            "plugins": ["@babel/plugin-proposal-class-properties"],
+            "presets": [
+                [
+                    "@babel/preset-env",
+                    {
+                        "loose": true
+                    }
+                ],
+                "@babel/preset-react"
+            ]
+        }
+    },
+    "plugins": [
+        ["@babel/plugin-proposal-class-properties", { "loose": false }],
+        ["@babel/plugin-proposal-private-methods", { "loose": false }],
+        [
+            "@babel/plugin-proposal-private-property-in-object",
+            { "loose": false }
+        ]
+    ],
+    "presets": [
+        "@babel/preset-typescript",
+        [
+            "@babel/preset-env",
+            {
+                "loose": true,
+                "modules": false
+            }
+        ]
+    ]
+}
