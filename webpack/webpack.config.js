@@ -27,11 +27,9 @@ module.exports = {
                     path.resolve(ROOT, 'src'),
                     path.resolve(ROOT, 'DEV_ONLY'),
                 ],
-                loader: 'babel-loader',
+                loader: require.resolve('babel-loader'),
                 options: {
                     cacheDirectory: true,
-                    plugins: ['@babel/plugin-proposal-class-properties'],
-                    presets: ['@babel/preset-react'],
                 },
                 test: /\.(js|ts|tsx)$/,
             },
