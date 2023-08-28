@@ -99,13 +99,13 @@ export declare class Cache<
     addons: AddonOptions;
 
     clear(): void;
-    delete(node: CacheNode<Fn>): void;
+    delete(key: Key): void;
     get(key: Key): ReturnType<Fn> | undefined;
     has(key: Key): boolean;
     on(
         type: CacheChangeType,
         listener: CacheChangeListener<Fn, Cache<Fn, AddonOptions>>
     ): () => void;
-    set(key: Key, value: ReturnType<Fn>): CacheNode<Fn>;
+    set(key: Key, value: ReturnType<Fn>): void;
     snapshot(): CacheSnapshot<Fn>;
 }

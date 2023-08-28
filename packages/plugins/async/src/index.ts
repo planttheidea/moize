@@ -1,4 +1,9 @@
-import type { Options, Plugin } from '../../../core';
+import type {
+    Cache,
+    CacheChangeListener,
+    Options,
+    Plugin,
+} from '../../../core';
 
 export interface AddonOptions {
     async: boolean;
@@ -11,9 +16,14 @@ export const asyncPlugin: Plugin<AddonOptions> = function asyncPlugin(
         options: Options<Fn, AddonOptions>
     ) {
         const cache = createCache(options as any);
-
-        // @ts-expect-error - `o` is not surfaced on public API
-        cache.o.resolve = new Set();
+        const resolveListeners: Array<
+            CacheChangeListener<Fn, Cache<Fn, AddonOptions>>
+            // @ts-expect-error - `o` is not surfaced on public API
+        > = (cache.o.resolve = []);
+        const rejectListeners: Array<
+            CacheChangeListener<Fn, Cache<Fn, AddonOptions>>
+            // @ts-expect-error - `o` is not surfaced on public API
+        > = (cache.o.reject = []);
 
         if (cache.addons.async) {
             cache.on('add', (entry) => {
@@ -24,15 +34,21 @@ export const asyncPlugin: Plugin<AddonOptions> = function asyncPlugin(
                     (value: any) => {
                         node.v = Promise.resolve(value);
 
-                        cache.has(node.k) &&
-                            cache.notify('resolve', {
-                                key: node.k,
-                                value: node.v,
-                            });
+                        resolveListeners.length &&
+                            cache.has(node.k) &&
+                            // @ts-expect-error - `b` is not surfaced on public API
+                            cache.b('resolve', { key: node.k, value: node.v });
                         return value;
                     },
                     (error: Error) => {
-                        cache.delete(node);
+                        const hasEntry = cache.has(entry.key);
+
+                        cache.delete(entry.key);
+
+                        rejectListeners.length &&
+                            hasEntry &&
+                            // @ts-expect-error - `b` is not surfaced on public API
+                            cache.b('reject', entry);
                         throw error;
                     }
                 );

@@ -39,7 +39,7 @@ export function createMoize<Plugins extends Tuple<Plugin<any>>>(
         const moized: Moized<Fn, AddonOptions> = function moized(this: any) {
             const key: Key = transformKey ? transformKey(arguments) : arguments;
             // @ts-expect-error - `g` is not surfaced on public API
-            let node = cache.g(key);
+            let node = cache.g(key, true);
 
             if (node) {
                 return node.v;
@@ -48,7 +48,8 @@ export function createMoize<Plugins extends Tuple<Plugin<any>>>(
             // @ts-expect-error - `n` is not surfaced on public API
             node = cache.n(
                 transformKey ? key : cloneKey(key),
-                fn.apply(this, key)
+                fn.apply(this, key),
+                true
             );
 
             return node.v;
