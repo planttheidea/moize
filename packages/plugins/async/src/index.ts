@@ -41,12 +41,13 @@ export const asyncPlugin: Plugin<AddonOptions> = function asyncPlugin(
                         return value;
                     },
                     (error: Error) => {
-                        const hasEntry = cache.has(entry.key);
+                        const shouldNotify = rejectListeners.length
+                            ? cache.has(entry.key)
+                            : false;
 
                         cache.delete(entry.key);
 
-                        rejectListeners.length &&
-                            hasEntry &&
+                        shouldNotify &&
                             // @ts-expect-error - `b` is not surfaced on public API
                             cache.b('reject', entry);
                         throw error;
