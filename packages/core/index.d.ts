@@ -16,7 +16,12 @@ export interface CacheEntry<Fn extends (...args: any[]) => any> {
     value: ReturnType<Fn>;
 }
 
-export type CacheChangeType = string;
+export type CacheChangeType =
+    | 'add'
+    | 'delete'
+    | 'hit'
+    | 'update'
+    | (string & {});
 export type CacheChangeListener<
     Fn extends (...args: any[]) => any,
     CacheInstance extends Cache<Fn, object>
