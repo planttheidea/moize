@@ -3,7 +3,7 @@
 import Bluebird from 'bluebird';
 import { deepEqual } from 'fast-equals';
 
-import memoize from '../src';
+import moize from '../src';
 
 // import '../benchmarks';
 
@@ -31,7 +31,7 @@ function method(one: string, two: string) {
     return [one, two].join(' ');
 }
 
-const memoized = memoize(method);
+const memoized = moize(method);
 
 memoized(foo, bar);
 memoized(bar, foo);
@@ -51,11 +51,14 @@ console.groupEnd();
 
 console.group('standard with larger cache size');
 
-const memoizedLargerCache = memoize(method, {
-    onCache(type, entry) {
-        console.log(type, entry);
-    },
+const memoizedLargerCache = moize(method, {
     maxSize: 3,
+});
+
+(['add', 'delete', 'hit', 'update'] as const).forEach((type) => {
+    memoizedLargerCache.cache.on(type, (entry) => {
+        console.log(type, entry);
+    });
 });
 
 memoizedLargerCache(foo, bar);
@@ -72,7 +75,7 @@ console.groupEnd();
 
 console.group('maxArgs');
 
-const memoizedMax = memoize(method, {
+const memoizedMax = moize(method, {
     matchesKey: (originalKey, newKey) => originalKey[0] === newKey[0],
 });
 
@@ -96,7 +99,7 @@ const deepEqualMethod = ({
     return [one, two];
 };
 
-const deepEqualMemoized = memoize(deepEqualMethod, {
+const deepEqualMemoized = moize(deepEqualMethod, {
     matchesArg: deepEqual,
 });
 
@@ -109,72 +112,6 @@ console.log(deepEqualMemoized.cache.snapshot());
 
 console.groupEnd();
 
-console.group('promise');
-
-const promiseMethod = (number: number, otherNumber: number) => {
-    console.log('promise method fired', number);
-
-    return new Promise((resolve: Function) => {
-        resolve(number * otherNumber);
-    });
-};
-
-const promiseMethodRejected = (number: number) => {
-    console.log('promise rejection method fired', number);
-
-    return new Bluebird((resolve, reject) => {
-        setTimeout(() => {
-            reject(new Error(foo));
-        }, 100);
-    });
-};
-
-const memoizedPromise = memoize(promiseMethod, { async: true });
-const memoizedPromiseRejected = memoize(promiseMethodRejected, {
-    async: true,
-});
-
-memoizedPromiseRejected(3)
-    .then((value: any) => {
-        console.log(value);
-    })
-    .catch((error: Error) => {
-        console.log(memoizedPromiseRejected.cache.snapshot());
-        console.error(error);
-    });
-
-memoizedPromiseRejected(3)
-    .then((value: any) => {
-        console.log(value);
-    })
-    .catch((error: Error) => {
-        console.log(memoizedPromiseRejected.cache.snapshot());
-        console.error(error);
-    });
-
-memoizedPromiseRejected(3)
-    .then((value: any) => {
-        console.log(value);
-    })
-    .catch((error: Error) => {
-        console.log(memoizedPromiseRejected.cache.snapshot());
-        console.error(error);
-    });
-
-// get result
-memoizedPromise(2, 2).then((value: unknown) => {
-    console.log(`computed value: ${value}`);
-});
-
-// pull from cache
-memoizedPromise(2, 2).then((value: unknown) => {
-    console.log(`cached value: ${value}`);
-});
-
-console.log(memoizedPromise.cache.snapshot().map(({ key }) => key));
-
-console.groupEnd();
-
 console.group('with default parameters');
 
 const withDefault = (foo: string, bar: string = 'default') => {
@@ -183,7 +120,7 @@ const withDefault = (foo: string, bar: string = 'default') => {
     return `${foo} ${bar}`;
 };
 
-const moizedWithDefault = memoize(withDefault, { maxSize: 5 });
+const moizedWithDefault = moize(withDefault, { maxSize: 5 });
 
 console.log(moizedWithDefault(foo));
 console.log(moizedWithDefault(foo, bar));
@@ -199,7 +136,7 @@ const noFns = (one: string, two: string, three: Function) => {
     return { one, two, three };
 };
 
-const memoizedNoFns = memoize(noFns, {
+const memoizedNoFns = moize(noFns, {
     matchesArg(key1, key2) {
         return key1 === key2;
     },
@@ -226,7 +163,7 @@ const matchingKeyMethod = function (object: {
     return object.deeply.nested.number;
 };
 
-const matchingKeyMemoized = memoize(matchingKeyMethod, {
+const matchingKeyMemoized = moize(matchingKeyMethod, {
     matchesKey: deepEqual,
     maxSize: 10,
 });
@@ -246,7 +183,7 @@ type Dictionary<Type> = {
     [index: number]: Type;
 };
 
-const calc = memoize(
+const calc = moize(
     (object: Dictionary<any>, metadata: Dictionary<any>): Dictionary<any> =>
         Object.keys(object).reduce((totals: Dictionary<any>, key: string) => {
             if (Array.isArray(object[key])) {

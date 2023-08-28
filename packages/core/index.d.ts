@@ -1,3 +1,5 @@
+export type TupleFrom<Type> = [Type] | Type[];
+
 export type RawKey = IArguments | Key;
 export type Key = any[];
 export type Arg = Key[number];
@@ -14,45 +16,97 @@ export interface CacheEntry<Fn extends (...args: any[]) => any> {
     value: ReturnType<Fn>;
 }
 
-type OnChange<Fn extends (...args: any[]) => any> = (
-    type: 'add' | 'delete' | 'hit' | 'resolved' | 'update',
-    entry: CacheEntry<Fn>,
-    cache: Cache<Fn>
-) => void;
+export type CacheChangeType = string;
+export type CacheChangeListener<
+    Fn extends (...args: any[]) => any,
+    CacheInstance extends Cache<Fn, object>
+> = (entry: CacheEntry<Fn>, cache: CacheInstance) => void;
+
 type KeyTransformer<Fn extends (...args: any[]) => any> = (
     args: Parameters<Fn>
 ) => Key;
 
-export interface Options<Fn extends (...args: any[]) => any> {
-    async?: boolean;
+export type Options<
+    Fn extends (...args: any[]) => any,
+    AddonOptions extends object = {}
+> = {
     maxSize?: number;
     matchesArg?: (a: Arg, b: Arg) => boolean;
     matchesKey?: (a: Key, b: Key) => boolean;
-    onCache?: OnChange<Fn>;
     transformKey?: KeyTransformer<Fn>;
-}
+} & {
+    [Key in keyof AddonOptions]: AddonOptions[Key];
+};
 
 export type CacheSnapshot<Fn extends (...args: any[]) => any> = Array<{
     key: Key;
     value: ReturnType<Fn>;
 }>;
 
-export interface Memoized<Fn extends (...args: any[]) => any> {
+export interface Moized<
+    Fn extends (...args: any[]) => any,
+    AddonOptions extends object = {}
+> {
     (...args: Parameters<Fn>): ReturnType<Fn>;
 
-    cache: Cache<Fn>;
+    cache: Cache<Fn, AddonOptions>;
     fn: Fn;
-    isMemoized: true;
-    options: Options<Fn>;
+    isMoized: true;
+    options: Options<Fn, AddonOptions>;
 }
 
-export declare class Cache<Fn extends (...args: any[]) => any> {
-    constructor(options: Options<Fn>);
+export type CreateCache<
+    Fn extends (...args: any[]) => any,
+    AddonOptions extends object = {}
+> = (options: Options<Fn, AddonOptions>) => Cache<Fn, AddonOptions>;
+
+export type Plugin<AddonOptions extends object = {}> = <
+    Fn extends (...args: any[]) => any
+>(
+    createCache: CreateCache<Fn, AddonOptions>
+) => CreateCache<Fn, AddonOptions>;
+
+export type OnlyAddonOptions<AllOptions extends Options<any, any>> = {
+    [Key in keyof AllOptions as Exclude<
+        Key,
+        keyof Options<any, {}>
+    >]: AllOptions[Key];
+};
+
+export type ExtractAddonOptions<AddonPlugin extends Plugin<any>> =
+    OnlyAddonOptions<Parameters<Parameters<AddonPlugin>[0]>[0]>;
+
+export type GetAddonOptions<
+    Plugins extends TupleFrom<Plugin<any>>,
+    AddonOptions extends object
+> = Plugins extends [infer NextPlugin, ...infer RemainingPlugins]
+    ? NextPlugin extends Plugin<any>
+        ? RemainingPlugins extends Array<Plugin<any>>
+            ? GetAddonOptions<
+                  RemainingPlugins,
+                  AddonOptions & ExtractAddonOptions<NextPlugin>
+              >
+            : AddonOptions
+        : AddonOptions
+    : AddonOptions;
+
+export declare class Cache<
+    Fn extends (...args: any[]) => any,
+    AddonOptions extends object = {}
+> {
+    constructor(options: Options<Fn, AddonOptions>);
+
+    addons: AddonOptions;
 
     clear(): void;
     delete(node: CacheNode<Fn>): void;
     get(key: Key): ReturnType<Fn> | undefined;
     has(key: Key): boolean;
+    notify(type: CacheChangeType, entry: CacheEntry<Fn>): void;
+    on(
+        type: CacheChangeType,
+        listener: CacheChangeListener<Fn, Cache<Fn, AddonOptions>>
+    ): () => void;
     set(key: Key, value: ReturnType<Fn>): CacheNode<Fn>;
     snapshot(): CacheSnapshot<Fn>;
 }

@@ -1,4 +1,4 @@
-import type { CacheNode, CacheEntry, Memoized } from '../index.d';
+import type { CacheNode, CacheEntry, Moized } from '../index.d';
 
 type TypeOf =
     | 'bigint'
@@ -46,7 +46,7 @@ export function getEntry<Fn extends (...args: any[]) => any>(
     return { key: node.k, value: node.v };
 }
 
-export function isMemoized(fn: any): fn is Memoized<any> {
+export function isMoized(fn: any): fn is Moized<any, any> {
     return typeof fn === 'function' && fn.fn;
 }
 

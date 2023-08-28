@@ -24,12 +24,17 @@ export default {
         rules: [
             {
                 include: [
-                    resolve(ROOT, 'src'),
                     resolve(ROOT, 'dev-playground'),
+                    resolve(ROOT, '..', 'plugins'),
+                    resolve(ROOT, 'src'),
                 ],
                 loader: 'babel-loader',
                 options: {
                     cacheDirectory: true,
+                    presets: [
+                        '@babel/preset-typescript',
+                        ['@babel/preset-env', { loose: true, modules: false }],
+                    ],
                 },
                 test: /\.(js|ts|tsx)$/,
             },
@@ -37,8 +42,8 @@ export default {
     },
 
     output: {
-        filename: 'moize.js',
-        library: 'moize',
+        filename: 'moize-core.js',
+        library: 'moize-core',
         libraryTarget: 'umd',
         path: resolve(ROOT, 'dist'),
         publicPath: `http://localhost:${PORT}/`,
