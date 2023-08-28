@@ -15,7 +15,7 @@ import { cloneKey, getDefault, getEntry, sameValueZero } from './utils';
 
 type CacheChangeListenerMap<
     Fn extends (...args: any[]) => any,
-    CacheInstance extends Cache<Fn, object>
+    CacheInstance extends Cache<Fn, any>
 > = Record<CacheChangeType, Set<CacheChangeListener<Fn, CacheInstance>>>;
 
 const CACHE_CHANGE_TYPES: CacheChangeType[] = [
@@ -39,7 +39,6 @@ export class Cache<
     private l: number;
     private m: (a: Key, b: Key) => boolean;
     private o: CacheChangeListenerMap<Fn, this>;
-    private p: boolean;
     private s = 0;
     private t: CacheNode<Fn> | null = null;
 
@@ -99,7 +98,7 @@ export class Cache<
 
         --this.s;
 
-        this.notify('delete', getEntry(node));
+        this.o.delete.size && this.b('delete', getEntry(node));
     }
 
     get(key: Key): ReturnType<Fn> | undefined {
@@ -112,21 +111,10 @@ export class Cache<
         return !!this.g(key);
     }
 
-    notify(type: CacheChangeType, entry: CacheEntry<Fn>): void {
-        const listeners = this.o[type];
-
-        listeners.size &&
-            listeners.forEach((listener) => {
-                listener(entry, this);
-            });
-    }
-
     on(
         type: CacheChangeType,
         listener: (entry: CacheEntry<Fn>, cache: this) => void
     ) {
-        console.log('listeners', this.o);
-
         this.o[type].add(listener);
 
         return () => this.o[type].delete(listener);
@@ -138,7 +126,7 @@ export class Cache<
         if (!existingNode) {
             const node = this.n(key, value);
 
-            this.notify('add', getEntry(node));
+            this.o.add.size && this.b('add', getEntry(node));
 
             return node;
         }
@@ -149,7 +137,7 @@ export class Cache<
             this.u(existingNode);
         }
 
-        this.notify('update', getEntry(existingNode));
+        this.o.update.size && this.b('update', getEntry(existingNode));
 
         return existingNode;
     }
@@ -165,6 +153,12 @@ export class Cache<
         }
 
         return cached;
+    }
+
+    private b(type: CacheChangeType, entry: CacheEntry<Fn>): void {
+        this.o[type].forEach((listener) => {
+            listener(entry, this);
+        });
     }
 
     private e(prevKey: Key, nextKey: Key): boolean {
@@ -193,6 +187,7 @@ export class Cache<
         }
 
         if (this.m(this.h.k, key)) {
+            this.o.hit.size && this.b('hit', getEntry(this.h));
             return this.h;
         }
 
@@ -205,6 +200,7 @@ export class Cache<
         while (cached) {
             if (this.m(cached.k, key)) {
                 this.u(cached);
+                this.o.update.size && this.b('update', getEntry(cached));
                 return cached;
             }
 

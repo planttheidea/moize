@@ -1,6 +1,6 @@
 import type { GetAddonOptions, Key, Moized, Options, Plugin } from '../index.d';
 import { createCacheCreator } from './cache';
-import { cloneKey, getEntry, isMoized } from './utils';
+import { cloneKey, isMoized } from './utils';
 
 type Tuple<Type> = [Type] | Type[];
 
@@ -38,16 +38,10 @@ export function createMoize<Plugins extends Tuple<Plugin<any>>>(
 
         const moized: Moized<Fn, AddonOptions> = function moized(this: any) {
             const key: Key = transformKey ? transformKey(arguments) : arguments;
-            // @ts-expect-error - `h` is not surfaced on public API
-            const prevHead = cache.h;
             // @ts-expect-error - `g` is not surfaced on public API
             let node = cache.g(key);
 
             if (node) {
-                cache.notify(
-                    node === prevHead ? 'hit' : 'update',
-                    getEntry(node)
-                );
                 return node.v;
             }
 
@@ -56,7 +50,6 @@ export function createMoize<Plugins extends Tuple<Plugin<any>>>(
                 transformKey ? key : cloneKey(key),
                 fn.apply(this, key)
             );
-            cache.notify('add', getEntry(node));
 
             return node.v;
         };

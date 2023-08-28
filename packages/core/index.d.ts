@@ -102,7 +102,6 @@ export declare class Cache<
     delete(node: CacheNode<Fn>): void;
     get(key: Key): ReturnType<Fn> | undefined;
     has(key: Key): boolean;
-    notify(type: CacheChangeType, entry: CacheEntry<Fn>): void;
     on(
         type: CacheChangeType,
         listener: CacheChangeListener<Fn, Cache<Fn, AddonOptions>>
