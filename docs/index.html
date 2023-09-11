@@ -21,85 +21,85 @@
 
 <p><code>moize</code> is a <a href="#benchmarks">consistently blazing fast</a> memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.</p>
 <ul>
-<li><a href="#importing">Importing</a><ul>
-<li><a href="#esm-in-browsers">ESM in browsers</a></li>
-<li><a href="#esm-in-nodejs">ESM in NodeJS</a></li>
-<li><a href="#commonjs">CommonJS</a></li>
+<li><a href="#md:importing">Importing</a><ul>
+<li><a href="#md:esm-in-browsers">ESM in browsers</a></li>
+<li><a href="#md:esm-in-nodejs">ESM in NodeJS</a></li>
+<li><a href="#md:commonjs">CommonJS</a></li>
 </ul>
 </li>
-<li><a href="#usage">Usage</a></li>
-<li><a href="#configuration-options">Configuration options</a><ul>
-<li><a href="#isdeepequal">isDeepEqual</a></li>
-<li><a href="#ispromise">isPromise</a></li>
-<li><a href="#isreact">isReact</a></li>
-<li><a href="#isserialized">isSerialized</a></li>
-<li><a href="#isshallowequal">isShallowEqual</a></li>
-<li><a href="#matchesarg">matchesArg</a></li>
-<li><a href="#matcheskey">matchesKey</a></li>
-<li><a href="#maxage">maxAge</a></li>
-<li><a href="#maxargs">maxArgs</a></li>
-<li><a href="#maxsize">maxSize</a></li>
-<li><a href="#oncacheadd">onCacheAdd</a></li>
-<li><a href="#oncachechange">onCacheChange</a></li>
-<li><a href="#oncachehit">onCacheHit</a></li>
-<li><a href="#onexpire">onExpire</a></li>
-<li><a href="#profilename">profileName</a></li>
-<li><a href="#serializer">serializer</a></li>
-<li><a href="#transformargs">transformArgs</a></li>
-<li><a href="#updatecacheforkey">updateCacheForKey</a></li>
-<li><a href="#updateexpire">updateExpire</a></li>
+<li><a href="#md:usage">Usage</a></li>
+<li><a href="#md:configuration-options">Configuration options</a><ul>
+<li><a href="#md:isdeepequal">isDeepEqual</a></li>
+<li><a href="#md:ispromise">isPromise</a></li>
+<li><a href="#md:isreact">isReact</a></li>
+<li><a href="#md:isserialized">isSerialized</a></li>
+<li><a href="#md:isshallowequal">isShallowEqual</a></li>
+<li><a href="#md:matchesarg">matchesArg</a></li>
+<li><a href="#md:matcheskey">matchesKey</a></li>
+<li><a href="#md:maxage">maxAge</a></li>
+<li><a href="#md:maxargs">maxArgs</a></li>
+<li><a href="#md:maxsize">maxSize</a></li>
+<li><a href="#md:oncacheadd">onCacheAdd</a></li>
+<li><a href="#md:oncachechange">onCacheChange</a></li>
+<li><a href="#md:oncachehit">onCacheHit</a></li>
+<li><a href="#md:onexpire">onExpire</a></li>
+<li><a href="#md:profilename">profileName</a></li>
+<li><a href="#md:serializer">serializer</a></li>
+<li><a href="#md:transformargs">transformArgs</a></li>
+<li><a href="#md:updatecacheforkey">updateCacheForKey</a></li>
+<li><a href="#md:updateexpire">updateExpire</a></li>
 </ul>
 </li>
-<li><a href="#usage-with-shortcut-methods">Usage with shortcut methods</a><ul>
-<li><a href="#moizedeep">moize.deep</a></li>
-<li><a href="#moizeinfinite">moize.infinite</a></li>
-<li><a href="#moizematchesarg">moize.matchesArg</a></li>
-<li><a href="#moizematcheskey">moize.matchesKey</a></li>
-<li><a href="#moizemaxage">moize.maxAge</a></li>
-<li><a href="#moizemaxargs">moize.maxArgs</a></li>
-<li><a href="#moizemaxsize">moize.maxSize</a></li>
-<li><a href="#moizeprofile">moize.profile</a></li>
-<li><a href="#moizepromise">moize.promise</a></li>
-<li><a href="#moizereact">moize.react</a></li>
-<li><a href="#moizeserialize">moize.serialize</a></li>
-<li><a href="#moizeserializewith">moize.serializeWith</a></li>
-<li><a href="#moizeshallow">moize.shallow</a></li>
-<li><a href="#moizetransformargs">moize.transformArgs</a></li>
-<li><a href="#moizeupdatecacheforkey">moize.updateCacheForKey</a></li>
+<li><a href="#md:usage-with-shortcut-methods">Usage with shortcut methods</a><ul>
+<li><a href="#md:moizedeep">moize.deep</a></li>
+<li><a href="#md:moizeinfinite">moize.infinite</a></li>
+<li><a href="#md:moizematchesarg">moize.matchesArg</a></li>
+<li><a href="#md:moizematcheskey">moize.matchesKey</a></li>
+<li><a href="#md:moizemaxage">moize.maxAge</a></li>
+<li><a href="#md:moizemaxargs">moize.maxArgs</a></li>
+<li><a href="#md:moizemaxsize">moize.maxSize</a></li>
+<li><a href="#md:moizeprofile">moize.profile</a></li>
+<li><a href="#md:moizepromise">moize.promise</a></li>
+<li><a href="#md:moizereact">moize.react</a></li>
+<li><a href="#md:moizeserialize">moize.serialize</a></li>
+<li><a href="#md:moizeserializewith">moize.serializeWith</a></li>
+<li><a href="#md:moizeshallow">moize.shallow</a></li>
+<li><a href="#md:moizetransformargs">moize.transformArgs</a></li>
+<li><a href="#md:moizeupdatecacheforkey">moize.updateCacheForKey</a></li>
 </ul>
 </li>
-<li><a href="#usemoize-hook">useMoize hook</a></li>
-<li><a href="#composition">Composition</a></li>
-<li><a href="#collecting-statistics">Collecting statistics</a><ul>
-<li><a href="#stats-methods">Stats methods</a></li>
-<li><a href="#clearstats">clearStats</a></li>
-<li><a href="#collectstats">collectStats</a></li>
-<li><a href="#getstatsprofilename">getStats([profileName])</a></li>
+<li><a href="#md:usemoize-hook">useMoize hook</a></li>
+<li><a href="#md:composition">Composition</a></li>
+<li><a href="#md:collecting-statistics">Collecting statistics</a><ul>
+<li><a href="#md:stats-methods">Stats methods</a></li>
+<li><a href="#md:clearstats">clearStats</a></li>
+<li><a href="#md:collectstats">collectStats</a></li>
+<li><a href="#md:getstatsprofilename">getStats([profileName])</a></li>
 </ul>
 </li>
-<li><a href="#introspection">Introspection</a><ul>
-<li><a href="#iscollectingstats">isCollectingStats</a></li>
-<li><a href="#ismoized">isMoized</a></li>
+<li><a href="#md:introspection">Introspection</a><ul>
+<li><a href="#md:iscollectingstats">isCollectingStats</a></li>
+<li><a href="#md:ismoized">isMoized</a></li>
 </ul>
 </li>
-<li><a href="#direct-cache-manipulation">Direct cache manipulation</a><ul>
-<li><a href="#cache">cache</a></li>
-<li><a href="#cachesnapshot">cacheSnapshot</a></li>
-<li><a href="#addkey-value">add(key, value)</a></li>
-<li><a href="#clear">clear()</a></li>
-<li><a href="#getkey">get(key)</a></li>
-<li><a href="#getstats">getStats()</a></li>
-<li><a href="#haskey">has(key)</a></li>
-<li><a href="#keys">keys()</a></li>
-<li><a href="#removekey">remove(key)</a></li>
-<li><a href="#updatekey-value">update(key, value)</a></li>
-<li><a href="#values">values()</a></li>
+<li><a href="#md:direct-cache-manipulation">Direct cache manipulation</a><ul>
+<li><a href="#md:cache">cache</a></li>
+<li><a href="#md:cachesnapshot">cacheSnapshot</a></li>
+<li><a href="#md:addkey-value">add(key, value)</a></li>
+<li><a href="#md:clear">clear()</a></li>
+<li><a href="#md:getkey">get(key)</a></li>
+<li><a href="#md:getstats">getStats()</a></li>
+<li><a href="#md:haskey">has(key)</a></li>
+<li><a href="#md:keys">keys()</a></li>
+<li><a href="#md:removekey">remove(key)</a></li>
+<li><a href="#md:updatekey-value">update(key, value)</a></li>
+<li><a href="#md:values">values()</a></li>
 </ul>
 </li>
-<li><a href="#benchmarks">Benchmarks</a></li>
-<li><a href="#filesize">Filesize</a></li>
-<li><a href="#browser-support">Browser support</a></li>
-<li><a href="#development">Development</a></li>
+<li><a href="#md:benchmarks">Benchmarks</a></li>
+<li><a href="#md:filesize">Filesize</a></li>
+<li><a href="#md:browser-support">Browser support</a></li>
+<li><a href="#md:development">Development</a></li>
 </ul>
 <pre><code><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">i</span><span class="hl-1"> </span><span class="hl-0">moize</span><span class="hl-1"> --</span><span class="hl-0">save</span>
 </code><button>Copy</button></pre>
