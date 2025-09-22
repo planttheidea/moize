@@ -63,6 +63,10 @@ export type Serialize = (key: Key) => string[];
 export type TransformKey = (key: Key) => Key;
 export type UpdateCacheForKey = (key: Key) => boolean;
 
+export type GetMaxAge<MoizeableFn extends Moizeable = Moizeable> = (value: ReturnType<MoizeableFn>, key: Key, cache: Cache<MoizeableFn>) => number;
+
+export type MaxAgeOption<MoizeableFn extends Moizeable = Moizeable> = number | GetMaxAge<MoizeableFn>;
+
 export type Options<MoizeableFn extends Moizeable = Moizeable> = Partial<{
     isDeepEqual: boolean;
     isPromise: boolean;
@@ -71,7 +75,7 @@ export type Options<MoizeableFn extends Moizeable = Moizeable> = Partial<{
     isShallowEqual: boolean;
     matchesArg: IsEqual;
     matchesKey: IsMatchingKey;
-    maxAge: number;
+    maxAge: MaxAgeOption<MoizeableFn>;
     maxArgs: number;
     maxSize: number;
     onCacheAdd: OnCacheOperation<MoizeableFn>;
@@ -165,18 +169,18 @@ export type CurriedMoize<OriginalOptions> = <
     | Moized<CurriedFn, OriginalOptions & CurriedOptions>
     | CurriedMoize<OriginalOptions & CurriedOptions>;
 
-export interface MaxAge {
-    <MaxAge extends number>(maxAge: MaxAge): Moizer<{ maxAge: MaxAge }>;
-    <MaxAge extends number, UpdateExpire extends boolean>(
+export interface MaxAge<MoizeableFn extends Moizeable = Moizeable> {
+    <MaxAge extends MaxAgeOption<MoizeableFn>>(maxAge: MaxAge): Moizer<{ maxAge: MaxAge }>;
+    <MaxAge extends MaxAgeOption<MoizeableFn>, UpdateExpire extends boolean>(
         maxAge: MaxAge,
         expireOptions: UpdateExpire
     ): Moizer<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
-    <MaxAge extends number, ExpireHandler extends OnExpire>(
+    <MaxAge extends MaxAgeOption<MoizeableFn>, ExpireHandler extends OnExpire>(
         maxAge: MaxAge,
         expireOptions: ExpireHandler
     ): Moizer<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
     <
-        MaxAge extends number,
+        MaxAge extends MaxAgeOption<MoizeableFn>,
         ExpireHandler extends OnExpire,
         ExpireOptions extends {
             onExpire: ExpireHandler;
@@ -186,7 +190,7 @@ export interface MaxAge {
         expireOptions: ExpireOptions
     ): Moizer<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
     <
-        MaxAge extends number,
+        MaxAge extends MaxAgeOption<MoizeableFn>,
         UpdateExpire extends boolean,
         ExpireOptions extends {
             updateExpire: UpdateExpire;
@@ -196,7 +200,7 @@ export interface MaxAge {
         expireOptions: ExpireOptions
     ): Moizer<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
     <
-        MaxAge extends number,
+        MaxAge extends MaxAgeOption<MoizeableFn>,
         ExpireHandler extends OnExpire,
         UpdateExpire extends boolean,
         ExpireOptions extends {

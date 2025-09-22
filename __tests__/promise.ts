@@ -133,8 +133,10 @@ describe('moize.promise', () => {
                         method
                     );
 
+                    const maxAge = method.options.maxAge as number;
+
                     await new Promise((resolve) =>
-                        setTimeout(resolve, method.options.maxAge * 2)
+                        setTimeout(resolve, maxAge * 2)
                     ).then(() => {
                         expect(method.options.onExpire).toHaveBeenCalledTimes(
                             1

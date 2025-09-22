@@ -7,6 +7,7 @@ import type {
     IsEqual,
     IsMatchingKey,
     Key,
+    MaxAgeOption,
     OnCacheOperation,
     Options,
 } from '../index.d';
@@ -76,8 +77,6 @@ export function createOnCacheAddSetExpiration<MoizeableFn extends AnyFn>(
     isEqual: IsEqual,
     isMatchingKey: IsMatchingKey
 ): OnCacheOperation<MoizeableFn> {
-    const { maxAge } = options;
-
     return function onCacheAdd(
         cache: Cache<MoizeableFn>,
         moizedOptions: Options<MoizeableFn>,
@@ -118,6 +117,8 @@ export function createOnCacheAddSetExpiration<MoizeableFn extends AnyFn>(
                 }
             };
 
+            const maxAge = getMaxAgeValue(options.maxAge, cache);
+
             expirations.push({
                 expirationMethod,
                 key,
@@ -148,9 +149,11 @@ export function createOnCacheHitResetExpiration<MoizeableFn extends AnyFn>(
         if (~expirationIndex) {
             clearExpiration(expirations, key, false);
 
+            const maxAge = getMaxAgeValue(options.maxAge, cache);
+
             expirations[expirationIndex].timeoutId = createTimeout(
                 expirations[expirationIndex].expirationMethod,
-                options.maxAge
+                maxAge
             );
         }
     };
@@ -178,7 +181,7 @@ export function getMaxAgeOptions<MoizeableFn extends AnyFn>(
     onCacheHit: OnCacheOperation<MoizeableFn> | undefined;
 } {
     const onCacheAdd =
-        typeof options.maxAge === 'number' && isFinite(options.maxAge)
+        isMaxAgeValid(options.maxAge)
             ? createOnCacheAddSetExpiration(
                   expirations,
                   options,
@@ -194,4 +197,28 @@ export function getMaxAgeOptions<MoizeableFn extends AnyFn>(
                 ? createOnCacheHitResetExpiration(expirations, options)
                 : undefined,
     };
+}
+
+export function getMaxAgeValue<MoizeableFn extends AnyFn>(
+    maxAge: MaxAgeOption<MoizeableFn>,
+    cache: Cache<MoizeableFn>,
+): number | undefined {
+    if (typeof maxAge === 'function') {
+        const { keys, values } = cache;
+
+        if (!values.length || !keys.length) {
+            return;
+        }
+
+        const key = keys[0];
+        const value = values[0];
+
+        return maxAge(value, key, cache);
+    }
+
+    return maxAge;
+}
+
+export function isMaxAgeValid(maxAge: any): maxAge is MaxAgeOption<any> {
+    return typeof maxAge === 'number' ? maxAge >= 0 && isFinite(maxAge) : typeof maxAge === 'function';
 }

@@ -159,4 +159,40 @@ describe('moize.maxAge', () => {
             withOnExpire
         );
     });
+
+    it('should derive the `maxAge` value if a function is passed', async () => {
+        const getMaxAge = jest
+            .fn()
+            .mockReturnValueOnce(500)
+            .mockReturnValueOnce(1500);
+
+        const memoized = moize.maxAge(getMaxAge)(method, {
+            onExpire: jest.fn(),
+        });
+
+        memoized(foo, bar);
+
+        expect(memoized.has([foo, bar])).toBe(true);
+        expect(memoized.options.onExpire).not.toHaveBeenCalled();
+        expect(getMaxAge).toHaveBeenCalledTimes(1);
+
+        await new Promise((resolve) => setTimeout(resolve, 700));
+
+        expect(memoized.has([foo, bar])).toBe(false);
+        expect(memoized.options.onExpire).toHaveBeenCalledTimes(1);
+
+        memoized(foo, bar);
+
+        expect(memoized.has([foo, bar])).toBe(true);
+        expect(getMaxAge).toHaveBeenCalledTimes(2);
+
+        await new Promise((resolve) => setTimeout(resolve, 700));
+
+        expect(memoized.has([foo, bar])).toBe(true);
+
+        await new Promise((resolve) => setTimeout(resolve, 900));
+
+        expect(memoized.has([foo, bar])).toBe(false);
+        expect(memoized.options.onExpire).toHaveBeenCalledTimes(2);
+    }); 
 });

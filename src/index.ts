@@ -2,7 +2,7 @@ import memoize from 'micro-memoize';
 import { createMoizedComponent } from './component';
 import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
-import { getMaxAgeOptions } from './maxAge';
+import { getMaxAgeOptions, isMaxAgeValid } from './maxAge';
 import {
     createOnCacheOperation,
     getIsEqual,
@@ -24,6 +24,7 @@ import type {
     Expiration,
     IsEqual,
     IsMatchingKey,
+    MaxAgeOption,
     MicroMemoizeOptions,
     Moize,
     Moizeable,
@@ -121,7 +122,7 @@ const moize: Moize = function <
         ...DEFAULT_OPTIONS,
         ...options,
         maxAge:
-            typeof options.maxAge === 'number' && options.maxAge >= 0
+            isMaxAgeValid(options.maxAge)
                 ? options.maxAge
                 : DEFAULT_OPTIONS.maxAge,
         maxArgs:
@@ -353,19 +354,20 @@ moize.matchesKey = function (keyMatcher: IsMatchingKey) {
     return moize({ matchesKey: keyMatcher });
 };
 
-function maxAge<MaxAge extends number>(
+function maxAge<MoizeableFn extends Moizeable, MaxAge extends MaxAgeOption<MoizeableFn>>(
     maxAge: MaxAge
 ): Moize<{ maxAge: MaxAge }>;
-function maxAge<MaxAge extends number, UpdateExpire extends boolean>(
+function maxAge<MoizeableFn extends Moizeable,MaxAge extends MaxAgeOption<MoizeableFn>, UpdateExpire extends boolean>(
     maxAge: MaxAge,
     expireOptions: UpdateExpire
 ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
-function maxAge<MaxAge extends number, ExpireHandler extends OnExpire>(
+function maxAge<MoizeableFn extends Moizeable,MaxAge extends MaxAgeOption<MoizeableFn>, ExpireHandler extends OnExpire>(
     maxAge: MaxAge,
     expireOptions: ExpireHandler
 ): Moize<{ maxAge: MaxAge; onExpire: ExpireHandler }>;
 function maxAge<
-    MaxAge extends number,
+    MoizeableFn extends Moizeable,
+    MaxAge extends MaxAgeOption<MoizeableFn>,
     ExpireHandler extends OnExpire,
     ExpireOptions extends {
         onExpire: ExpireHandler;
@@ -375,7 +377,8 @@ function maxAge<
     expireOptions: ExpireOptions
 ): Moize<{ maxAge: MaxAge; onExpire: ExpireOptions['onExpire'] }>;
 function maxAge<
-    MaxAge extends number,
+    MoizeableFn extends Moizeable,
+    MaxAge extends MaxAgeOption<MoizeableFn>,
     UpdateExpire extends boolean,
     ExpireOptions extends {
         updateExpire: UpdateExpire;
@@ -385,7 +388,8 @@ function maxAge<
     expireOptions: ExpireOptions
 ): Moize<{ maxAge: MaxAge; updateExpire: UpdateExpire }>;
 function maxAge<
-    MaxAge extends number,
+    MoizeableFn extends Moizeable,
+    MaxAge extends MaxAgeOption<MoizeableFn>,
     ExpireHandler extends OnExpire,
     UpdateExpire extends boolean,
     ExpireOptions extends {
@@ -401,7 +405,8 @@ function maxAge<
     updateExpire: UpdateExpire;
 }>;
 function maxAge<
-    MaxAge extends number,
+    MoizeableFn extends Moizeable,
+    MaxAge extends MaxAgeOption<MoizeableFn>,
     ExpireHandler extends OnExpire,
     UpdateExpire extends boolean,
     ExpireOptions extends {
