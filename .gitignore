@@ -1,5 +1,6 @@
 .idea
 .nyc_output
+.yarn
 coverage
 dist
 node_modules
