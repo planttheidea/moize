@@ -63,9 +63,15 @@ export type Serialize = (key: Key) => string[];
 export type TransformKey = (key: Key) => Key;
 export type UpdateCacheForKey = (key: Key) => boolean;
 
-export type GetMaxAge<MoizeableFn extends Moizeable = Moizeable> = (value: ReturnType<MoizeableFn>, key: Key, cache: Cache<MoizeableFn>) => number;
+export type GetMaxAge<MoizeableFn extends Moizeable = Moizeable> = (
+    value: ReturnType<MoizeableFn>,
+    key: Key,
+    cache: Cache<MoizeableFn>
+) => number;
 
-export type MaxAgeOption<MoizeableFn extends Moizeable = Moizeable> = number | GetMaxAge<MoizeableFn>;
+export type MaxAgeOption<MoizeableFn extends Moizeable = Moizeable> =
+    | number
+    | GetMaxAge<MoizeableFn>;
 
 export type Options<MoizeableFn extends Moizeable = Moizeable> = Partial<{
     isDeepEqual: boolean;
@@ -170,7 +176,9 @@ export type CurriedMoize<OriginalOptions> = <
     | CurriedMoize<OriginalOptions & CurriedOptions>;
 
 export interface MaxAge<MoizeableFn extends Moizeable = Moizeable> {
-    <MaxAge extends MaxAgeOption<MoizeableFn>>(maxAge: MaxAge): Moizer<{ maxAge: MaxAge }>;
+    <MaxAge extends MaxAgeOption<MoizeableFn>>(maxAge: MaxAge): Moizer<{
+        maxAge: MaxAge;
+    }>;
     <MaxAge extends MaxAgeOption<MoizeableFn>, UpdateExpire extends boolean>(
         maxAge: MaxAge,
         expireOptions: UpdateExpire

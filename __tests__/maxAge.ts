@@ -194,5 +194,5 @@ describe('moize.maxAge', () => {
 
         expect(memoized.has([foo, bar])).toBe(false);
         expect(memoized.options.onExpire).toHaveBeenCalledTimes(2);
-    }); 
+    });
 });

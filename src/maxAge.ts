@@ -180,15 +180,14 @@ export function getMaxAgeOptions<MoizeableFn extends AnyFn>(
     onCacheAdd: OnCacheOperation<MoizeableFn> | undefined;
     onCacheHit: OnCacheOperation<MoizeableFn> | undefined;
 } {
-    const onCacheAdd =
-        isMaxAgeValid(options.maxAge)
-            ? createOnCacheAddSetExpiration(
-                  expirations,
-                  options,
-                  isEqual,
-                  isMatchingKey
-              )
-            : undefined;
+    const onCacheAdd = isMaxAgeValid(options.maxAge)
+        ? createOnCacheAddSetExpiration(
+              expirations,
+              options,
+              isEqual,
+              isMatchingKey
+          )
+        : undefined;
 
     return {
         onCacheAdd,
@@ -201,17 +200,17 @@ export function getMaxAgeOptions<MoizeableFn extends AnyFn>(
 
 /**
  * @private
- * 
+ *
  * @description
  * Get the numeric maxAge value, deriving it if the option is a function.
- * 
+ *
  * @param maxAge the maxAge option passed to moize
  * @param cache the cache instance for the memoized function
  * @returns numeric maxAge value or undefined
  */
 export function getMaxAgeValue<MoizeableFn extends AnyFn>(
     maxAge: MaxAgeOption<MoizeableFn>,
-    cache: Cache<MoizeableFn>,
+    cache: Cache<MoizeableFn>
 ): number | undefined {
     if (typeof maxAge === 'function') {
         const { keys, values } = cache;
@@ -231,13 +230,15 @@ export function getMaxAgeValue<MoizeableFn extends AnyFn>(
 
 /**
  * @private
- * 
+ *
  * @description
  * Determine whether the `maxAge` option is valid.
- * 
+ *
  * @param maxAge the maxAge option to validate
  * @returns whether the maxAge option is valid
  */
 export function isMaxAgeValid(maxAge: any): maxAge is MaxAgeOption<any> {
-    return typeof maxAge === 'number' ? maxAge >= 0 && isFinite(maxAge) : typeof maxAge === 'function';
+    return typeof maxAge === 'number'
+        ? maxAge >= 0 && isFinite(maxAge)
+        : typeof maxAge === 'function';
 }
