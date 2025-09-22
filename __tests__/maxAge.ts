@@ -8,6 +8,33 @@ const foo = 'foo';
 const bar = 'bar';
 
 describe('moize.maxAge', () => {
+    it('throws when the `maxAge` option is an invalid static value', () => {
+        expect(() => moize.maxAge(-100)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge(NaN)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge(Infinity)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge('100' as any)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge(true as any)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge(false as any)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge([] as any)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+        expect(() => moize.maxAge({} as any)(method)).toThrow(
+            'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+        );
+    });
+
     it('removes the item from cache after the time passed', async () => {
         const memoized = moize.maxAge(1000)(method, {
             onExpire: jest.fn(),
@@ -194,5 +221,31 @@ describe('moize.maxAge', () => {
 
         expect(memoized.has([foo, bar])).toBe(false);
         expect(memoized.options.onExpire).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw when the `maxAge` value has a function passed but resolves to an invalid value', async () => {
+        const getMaxAge = jest
+            .fn()
+            .mockReturnValueOnce(500)
+            .mockReturnValueOnce(undefined);
+
+        const memoized = moize.maxAge(getMaxAge)(method, {
+            onExpire: jest.fn(),
+        });
+
+        memoized(foo, bar);
+
+        expect(memoized.has([foo, bar])).toBe(true);
+        expect(memoized.options.onExpire).not.toHaveBeenCalled();
+        expect(getMaxAge).toHaveBeenCalledTimes(1);
+
+        await new Promise((resolve) => setTimeout(resolve, 700));
+
+        expect(memoized.has([foo, bar])).toBe(false);
+        expect(memoized.options.onExpire).toHaveBeenCalledTimes(1);
+
+        expect(() => memoized(foo, bar)).toThrow(
+            'The `maxAge` function must return a finite non-negative number.'
+        );
     });
 });

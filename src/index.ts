@@ -2,7 +2,7 @@ import memoize from 'micro-memoize';
 import { createMoizedComponent } from './component';
 import { DEFAULT_OPTIONS } from './constants';
 import { createMoizeInstance } from './instance';
-import { getMaxAgeOptions, isMaxAgeValid } from './maxAge';
+import { getMaxAgeOptions } from './maxAge';
 import {
     createOnCacheOperation,
     getIsEqual,
@@ -121,9 +121,6 @@ const moize: Moize = function <
     const coalescedOptions: Options<MoizeableFn> = {
         ...DEFAULT_OPTIONS,
         ...options,
-        maxAge: isMaxAgeValid(options.maxAge)
-            ? options.maxAge
-            : DEFAULT_OPTIONS.maxAge,
         maxArgs:
             typeof options.maxArgs === 'number' && options.maxArgs >= 0
                 ? options.maxArgs

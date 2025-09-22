@@ -6,73 +6,73 @@
 
 `moize` is a [consistently blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
 
-- [Importing](#importing)
-  - [ESM in browsers](#esm-in-browsers)
-  - [ESM in NodeJS](#esm-in-nodejs)
-  - [CommonJS](#commonjs)
-- [Usage](#usage)
-- [Configuration options](#configuration-options)
-  - [isDeepEqual](#isdeepequal)
-  - [isPromise](#ispromise)
-  - [isReact](#isreact)
-  - [isSerialized](#isserialized)
-  - [isShallowEqual](#isshallowequal)
-  - [matchesArg](#matchesarg)
-  - [matchesKey](#matcheskey)
-  - [maxAge](#maxage)
-  - [maxArgs](#maxargs)
-  - [maxSize](#maxsize)
-  - [onCacheAdd](#oncacheadd)
-  - [onCacheChange](#oncachechange)
-  - [onCacheHit](#oncachehit)
-  - [onExpire](#onexpire)
-  - [profileName](#profilename)
-  - [serializer](#serializer)
-  - [transformArgs](#transformargs)
-  - [updateCacheForKey](#updatecacheforkey)
-  - [updateExpire](#updateexpire)
-- [Usage with shortcut methods](#usage-with-shortcut-methods)
-  - [moize.deep](#moizedeep)
-  - [moize.infinite](#moizeinfinite)
-  - [moize.matchesArg](#moizematchesarg)
-  - [moize.matchesKey](#moizematcheskey)
-  - [moize.maxAge](#moizemaxage)
-  - [moize.maxArgs](#moizemaxargs)
-  - [moize.maxSize](#moizemaxsize)
-  - [moize.profile](#moizeprofile)
-  - [moize.promise](#moizepromise)
-  - [moize.react](#moizereact)
-  - [moize.serialize](#moizeserialize)
-  - [moize.serializeWith](#moizeserializewith)
-  - [moize.shallow](#moizeshallow)
-  - [moize.transformArgs](#moizetransformargs)
-  - [moize.updateCacheForKey](#moizeupdatecacheforkey)
-- [useMoize hook](#usemoize-hook)
-- [Composition](#composition)
-- [Collecting statistics](#collecting-statistics)
-  - [Stats methods](#stats-methods)
-  - [clearStats](#clearstats)
-  - [collectStats](#collectstats)
-  - [getStats([profileName])](#getstatsprofilename)
-- [Introspection](#introspection)
-  - [isCollectingStats](#iscollectingstats)
-  - [isMoized](#ismoized)
-- [Direct cache manipulation](#direct-cache-manipulation)
-  - [cache](#cache)
-  - [cacheSnapshot](#cachesnapshot)
-  - [add(key, value)](#addkey-value)
-  - [clear()](#clear)
-  - [get(key)](#getkey)
-  - [getStats()](#getstats)
-  - [has(key)](#haskey)
-  - [keys()](#keys)
-  - [remove(key)](#removekey)
-  - [update(key, value)](#updatekey-value)
-  - [values()](#values)
-- [Benchmarks](#benchmarks)
-- [Filesize](#filesize)
-- [Browser support](#browser-support)
-- [Development](#development)
+-   [Importing](#importing)
+    -   [ESM in browsers](#esm-in-browsers)
+    -   [ESM in NodeJS](#esm-in-nodejs)
+    -   [CommonJS](#commonjs)
+-   [Usage](#usage)
+-   [Configuration options](#configuration-options)
+    -   [isDeepEqual](#isdeepequal)
+    -   [isPromise](#ispromise)
+    -   [isReact](#isreact)
+    -   [isSerialized](#isserialized)
+    -   [isShallowEqual](#isshallowequal)
+    -   [matchesArg](#matchesarg)
+    -   [matchesKey](#matcheskey)
+    -   [maxAge](#maxage)
+    -   [maxArgs](#maxargs)
+    -   [maxSize](#maxsize)
+    -   [onCacheAdd](#oncacheadd)
+    -   [onCacheChange](#oncachechange)
+    -   [onCacheHit](#oncachehit)
+    -   [onExpire](#onexpire)
+    -   [profileName](#profilename)
+    -   [serializer](#serializer)
+    -   [transformArgs](#transformargs)
+    -   [updateCacheForKey](#updatecacheforkey)
+    -   [updateExpire](#updateexpire)
+-   [Usage with shortcut methods](#usage-with-shortcut-methods)
+    -   [moize.deep](#moizedeep)
+    -   [moize.infinite](#moizeinfinite)
+    -   [moize.matchesArg](#moizematchesarg)
+    -   [moize.matchesKey](#moizematcheskey)
+    -   [moize.maxAge](#moizemaxage)
+    -   [moize.maxArgs](#moizemaxargs)
+    -   [moize.maxSize](#moizemaxsize)
+    -   [moize.profile](#moizeprofile)
+    -   [moize.promise](#moizepromise)
+    -   [moize.react](#moizereact)
+    -   [moize.serialize](#moizeserialize)
+    -   [moize.serializeWith](#moizeserializewith)
+    -   [moize.shallow](#moizeshallow)
+    -   [moize.transformArgs](#moizetransformargs)
+    -   [moize.updateCacheForKey](#moizeupdatecacheforkey)
+-   [useMoize hook](#usemoize-hook)
+-   [Composition](#composition)
+-   [Collecting statistics](#collecting-statistics)
+    -   [Stats methods](#stats-methods)
+    -   [clearStats](#clearstats)
+    -   [collectStats](#collectstats)
+    -   [getStats([profileName])](#getstatsprofilename)
+-   [Introspection](#introspection)
+    -   [isCollectingStats](#iscollectingstats)
+    -   [isMoized](#ismoized)
+-   [Direct cache manipulation](#direct-cache-manipulation)
+    -   [cache](#cache)
+    -   [cacheSnapshot](#cachesnapshot)
+    -   [add(key, value)](#addkey-value)
+    -   [clear()](#clear)
+    -   [get(key)](#getkey)
+    -   [getStats()](#getstats)
+    -   [has(key)](#haskey)
+    -   [keys()](#keys)
+    -   [remove(key)](#removekey)
+    -   [update(key, value)](#updatekey-value)
+    -   [values()](#values)
+-   [Benchmarks](#benchmarks)
+-   [Filesize](#filesize)
+-   [Browser support](#browser-support)
+-   [Development](#development)
 
 ```
 $ npm i moize --save
@@ -386,20 +386,26 @@ const memoized = moize.matchesKey(isFooEqualAndHasBar)(fn);
 
 ## maxAge
 
-The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method.
+The maximum amount of time in milliseconds that you want a computed value to be stored in cache for this method. This can be either a number or a
+function that returns a number.
 
 ```ts
-const fn = (item: Record<string, any>) => item;
+const fn = (item: Record<string, any>) => getRating(item.value);
 
-const MAX_AGE = 1000 * 60 * 5; // five minutes;
-
-const memoized = moize(fn, { maxAge: MAX_AGE });
+const memoized = moize(fn, { maxAge: 300_000 /* five minutes */ });
+// or
+const memoized = moize(fn, {
+    maxAge(value, key, cache) {
+        // Immediately clear from cache when the rating is 0.
+        return value >= 0 ? 300_000 : 0;
+    },
+});
 ```
 
 This is also available via the shortcut method of [`moize.maxAge`](#moizemaxage).
 
 ```ts
-const memoized = moize.maxAge(MAX_AGE)(fn);
+const memoized = moize.maxAge(300_000)(fn);
 ```
 
 **TIP**: A common usage of this is in tandem with `isPromise` for AJAX calls, and in that scenario the expected behavior is usually to have the `maxAge` countdown begin upon resolution of the promise. If this is your intended use case, you should also apply the `updateExpire` option.

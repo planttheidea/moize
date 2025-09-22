@@ -119,6 +119,12 @@ export function createOnCacheAddSetExpiration<MoizeableFn extends AnyFn>(
 
             const maxAge = getMaxAgeValue(options.maxAge, cache);
 
+            if (!isMaxAgeValueValid(maxAge)) {
+                throw new TypeError(
+                    'The `maxAge` function must return a finite non-negative number.'
+                );
+            }
+
             expirations.push({
                 expirationMethod,
                 key,
@@ -180,14 +186,22 @@ export function getMaxAgeOptions<MoizeableFn extends AnyFn>(
     onCacheAdd: OnCacheOperation<MoizeableFn> | undefined;
     onCacheHit: OnCacheOperation<MoizeableFn> | undefined;
 } {
-    const onCacheAdd = isMaxAgeValid(options.maxAge)
-        ? createOnCacheAddSetExpiration(
-              expirations,
-              options,
-              isEqual,
-              isMatchingKey
-          )
-        : undefined;
+    let onCacheAdd: OnCacheOperation<MoizeableFn> | undefined;
+
+    if (options.maxAge != null) {
+        if (!isMaxAgeValid(options.maxAge)) {
+            throw new TypeError(
+                'The `maxAge` option must be a finite non-negative number or a function that returns a finite non-negative number.'
+            );
+        }
+
+        onCacheAdd = createOnCacheAddSetExpiration(
+            expirations,
+            options,
+            isEqual,
+            isMatchingKey
+        );
+    }
 
     return {
         onCacheAdd,
@@ -239,6 +253,10 @@ export function getMaxAgeValue<MoizeableFn extends AnyFn>(
  */
 export function isMaxAgeValid(maxAge: any): maxAge is MaxAgeOption<any> {
     return typeof maxAge === 'number'
-        ? maxAge >= 0 && isFinite(maxAge)
+        ? isMaxAgeValueValid(maxAge)
         : typeof maxAge === 'function';
+}
+
+export function isMaxAgeValueValid(maxAge: number): boolean {
+    return typeof maxAge === 'number' && maxAge >= 0 && isFinite(maxAge);
 }
