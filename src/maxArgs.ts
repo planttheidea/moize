@@ -1,6 +1,9 @@
-import { Options } from './internalTypes';
-import { Key } from 'micro-memoize';
+import type { Options } from './internalTypes';
+import type { Key } from 'micro-memoize';
 
+/**
+ * Create a method that takes the first N number of items from the array (faster than slice).
+ */
 export function getMaxArgsTransformKey<Fn extends (...args: any[]) => any>({
     maxArgs,
 }: Options<Fn>) {

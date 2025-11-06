@@ -53,6 +53,7 @@
         "memoizee": "^0.4.17",
         "memoizerific": "^1.11.3",
         "ora": "^9.0.0",
+        "prettier": "^3.6.2",
         "prop-types": "^15.8.1",
         "q": "^1.5.1",
         "ramda": "^0.32.0",

@@ -1,5 +1,5 @@
 /**
- * Compose functions and return a single function.
+ * Compose functions into a single function.
  */
 export function compose<Method>(...functions: Method[]): Method {
     return functions.reduce(function (f: any, g: any) {
