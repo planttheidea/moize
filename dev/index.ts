@@ -21,3 +21,26 @@ const maxArgs = moize((one: string, two: string) => ({ one, two }), {
 
 console.log(maxArgs('foo', 'bar'));
 console.log(maxArgs('foo', 'baz'));
+
+const serialize = moize((one: string, two: string) => ({ one, two }), {
+    // maxArgs: 1,
+    serialize: true,
+});
+
+console.log(serialize('foo', 'bar'));
+console.log(serialize('foo', 'baz'));
+console.log(serialize.cache.snapshot.keys);
+
+let index = 0;
+
+const forceUpdate = moize(
+    (one: string, two: string) => ({ one, index: ++index, two }),
+    { forceUpdate: ([one]) => one === 'foo' }
+);
+
+forceUpdate.cache.on('update', console.log);
+
+console.log(forceUpdate('bar', 'baz'));
+console.log(forceUpdate('bar', 'baz'));
+console.log(forceUpdate('foo', 'baz'));
+console.log(forceUpdate('foo', 'baz'));

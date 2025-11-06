@@ -5208,6 +5208,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-stringify@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "fast-stringify@npm:3.0.0"
+  checksum: 10c0/d374e96ccbc75e3b21dffd1fbeda4a915beb8488b47866716625802c400e811871e4ef984cf0b1b7a9b1dd784ea6987bd08f844e7cdb1b22836af61226c5eaf7
+  languageName: node
+  linkType: hard
+
 "fastq@npm:^1.6.0":
   version: 1.15.0
   resolution: "fastq@npm:1.15.0"
@@ -7120,6 +7127,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     fast-equals: "npm:^5.3.2"
     fast-memoize: "npm:^2.5.2"
+    fast-stringify: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     lru-memoize: "npm:^1.1.0"
     mem: "npm:^10.0.0"

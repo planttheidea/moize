@@ -2,6 +2,7 @@ import { memoize } from 'micro-memoize';
 import type { Options as MicroMemoizeOptions } from 'micro-memoize';
 import type { Moized, Options } from './internalTypes';
 import { getIsArgEqual, getIsKeyEqual, getTransformKey } from './options';
+import { getUpdatableMoize } from './forceRefreshKey';
 
 export function moize<Fn extends (...args: any[]) => any>(
     fn: Fn,
@@ -9,7 +10,7 @@ export function moize<Fn extends (...args: any[]) => any>(
 ): Moized<Fn> {
     const {
         expires,
-        forceRefreshKey,
+        forceUpdate,
         maxArgs,
         maxSize,
         react,
@@ -27,7 +28,7 @@ export function moize<Fn extends (...args: any[]) => any>(
     const moizeOptions = {
         ...microMemoizeOptions,
         expires,
-        forceRefreshKey,
+        forceUpdate,
         maxArgs,
         maxSize,
         react,
@@ -40,5 +41,5 @@ export function moize<Fn extends (...args: any[]) => any>(
     moized.fn = fn;
     moized.options = moizeOptions;
 
-    return moized;
+    return getUpdatableMoize(moized, options);
 }

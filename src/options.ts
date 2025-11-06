@@ -1,6 +1,7 @@
 import { deepEqual, shallowEqual } from 'fast-equals';
 import { Options } from './internalTypes';
 import { getMaxArgsTransformKey } from './maxArgs';
+import { getSerializeTransformKey } from './serialize';
 import { compose } from './utils';
 
 export function getIsArgEqual<Fn extends (...args: any[]) => any>({
@@ -27,5 +28,9 @@ export function getIsKeyEqual<Fn extends (...args: any[]) => any>(
 export function getTransformKey<Fn extends (...args: any[]) => any>(
     options: Options<Fn>
 ) {
-    return compose(options.transformKey, getMaxArgsTransformKey(options));
+    return compose(
+        getSerializeTransformKey(options),
+        options.transformKey,
+        getMaxArgsTransformKey(options)
+    );
 }

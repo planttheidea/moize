@@ -5,7 +5,7 @@ import type {
     Memoized as BaseMemoized,
 } from 'micro-memoize';
 
-export type ForceRefreshKey = (key: Key) => boolean;
+export type ForceUpdate = (key: Key) => boolean;
 export type GetMaxAge<Fn extends (...args: any) => any> = (
     key: Key,
     value: ReturnType<Fn>,
@@ -24,7 +24,7 @@ export type Options<Fn extends (...args: any[]) => any> = Omit<
     'isArgEqual'
 > & {
     expires?: number | GetMaxAge<Fn> | ExpireConfig<Fn>;
-    forceRefreshKey?: ForceRefreshKey;
+    forceUpdate?: ForceUpdate;
     isArgEqual?: 'deep' | 'shallow' | BaseOptions<Fn>['isArgEqual'];
     maxArgs?: number;
     react?: boolean;
