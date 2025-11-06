@@ -1,6 +1,6 @@
 import type { Key } from 'micro-memoize';
-import type { Options, Serialize } from './internalTypes';
 import stringify from 'fast-stringify';
+import type { Options, Serialize } from './internalTypes';
 
 /**
  * Default replacer used when stringifying to ensure values that would normally be

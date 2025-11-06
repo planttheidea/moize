@@ -15,7 +15,7 @@
         "target": "es5"
     },
     "exclude": ["node_modules"],
-    "include": ["src/*", "__tests__/*"],
+    "include": ["src/**/*", "__tests__/*", "dev/**/*"],
     "typedocOptions": {
         "out": "docs",
         "entryPoints": ["src/index.ts"]

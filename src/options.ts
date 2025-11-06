@@ -9,6 +9,7 @@ import { compose } from './utils';
  */
 export function getIsArgEqual<Fn extends (...args: any[]) => any>({
     isArgEqual,
+    react,
 }: Options<Fn>) {
     if (typeof isArgEqual === 'function') {
         return isArgEqual;
@@ -18,7 +19,7 @@ export function getIsArgEqual<Fn extends (...args: any[]) => any>({
         return deepEqual;
     }
 
-    if (isArgEqual === 'shallow') {
+    if (isArgEqual === 'shallow' || react) {
         return shallowEqual;
     }
 }

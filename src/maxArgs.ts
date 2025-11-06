@@ -1,18 +1,20 @@
+import type { Key, KeyTransformer } from 'micro-memoize';
 import type { Options } from './internalTypes';
-import type { Key } from 'micro-memoize';
 
 /**
  * Create a method that takes the first N number of items from the array (faster than slice).
  */
 export function getMaxArgsTransformKey<Fn extends (...args: any[]) => any>({
     maxArgs,
-}: Options<Fn>) {
+    react,
+}: Options<Fn>): KeyTransformer<Fn> | undefined {
     if (
         typeof maxArgs !== 'number' ||
         !Number.isFinite(maxArgs) ||
         maxArgs < 0
     ) {
-        return;
+        // If `react`, force the args to be limited to 2.
+        return react ? getMaxArgsTransformKey({ maxArgs: 2 }) : undefined;
     }
 
     if (maxArgs === 0) {
@@ -23,7 +25,8 @@ export function getMaxArgsTransformKey<Fn extends (...args: any[]) => any>({
         return (args: Key) => (maxArgs >= args.length ? args : [args[0]]);
     }
 
-    if (maxArgs === 2) {
+    // If `react`, force the args to be limited to 2 even if `maxArgs` passed is higher.
+    if (maxArgs === 2 || react) {
         return (args: Key) =>
             maxArgs >= args.length ? args : [args[0], args[1]];
     }
