@@ -10,6 +10,8 @@
         "noImplicitAny": true,
         "outDir": "./dist",
         "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
         "target": "es5"
     },
     "exclude": ["node_modules"],

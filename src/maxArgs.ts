@@ -1,39 +1,43 @@
-import type { Key } from '../index.d';
+import { Options } from './internalTypes';
+import { Key } from 'micro-memoize';
 
-export function createGetInitialArgs(size: number) {
-    /**
-     * @private
-     *
-     * @description
-     * take the first N number of items from the array (faster than slice)
-     *
-     * @param args the args to take from
-     * @returns the shortened list of args as an array
-     */
-    return function (args: Key): Key {
-        if (size >= args.length) {
+export function getMaxArgsTransformKey<Fn extends (...args: any[]) => any>({
+    maxArgs,
+}: Options<Fn>) {
+    if (
+        typeof maxArgs !== 'number' ||
+        !Number.isFinite(maxArgs) ||
+        maxArgs < 0
+    ) {
+        return;
+    }
+
+    if (maxArgs === 0) {
+        return () => [];
+    }
+
+    if (maxArgs === 1) {
+        return (args: Key) => (maxArgs >= args.length ? args : [args[0]]);
+    }
+
+    if (maxArgs === 2) {
+        return (args: Key) =>
+            maxArgs >= args.length ? args : [args[0], args[1]];
+    }
+
+    if (maxArgs === 3) {
+        return (args: Key) =>
+            maxArgs >= args.length ? args : [args[0], args[1], args[2]];
+    }
+
+    return (args: Key) => {
+        if (maxArgs >= args.length) {
             return args;
         }
 
-        if (size === 0) {
-            return [];
-        }
+        const clone = new Array(maxArgs);
 
-        if (size === 1) {
-            return [args[0]];
-        }
-
-        if (size === 2) {
-            return [args[0], args[1]];
-        }
-
-        if (size === 3) {
-            return [args[0], args[1], args[2]];
-        }
-
-        const clone = [];
-
-        for (let index = 0; index < size; index++) {
+        for (let index = 0; index < maxArgs; ++index) {
             clone[index] = args[index];
         }
 
