@@ -11,30 +11,69 @@ div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);
 
-const simple = moize((one: string, two: string) => ({ one, two }));
+const simple = moize((one: string, two: string) => {
+    console.log('called simple');
+
+    return { one, two };
+});
 
 console.log(simple('foo', 'bar'));
+console.log(simple('foo', 'bar'));
+console.log(simple('foo', 'bar'));
+console.log(simple.options);
 
-const maxArgs = moize((one: string, two: string) => ({ one, two }), {
-    maxArgs: 1,
-});
+const deep = moize(
+    (object: { foo: { bar: string } }) => {
+        console.log('called deep');
+        return { object };
+    },
+    {
+        isArgEqual: 'deep',
+    }
+);
+
+console.log(deep({ foo: { bar: 'baz' } }));
+console.log(deep({ foo: { bar: 'baz' } }));
+console.log(deep({ foo: { bar: 'baz' } }));
+console.log(deep.options);
+
+const maxArgs = moize(
+    (one: string, two: string) => {
+        console.log('called maxAargs');
+        return { one, two };
+    },
+    { maxArgs: 1 }
+);
 
 console.log(maxArgs('foo', 'bar'));
 console.log(maxArgs('foo', 'baz'));
+console.log(maxArgs.options);
 
-const serialize = moize((one: string, two: string) => ({ one, two }), {
-    // maxArgs: 1,
-    serialize: true,
-});
+const serialize = moize(
+    (one: string, two: string) => {
+        console.log('called serialize');
+        return { one, two };
+    },
+    {
+        // maxArgs: 1,
+        serialize: true,
+    }
+);
 
 console.log(serialize('foo', 'bar'));
 console.log(serialize('foo', 'baz'));
+console.log(serialize('foo', 'baz'));
 console.log(serialize.cache.snapshot.keys);
+console.log(serialize.options);
 
 let index = 0;
 
 const forceUpdate = moize(
-    (one: string, two: string) => ({ one, index: ++index, two }),
+    (one: string, two: string) => {
+        console.log('called force update');
+
+        return { one, index: ++index, two };
+    },
     { forceUpdate: ([one]) => one === 'foo' }
 );
 
@@ -44,3 +83,4 @@ console.log(forceUpdate('bar', 'baz'));
 console.log(forceUpdate('bar', 'baz'));
 console.log(forceUpdate('foo', 'baz'));
 console.log(forceUpdate('foo', 'baz'));
+console.log(forceUpdate.options);
