@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import moize from '../src';
-import { copyStaticProperties } from '../src/instance';
+import { copyStaticProperties } from '../src/moize';
 
 describe('moize.react', () => {
     type ValueBarProps = {
@@ -33,7 +33,7 @@ describe('moize.react', () => {
     };
 
     const ValueBar = jest.fn(_ValueBar) as (
-        props: ValueBarProps
+        props: ValueBarProps,
     ) => JSX.Element;
 
     // force static properties to be passed to mock
@@ -96,7 +96,7 @@ describe('moize.react', () => {
 
         const Component = ({ id }: Props) => <div id={id} />;
         const ComponentSpy = jest.fn(
-            Component
+            Component,
         ) as unknown as typeof Component & {
             contextTypes: Record<string, any>;
         };
@@ -207,7 +207,7 @@ describe('moize.react', () => {
 
         function renderApp(
             isRerender?: boolean,
-            onRender?: (value?: unknown) => void
+            onRender?: (value?: unknown) => void,
         ) {
             ReactDOM.render(<App isRerender={isRerender} />, app, onRender);
         }
@@ -223,7 +223,7 @@ describe('moize.react', () => {
         await new Promise((resolve) =>
             setTimeout(() => {
                 renderApp(true, resolve);
-            }, 1000)
+            }, 1000),
         );
 
         expect(ValueBar).toHaveBeenCalledTimes(data.length + 1);

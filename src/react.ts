@@ -1,14 +1,16 @@
-import type { Options as MicroMemoizeOptions } from 'micro-memoize';
-import { ComponentProps, ComponentType } from 'react';
-import { createMoized } from './instance';
-import { Moizable, Options } from './internalTypes';
+import type {
+    Component,
+    ComponentProps,
+    ComponentType,
+    RefObject,
+} from 'react';
+import { createMoized } from './moize';
+import type { Moizable, Moized, Options } from './internalTypes';
 
-function getElementType<Fn extends Moizable>({ react }: Options<Fn>) {
-    // This was stolen from React internals, which allows us to create React elements without needing
-    // a dependency on the React library itself.
-    return react === true || react === '19'
-        ? Symbol.for('react.transitional.element')
-        : Symbol.for('react.element');
+interface MoizedComponent<Fn extends Moizable, Props> extends Component<Props> {
+    Moized: Moized<Fn, Options<Fn>>;
+    refs: Record<string, RefObject<any>>;
+    updater: any;
 }
 
 /**
@@ -19,37 +21,37 @@ function getElementType<Fn extends Moizable>({ react }: Options<Fn>) {
  * the basic essentials for a component class and the results of the
  * `createElement` function.
  */
-export function getWrappedReactMoize<
+export function createWrappedReactMoize<
     Fn extends Moizable,
     Opts extends Options<Fn>,
->(
-    fn: Fn,
-    microMemoizeOptions: MicroMemoizeOptions<Fn>,
-    options: Opts,
-): ComponentType<ComponentProps<Fn>> {
+>(fn: Fn, options: Opts): ComponentType<ComponentProps<Fn>> {
     const elementType = getElementType(options);
 
-    function Moized<Props extends Record<string, unknown>, Context, Updater>(
-        this: any,
+    function Moized<Props extends ComponentProps<Fn>, Context, Updater>(
+        this: MoizedComponent<Fn, Props>,
         props: Props,
         context: Context,
         updater: Updater,
     ) {
+        // @ts-expect-error - Allow assignment to `props`, since this is
+        // the constructor.
         this.props = props;
         this.context = context;
         this.updater = updater;
 
         this.refs = {};
 
-        this.MoizedComponent = createMoized(fn, microMemoizeOptions, options);
+        this.Moized = createMoized(fn, options);
     }
 
     Moized.prototype.isReactComponent = {};
 
-    Moized.prototype.render = function (): ReturnType<Fn> {
+    Moized.prototype.render = function (
+        this: MoizedComponent<Fn, ComponentProps<Fn>>,
+    ): ReturnType<Fn> {
         return {
             $$typeof: elementType,
-            type: this.MoizedComponent,
+            type: this.Moized,
             props: this.props,
             ref: null,
             key: null,
@@ -60,4 +62,12 @@ export function getWrappedReactMoize<
     Moized.displayName = `Moized(${fn.displayName || fn.name || 'Component'})`;
 
     return Moized as ComponentType<ComponentProps<Fn>>;
+}
+
+function getElementType<Fn extends Moizable>({ react }: Options<Fn>) {
+    // This was stolen from React internals, which allows us to create React elements without needing
+    // a dependency on the React library itself.
+    return react === true || react === '19'
+        ? Symbol.for('react.transitional.element')
+        : Symbol.for('react.element');
 }

@@ -4,7 +4,7 @@ import type {
     Key,
     Memoized as BaseMemoized,
 } from 'micro-memoize';
-import { ExpirationManager } from './expires';
+import type { ExpirationManager } from './expires';
 
 export type ForceUpdate<Fn extends Moizable> = (
     args: Parameters<Fn>,

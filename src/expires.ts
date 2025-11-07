@@ -1,5 +1,5 @@
-import { Cache, Key } from 'micro-memoize';
-import {
+import type { Cache, Key } from 'micro-memoize';
+import type {
     GetMaxAge,
     Moizable,
     Moized,
@@ -9,12 +9,30 @@ import {
 } from './internalTypes';
 
 export class ExpirationManager<Fn extends Moizable> {
+    /**
+     * The [c]ache being monitored.
+     */
     c: Cache<Fn>;
+    /**
+     * Map of [e]xpiration timeouts.
+     */
     e = new Map<Key, ReturnType<typeof setTimeout>>();
-    l = 0;
+    /**
+     * Whether the entry in cache should [p]ersist, and therefore not
+     * have any expiration.
+     */
     p: ShouldPersist<Fn> | undefined;
+    /**
+     * Whether the entry in cache should be [r]emoved on expiration.
+     */
     r: ShouldRemoveOnExpire<Fn> | undefined;
+    /**
+     * The [t]ime to wait before expiring, or a method that determines that time.
+     */
     t: number | GetMaxAge<Fn>;
+    /**
+     * Whether the expiration should [u]pdate when the cache entry is hit.
+     */
     u: boolean;
 
     constructor(cache: Cache<Fn>, expires: Required<Options<Fn>>['expires']) {
@@ -31,32 +49,36 @@ export class ExpirationManager<Fn extends Moizable> {
         }
 
         this.c.on('add', (event) => {
-            const node = this.c.g(event.key);
-
-            if (node && !this.p?.(event.key, event.value, cache)) {
+            if (
+                this.c.g(event.key) &&
+                !this.p?.(event.key, event.value, cache)
+            ) {
                 this.s(event.key, event.value);
             }
         });
 
+        // Only set up a `hit` listener if we care about updating the expiration.
         if (this.u) {
             this.c.on('hit', (event) => {
-                const node = this.c.g(event.key);
-
-                if (node && !this.p?.(event.key, event.value, cache)) {
+                if (
+                    this.c.g(event.key) &&
+                    !this.p?.(event.key, event.value, cache)
+                ) {
                     this.s(event.key, event.value);
                 }
             });
         }
 
         this.c.on('delete', (event) => {
-            const node = this.c.g(event.key);
-
-            if (node && this.e.has(event.key)) {
+            if (this.e.has(event.key)) {
                 this.d(event.key);
             }
         });
     }
 
+    /**
+     * Method to [d]elete the expiration.
+     */
     d(key: Key) {
         const expiration = this.e.get(key);
 
@@ -68,6 +90,10 @@ export class ExpirationManager<Fn extends Moizable> {
         this.e.delete(key);
     }
 
+    /**
+     * Method to [s]et the new expiration. If one is present for the given `key`, it will delete
+     * the existing expiration before creating the new one.
+     */
     s(key: Key, value: ReturnType<Fn>) {
         if (this.e.has(key)) {
             this.d(key);
@@ -97,7 +123,7 @@ export class ExpirationManager<Fn extends Moizable> {
                 !this.r(key, node.v, time, cache)
             ) {
                 cache.u(node);
-                cache.o && cache.o.n('update', node, 'refreshed');
+                cache.o && cache.o.n('update', node, 'expiration reset');
 
                 this.s(key, node.v);
             } else {
@@ -106,6 +132,12 @@ export class ExpirationManager<Fn extends Moizable> {
             }
         }, time);
 
+        if (typeof timeout.unref === 'function') {
+            // If done in NodeJS, the timeout should have its reference removed to avoid
+            // hanging timers if collected while running.
+            timeout.unref();
+        }
+
         this.e.set(key, timeout);
     }
 }
@@ -113,10 +145,10 @@ export class ExpirationManager<Fn extends Moizable> {
 export function getExpirationManager<
     Fn extends Moizable,
     Opts extends Options<Fn>,
->(moized: Moized<Fn, Opts>, options: Opts) {
-    return options.expires != null
-        ? new ExpirationManager(moized.cache, options.expires)
-        : undefined;
+>(moized: Moized<Fn, Opts>, options: Opts): ExpirationManager<Fn> | undefined {
+    if (options.expires != null) {
+        return new ExpirationManager(moized.cache, options.expires);
+    }
 }
 
 function isExpireTimeValid(expires: any): expires is number {
