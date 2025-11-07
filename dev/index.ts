@@ -1,4 +1,5 @@
 import { moize } from '../src/index.js';
+import { render } from './react.js';
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
@@ -6,10 +7,14 @@ document.body.style.margin = '0px';
 document.body.style.padding = '0px';
 
 const div = document.createElement('div');
+const span = document.createElement('span');
 
-div.textContent = 'Check the console for details.';
+span.textContent = 'Check the console for details.';
 
+div.appendChild(span);
 document.body.appendChild(div);
+
+render(div);
 
 const simple = moize((one: string, two: string) => {
     console.log('called simple');
@@ -29,7 +34,7 @@ const deep = moize(
     },
     {
         isArgEqual: 'deep',
-    }
+    },
 );
 
 console.log(deep({ foo: { bar: 'baz' } }));
@@ -42,7 +47,7 @@ const maxArgs = moize(
         console.log('called maxAargs');
         return { one, two };
     },
-    { maxArgs: 1 }
+    { maxArgs: 1 },
 );
 
 console.log(maxArgs('foo', 'bar'));
@@ -57,7 +62,7 @@ const serialize = moize(
     {
         // maxArgs: 1,
         serialize: true,
-    }
+    },
 );
 
 console.log(serialize('foo', 'bar'));
@@ -74,7 +79,7 @@ const forceUpdate = moize(
 
         return { one, index: ++index, two };
     },
-    { forceUpdate: ([one]) => one === 'foo' }
+    { forceUpdate: ([one]) => one === 'foo' },
 );
 
 forceUpdate.cache.on('update', console.log);

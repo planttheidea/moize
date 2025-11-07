@@ -6,7 +6,7 @@ import type {
 } from 'micro-memoize';
 
 export type ForceUpdate = (key: Key) => boolean;
-export type GetMaxAge<Fn extends (...args: any) => any> = (
+export type GetMaxAge<Fn extends Moizable> = (
     key: Key,
     value: ReturnType<Fn>,
     cache: Cache<Fn>,
@@ -14,12 +14,16 @@ export type GetMaxAge<Fn extends (...args: any) => any> = (
 export type OnExpire = (key: Key) => any;
 export type Serialize = (key: Key) => [string];
 
-interface ExpireConfig<Fn extends (...args: any[]) => any> {
+interface ExpireConfig<Fn extends Moizable> {
     after: number | GetMaxAge<Fn>;
     updateExpire?: boolean;
 }
 
-export type Options<Fn extends (...args: any[]) => any> = Omit<
+export type Moizable = ((...args: any[]) => any) & {
+    displayName?: string;
+};
+
+export type Options<Fn extends Moizable> = Omit<
     BaseOptions<Fn>,
     'isArgEqual'
 > & {
@@ -55,7 +59,7 @@ export type Options<Fn extends (...args: any[]) => any> = Omit<
     /**
      * Whether the function wrapped is a React component.
      */
-    react?: boolean;
+    react?: boolean | '19' | '18' | '17' | '16';
     /**
      * Whether to serialize the arguments into a string value for cache
      * purposes. A custom serializer can also be provided, if the default
@@ -72,7 +76,7 @@ export type Options<Fn extends (...args: any[]) => any> = Omit<
     statsProfile?: string;
 };
 
-export type Memoized<Fn extends (...args: any[]) => any> = Fn &
+export type Memoized<Fn extends Moizable> = Fn &
     Omit<BaseMemoized<Fn, BaseOptions<Fn>>, 'options'> & {
         /**
          * Options passed for the memoized method.
@@ -80,4 +84,4 @@ export type Memoized<Fn extends (...args: any[]) => any> = Fn &
         options: Options<Fn>;
     };
 
-export type Moized<Fn extends (...args: any[]) => any> = Memoized<Fn> & {};
+export type Moized<Fn extends Moizable> = Memoized<Fn> & {};

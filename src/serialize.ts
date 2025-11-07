@@ -1,6 +1,6 @@
 import type { Key } from 'micro-memoize';
 import stringify from 'fast-stringify';
-import type { Options, Serialize } from './internalTypes';
+import type { Moizable, Options, Serialize } from './internalTypes';
 
 /**
  * Default replacer used when stringifying to ensure values that would normally be
@@ -15,7 +15,7 @@ function defaultReplacer(key: string, value: any) {
 /**
  * Based on the options passed, either use the serializer passed or use the default.
  */
-export function getSerializeTransformKey<Fn extends (...args: any[]) => any>({
+export function getSerializeTransformKey<Fn extends Moizable>({
     serialize,
 }: Options<Fn>): Serialize | undefined {
     if (typeof serialize === 'function') {
