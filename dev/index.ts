@@ -89,3 +89,24 @@ console.log(forceUpdate('bar', 'baz'));
 console.log(forceUpdate('foo', 'baz'));
 console.log(forceUpdate('foo', 'baz'));
 console.log(forceUpdate.options);
+
+const expires = moize(
+    (one: string, two: string) => {
+        console.log('called expires');
+
+        return { one, index: ++index, two };
+    },
+    {
+        expires: {
+            after: 1000,
+            shouldRemove: ([one]) => one === 'bar',
+        },
+        maxSize: 2,
+    },
+);
+
+expires.cache.on('delete', console.log);
+expires.cache.on('update', console.log);
+
+console.log(expires('foo', 'bar'));
+console.log(expires('bar', 'baz'));

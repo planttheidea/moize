@@ -1,8 +1,7 @@
-import { memoize } from 'micro-memoize';
 import type { Options as MicroMemoizeOptions } from 'micro-memoize';
 import { ComponentProps, ComponentType } from 'react';
-import { Moizable, Moized, Options } from './internalTypes';
-import { getWrappedForceUpdateMoize } from './forceUpdate';
+import { createMoized } from './instance';
+import { Moizable, Options } from './internalTypes';
 
 function getElementType<Fn extends Moizable>({ react }: Options<Fn>) {
     // This was stolen from React internals, which allows us to create React elements without needing
@@ -42,15 +41,7 @@ export function getWrappedReactMoize<
 
         this.refs = {};
 
-        let Component = memoize(fn, microMemoizeOptions) as Moized<Fn, Opts>;
-
-        if (options.forceUpdate) {
-            Component = getWrappedForceUpdateMoize(Component, options);
-        }
-
-        this.MoizedComponent = Component;
-        // Override the `micro-memoize` options with the `options` passed.
-        this.MoizedComponent.options = options;
+        this.MoizedComponent = createMoized(fn, microMemoizeOptions, options);
     }
 
     Moized.prototype.isReactComponent = {};

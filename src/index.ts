@@ -1,7 +1,6 @@
-import { memoize } from 'micro-memoize';
 import type { Options as MicroMemoizeOptions } from 'micro-memoize';
 import { ComponentProps, ComponentType } from 'react';
-import { getWrappedForceUpdateMoize } from './forceUpdate';
+import { createMoized } from './instance';
 import type { Moizable, Moized, Options } from './internalTypes';
 import { getIsArgEqual, getIsKeyEqual, getTransformKey } from './options';
 import { getWrappedReactMoize } from './react';
@@ -33,14 +32,5 @@ export function moize<
         return getWrappedReactMoize(fn, microMemoizeOptions, options);
     }
 
-    let moized = memoize(fn, microMemoizeOptions) as Moized<Fn, Opts>;
-
-    if (options.forceUpdate) {
-        moized = getWrappedForceUpdateMoize(moized, options);
-    }
-
-    // Override the `micro-memoize` options with the `options` passed.
-    moized.options = options;
-
-    return moized;
+    return createMoized(fn, microMemoizeOptions, options);
 }

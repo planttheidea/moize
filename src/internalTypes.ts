@@ -4,6 +4,7 @@ import type {
     Key,
     Memoized as BaseMemoized,
 } from 'micro-memoize';
+import { ExpirationManager } from './expires';
 
 export type ForceUpdate<Fn extends Moizable> = (
     args: Parameters<Fn>,
@@ -14,11 +15,37 @@ export type GetMaxAge<Fn extends Moizable> = (
     cache: Cache<Fn>,
 ) => number;
 export type OnExpire = (key: Key) => any;
+export type ShouldPersist<Fn extends Moizable> = (
+    key: Key,
+    value: ReturnType<Fn>,
+    cache: Cache<Fn>,
+) => boolean;
+export type ShouldRemoveOnExpire<Fn extends Moizable> = (
+    key: Key,
+    value: ReturnType<Fn>,
+    time: number,
+    cache: Cache<Fn>,
+) => boolean;
 export type Serialize = (key: Key) => [string];
 
 interface ExpireConfig<Fn extends Moizable> {
+    /**
+     * The amount of time before the cache entry is automatically removed.
+     */
     after: number | GetMaxAge<Fn>;
-    updateExpire?: boolean;
+    /**
+     * Determine whether the cache entry should never expire.
+     */
+    shouldPersist?: ShouldPersist<Fn>;
+    /**
+     * Determine whether the cache entry should be removed upon expiration.
+     * If `false` is returned, a new expiration is generated (not persistent).
+     */
+    shouldRemove?: ShouldRemoveOnExpire<Fn>;
+    /**
+     * Whether the cache entry expiration should be reset upon being hit.
+     */
+    update?: boolean;
 }
 
 export type Moizable = ((...args: any[]) => any) & {
@@ -89,4 +116,6 @@ export type Memoized<Fn extends Moizable, Opts extends Options<Fn>> = Fn &
 export type Moized<Fn extends Moizable, Opts extends Options<Fn>> = Memoized<
     Fn,
     Opts
-> & {};
+> & {
+    expirationManager: ExpirationManager<Fn> | undefined;
+};
