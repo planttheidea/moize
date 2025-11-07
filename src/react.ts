@@ -20,14 +20,16 @@ function getElementType<Fn extends Moizable>({ react }: Options<Fn>) {
  * the basic essentials for a component class and the results of the
  * `createElement` function.
  */
-export function getWrappedReactMoize<Fn extends Moizable>(
+export function getWrappedReactMoize<
+    Fn extends Moizable,
+    Opts extends Options<Fn>,
+>(
     fn: Fn,
     microMemoizeOptions: MicroMemoizeOptions<Fn>,
-    options: Options<Fn>,
+    options: Opts,
 ): ComponentType<ComponentProps<Fn>> {
     const elementType = getElementType(options);
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
     function Moized<Props extends Record<string, unknown>, Context, Updater>(
         this: any,
         props: Props,
@@ -40,7 +42,7 @@ export function getWrappedReactMoize<Fn extends Moizable>(
 
         this.refs = {};
 
-        let Component = memoize(fn, microMemoizeOptions) as Moized<Fn>;
+        let Component = memoize(fn, microMemoizeOptions) as Moized<Fn, Opts>;
 
         if (options.forceUpdate) {
             Component = getWrappedForceUpdateMoize(Component, options);

@@ -5,7 +5,9 @@ import type {
     Memoized as BaseMemoized,
 } from 'micro-memoize';
 
-export type ForceUpdate = (key: Key) => boolean;
+export type ForceUpdate<Fn extends Moizable> = (
+    args: Parameters<Fn>,
+) => boolean;
 export type GetMaxAge<Fn extends Moizable> = (
     key: Key,
     value: ReturnType<Fn>,
@@ -39,7 +41,7 @@ export type Options<Fn extends Moizable> = Omit<
      * This should only be necessary if the memoized function is not
      * deterministic due to side-effects.
      */
-    forceUpdate?: ForceUpdate;
+    forceUpdate?: ForceUpdate<Fn>;
     /**
      * Whether the two args are equal in value. This is used to compare
      * specific arguments in order for a cached key versus the key the
@@ -76,12 +78,15 @@ export type Options<Fn extends Moizable> = Omit<
     statsProfile?: string;
 };
 
-export type Memoized<Fn extends Moizable> = Fn &
+export type Memoized<Fn extends Moizable, Opts extends Options<Fn>> = Fn &
     Omit<BaseMemoized<Fn, BaseOptions<Fn>>, 'options'> & {
         /**
          * Options passed for the memoized method.
          */
-        options: Options<Fn>;
+        options: Opts;
     };
 
-export type Moized<Fn extends Moizable> = Memoized<Fn> & {};
+export type Moized<Fn extends Moizable, Opts extends Options<Fn>> = Memoized<
+    Fn,
+    Opts
+> & {};

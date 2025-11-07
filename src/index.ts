@@ -6,10 +6,17 @@ import type { Moizable, Moized, Options } from './internalTypes';
 import { getIsArgEqual, getIsKeyEqual, getTransformKey } from './options';
 import { getWrappedReactMoize } from './react';
 
-export function moize<Fn extends Moizable, Opts extends Options<Fn>>(
+export function moize<
+    const Fn extends Moizable,
+    const Opts extends Options<Fn>,
+>(
     fn: Fn,
     options: Opts = {} as Opts,
-): Opts['react'] extends true ? ComponentType<ComponentProps<Fn>> : Moized<Fn> {
+): {} extends Opts
+    ? Moized<Fn, {}>
+    : Opts['react'] extends true
+      ? ComponentType<ComponentProps<Fn>>
+      : Moized<Fn, Opts> {
     const { async, maxSize } = options;
 
     const isKeyEqual = getIsKeyEqual(options);
@@ -26,7 +33,7 @@ export function moize<Fn extends Moizable, Opts extends Options<Fn>>(
         return getWrappedReactMoize(fn, microMemoizeOptions, options);
     }
 
-    let moized = memoize(fn, microMemoizeOptions) as Moized<Fn>;
+    let moized = memoize(fn, microMemoizeOptions) as Moized<Fn, Opts>;
 
     if (options.forceUpdate) {
         moized = getWrappedForceUpdateMoize(moized, options);

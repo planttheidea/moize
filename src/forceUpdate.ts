@@ -1,9 +1,9 @@
 import type { Moizable, Moized, Options } from './internalTypes';
 
-export function getWrappedForceUpdateMoize<Fn extends Moizable>(
-    moized: Moized<Fn>,
-    { forceUpdate }: Options<Fn>,
-) {
+export function getWrappedForceUpdateMoize<
+    Fn extends Moizable,
+    Opts extends Options<Fn>,
+>(moized: Moized<Fn, Opts>, { forceUpdate }: Opts) {
     if (forceUpdate == null) {
         return moized;
     }

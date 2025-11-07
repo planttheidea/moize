@@ -1,5 +1,5 @@
 import { deepEqual, shallowEqual } from 'fast-equals';
-import type { Options } from './internalTypes';
+import type { Moizable, Options } from './internalTypes';
 import { getMaxArgsTransformKey } from './maxArgs';
 import { getSerializeTransformKey, isSerializedKeyEqual } from './serialize';
 import { compose } from './utils';
@@ -7,7 +7,7 @@ import { compose } from './utils';
 /**
  * Get the `isArgEqual` method passed to `micro-memoize`.
  */
-export function getIsArgEqual<Fn extends (...args: any[]) => any>({
+export function getIsArgEqual<Fn extends Moizable>({
     isArgEqual,
     react,
 }: Options<Fn>) {
@@ -19,6 +19,8 @@ export function getIsArgEqual<Fn extends (...args: any[]) => any>({
         return deepEqual;
     }
 
+    // If `react` and no custom equality comparator is passed, use `shallowEqual` to allow
+    // a shallow props comparison.
     if (isArgEqual === 'shallow' || react) {
         return shallowEqual;
     }
@@ -27,7 +29,7 @@ export function getIsArgEqual<Fn extends (...args: any[]) => any>({
 /**
  * Get the `isKeyEqual` method passed to `micro-memoize`.
  */
-export function getIsKeyEqual<Fn extends (...args: any[]) => any>({
+export function getIsKeyEqual<Fn extends Moizable>({
     isKeyEqual,
     serialize,
 }: Options<Fn>) {
@@ -43,9 +45,7 @@ export function getIsKeyEqual<Fn extends (...args: any[]) => any>({
 /**
  * Get the `transformKey` method passed to `micro-memoize`.
  */
-export function getTransformKey<Fn extends (...args: any[]) => any>(
-    options: Options<Fn>,
-) {
+export function getTransformKey<Fn extends Moizable>(options: Options<Fn>) {
     return compose(
         getSerializeTransformKey(options),
         options.transformKey,
