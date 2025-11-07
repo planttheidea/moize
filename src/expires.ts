@@ -42,7 +42,7 @@ export class ExpirationManager<Fn extends Moizable> {
             this.c.on('hit', (event) => {
                 const node = this.c.g(event.key);
 
-                if (node) {
+                if (node && !this.p?.(event.key, event.value, cache)) {
                     this.s(event.key, event.value);
                 }
             });
