@@ -122,7 +122,7 @@ export class ExpirationManager<Fn extends Moizeable> {
                 typeof this.r === 'function' &&
                 !this.r(key, node.v, time, cache)
             ) {
-                cache.u(node);
+                node !== cache.h && cache.u(node);
                 cache.o && cache.o.n('update', node, 'expiration reset');
 
                 this.s(key, node.v);
