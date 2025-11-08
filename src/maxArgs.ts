@@ -1,4 +1,4 @@
-import type { Key, KeyTransformer } from 'micro-memoize';
+import type { Key, TransformKey } from 'micro-memoize';
 import type { Moizeable, Options } from './internalTypes';
 
 /**
@@ -7,7 +7,7 @@ import type { Moizeable, Options } from './internalTypes';
 export function getMaxArgsTransformKey<Fn extends Moizeable>({
     maxArgs,
     react,
-}: Options<Fn>): KeyTransformer<Fn> | undefined {
+}: Options<Fn>): TransformKey<Fn> | undefined {
     if (
         typeof maxArgs !== 'number' ||
         !Number.isFinite(maxArgs) ||

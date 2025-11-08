@@ -1,4 +1,4 @@
-import { KeyTransformer, Options as MicroMemoizeOptions } from 'micro-memoize';
+import { TransformKey, Options as MicroMemoizeOptions } from 'micro-memoize';
 import { createMoized } from './moize';
 import type {
     ExpiresConfig,
@@ -80,7 +80,7 @@ export const moize: Moize<{}> = function moize<
 
 moize.async = moize({ async: true });
 moize.clearStats = clearStats;
-moize.deep = moize({ isArgEqual: 'deep' });
+moize.deep = moize({ isKeyItemEqual: 'deep' });
 moize.expires = <
     Expires extends number | GetExpires<Moizeable> | ExpiresConfig<Moizeable>,
 >(
@@ -91,11 +91,13 @@ moize.forceUpdate = <Update extends ForceUpdate<Moizeable>>(
 ) => moize({ forceUpdate });
 moize.getStats = getStats;
 moize.infinite = moize({ maxSize: Infinity });
-moize.isArgEqual = <
-    IsArgEqual extends Required<MicroMemoizeOptions<Moizeable>>['isArgEqual'],
+moize.isKeyItemEqual = <
+    IsArgEqual extends Required<
+        MicroMemoizeOptions<Moizeable>
+    >['isKeyItemEqual'],
 >(
-    isArgEqual: IsArgEqual,
-) => moize({ isArgEqual });
+    isKeyItemEqual: IsArgEqual,
+) => moize({ isKeyItemEqual });
 moize.isKeyEqual = <
     IsKeyEqual extends Required<MicroMemoizeOptions<Moizeable>>['isKeyEqual'],
 >(
@@ -110,11 +112,11 @@ moize.react = moize({ react: true });
 moize.serialize = <Serialize extends boolean | Serializer>(
     serialize: Serialize,
 ) => moize({ serialize });
-moize.shallow = moize({ isArgEqual: 'shallow' });
+moize.shallow = moize({ isKeyItemEqual: 'shallow' });
 moize.startCollectingStats = startCollectingStats;
 moize.statsName = <StatsName extends string>(statsName: StatsName) =>
     moize({ statsName });
 moize.stopCollectingStats = stopCollectingStats;
-moize.transformKey = <TransformKey extends KeyTransformer<Moizeable>>(
-    transformKey: TransformKey,
+moize.transformKey = <Transform extends TransformKey<Moizeable>>(
+    transformKey: Transform,
 ) => moize({ transformKey });

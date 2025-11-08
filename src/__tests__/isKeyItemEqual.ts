@@ -9,7 +9,7 @@ describe('deep', () => {
 
     test('memoizes based on the deep values via option', () => {
         const fn = vi.fn(method);
-        const memoized = moize(fn, { isArgEqual: 'deep' });
+        const memoized = moize(fn, { isKeyItemEqual: 'deep' });
 
         const resultA = memoized({ one: 1, two: { deep: 2 } });
         const resultB = memoized({ one: 1, two: { deep: 2 } });
@@ -42,7 +42,7 @@ describe('shallow', () => {
 
     test('memoizes based on the shallow values via option', () => {
         const fn = vi.fn(method);
-        const memoized = moize(fn, { isArgEqual: 'shallow' });
+        const memoized = moize(fn, { isKeyItemEqual: 'shallow' });
 
         const two = { deep: 2 };
 
@@ -90,7 +90,7 @@ describe('custom', () => {
         const method = (one: number, two: { deep: number }) => [one, two.deep];
         const fn = vi.fn(method);
         const memoized = moize(fn, {
-            isArgEqual: (prevArg, nextArg) => {
+            isKeyItemEqual: (prevArg, nextArg) => {
                 if (typeof prevArg === 'number') {
                     return prevArg === nextArg;
                 }

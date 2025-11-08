@@ -35,23 +35,23 @@ export function createMoized<Fn extends Moizeable, Opts extends Options<Fn>>(
 }
 
 /**
- * Get the `isArgEqual` method passed to `micro-memoize`.
+ * Get the `isKeyItemEqual` method passed to `micro-memoize`.
  */
 function getIsArgEqualOption<Fn extends Moizeable>({
-    isArgEqual,
+    isKeyItemEqual,
     react,
-}: Options<Fn>): MicroMemoizeOptions<Fn>['isArgEqual'] {
-    if (typeof isArgEqual === 'function') {
-        return isArgEqual;
+}: Options<Fn>): MicroMemoizeOptions<Fn>['isKeyItemEqual'] {
+    if (typeof isKeyItemEqual === 'function') {
+        return isKeyItemEqual;
     }
 
-    if (isArgEqual === 'deep') {
+    if (isKeyItemEqual === 'deep') {
         return deepEqual;
     }
 
     // If `react` and no custom equality comparator is passed, use `shallowEqual` to allow
     // a shallow props comparison.
-    if (isArgEqual === 'shallow' || react) {
+    if (isKeyItemEqual === 'shallow' || react) {
         return shallowEqual;
     }
 }
@@ -81,13 +81,17 @@ function getMicroMemoizeOptions<Fn extends Moizeable>(
     const { async, maxSize } = options;
 
     const isKeyEqual = getIsKeyEqualOption(options);
-    // `isArgEqual` is only used when `isKeyEqual` is not defined.
-    const isArgEqual = isKeyEqual ? undefined : getIsArgEqualOption(options);
+    // `isKeyItemEqual` is only used when `isKeyEqual` is not defined.
+    const isKeyItemEqual = isKeyEqual
+        ? undefined
+        : getIsArgEqualOption(options);
     const transformKey = getTransformKeyOption(options);
 
     return isKeyEqual
         ? { async, isKeyEqual, maxSize, transformKey }
-        : { async, isArgEqual, maxSize, transformKey };
+        : isKeyItemEqual
+          ? { async, isKeyItemEqual, maxSize, transformKey }
+          : { async, maxSize, transformKey };
 }
 
 /**

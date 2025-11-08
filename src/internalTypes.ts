@@ -3,7 +3,7 @@ import type {
     Cache,
     Key,
     Memoized as BaseMemoized,
-    KeyTransformer,
+    TransformKey,
 } from 'micro-memoize';
 import type { ExpirationManager } from './expires';
 import type {
@@ -75,7 +75,7 @@ export type Moizeable = ((...args: any[]) => any) & {
 
 export type Options<Fn extends Moizeable> = Omit<
     BaseOptions<Fn>,
-    'isArgEqual'
+    'isKeyItemEqual'
 > & {
     /**
      * Whether the entry in cache should automatically remove itself
@@ -101,7 +101,7 @@ export type Options<Fn extends Moizeable> = Omit<
      * @note
      * This option will be ignored if the `isKeyEqual` option is provided.
      */
-    isArgEqual?: 'deep' | 'shallow' | BaseOptions<Fn>['isArgEqual'];
+    isKeyItemEqual?: 'deep' | 'shallow' | BaseOptions<Fn>['isKeyItemEqual'];
     /**
      * The maximum number of args to consider for caching.
      */
@@ -118,7 +118,7 @@ export type Options<Fn extends Moizeable> = Omit<
      * purposes. A custom serializer can also be provided, if the default
      * one is insufficient.
      *
-     * This can potentially be faster than `isArgEqual: 'deep'` in rare
+     * This can potentially be faster than `isKeyItemEqual: 'deep'` in rare
      * cases, but can also be used to provide a deep equal check that handles
      * circular references.
      */
@@ -188,7 +188,7 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
     /**
      * Create a moized method that uses deep equality comparison in argument checks.
      */
-    deep: Moize<{ isArgEqual: 'deep' }>;
+    deep: Moize<{ isKeyItemEqual: 'deep' }>;
     /**
      * Create a moized method where the existence in cache is limited to a specific time window
      * after being added to the cache.
@@ -221,11 +221,11 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
      * Create a moized method that will use the method passed for equality comparison
      * in argument checks.
      */
-    isArgEqual: <
-        IsArgEqual extends Required<BaseOptions<Moizeable>>['isArgEqual'],
+    isKeyItemEqual: <
+        IsArgEqual extends Required<BaseOptions<Moizeable>>['isKeyItemEqual'],
     >(
-        isArgEqual: IsArgEqual,
-    ) => Moize<{ isArgEqual: IsArgEqual }>;
+        isKeyItemEqual: IsArgEqual,
+    ) => Moize<{ isKeyItemEqual: IsArgEqual }>;
     /**
      * Create a moized method that will use the method passed for complete key
      * equality comparison.
@@ -266,7 +266,7 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
     /**
      * Create a moized method that uses shallow equality comparison in argument checks.
      */
-    shallow: Moize<{ isArgEqual: 'shallow' }>;
+    shallow: Moize<{ isKeyItemEqual: 'shallow' }>;
     /**
      * Start collecting stats.
      */
@@ -284,7 +284,7 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
     /**
      * Create a moized method that will transform the arguments passed for use as the key in cache.
      */
-    transformKey: <TransformKey extends KeyTransformer<Moizeable>>(
-        transformKey: TransformKey,
-    ) => Moize<{ transformKey: TransformKey }>;
+    transformKey: <Transform extends TransformKey<Moizeable>>(
+        transformKey: Transform,
+    ) => Moize<{ transformKey: Transform }>;
 }
