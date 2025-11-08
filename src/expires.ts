@@ -1,6 +1,6 @@
 import type { Cache, Key } from 'micro-memoize';
 import type {
-    GetMaxAge,
+    GetExpires,
     Moizeable,
     Moized,
     Options,
@@ -29,7 +29,7 @@ export class ExpirationManager<Fn extends Moizeable> {
     /**
      * The [t]ime to wait before expiring, or a method that determines that time.
      */
-    t: number | GetMaxAge<Fn>;
+    t: number | GetExpires<Fn>;
     /**
      * Whether the expiration should [u]pdate when the cache entry is hit.
      */

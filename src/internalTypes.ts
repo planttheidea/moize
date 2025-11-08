@@ -71,7 +71,6 @@ export interface GlobalStats {
 
 export type Moizeable = ((...args: any[]) => any) & {
     displayName?: string;
-    isMemoized?: boolean;
 };
 
 export type Options<Fn extends Moizeable> = Omit<
@@ -109,8 +108,11 @@ export type Options<Fn extends Moizeable> = Omit<
     maxArgs?: number;
     /**
      * Whether the function wrapped is a React component.
+     *
+     * If `true` is passed, it will assume latest v19. If a number is passed,
+     * it will use that as the expected major version.
      */
-    react?: boolean | '19' | '18' | '17' | '16';
+    react?: boolean | 19 | 18 | 17 | 16;
     /**
      * Whether to serialize the arguments into a string value for cache
      * purposes. A custom serializer can also be provided, if the default
@@ -127,21 +129,29 @@ export type Options<Fn extends Moizeable> = Omit<
     statsName?: string;
 };
 
-export type Memoized<Fn extends Moizeable, Opts extends Options<Fn>> = Fn &
+export type Moized<Fn extends Moizeable, Opts extends Options<Fn>> = Fn &
     Omit<BaseMemoized<Fn, BaseOptions<Fn>>, 'options'> & {
+        /**
+         * Manager for the expirations cache. This is only populated when
+         * `options.expires` is set.
+         */
+        expirationManager: ExpirationManager<Fn> | undefined;
+        /**
+         * Get the stats for the given method based on its `statsName`. If
+         * statistics are not being collected on the method, this will return
+         * undefined.
+         */
+        getStats: () => ProfileStats | undefined;
         /**
          * Options passed for the memoized method.
          */
         options: Opts;
+        /**
+         * Manager for the stats cache. This is only populated when `options.statsName`
+         * is set.
+         */
+        statsManager: StatsManager<Fn> | undefined;
     };
-
-export type Moized<Fn extends Moizeable, Opts extends Options<Fn>> = Memoized<
-    Fn,
-    Opts
-> & {
-    expirationManager: ExpirationManager<Fn> | undefined;
-    statsManager: StatsManager<Fn> | undefined;
-};
 
 export interface Moize<BaseOpts extends Options<Moizeable>> {
     <Fn extends Moizeable>(fn: Fn): Moized<Fn, BaseOpts>;
@@ -165,9 +175,24 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
         options: PassedOpts,
     ): Moize<Omit<BaseOpts, keyof PassedOpts> & PassedOpts>;
 
+    /**
+     * Create a moized method specific to caching resolved values. Method passed
+     * should return a `Promise`-like object.
+     */
     async: Moize<{ async: true }>;
+    /**
+     * Clear all existing stats stored, either of the specific profile whose name is passed,
+     * or globally if no name is passed.
+     */
     clearStats: typeof clearStats;
+    /**
+     * Create a moized method that uses deep equality comparison in argument checks.
+     */
     deep: Moize<{ isArgEqual: 'deep' }>;
+    /**
+     * Create a moized method where the existence in cache is limited to a specific time window
+     * after being added to the cache.
+     */
     expires: <
         Expires extends
             | number
@@ -176,38 +201,89 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
     >(
         expires: Expires,
     ) => Moize<{ expires: Expires }>;
+    /**
+     * Create a moized method that will call the underlying (unmemoized) function and update the
+     * cache value with its return. This is mainly used if the function has side-effects, and is
+     * therefore not deterministic.
+     */
     forceUpdate: <Update extends ForceUpdate<Moizeable>>(
         forceUpdate: Update,
     ) => Moize<{ forceUpdate: Update }>;
+    /**
+     * Get the stats of a given profile, or global stats if no `profileName` is given.
+     */
     getStats: typeof getStats;
+    /**
+     * Create a moized method that will have no limit on the size of the cache.
+     */
     infinite: Moize<{ maxSize: typeof Infinity }>;
+    /**
+     * Create a moized method that will use the method passed for equality comparison
+     * in argument checks.
+     */
     isArgEqual: <
         IsArgEqual extends Required<BaseOptions<Moizeable>>['isArgEqual'],
     >(
         isArgEqual: IsArgEqual,
     ) => Moize<{ isArgEqual: IsArgEqual }>;
+    /**
+     * Create a moized method that will use the method passed for complete key
+     * equality comparison.
+     */
     isKeyEqual: <
         IsKeyEqual extends Required<BaseOptions<Moizeable>>['isKeyEqual'],
     >(
         isKeyEqual: IsKeyEqual,
     ) => Moize<{ isKeyEqual: IsKeyEqual }>;
+    /**
+     * Whether stats are currently being collected.
+     */
     isCollectingStats: typeof isCollectingStats;
+    /**
+     * Create a moized method where the number of arguments used as the key in cache is limited
+     * to the value passed.
+     */
     maxArgs: <MaxArgs extends number>(
         maxArgs: MaxArgs,
     ) => Moize<{ maxArgs: MaxArgs }>;
+    /**
+     * Create a moized method where the total size of the cache is limited to the value passed.
+     */
     maxSize: <MaxSize extends number>(
         maxSize: MaxSize,
     ) => Moize<{ maxSize: MaxSize }>;
+    /**
+     * Create a moized React component. This will memoize renders on a per-instance basis, similar
+     * to `React.memo()`.
+     */
     react: Moize<{ react: true }>;
+    /**
+     * Create a moized method that will serialize the argumentsfor use as the key in cache.
+     */
     serialize: <Serialize extends boolean | Serializer>(
         serialize: Serialize,
     ) => Moize<{ serialize: Serialize }>;
+    /**
+     * Create a moized method that uses shallow equality comparison in argument checks.
+     */
     shallow: Moize<{ isArgEqual: 'shallow' }>;
+    /**
+     * Start collecting stats.
+     */
     startCollectingStats: typeof startCollectingStats;
+    /**
+     * Collect stats for the method under the given name.
+     */
     statsName: <StatsName extends string>(
         statsName: StatsName,
     ) => Moize<{ statsName: StatsName }>;
+    /**
+     * Stop collecting stats.
+     */
     stopCollectingStats: typeof stopCollectingStats;
+    /**
+     * Create a moized method that will transform the arguments passed for use as the key in cache.
+     */
     transformKey: <TransformKey extends KeyTransformer<Moizeable>>(
         transformKey: TransformKey,
     ) => Moize<{ transformKey: TransformKey }>;

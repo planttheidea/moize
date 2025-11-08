@@ -157,6 +157,9 @@ export function getStats<Name extends string | undefined>(
           stats?.g();
 }
 
+/**
+ * Get the stats manager for the given moized function.
+ */
 export function getStatsManager<Fn extends Moizeable, Opts extends Options<Fn>>(
     moized: Moized<Fn, Opts>,
     options: Opts,
@@ -169,7 +172,7 @@ export function getStatsManager<Fn extends Moizeable, Opts extends Options<Fn>>(
 /**
  * Get the usage percentage based on the number of hits and total calls.
  */
-export function getUsagePercentage(calls: number, hits: number) {
+function getUsagePercentage(calls: number, hits: number) {
     return calls ? `${((hits / calls) * 100).toFixed(4)}%` : '0.0000%';
 }
 

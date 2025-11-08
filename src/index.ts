@@ -19,6 +19,28 @@ import {
 } from './stats';
 import { isMoized } from './utils';
 
+/**
+ * Create a memoized method based on the options passed.
+ *
+ * @example
+ * import { moize } from 'moize';
+ *
+ * // standard implementation
+ * const fn = (foo, bar) => `${foo} ${bar}`;
+ * const memoizedFn = moize(fn);
+ *
+ * // implementation with options
+ * const fn = async (id) => get(`http://foo.com/${id}`);
+ * const memoizedFn = moize(fn, {async: true, maxSize: 5});
+ *
+ * // implementation with convenience methods
+ * const Foo = ({foo}) => <div>{foo}</div>;
+ * const MemoizedFoo = moize.react(Foo);
+ *
+ * // implementation with currying
+ * const fn = (foo, bar) => [foo, bar];
+ * const memoizedFn = moize({ serialize: true })(fn);
+ */
 export const moize: Moize<{}> = function moize<
     const Fn extends Moizeable,
     const Opts extends Options<Fn>,
@@ -57,60 +79,42 @@ export const moize: Moize<{}> = function moize<
 };
 
 moize.async = moize({ async: true });
-
 moize.clearStats = clearStats;
-
 moize.deep = moize({ isArgEqual: 'deep' });
-
 moize.expires = <
     Expires extends number | GetExpires<Moizeable> | ExpiresConfig<Moizeable>,
 >(
     expires: Expires,
 ) => moize({ expires });
-
 moize.forceUpdate = <Update extends ForceUpdate<Moizeable>>(
     forceUpdate: Update,
 ) => moize({ forceUpdate });
-
 moize.getStats = getStats;
-
 moize.infinite = moize({ maxSize: Infinity });
-
 moize.isArgEqual = <
     IsArgEqual extends Required<MicroMemoizeOptions<Moizeable>>['isArgEqual'],
 >(
     isArgEqual: IsArgEqual,
 ) => moize({ isArgEqual });
-
 moize.isKeyEqual = <
     IsKeyEqual extends Required<MicroMemoizeOptions<Moizeable>>['isKeyEqual'],
 >(
     isKeyEqual: IsKeyEqual,
 ) => moize({ isKeyEqual });
-
 moize.isCollectingStats = isCollectingStats;
-
 moize.maxArgs = <MaxArgs extends number>(maxArgs: MaxArgs) =>
     moize({ maxArgs });
-
 moize.maxSize = <MaxSize extends number>(maxSize: MaxSize) =>
     moize({ maxSize });
-
 moize.react = moize({ react: true });
-
 moize.serialize = <Serialize extends boolean | Serializer>(
     serialize: Serialize,
 ) => moize({ serialize });
-
 moize.shallow = moize({ isArgEqual: 'shallow' });
-
 moize.startCollectingStats = startCollectingStats;
-
 moize.statsName = <StatsName extends string>(statsName: StatsName) =>
     moize({ statsName });
-
 moize.stopCollectingStats = stopCollectingStats;
-
 moize.transformKey = <TransformKey extends KeyTransformer<Moizeable>>(
     transformKey: TransformKey,
 ) => moize({ transformKey });

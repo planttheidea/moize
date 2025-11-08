@@ -19,6 +19,9 @@ export function compose<Method>(...functions: Method[]): Method {
     });
 }
 
+/**
+ * Determine whether the value passed is a moized method.
+ */
 export function isMoized(fn: any): fn is Moize<Options<Moizeable>> {
     return typeof fn === 'function' && !!fn.isMemoized && !!fn.fn;
 }

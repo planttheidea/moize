@@ -67,14 +67,14 @@ console.log(serialize.options);
 
 let index = 0;
 
-const forceUpdate = moize(
-    (one: string, two: string) => {
-        console.log('called force update');
+const forceUpdate = moize.forceUpdate(([one]) => one === 'foo')((
+    one: string,
+    two: string,
+) => {
+    console.log('called force update');
 
-        return { one, index: ++index, two };
-    },
-    { forceUpdate: ([one]) => one === 'foo' },
-);
+    return { one, index: ++index, two };
+});
 
 forceUpdate.cache.on('update', console.log);
 
@@ -105,13 +105,13 @@ expires.cache.on('update', console.log);
 console.log(expires('foo', 'bar'));
 console.log(expires('bar', 'baz'));
 
-const stats = moize(
+const stats = moize.statsName('stats')(
     (one: string, two: string) => {
         console.log('called stats');
 
         return { one, index: ++index, two };
     },
-    { maxSize: 2, statsName: 'stats' },
+    { maxSize: 2 },
 );
 
 console.log(stats('foo', 'bar'));
@@ -126,9 +126,4 @@ console.log(stats('foo', 'bar'));
 console.log(stats('foo', 'bar'));
 
 console.log(moize.getStats('stats'));
-console.log(moize.getStats());
-
-moize.stopCollectingStats();
-
-console.log('stats after collection', moize.getStats('stats'));
 console.log(moize.getStats());

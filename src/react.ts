@@ -68,7 +68,7 @@ export function createWrappedReactMoize<
 function getElementType<Fn extends Moizeable>({ react }: Options<Fn>) {
     // This was stolen from React internals, which allows us to create React elements without needing
     // a dependency on the React library itself.
-    return react === true || react === '19'
+    return react === true || react === 19
         ? Symbol.for('react.transitional.element')
         : Symbol.for('react.element');
 }

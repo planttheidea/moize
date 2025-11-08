@@ -1,5 +1,9 @@
 import type { Moizeable, Moized, Options } from './internalTypes';
 
+/**
+ * Create a wrapped moized method that will conditionally update the cache based on
+ * the result of the option passed.
+ */
 export function getWrappedForceUpdateMoize<
     Fn extends Moizeable,
     Opts extends Options<Fn>,
