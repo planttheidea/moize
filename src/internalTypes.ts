@@ -3,14 +3,22 @@ import type {
     Cache,
     Key,
     Memoized as BaseMemoized,
+    KeyTransformer,
 } from 'micro-memoize';
 import type { ExpirationManager } from './expires';
-import { StatsManager } from './stats';
+import type {
+    clearStats,
+    getStats,
+    isCollectingStats,
+    startCollectingStats,
+    StatsManager,
+    stopCollectingStats,
+} from './stats';
 
 export type ForceUpdate<Fn extends Moizeable> = (
     args: Parameters<Fn>,
 ) => boolean;
-export type GetMaxAge<Fn extends Moizeable> = (
+export type GetExpires<Fn extends Moizeable> = (
     key: Key,
     value: ReturnType<Fn>,
     cache: Cache<Fn>,
@@ -27,13 +35,13 @@ export type ShouldRemoveOnExpire<Fn extends Moizeable> = (
     time: number,
     cache: Cache<Fn>,
 ) => boolean;
-export type Serialize = (key: Key) => [string];
+export type Serializer = (key: Key) => [string];
 
-interface ExpireConfig<Fn extends Moizeable> {
+export interface ExpiresConfig<Fn extends Moizeable> {
     /**
      * The amount of time before the cache entry is automatically removed.
      */
-    after: number | GetMaxAge<Fn>;
+    after: number | GetExpires<Fn>;
     /**
      * Determine whether the cache entry should never expire.
      */
@@ -63,6 +71,7 @@ export interface GlobalStats {
 
 export type Moizeable = ((...args: any[]) => any) & {
     displayName?: string;
+    isMemoized?: boolean;
 };
 
 export type Options<Fn extends Moizeable> = Omit<
@@ -73,7 +82,7 @@ export type Options<Fn extends Moizeable> = Omit<
      * Whether the entry in cache should automatically remove itself
      * after a period of time.
      */
-    expires?: number | GetMaxAge<Fn> | ExpireConfig<Fn>;
+    expires?: number | GetExpires<Fn> | ExpiresConfig<Fn>;
     /**
      * Method to determine whether to bypass the cache to force an update
      * of the underlying entry based on new results.
@@ -111,7 +120,7 @@ export type Options<Fn extends Moizeable> = Omit<
      * cases, but can also be used to provide a deep equal check that handles
      * circular references.
      */
-    serialize?: boolean | Serialize;
+    serialize?: boolean | Serializer;
     /**
      * The name to give this method when recording profiling stats.
      */
@@ -133,3 +142,73 @@ export type Moized<Fn extends Moizeable, Opts extends Options<Fn>> = Memoized<
     expirationManager: ExpirationManager<Fn> | undefined;
     statsManager: StatsManager<Fn> | undefined;
 };
+
+export interface Moize<BaseOpts extends Options<Moizeable>> {
+    <Fn extends Moizeable>(fn: Fn): Moized<Fn, BaseOpts>;
+    <Fn extends Moizeable, Opts extends Options<Fn>>(
+        fn: Fn,
+        options: Opts,
+    ): Moized<Fn, Omit<BaseOpts, keyof Opts> & Opts>;
+    <Fn extends Moized<Moizeable, Options<Moizeable>>>(
+        fn: Fn,
+    ): Moized<Fn['fn'], Omit<Fn['options'], keyof BaseOpts> & BaseOpts>;
+    <Fn extends Moized<Moizeable, Options<Fn>>, PassedOpts extends Options<Fn>>(
+        fn: Fn,
+        options: PassedOpts,
+    ): Moized<
+        Fn['fn'],
+        Omit<Fn['options'], keyof BaseOpts | keyof PassedOpts> &
+            Omit<BaseOpts, keyof PassedOpts> &
+            PassedOpts
+    >;
+    <PassedOpts extends Options<Moizeable>>(
+        options: PassedOpts,
+    ): Moize<Omit<BaseOpts, keyof PassedOpts> & PassedOpts>;
+
+    async: Moize<{ async: true }>;
+    clearStats: typeof clearStats;
+    deep: Moize<{ isArgEqual: 'deep' }>;
+    expires: <
+        Expires extends
+            | number
+            | GetExpires<Moizeable>
+            | ExpiresConfig<Moizeable>,
+    >(
+        expires: Expires,
+    ) => Moize<{ expires: Expires }>;
+    forceUpdate: <Update extends ForceUpdate<Moizeable>>(
+        forceUpdate: Update,
+    ) => Moize<{ forceUpdate: Update }>;
+    getStats: typeof getStats;
+    infinite: Moize<{ maxSize: typeof Infinity }>;
+    isArgEqual: <
+        IsArgEqual extends Required<BaseOptions<Moizeable>>['isArgEqual'],
+    >(
+        isArgEqual: IsArgEqual,
+    ) => Moize<{ isArgEqual: IsArgEqual }>;
+    isKeyEqual: <
+        IsKeyEqual extends Required<BaseOptions<Moizeable>>['isKeyEqual'],
+    >(
+        isKeyEqual: IsKeyEqual,
+    ) => Moize<{ isKeyEqual: IsKeyEqual }>;
+    isCollectingStats: typeof isCollectingStats;
+    maxArgs: <MaxArgs extends number>(
+        maxArgs: MaxArgs,
+    ) => Moize<{ maxArgs: MaxArgs }>;
+    maxSize: <MaxSize extends number>(
+        maxSize: MaxSize,
+    ) => Moize<{ maxSize: MaxSize }>;
+    react: Moize<{ react: true }>;
+    serialize: <Serialize extends boolean | Serializer>(
+        serialize: Serialize,
+    ) => Moize<{ serialize: Serialize }>;
+    shallow: Moize<{ isArgEqual: 'shallow' }>;
+    startCollectingStats: typeof startCollectingStats;
+    statsName: <StatsName extends string>(
+        statsName: StatsName,
+    ) => Moize<{ statsName: StatsName }>;
+    stopCollectingStats: typeof stopCollectingStats;
+    transformKey: <TransformKey extends KeyTransformer<Moizeable>>(
+        transformKey: TransformKey,
+    ) => Moize<{ transformKey: TransformKey }>;
+}

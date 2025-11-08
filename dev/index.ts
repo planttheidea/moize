@@ -29,28 +29,20 @@ console.log(simple('foo', 'bar'));
 console.log(simple('foo', 'bar'));
 console.log(simple.options);
 
-const deep = moize(
-    (object: { foo: { bar: string } }) => {
-        console.log('called deep');
-        return { object };
-    },
-    {
-        isArgEqual: 'deep',
-    },
-);
+const deep = moize.deep((object: { foo: { bar: string } }) => {
+    console.log('called deep');
+    return { object };
+});
 
 console.log(deep({ foo: { bar: 'baz' } }));
 console.log(deep({ foo: { bar: 'baz' } }));
 console.log(deep({ foo: { bar: 'baz' } }));
 console.log(deep.options);
 
-const maxArgs = moize(
-    (one: string, two: string) => {
-        console.log('called maxAargs');
-        return { one, two };
-    },
-    { maxArgs: 1 },
-);
+const maxArgs = moize.maxArgs(1)((one: string, two: string) => {
+    console.log('called maxAargs');
+    return { one, two };
+});
 
 console.log(maxArgs('foo', 'bar'));
 console.log(maxArgs('foo', 'baz'));

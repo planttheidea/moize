@@ -1,3 +1,5 @@
+import { Moize, Moizeable, Options } from './internalTypes';
+
 /**
  * Compose functions into a single function.
  */
@@ -15,4 +17,8 @@ export function compose<Method>(...functions: Method[]): Method {
             return g;
         }
     });
+}
+
+export function isMoized(fn: any): fn is Moize<Options<Moizeable>> {
+    return typeof fn === 'function' && !!fn.isMemoized && !!fn.fn;
 }

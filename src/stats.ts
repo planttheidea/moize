@@ -174,6 +174,13 @@ export function getUsagePercentage(calls: number, hits: number) {
 }
 
 /**
+ * Whether stats are currently being collected.
+ */
+export function isCollectingStats(): boolean {
+    return Boolean(stats);
+}
+
+/**
  * Start collecting stats.
  */
 export function startCollectingStats(): void {
