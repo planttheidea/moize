@@ -3,7 +3,7 @@
         "allowJs": true,
         "esModuleInterop": true,
         "jsx": "react-jsx",
-        "lib": ["dom", "es2015"],
+        "lib": ["DOM", "ESNext"],
         "module": "esNext",
         "moduleResolution": "node",
         "noImplicitAny": true,
