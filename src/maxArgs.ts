@@ -1,10 +1,10 @@
 import type { Key, KeyTransformer } from 'micro-memoize';
-import type { Moizable, Options } from './internalTypes';
+import type { Moizeable, Options } from './internalTypes';
 
 /**
  * Create a method that takes the first N number of items from the array (faster than slice).
  */
-export function getMaxArgsTransformKey<Fn extends Moizable>({
+export function getMaxArgsTransformKey<Fn extends Moizeable>({
     maxArgs,
     react,
 }: Options<Fn>): KeyTransformer<Fn> | undefined {

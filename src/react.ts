@@ -5,9 +5,10 @@ import type {
     RefObject,
 } from 'react';
 import { createMoized } from './moize';
-import type { Moizable, Moized, Options } from './internalTypes';
+import type { Moizeable, Moized, Options } from './internalTypes';
 
-interface MoizedComponent<Fn extends Moizable, Props> extends Component<Props> {
+interface MoizedComponent<Fn extends Moizeable, Props>
+    extends Component<Props> {
     Moized: Moized<Fn, Options<Fn>>;
     refs: Record<string, RefObject<any>>;
     updater: any;
@@ -22,7 +23,7 @@ interface MoizedComponent<Fn extends Moizable, Props> extends Component<Props> {
  * `createElement` function.
  */
 export function createWrappedReactMoize<
-    Fn extends Moizable,
+    Fn extends Moizeable,
     Opts extends Options<Fn>,
 >(fn: Fn, options: Opts): ComponentType<ComponentProps<Fn>> {
     const elementType = getElementType(options);
@@ -64,7 +65,7 @@ export function createWrappedReactMoize<
     return Moized as ComponentType<ComponentProps<Fn>>;
 }
 
-function getElementType<Fn extends Moizable>({ react }: Options<Fn>) {
+function getElementType<Fn extends Moizeable>({ react }: Options<Fn>) {
     // This was stolen from React internals, which allows us to create React elements without needing
     // a dependency on the React library itself.
     return react === true || react === '19'

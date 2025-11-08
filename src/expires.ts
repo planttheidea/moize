@@ -1,14 +1,14 @@
 import type { Cache, Key } from 'micro-memoize';
 import type {
     GetMaxAge,
-    Moizable,
+    Moizeable,
     Moized,
     Options,
     ShouldPersist,
     ShouldRemoveOnExpire,
 } from './internalTypes';
 
-export class ExpirationManager<Fn extends Moizable> {
+export class ExpirationManager<Fn extends Moizeable> {
     /**
      * The [c]ache being monitored.
      */
@@ -143,7 +143,7 @@ export class ExpirationManager<Fn extends Moizable> {
 }
 
 export function getExpirationManager<
-    Fn extends Moizable,
+    Fn extends Moizeable,
     Opts extends Options<Fn>,
 >(moized: Moized<Fn, Opts>, options: Opts): ExpirationManager<Fn> | undefined {
     if (options.expires != null) {

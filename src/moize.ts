@@ -2,13 +2,14 @@ import { memoize } from 'micro-memoize';
 import { deepEqual, shallowEqual } from 'fast-equals';
 import type { Options as MicroMemoizeOptions } from 'micro-memoize';
 import { getExpirationManager } from './expires';
-import type { Moizable, Moized, Options } from './internalTypes';
+import type { Moizeable, Moized, Options } from './internalTypes';
 import { getWrappedForceUpdateMoize } from './forceUpdate';
 import { getMaxArgsTransformKey } from './maxArgs';
 import { getSerializeTransformKey, isSerializedKeyEqual } from './serialize';
 import { compose } from './utils';
+import { getStatsManager } from './stats';
 
-export function createMoized<Fn extends Moizable, Opts extends Options<Fn>>(
+export function createMoized<Fn extends Moizeable, Opts extends Options<Fn>>(
     fn: Fn,
     options: Opts,
 ): Moized<Fn, Opts> {
@@ -23,6 +24,7 @@ export function createMoized<Fn extends Moizable, Opts extends Options<Fn>>(
     moized.expirationManager = getExpirationManager(moized, options);
     // Override the `micro-memoize` options with the ones passed to `moize`.
     moized.options = options;
+    moized.statsManager = getStatsManager(moized, options);
 
     return moized;
 }
@@ -30,7 +32,7 @@ export function createMoized<Fn extends Moizable, Opts extends Options<Fn>>(
 /**
  * Get the `isArgEqual` method passed to `micro-memoize`.
  */
-function getIsArgEqualOption<Fn extends Moizable>({
+function getIsArgEqualOption<Fn extends Moizeable>({
     isArgEqual,
     react,
 }: Options<Fn>): MicroMemoizeOptions<Fn>['isArgEqual'] {
@@ -52,7 +54,7 @@ function getIsArgEqualOption<Fn extends Moizable>({
 /**
  * Get the `isKeyEqual` method passed to `micro-memoize`.
  */
-function getIsKeyEqualOption<Fn extends Moizable>({
+function getIsKeyEqualOption<Fn extends Moizeable>({
     isKeyEqual,
     serialize,
 }: Options<Fn>): MicroMemoizeOptions<Fn>['isKeyEqual'] {
@@ -65,7 +67,7 @@ function getIsKeyEqualOption<Fn extends Moizable>({
     }
 }
 
-function getMicroMemoizeOptions<Fn extends Moizable>(
+function getMicroMemoizeOptions<Fn extends Moizeable>(
     options: Options<Fn>,
 ): MicroMemoizeOptions<Fn> {
     const { async, maxSize } = options;
@@ -83,7 +85,7 @@ function getMicroMemoizeOptions<Fn extends Moizable>(
 /**
  * Get the `transformKey` method passed to `micro-memoize`.
  */
-function getTransformKeyOption<Fn extends Moizable>(
+function getTransformKeyOption<Fn extends Moizeable>(
     options: Options<Fn>,
 ): MicroMemoizeOptions<Fn>['transformKey'] {
     return compose(

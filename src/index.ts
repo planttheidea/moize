@@ -1,10 +1,16 @@
 import { ComponentProps, ComponentType } from 'react';
 import { createMoized } from './moize';
-import type { Moizable, Moized, Options } from './internalTypes';
+import type { Moizeable, Moized, Options } from './internalTypes';
 import { createWrappedReactMoize } from './react';
+import {
+    clearStats,
+    getStats,
+    startCollectingStats,
+    stopCollectingStats,
+} from './stats';
 
 export function moize<
-    const Fn extends Moizable,
+    const Fn extends Moizeable,
     const Opts extends Options<Fn>,
 >(
     fn: Fn,
@@ -20,3 +26,8 @@ export function moize<
           createWrappedReactMoize(fn, options)
         : createMoized(fn, options);
 }
+
+moize.clearStats = clearStats;
+moize.getStats = getStats;
+moize.startCollectingStats = startCollectingStats;
+moize.stopCollectingStats = stopCollectingStats;

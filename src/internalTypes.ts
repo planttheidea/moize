@@ -5,22 +5,23 @@ import type {
     Memoized as BaseMemoized,
 } from 'micro-memoize';
 import type { ExpirationManager } from './expires';
+import { StatsManager } from './stats';
 
-export type ForceUpdate<Fn extends Moizable> = (
+export type ForceUpdate<Fn extends Moizeable> = (
     args: Parameters<Fn>,
 ) => boolean;
-export type GetMaxAge<Fn extends Moizable> = (
+export type GetMaxAge<Fn extends Moizeable> = (
     key: Key,
     value: ReturnType<Fn>,
     cache: Cache<Fn>,
 ) => number;
 export type OnExpire = (key: Key) => any;
-export type ShouldPersist<Fn extends Moizable> = (
+export type ShouldPersist<Fn extends Moizeable> = (
     key: Key,
     value: ReturnType<Fn>,
     cache: Cache<Fn>,
 ) => boolean;
-export type ShouldRemoveOnExpire<Fn extends Moizable> = (
+export type ShouldRemoveOnExpire<Fn extends Moizeable> = (
     key: Key,
     value: ReturnType<Fn>,
     time: number,
@@ -28,7 +29,7 @@ export type ShouldRemoveOnExpire<Fn extends Moizable> = (
 ) => boolean;
 export type Serialize = (key: Key) => [string];
 
-interface ExpireConfig<Fn extends Moizable> {
+interface ExpireConfig<Fn extends Moizeable> {
     /**
      * The amount of time before the cache entry is automatically removed.
      */
@@ -48,11 +49,23 @@ interface ExpireConfig<Fn extends Moizable> {
     update?: boolean;
 }
 
-export type Moizable = ((...args: any[]) => any) & {
+export interface ProfileStats {
+    calls: number;
+    hits: number;
+    name: string;
+    usage: string;
+}
+
+export interface GlobalStats {
+    profiles: Record<string, ProfileStats>;
+    usage: string;
+}
+
+export type Moizeable = ((...args: any[]) => any) & {
     displayName?: string;
 };
 
-export type Options<Fn extends Moizable> = Omit<
+export type Options<Fn extends Moizeable> = Omit<
     BaseOptions<Fn>,
     'isArgEqual'
 > & {
@@ -102,10 +115,10 @@ export type Options<Fn extends Moizable> = Omit<
     /**
      * The name to give this method when recording profiling stats.
      */
-    statsProfile?: string;
+    statsName?: string;
 };
 
-export type Memoized<Fn extends Moizable, Opts extends Options<Fn>> = Fn &
+export type Memoized<Fn extends Moizeable, Opts extends Options<Fn>> = Fn &
     Omit<BaseMemoized<Fn, BaseOptions<Fn>>, 'options'> & {
         /**
          * Options passed for the memoized method.
@@ -113,9 +126,10 @@ export type Memoized<Fn extends Moizable, Opts extends Options<Fn>> = Fn &
         options: Opts;
     };
 
-export type Moized<Fn extends Moizable, Opts extends Options<Fn>> = Memoized<
+export type Moized<Fn extends Moizeable, Opts extends Options<Fn>> = Memoized<
     Fn,
     Opts
 > & {
     expirationManager: ExpirationManager<Fn> | undefined;
+    statsManager: StatsManager<Fn> | undefined;
 };

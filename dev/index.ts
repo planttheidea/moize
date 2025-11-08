@@ -6,6 +6,8 @@ document.body.style.color = '#d5d5d5';
 document.body.style.margin = '0px';
 document.body.style.padding = '0px';
 
+moize.startCollectingStats();
+
 const div = document.createElement('div');
 const span = document.createElement('span');
 
@@ -99,9 +101,9 @@ const expires = moize(
     {
         expires: {
             after: 1000,
-            shouldRemove: ([one]) => one === 'bar',
         },
         maxSize: 2,
+        statsName: 'expires',
     },
 );
 
@@ -110,3 +112,31 @@ expires.cache.on('update', console.log);
 
 console.log(expires('foo', 'bar'));
 console.log(expires('bar', 'baz'));
+
+const stats = moize(
+    (one: string, two: string) => {
+        console.log('called stats');
+
+        return { one, index: ++index, two };
+    },
+    { maxSize: 2, statsName: 'stats' },
+);
+
+console.log(stats('foo', 'bar'));
+
+console.log(stats.statsManager?.m());
+
+console.log(stats('foo', 'bar'));
+console.log(stats('foo', 'bar'));
+console.log(stats('foo', 'bar'));
+console.log(stats('bar', 'baz'));
+console.log(stats('foo', 'bar'));
+console.log(stats('foo', 'bar'));
+
+console.log(moize.getStats('stats'));
+console.log(moize.getStats());
+
+moize.stopCollectingStats();
+
+console.log('stats after collection', moize.getStats('stats'));
+console.log(moize.getStats());
