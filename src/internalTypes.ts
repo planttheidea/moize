@@ -258,9 +258,14 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
      */
     react: Moize<{ react: true }>;
     /**
-     * Create a moized method that will serialize the argumentsfor use as the key in cache.
+     * Create a moized method that will serialize the arguments for use as the key in cache.
      */
-    serialize: <Serialize extends boolean | Serializer>(
+    serialize: Moize<{ serialize: true }>;
+    /**
+     * Create a moized method that will serialize the arguments with the custom serializer for use
+     * as the key in cache.
+     */
+    serializeWith: <Serialize extends Serializer>(
         serialize: Serialize,
     ) => Moize<{ serialize: Serialize }>;
     /**

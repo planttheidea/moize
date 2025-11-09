@@ -109,9 +109,9 @@ moize.maxArgs = <MaxArgs extends number>(maxArgs: MaxArgs) =>
 moize.maxSize = <MaxSize extends number>(maxSize: MaxSize) =>
     moize({ maxSize });
 moize.react = moize({ react: true });
-moize.serialize = <Serialize extends boolean | Serializer>(
-    serialize: Serialize,
-) => moize({ serialize });
+moize.serialize = moize({ serialize: true });
+moize.serializeWith = <Serialize extends Serializer>(serialize: Serialize) =>
+    moize({ serialize });
 moize.shallow = moize({ isKeyItemEqual: 'shallow' });
 moize.startCollectingStats = startCollectingStats;
 moize.statsName = <StatsName extends string>(statsName: StatsName) =>

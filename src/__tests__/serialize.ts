@@ -1,33 +1,46 @@
-import cloneDeep from 'lodash/cloneDeep';
-import moize from '../src';
+/* eslint-disable @typescript-eslint/no-empty-function */
 
-type Arg = {
+import cloneDeep from 'lodash/cloneDeep';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+import { moize } from '../index.js';
+
+interface Arg {
     one: number;
     two: number;
     three: () => void;
     four: symbol;
     five: null;
-};
+}
 
-const method = jest.fn(function ({ one, two, three, four, five }: Arg) {
+const method = vi.fn(({ one, two, three, four, five }: Arg) => {
     return [one, two, three, four, five];
 });
 
-const memoized = moize.serialize(method);
+const memoized = moize.serialize(method, { maxSize: 2 });
 
-describe('moize.serialize', () => {
-    afterEach(jest.clearAllMocks);
+describe('serialize', () => {
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
 
-    it('serializes the args passed by', () => {
-        const three = function () {};
+    test('serializes the args passed by', () => {
+        const three = () => {};
+        const altThree = () => {};
         const four = Symbol('foo');
+        const altFour = Symbol('foo');
 
-        const resultA = memoized({ one: 1, two: 2, three, four, five: null });
+        const resultA = memoized({
+            one: 1,
+            two: 2,
+            three,
+            four,
+            five: null,
+        });
         const resultB = memoized({
             one: 1,
             two: 2,
-            three() {},
-            four: Symbol('foo'),
+            three: altThree,
+            four: altFour,
             five: null,
         });
 
@@ -37,16 +50,16 @@ describe('moize.serialize', () => {
         expect(method).toHaveBeenCalledTimes(1);
     });
 
-    it('handles circular objects', () => {
-        type Arg = {
+    test('handles circular objects', () => {
+        interface Arg {
             deeply: {
                 nested: {
                     circular: Arg | {};
                 };
             };
-        };
+        }
 
-        const circularMethod = jest.fn((arg: Arg) => arg);
+        const circularMethod = vi.fn((arg: Arg) => arg);
         const circularMemoized = moize.serialize(circularMethod);
 
         const circular: Arg = {
@@ -66,22 +79,26 @@ describe('moize.serialize', () => {
 
         expect(circularMethod).toHaveBeenCalledTimes(1);
 
-        expect(circularMemoized.cache.keys).toEqual([
-            ['|{"deeply":{"nested":{"circular":"[ref=.]"}}}|'],
+        expect(circularMemoized.cache.snapshot.keys).toEqual([
+            ['[{"deeply":{"nested":{"circular":"[ref=.0]"}}}]'],
         ]);
     });
 });
 
-describe('moize.serializeWith', () => {
-    afterEach(jest.clearAllMocks);
+describe('serializeWith', () => {
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
 
-    it('serializes the arguments passed with the custom serializer', () => {
+    test('serializes the arguments passed with the custom serializer', () => {
         const withSerializer = moize.serializeWith((args: any[]) => [
             JSON.stringify(args),
         ])(method);
 
-        const three = function () {};
+        const three = () => {};
+        const altThree = () => {};
         const four = Symbol('foo');
+        const altFour = Symbol('foo');
 
         const resultA = withSerializer({
             one: 1,
@@ -93,8 +110,8 @@ describe('moize.serializeWith', () => {
         const resultB = withSerializer({
             one: 1,
             two: 2,
-            three() {},
-            four: Symbol('foo'),
+            three: altThree,
+            four: altFour,
             five: null,
         });
 
