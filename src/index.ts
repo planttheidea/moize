@@ -1,9 +1,11 @@
-import { TransformKey, Options as MicroMemoizeOptions } from 'micro-memoize';
+import { TransformKey } from 'micro-memoize';
 import { createMoized } from './moize';
 import type {
     ExpiresConfig,
     ForceUpdate,
     GetExpires,
+    IsKeyEqual,
+    IsKeyItemEqual,
     Moize,
     Moizeable,
     Options,
@@ -91,18 +93,12 @@ moize.forceUpdate = <Update extends ForceUpdate<Moizeable>>(
 ) => moize({ forceUpdate });
 moize.getStats = getStats;
 moize.infinite = moize({ maxSize: Infinity });
-moize.isKeyItemEqual = <
-    IsArgEqual extends Required<
-        MicroMemoizeOptions<Moizeable>
-    >['isKeyItemEqual'],
->(
-    isKeyItemEqual: IsArgEqual,
-) => moize({ isKeyItemEqual });
-moize.isKeyEqual = <
-    IsKeyEqual extends Required<MicroMemoizeOptions<Moizeable>>['isKeyEqual'],
->(
-    isKeyEqual: IsKeyEqual,
+moize.isKeyEqual = <IsEqual extends IsKeyEqual<Moizeable>>(
+    isKeyEqual: IsEqual,
 ) => moize({ isKeyEqual });
+moize.isKeyItemEqual = <IsEqual extends IsKeyItemEqual<Moizeable>>(
+    isKeyItemEqual: IsEqual,
+) => moize({ isKeyItemEqual });
 moize.isCollectingStats = isCollectingStats;
 moize.maxArgs = <MaxArgs extends number>(maxArgs: MaxArgs) =>
     moize({ maxArgs });

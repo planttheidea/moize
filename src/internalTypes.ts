@@ -23,6 +23,12 @@ export type GetExpires<Fn extends Moizeable> = (
     value: ReturnType<Fn>,
     cache: Cache<Fn>,
 ) => number;
+export type IsKeyEqual<Fn extends Moizeable> = Required<
+    BaseOptions<Fn>
+>['isKeyEqual'];
+export type IsKeyItemEqual<Fn extends Moizeable> = Required<
+    BaseOptions<Fn>
+>['isKeyItemEqual'];
 export type OnExpire = (key: Key) => any;
 export type ShouldPersist<Fn extends Moizeable> = (
     key: Key,
@@ -218,23 +224,19 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
      */
     infinite: Moize<{ maxSize: typeof Infinity }>;
     /**
-     * Create a moized method that will use the method passed for equality comparison
-     * in argument checks.
-     */
-    isKeyItemEqual: <
-        IsArgEqual extends Required<BaseOptions<Moizeable>>['isKeyItemEqual'],
-    >(
-        isKeyItemEqual: IsArgEqual,
-    ) => Moize<{ isKeyItemEqual: IsArgEqual }>;
-    /**
      * Create a moized method that will use the method passed for complete key
      * equality comparison.
      */
-    isKeyEqual: <
-        IsKeyEqual extends Required<BaseOptions<Moizeable>>['isKeyEqual'],
-    >(
-        isKeyEqual: IsKeyEqual,
-    ) => Moize<{ isKeyEqual: IsKeyEqual }>;
+    isKeyEqual: <IsEqual extends IsKeyEqual<Moizeable>>(
+        isKeyEqual: IsEqual,
+    ) => Moize<{ isKeyEqual: IsEqual }>;
+    /**
+     * Create a moized method that will use the method passed for equality comparison
+     * in argument checks.
+     */
+    isKeyItemEqual: <IsEqual extends IsKeyItemEqual<Moizeable>>(
+        isKeyItemEqual: IsEqual,
+    ) => Moize<{ isKeyItemEqual: IsEqual }>;
     /**
      * Whether stats are currently being collected.
      */
