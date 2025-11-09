@@ -7,7 +7,7 @@ import { getWrappedForceUpdateMoize } from './forceUpdate';
 import { getMaxArgsTransformKey } from './maxArgs';
 import { getSerializeTransformKey, isSerializedKeyEqual } from './serialize';
 import { compose } from './utils';
-import { getStats, getStatsManager } from './stats';
+import { clearStats, getStats, getStatsManager } from './stats';
 
 /**
  * Create a moized instance of the function passed, including all necessary static properties.
@@ -24,9 +24,15 @@ export function createMoized<Fn extends Moizeable, Opts extends Options<Fn>>(
         moized = getWrappedForceUpdateMoize(moized, options);
     }
 
+    moized.clearStats = options.statsName
+        ? () => {
+              clearStats(options.statsName);
+          }
+        : () => undefined;
     moized.expirationManager = getExpirationManager(moized, options);
-    moized.getStats = () =>
-        options.statsName != null ? getStats(options.statsName) : undefined;
+    moized.getStats = options.statsName
+        ? () => getStats(options.statsName)
+        : () => undefined;
     // Override the `micro-memoize` options with the ones passed to `moize`.
     moized.options = options;
     moized.statsManager = getStatsManager(moized, options);

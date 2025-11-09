@@ -71,6 +71,8 @@ export interface ProfileStats {
 }
 
 export interface GlobalStats {
+    calls: number;
+    hits: number;
     profiles: Record<string, ProfileStats>;
     usage: string;
 }
@@ -137,6 +139,11 @@ export type Options<Fn extends Moizeable> = Omit<
 
 export type Moized<Fn extends Moizeable, Opts extends Options<Fn>> = Fn &
     Omit<BaseMemoized<Fn, BaseOptions<Fn>>, 'options'> & {
+        /**
+         * Clear the stats for the given method based on its `statsName`. If
+         * statistics are not being collected on the method, this is a no-op.
+         */
+        clearStats: () => void;
         /**
          * Manager for the expirations cache. This is only populated when
          * `options.expires` is set.

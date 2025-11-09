@@ -58,6 +58,13 @@ export class StatsManager<Fn extends Moizeable> {
     }
 
     /**
+     * Method to [r]eset the counts.
+     */
+    r() {
+        this.p = { c: 0, h: 0 };
+    }
+
+    /**
      * Method to [s]tart the collection of stats for the given profile.
      */
     s() {
@@ -93,8 +100,7 @@ class Stats {
             const statsManager = nameToProfile.get(profileName);
 
             if (statsManager) {
-                statsManager.d?.();
-                nameToProfile.delete(profileName);
+                statsManager.r();
             }
         } else {
             nameToProfile.clear();
@@ -117,7 +123,12 @@ class Stats {
             hits += profile.p.h;
         });
 
-        return { profiles, usage: getUsagePercentage(calls, hits) };
+        return {
+            calls,
+            hits,
+            profiles,
+            usage: getUsagePercentage(calls, hits),
+        };
     }
     /**
      * Method to aggregate a single [p]rofile's stats.
@@ -150,11 +161,18 @@ export function clearStats(profileName?: string) {
 export function getStats<Name extends string | undefined>(
     profileName?: Name,
 ): undefined extends Name ? GlobalStats | undefined : ProfileStats | undefined {
+    if (!stats) {
+        console.warn(
+            'Stats are not being collected; please run "moize.startCollectingStats()" to collect them.',
+        );
+        return;
+    }
+
     return profileName != null
         ? // @ts-expect-error - Conditional returns can be tricky.
-          stats?.p(profileName)
+          stats.p(profileName)
         : // @ts-expect-error - Conditional returns can be tricky.
-          stats?.g();
+          stats.g();
 }
 
 /**

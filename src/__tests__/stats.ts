@@ -1,39 +1,40 @@
-import moize from '../src';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { moize } from '../index.js';
 
 const foo = 'foo';
 const bar = 'bar';
 
-const method = jest.fn(function (one: string, two: string) {
+const method = vi.fn(function (one: string, two: string) {
     return { one, two };
 });
 
-describe('moize.isCollectingStats', () => {
-    it('should identify if stats are being collected', () => {
+describe('isCollectingStats', () => {
+    test('should identify if stats are being collected', () => {
         expect(moize.isCollectingStats()).toBe(false);
 
-        moize.collectStats();
+        moize.startCollectingStats();
 
         expect(moize.isCollectingStats()).toBe(true);
 
-        moize.collectStats(false);
+        moize.stopCollectingStats();
 
         expect(moize.isCollectingStats()).toBe(false);
     });
 });
 
-describe('moize.profile', () => {
+describe('statsName', () => {
     beforeEach(() => {
-        moize.collectStats();
+        moize.startCollectingStats();
     });
 
     afterEach(() => {
-        moize.collectStats(false);
+        moize.stopCollectingStats();
         moize.clearStats();
     });
 
-    it('should create a memoized method with the profileName passed', () => {
+    test('should create a memoized method with the profileName passed', () => {
         const profileName = 'profileName';
-        const profiled = moize.profile(profileName)(method);
+        const profiled = moize.statsName(profileName)(method);
 
         profiled(foo, bar);
         profiled(foo, bar);
@@ -41,6 +42,7 @@ describe('moize.profile', () => {
         expect(profiled.getStats()).toEqual({
             calls: 2,
             hits: 1,
+            name: profileName,
             usage: '50.0000%',
         });
 
@@ -49,13 +51,14 @@ describe('moize.profile', () => {
         expect(profiled.getStats()).toEqual({
             calls: 0,
             hits: 0,
+            name: profileName,
             usage: '0.0000%',
         });
     });
 
-    it('should handle collecting more stats after clearing', () => {
+    test('should handle collecting more stats after clearing', () => {
         const profileName = 'profileName';
-        const profiled = moize.profile(profileName)(method);
+        const profiled = moize.statsName(profileName)(method);
 
         profiled(foo, bar);
         profiled(foo, bar);
@@ -63,6 +66,7 @@ describe('moize.profile', () => {
         expect(profiled.getStats()).toEqual({
             calls: 2,
             hits: 1,
+            name: profileName,
             usage: '50.0000%',
         });
 
@@ -71,6 +75,7 @@ describe('moize.profile', () => {
         expect(profiled.getStats()).toEqual({
             calls: 0,
             hits: 0,
+            name: profileName,
             usage: '0.0000%',
         });
 
@@ -80,53 +85,25 @@ describe('moize.profile', () => {
         expect(profiled.getStats()).toEqual({
             calls: 2,
             hits: 2,
+            name: profileName,
             usage: '100.0000%',
         });
     });
-
-    it('should profile a fallback name if one is not provided', () => {
-        const originalError = global.Error;
-
-        // @ts-ignore - dummy override
-        global.Error = function () {
-            return {};
-        };
-
-        const memoized = moize(method);
-
-        memoized(foo, bar);
-        memoized(foo, bar);
-
-        expect(moize.getStats()).toEqual({
-            calls: 2,
-            hits: 1,
-            profiles: {
-                [memoized.options.profileName]: {
-                    calls: 2,
-                    hits: 1,
-                    usage: '50.0000%',
-                },
-            },
-            usage: '50.0000%',
-        });
-
-        global.Error = originalError;
-    });
 });
 
-describe('moize.getStats', () => {
+describe('getStats', () => {
     beforeEach(() => {
-        moize.collectStats();
+        moize.startCollectingStats();
     });
 
     afterEach(() => {
-        moize.collectStats(false);
+        moize.stopCollectingStats();
         moize.clearStats();
     });
 
-    it('should handle stats for all usages', () => {
+    test('should handle stats for all usages', () => {
         const profileName = 'profileName';
-        const profiled = moize.profile(profileName)(method);
+        const profiled = moize.statsName(profileName)(method);
 
         profiled(foo, bar);
         profiled(foo, bar);
@@ -135,6 +112,7 @@ describe('moize.getStats', () => {
         expect(moize.getStats(profileName)).toEqual({
             calls: 2,
             hits: 1,
+            name: profileName,
             usage: '50.0000%',
         });
 
@@ -146,6 +124,7 @@ describe('moize.getStats', () => {
                 [profileName]: {
                     calls: 2,
                     hits: 1,
+                    name: profileName,
                     usage: '50.0000%',
                 },
             },
@@ -162,15 +141,15 @@ describe('moize.getStats', () => {
         });
     });
 
-    it('should warn when getting stats and stats are not being collected', () => {
-        moize.collectStats(false);
+    test('should warn when getting stats and stats are not being collected', () => {
+        moize.stopCollectingStats();
 
-        const warn = jest.spyOn(console, 'warn');
+        const warn = vi.spyOn(console, 'warn');
 
         moize.getStats();
 
         expect(warn).toHaveBeenCalledWith(
-            'Stats are not currently being collected, please run "collectStats" to enable them.'
+            'Stats are not being collected; please run "moize.startCollectingStats()" to collect them.',
         );
 
         warn.mockRestore();
