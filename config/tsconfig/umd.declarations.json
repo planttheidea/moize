@@ -1,0 +1,11 @@
+{
+  "extends": "./base.declarations.json",
+  "compilerOptions": {
+    "declarationDir": "../../dist/umd/types",
+    "lib": ["ES5"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "outDir": "../../dist/umd",
+    "target": "ES5"
+  }
+}

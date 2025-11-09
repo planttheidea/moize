@@ -1,13 +1,13 @@
 import { memoize } from 'micro-memoize';
 import { deepEqual, shallowEqual } from 'fast-equals';
 import type { Options as MicroMemoizeOptions } from 'micro-memoize';
-import { getExpirationManager } from './expires';
-import type { Moizeable, Moized, Options } from './internalTypes';
-import { getWrappedForceUpdateMoize } from './forceUpdate';
-import { getMaxArgsTransformKey } from './maxArgs';
-import { getSerializeTransformKey, isSerializedKeyEqual } from './serialize';
-import { compose, setName } from './utils';
-import { clearStats, getStats, getStatsManager } from './stats';
+import { getExpirationManager } from './expires.js';
+import type { Moizeable, Moized, Options } from './internalTypes.ts';
+import { getWrappedForceUpdateMoize } from './forceUpdate.js';
+import { getMaxArgsTransformKey } from './maxArgs.js';
+import { getSerializeTransformKey, isSerializedKeyEqual } from './serialize.js';
+import { clearStats, getStats, getStatsManager } from './stats.js';
+import { compose, setName } from './utils.js';
 
 /**
  * Create a moized instance of the function passed, including all necessary static properties.

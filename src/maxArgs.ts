@@ -1,5 +1,5 @@
 import type { Key, TransformKey } from 'micro-memoize';
-import type { Moizeable, Options } from './internalTypes';
+import type { Moizeable, Options } from './internalTypes.ts';
 
 /**
  * Create a method that takes the first N number of items from the array (faster than slice).

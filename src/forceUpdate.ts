@@ -1,5 +1,5 @@
-import type { Moizeable, Moized, Options } from './internalTypes';
-import { setName } from './utils';
+import type { Moizeable, Moized, Options } from './internalTypes.ts';
+import { setName } from './utils.js';
 
 /**
  * Create a wrapped moized method that will conditionally update the cache based on

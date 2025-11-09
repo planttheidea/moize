@@ -1,5 +1,5 @@
 import { TransformKey } from 'micro-memoize';
-import { createMoized } from './moize';
+import { createMoized } from './moize.js';
 import type {
     ExpiresConfig,
     ForceUpdate,
@@ -11,16 +11,16 @@ import type {
     Options,
     Serializer,
     SupportedReactVersions,
-} from './internalTypes';
-import { createWrappedReactMoize } from './react';
+} from './internalTypes.ts';
+import { createWrappedReactMoize } from './react.js';
 import {
     clearStats,
     getStats,
     isCollectingStats,
     startCollectingStats,
     stopCollectingStats,
-} from './stats';
-import { isMoized } from './utils';
+} from './stats.js';
+import { isMoized } from './utils.js';
 
 /**
  * Create a memoized method based on the options passed.

@@ -1,4 +1,4 @@
-import { Moize, Moizeable, Moized, Options } from './internalTypes';
+import { Moize, Moizeable, Moized, Options } from './internalTypes.js';
 
 /**
  * Compose functions into a single function.

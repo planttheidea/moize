@@ -1,6 +1,6 @@
 import type { Key } from 'micro-memoize';
 import stringify from 'fast-stringify';
-import type { Moizeable, Options, Serializer } from './internalTypes';
+import type { Moizeable, Options, Serializer } from './internalTypes.js';
 
 /**
  * Default replacer used when stringifying to ensure values that would normally be

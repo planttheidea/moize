@@ -5,7 +5,7 @@ import type {
     Memoized as BaseMemoized,
     TransformKey,
 } from 'micro-memoize';
-import type { ExpirationManager } from './expires';
+import type { ExpirationManager } from './expires.ts';
 import type {
     clearStats,
     getStats,
@@ -13,7 +13,7 @@ import type {
     startCollectingStats,
     StatsManager,
     stopCollectingStats,
-} from './stats';
+} from './stats.ts';
 
 export type SupportedReactVersions = 19 | 18 | 17 | 16;
 

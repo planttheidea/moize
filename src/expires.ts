@@ -6,7 +6,7 @@ import type {
     Options,
     ShouldPersist,
     ShouldRemoveOnExpire,
-} from './internalTypes';
+} from './internalTypes.ts';
 
 export class ExpirationManager<Fn extends Moizeable> {
     /**
@@ -132,9 +132,11 @@ export class ExpirationManager<Fn extends Moizeable> {
             }
         }, time);
 
-        // @ts-expect-error - If done in NodeJS, the timeout should have its reference removed to avoid
-        // hanging timers if collected while running.
-        timeout.unref?.();
+        if (typeof timeout.unref === 'function') {
+            // If done in NodeJS, the timeout should have its reference removed to avoid
+            // hanging timers if collected while running.
+            timeout.unref();
+        }
 
         this.e.set(key, timeout);
     }

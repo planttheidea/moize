@@ -4,8 +4,8 @@ import type {
     ComponentType,
     RefObject,
 } from 'react';
-import { createMoized } from './moize';
-import type { Moizeable, Moized, Options } from './internalTypes';
+import { createMoized } from './moize.js';
+import type { Moizeable, Moized, Options } from './internalTypes.ts';
 
 interface MoizedComponent<Fn extends Moizeable, Props>
     extends Component<Props> {

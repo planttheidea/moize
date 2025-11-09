@@ -5,7 +5,7 @@ import {
     Moized,
     Options,
     ProfileStats,
-} from './internalTypes';
+} from './internalTypes.js';
 
 interface ProfileCounts {
     c: number;

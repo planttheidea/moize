@@ -1,6 +1,6 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { moize } from '../src';
+import { moize } from '../src/index.js';
 
 interface ValueProps {
     bar?: string;

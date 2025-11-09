@@ -1,0 +1,9 @@
+{
+  "extends": "./base.declarations.json",
+  "compilerOptions": {
+    "declarationDir": "../../dist/esm/types",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "../../dist/esm"
+  }
+}
