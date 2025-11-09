@@ -10,6 +10,7 @@ import type {
     Moizeable,
     Options,
     Serializer,
+    SupportedReactVersions,
 } from './internalTypes';
 import { createWrappedReactMoize } from './react';
 import {
@@ -105,6 +106,9 @@ moize.maxArgs = <MaxArgs extends number>(maxArgs: MaxArgs) =>
 moize.maxSize = <MaxSize extends number>(maxSize: MaxSize) =>
     moize({ maxSize });
 moize.react = moize({ react: true });
+moize.reactVersion = <Version extends SupportedReactVersions>(
+    version: Version,
+) => moize({ react: version });
 moize.serialize = moize({ serialize: true });
 moize.serializeWith = <Serialize extends Serializer>(serialize: Serialize) =>
     moize({ serialize });

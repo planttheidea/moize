@@ -28,6 +28,7 @@ ValueBar.defaultProps = {
 };
 
 const Memoized = moize(ValueBar, { react: true });
+// const Memoized = moize.reactVersion(18)(ValueBar);
 
 const foo = 'foo';
 const bar = 'bar';
