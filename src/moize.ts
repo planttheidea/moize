@@ -6,7 +6,7 @@ import type { Moizeable, Moized, Options } from './internalTypes';
 import { getWrappedForceUpdateMoize } from './forceUpdate';
 import { getMaxArgsTransformKey } from './maxArgs';
 import { getSerializeTransformKey, isSerializedKeyEqual } from './serialize';
-import { compose } from './utils';
+import { compose, setName } from './utils';
 import { clearStats, getStats, getStatsManager } from './stats';
 
 /**
@@ -36,6 +36,8 @@ export function createMoized<Fn extends Moizeable, Opts extends Options<Fn>>(
     // Override the `micro-memoize` options with the ones passed to `moize`.
     moized.options = options;
     moized.statsManager = getStatsManager(moized, options);
+
+    setName(moized, fn, options);
 
     return moized;
 }

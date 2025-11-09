@@ -144,7 +144,9 @@ describe('getStats', () => {
     test('should warn when getting stats and stats are not being collected', () => {
         moize.stopCollectingStats();
 
-        const warn = vi.spyOn(console, 'warn');
+        const warn = vi
+            .spyOn(console, 'warn')
+            .mockImplementation(() => undefined);
 
         moize.getStats();
 

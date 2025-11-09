@@ -1,4 +1,5 @@
 import type { Moizeable, Moized, Options } from './internalTypes';
+import { setName } from './utils';
 
 /**
  * Create a wrapped moized method that will conditionally update the cache based on
@@ -14,7 +15,10 @@ export function getWrappedForceUpdateMoize<
 
     const { cache } = moized;
 
-    return Object.assign(function (this: any, ...args: Parameters<Fn>) {
+    const wrappedMoized = Object.assign(function (
+        this: any,
+        ...args: Parameters<Fn>
+    ) {
         if (!forceUpdate(args) || !cache.has(args)) {
             return moized.apply(this, args);
         }
@@ -24,5 +28,9 @@ export function getWrappedForceUpdateMoize<
         moized.cache.set(args, value, 'forced');
 
         return value;
-    }, moized);
+    }, moized) as Moized<Fn, Opts>;
+
+    setName(wrappedMoized, moized.fn, moized.options);
+
+    return wrappedMoized;
 }
