@@ -1,5 +1,5 @@
 import type { Key } from 'micro-memoize';
-import stringify from 'fast-stringify';
+import { stringify } from 'fast-stringify';
 import type { Moizeable, Options, Serializer } from './internalTypes.js';
 
 /**
