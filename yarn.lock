@@ -5963,10 +5963,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micro-memoize@npm:^5.0.0-beta.12":
-  version: 5.0.0-beta.12
-  resolution: "micro-memoize@npm:5.0.0-beta.12"
-  checksum: 10c0/a377cd463a1f9658eab19577d8284b366cf41e6b6f018017587bd6d0d7bc91fe3497a74b80b87a4217b60d14832a00a0cb692759acd3b834b29e9a496a65b871
+"micro-memoize@npm:^5.0.0-beta.13":
+  version: 5.0.0-beta.13
+  resolution: "micro-memoize@npm:5.0.0-beta.13"
+  checksum: 10c0/cdc84097745b64f1f5b18cae3268738b574d7728156bb470c1f99ab810cd96442d341489b81a6fca7f0e2958963dcc0be97a280ff406019eb5e51b3b5ab13ffa
   languageName: node
   linkType: hard
 
@@ -6150,7 +6150,7 @@ __metadata:
     mem: "npm:^10.0.0"
     memoizee: "npm:^0.4.17"
     memoizerific: "npm:^1.11.3"
-    micro-memoize: "npm:^5.0.0-beta.12"
+    micro-memoize: "npm:^5.0.0-beta.13"
     ora: "npm:^9.0.0"
     prettier: "npm:^3.6.2"
     prop-types: "npm:^15.8.1"
