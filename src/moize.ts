@@ -37,6 +37,8 @@ export function createMoized<Fn extends Moizeable, Opts extends Options<Fn>>(
     moized.options = options;
     moized.statsManager = getStatsManager(moized, options);
 
+    Object.assign(moized, fn);
+
     setName(moized, fn, options);
 
     return moized;

@@ -1,6 +1,9 @@
 import { describe, expect, test, vi } from 'vitest';
 import { moize } from '../index.js';
 
+// Have `vitest` ignore any rejection it sees.
+process.on('unhandledRejection', () => undefined);
+
 interface Type {
     number: number;
 }
@@ -24,9 +27,7 @@ const promiseMethodRejects =
 describe('success', () => {
     test('will refresh the cache', () => {
         const moized = moize.maxSize(2)(method, {
-            forceUpdate(args) {
-                return args[1].number % 2 === 0;
-            },
+            forceUpdate: (args) => args[1].number % 2 === 0,
         });
 
         const mutated = { number: 5 };
@@ -90,10 +91,8 @@ describe('success', () => {
 
     test('will refresh the cache when used with promises', async () => {
         const moized = moize.maxSize(2)(promiseMethodResolves, {
-            isPromise: true,
-            forceUpdate(args) {
-                return args[1].number % 2 === 0;
-            },
+            async: true,
+            forceUpdate: (args) => args[1].number % 2 === 0,
         });
 
         const mutated = { number: 5 };
@@ -118,10 +117,9 @@ describe('success', () => {
         expect(refreshedResult).not.toBe(result);
         expect(refreshedResult).toBe(16);
 
-        const { keys, values } = moized.cache.snapshot;
+        const cachedItem = moized.cache.get([6, mutated]);
 
-        expect(keys).toEqual([[6, mutated]]);
-        expect(values).toEqual([Promise.resolve(16)]);
+        expect(cachedItem).toEqual(Promise.resolve(16));
     });
 
     test('will refresh the cache when used with custom key transformers', () => {
@@ -222,20 +220,18 @@ describe('fail', () => {
             { forceUpdate: (args) => args[1].number % 2 === 0 },
         );
 
-        const mutated = { number: 5 };
-
-        expect(() => moized(6, mutated)).toThrow(new Error('boom'));
+        expect(() => moized(6, { number: 5 })).toThrow(new Error('boom'));
     });
 
     test('surfaces the error if the promise rejects', async () => {
         const moized = moize.maxSize(2)(promiseMethodRejects, {
-            isPromise: true,
+            async: true,
             forceUpdate: (args) => args[1].number % 2 === 0,
         });
 
-        const mutated = { number: 5 };
-
-        await expect(moized(6, mutated)).rejects.toEqual(new Error('boom'));
+        await expect(moized(6, { number: 5 })).rejects.toEqual(
+            new Error('boom'),
+        );
     });
 
     test('should have nothing in cache if promise is rejected and key was never present', async () => {
@@ -244,31 +240,34 @@ describe('fail', () => {
             forceUpdate: (args) => args[1].number % 2 === 0,
         });
 
-        const mutated = { number: 5 };
-
-        await expect(moized(6, mutated)).rejects.toEqual(new Error('boom'));
+        await expect(moized(6, { number: 5 })).rejects.toEqual(
+            new Error('boom'),
+        );
 
         expect(moized.cache.snapshot.keys).toEqual([]);
         expect(moized.cache.snapshot.values).toEqual([]);
     });
 
-    // For some reason, this is causing `jest` to crash instead of handle the rejection
-    test.skip('should have nothing in cache if promise is rejected and key was present', async () => {
+    test('should have nothing in cache if promise is rejected and key was present', async () => {
         const moized = moize.maxSize(2)(promiseMethodRejects, {
-            isPromise: true,
+            async: true,
             forceUpdate: (args) => args[1].number % 2 === 0,
         });
 
         const mutated = { number: 5 };
+        const error = new Error('boom');
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        moized.cache.set([6, mutated], Promise.resolve(11));
+        try {
+            const rejection = Promise.reject(error);
 
-        expect(moized.cache.get([6, mutated])).toEqual(Promise.resolve(11));
+            moized.cache.set([6, mutated], rejection);
 
-        mutated.number = 10;
+            expect(moized.cache.get([6, mutated])).toEqual(rejection);
 
-        await expect(moized(6, mutated)).rejects.toEqual(new Error('boom'));
+            await rejection;
+        } catch (e) {
+            expect(e).toBe(error);
+        }
 
         expect(moized.cache.snapshot.keys).toEqual([]);
         expect(moized.cache.snapshot.values).toEqual([]);

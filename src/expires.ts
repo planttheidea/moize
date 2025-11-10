@@ -76,6 +76,10 @@ export class ExpirationManager<Fn extends Moizeable> {
         });
     }
 
+    get size() {
+        return this.e.size;
+    }
+
     /**
      * Method to [d]elete the expiration.
      */
