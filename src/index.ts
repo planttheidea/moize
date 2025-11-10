@@ -10,9 +10,7 @@ import type {
     Moizeable,
     Options,
     Serializer,
-    SupportedReactVersions,
 } from './internalTypes.ts';
-import { createWrappedReactMoize } from './react.js';
 import {
     clearStats,
     getStats,
@@ -38,11 +36,11 @@ import { isMoized } from './utils.js';
  *
  * // implementation with convenience methods
  * const Foo = ({foo}) => <div>{foo}</div>;
- * const MemoizedFoo = moize.react(Foo);
+ * const memoizedFn = moize.async(Foo, { maxSize: 5});
  *
  * // implementation with currying
  * const fn = (foo, bar) => [foo, bar];
- * const memoizedFn = moize({ serialize: true })(fn);
+ * const memoizedFn = moize({ async: true, maxSize: 5 })(fn);
  */
 export const moize: Moize<{}> = function moize<
     const Fn extends Moizeable,
@@ -76,9 +74,7 @@ export const moize: Moize<{}> = function moize<
         return moize(fn.fn, Object.assign({}, fn.options, options));
     }
 
-    return options.react
-        ? createWrappedReactMoize(fn, options)
-        : createMoized(fn, options);
+    return createMoized(fn, options);
 };
 
 moize.async = moize({ async: true });
@@ -105,10 +101,6 @@ moize.maxArgs = <MaxArgs extends number>(maxArgs: MaxArgs) =>
     moize({ maxArgs });
 moize.maxSize = <MaxSize extends number>(maxSize: MaxSize) =>
     moize({ maxSize });
-moize.react = moize({ react: true });
-moize.reactVersion = <Version extends SupportedReactVersions>(
-    version: Version,
-) => moize({ react: version });
 moize.serialize = moize({ serialize: true });
 moize.serializeWith = <Serialize extends Serializer>(serialize: Serialize) =>
     moize({ serialize });

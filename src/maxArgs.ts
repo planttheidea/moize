@@ -6,15 +6,13 @@ import type { Moizeable, Options } from './internalTypes.ts';
  */
 export function getMaxArgsTransformKey<Fn extends Moizeable>({
     maxArgs,
-    react,
 }: Options<Fn>): TransformKey<Fn> | undefined {
     if (
         typeof maxArgs !== 'number' ||
         !Number.isFinite(maxArgs) ||
         maxArgs < 0
     ) {
-        // If `react`, force the args to be limited to 2.
-        return react ? getMaxArgsTransformKey({ maxArgs: 2 }) : undefined;
+        return undefined;
     }
 
     if (maxArgs === 0) {
@@ -25,8 +23,7 @@ export function getMaxArgsTransformKey<Fn extends Moizeable>({
         return (args: Key) => (maxArgs >= args.length ? args : [args[0]]);
     }
 
-    // If `react`, force the args to be limited to 2 even if `maxArgs` passed is higher.
-    if (maxArgs === 2 || react) {
+    if (maxArgs === 2) {
         return (args: Key) =>
             maxArgs >= args.length ? args : [args[0], args[1]];
     }

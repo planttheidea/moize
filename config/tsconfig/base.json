@@ -3,7 +3,6 @@
         "baseUrl": "src",
         "declaration": false,
         "esModuleInterop": true,
-        "jsx": "react-jsx",
         "lib": ["DOM", "ESNext"],
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
@@ -15,7 +14,7 @@
         "strictNullChecks": true,
         "inlineSources": true,
         "target": "ES2015",
-        "types": ["node", "react"]
+        "types": ["node"]
     },
     "exclude": ["node_modules"],
     "include": ["../../src/**/*", "../../dev/*"]

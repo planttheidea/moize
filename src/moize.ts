@@ -47,7 +47,6 @@ export function createMoized<Fn extends Moizeable, Opts extends Options<Fn>>(
  */
 function getIsArgEqualOption<Fn extends Moizeable>({
     isKeyItemEqual,
-    react,
 }: Options<Fn>): MicroMemoizeOptions<Fn>['isKeyItemEqual'] {
     if (typeof isKeyItemEqual === 'function') {
         return isKeyItemEqual;
@@ -57,9 +56,7 @@ function getIsArgEqualOption<Fn extends Moizeable>({
         return deepEqual;
     }
 
-    // If `react` and no custom equality comparator is passed, use `shallowEqual` to allow
-    // a shallow props comparison.
-    if (isKeyItemEqual === 'shallow' || react) {
+    if (isKeyItemEqual === 'shallow') {
         return shallowEqual;
     }
 }

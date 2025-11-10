@@ -1,5 +1,4 @@
 import { moize } from '../src/index.js';
-import { render } from './react.js';
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
@@ -15,8 +14,6 @@ span.textContent = 'Check the console for details.';
 
 div.appendChild(span);
 document.body.appendChild(div);
-
-render(div);
 
 const simple = moize((one: string, two: string) => {
     console.log('called simple');

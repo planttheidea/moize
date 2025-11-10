@@ -15,8 +15,6 @@ import type {
     stopCollectingStats,
 } from './stats.ts';
 
-export type SupportedReactVersions = 19 | 18 | 17 | 16;
-
 export type ForceUpdate<Fn extends Moizeable> = (
     args: Parameters<Fn>,
 ) => boolean;
@@ -116,13 +114,6 @@ export type Options<Fn extends Moizeable> = Omit<
      * The maximum number of args to consider for caching.
      */
     maxArgs?: number;
-    /**
-     * Whether the function wrapped is a React component.
-     *
-     * If `true` is passed, it will assume latest v19. If a number is passed,
-     * it will use that as the expected major version.
-     */
-    react?: boolean | SupportedReactVersions;
     /**
      * Whether to serialize the arguments into a string value for cache
      * purposes. A custom serializer can also be provided, if the default
@@ -263,18 +254,6 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
     maxSize: <MaxSize extends number>(
         maxSize: MaxSize,
     ) => Moize<{ maxSize: MaxSize }>;
-    /**
-     * Create a moized React component. This will memoize renders on a per-instance basis, similar
-     * to `React.memo()`.
-     */
-    react: Moize<{ react: true }>;
-    /**
-     * Create a moized React component for the given major version of React. This will memoize
-     * renders on a per-instance basis, similar to `React.memo()`.
-     */
-    reactVersion: <Version extends SupportedReactVersions>(
-        version: Version,
-    ) => Moize<{ react: Version }>;
     /**
      * Create a moized method that will serialize the arguments for use as the key in cache.
      */
