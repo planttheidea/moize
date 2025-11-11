@@ -6,14 +6,7 @@ import type {
     TransformKey,
 } from 'micro-memoize';
 import type { ExpirationManager } from './expires.ts';
-import type {
-    clearStats,
-    getStats,
-    isCollectingStats,
-    startCollectingStats,
-    StatsManager,
-    stopCollectingStats,
-} from './stats.ts';
+import type { StatsManager } from './stats.ts';
 
 export type ForceUpdate<Fn extends Moizeable> = (
     args: Parameters<Fn>,
@@ -187,11 +180,6 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
      */
     async: Moize<{ async: true }>;
     /**
-     * Clear all existing stats stored, either of the specific profile whose name is passed,
-     * or globally if no name is passed.
-     */
-    clearStats: typeof clearStats;
-    /**
      * Create a moized method that uses deep equality comparison in argument checks.
      */
     deep: Moize<{ isKeyItemEqual: 'deep' }>;
@@ -216,10 +204,6 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
         forceUpdate: Update,
     ) => Moize<{ forceUpdate: Update }>;
     /**
-     * Get the stats of a given profile, or global stats if no `profileName` is given.
-     */
-    getStats: typeof getStats;
-    /**
      * Create a moized method that will have no limit on the size of the cache.
      */
     infinite: Moize<{ maxSize: typeof Infinity }>;
@@ -237,10 +221,6 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
     isKeyItemEqual: <IsEqual extends IsKeyItemEqual<Moizeable>>(
         isKeyItemEqual: IsEqual,
     ) => Moize<{ isKeyItemEqual: IsEqual }>;
-    /**
-     * Whether stats are currently being collected.
-     */
-    isCollectingStats: typeof isCollectingStats;
     /**
      * Create a moized method where the number of arguments used as the key in cache is limited
      * to the value passed.
@@ -270,19 +250,11 @@ export interface Moize<BaseOpts extends Options<Moizeable>> {
      */
     shallow: Moize<{ isKeyItemEqual: 'shallow' }>;
     /**
-     * Start collecting stats.
-     */
-    startCollectingStats: typeof startCollectingStats;
-    /**
      * Collect stats for the method under the given name.
      */
     statsName: <StatsName extends string>(
         statsName: StatsName,
     ) => Moize<{ statsName: StatsName }>;
-    /**
-     * Stop collecting stats.
-     */
-    stopCollectingStats: typeof stopCollectingStats;
     /**
      * Create a moized method that will transform the arguments passed for use as the key in cache.
      */

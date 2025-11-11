@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { afterEach, describe, expect, test, vi } from 'vitest';
-import { moize } from '../index.js';
+import { moize, startCollectingStats, stopCollectingStats } from '../index.js';
 
 const foo = 'foo';
 const bar = 'bar';
@@ -27,7 +27,7 @@ afterEach(() => {
     memoizedDefaulted.cache.clear();
     memoizedDefaulted.clearStats();
 
-    moize.stopCollectingStats();
+    stopCollectingStats();
 });
 
 describe('main', () => {
@@ -332,7 +332,7 @@ describe('cache manipulation', () => {
     });
 
     test('should allow stats management of the method', () => {
-        moize.startCollectingStats();
+        startCollectingStats();
 
         const profiled = moize(memoized, { statsName: 'profiled' });
 

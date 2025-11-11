@@ -163,7 +163,7 @@ export function getStats<Name extends string | undefined>(
 ): undefined extends Name ? GlobalStats | undefined : ProfileStats | undefined {
     if (!stats) {
         console.warn(
-            'Stats are not being collected; please run "moize.startCollectingStats()" to collect them.',
+            'Stats are not being collected; please run "startCollectingStats()" to collect them.',
         );
         return;
     }

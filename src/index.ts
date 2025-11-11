@@ -20,6 +20,14 @@ import {
 } from './stats.js';
 import { isMoized } from './utils.js';
 
+export {
+    clearStats,
+    getStats,
+    isCollectingStats,
+    startCollectingStats,
+    stopCollectingStats,
+};
+
 /**
  * Create a memoized method based on the options passed.
  *
@@ -78,7 +86,6 @@ export const moize: Moize<{}> = function moize<
 };
 
 moize.async = moize({ async: true });
-moize.clearStats = clearStats;
 moize.deep = moize({ isKeyItemEqual: 'deep' });
 moize.expires = <
     Expires extends number | GetExpires<Moizeable> | ExpiresConfig<Moizeable>,
@@ -88,7 +95,6 @@ moize.expires = <
 moize.forceUpdate = <Update extends ForceUpdate<Moizeable>>(
     forceUpdate: Update,
 ) => moize({ forceUpdate });
-moize.getStats = getStats;
 moize.infinite = moize({ maxSize: Infinity });
 moize.isKeyEqual = <IsEqual extends IsKeyEqual<Moizeable>>(
     isKeyEqual: IsEqual,
@@ -96,7 +102,6 @@ moize.isKeyEqual = <IsEqual extends IsKeyEqual<Moizeable>>(
 moize.isKeyItemEqual = <IsEqual extends IsKeyItemEqual<Moizeable>>(
     isKeyItemEqual: IsEqual,
 ) => moize({ isKeyItemEqual });
-moize.isCollectingStats = isCollectingStats;
 moize.maxArgs = <MaxArgs extends number>(maxArgs: MaxArgs) =>
     moize({ maxArgs });
 moize.maxSize = <MaxSize extends number>(maxSize: MaxSize) =>
@@ -105,10 +110,8 @@ moize.serialize = moize({ serialize: true });
 moize.serializeWith = <Serialize extends Serializer>(serialize: Serialize) =>
     moize({ serialize });
 moize.shallow = moize({ isKeyItemEqual: 'shallow' });
-moize.startCollectingStats = startCollectingStats;
 moize.statsName = <StatsName extends string>(statsName: StatsName) =>
     moize({ statsName });
-moize.stopCollectingStats = stopCollectingStats;
 moize.transformKey = <Transform extends TransformKey<Moizeable>>(
     transformKey: Transform,
 ) => moize({ transformKey });

@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { moize } from '../index.js';
+import {
+    clearStats,
+    getStats,
+    isCollectingStats,
+    moize,
+    startCollectingStats,
+    stopCollectingStats,
+} from '../index.js';
 
 const foo = 'foo';
 const bar = 'bar';
@@ -10,26 +17,26 @@ const method = vi.fn(function (one: string, two: string) {
 
 describe('isCollectingStats', () => {
     test('should identify if stats are being collected', () => {
-        expect(moize.isCollectingStats()).toBe(false);
+        expect(isCollectingStats()).toBe(false);
 
-        moize.startCollectingStats();
+        startCollectingStats();
 
-        expect(moize.isCollectingStats()).toBe(true);
+        expect(isCollectingStats()).toBe(true);
 
-        moize.stopCollectingStats();
+        stopCollectingStats();
 
-        expect(moize.isCollectingStats()).toBe(false);
+        expect(isCollectingStats()).toBe(false);
     });
 });
 
 describe('statsName', () => {
     beforeEach(() => {
-        moize.startCollectingStats();
+        startCollectingStats();
     });
 
     afterEach(() => {
-        moize.stopCollectingStats();
-        moize.clearStats();
+        stopCollectingStats();
+        clearStats();
     });
 
     test('should create a memoized method with the profileName passed', () => {
@@ -93,12 +100,12 @@ describe('statsName', () => {
 
 describe('getStats', () => {
     beforeEach(() => {
-        moize.startCollectingStats();
+        startCollectingStats();
     });
 
     afterEach(() => {
-        moize.stopCollectingStats();
-        moize.clearStats();
+        stopCollectingStats();
+        clearStats();
     });
 
     test('should handle stats for all usages', () => {
@@ -109,7 +116,7 @@ describe('getStats', () => {
         profiled(foo, bar);
 
         // specific stats
-        expect(moize.getStats(profileName)).toEqual({
+        expect(getStats(profileName)).toEqual({
             calls: 2,
             hits: 1,
             name: profileName,
@@ -117,7 +124,7 @@ describe('getStats', () => {
         });
 
         // global stats
-        expect(moize.getStats()).toEqual({
+        expect(getStats()).toEqual({
             calls: 2,
             hits: 1,
             profiles: {
@@ -131,9 +138,9 @@ describe('getStats', () => {
             usage: '50.0000%',
         });
 
-        moize.clearStats();
+        clearStats();
 
-        expect(moize.getStats()).toEqual({
+        expect(getStats()).toEqual({
             calls: 0,
             hits: 0,
             profiles: {},
@@ -142,16 +149,16 @@ describe('getStats', () => {
     });
 
     test('should warn when getting stats and stats are not being collected', () => {
-        moize.stopCollectingStats();
+        stopCollectingStats();
 
         const warn = vi
             .spyOn(console, 'warn')
             .mockImplementation(() => undefined);
 
-        moize.getStats();
+        getStats();
 
         expect(warn).toHaveBeenCalledWith(
-            'Stats are not being collected; please run "moize.startCollectingStats()" to collect them.',
+            'Stats are not being collected; please run "startCollectingStats()" to collect them.',
         );
 
         warn.mockRestore();

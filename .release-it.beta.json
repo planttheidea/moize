@@ -11,8 +11,7 @@
             "npm run lint",
             "npm run typecheck",
             "npm run test",
-            "npm run dist",
-            "npm run copy:mjs"
+            "npm run dist"
         ]
     }
 }
