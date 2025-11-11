@@ -112,7 +112,7 @@
         "url": "git+https://github.com/planttheidea/moize.git"
     },
     "scripts": {
-        "benchmark": "npm run dist && node benchmark/index.js",
+        "benchmark": "npm run clean:cjs && npm run build:cjs && node benchmark/index.cjs",
         "benchmark:alternative": "npm run transpile:lib -- --no-comments && BENCHMARK_SUITE=alternative node benchmark/index.js",
         "benchmark:array": "npm run transpile:lib -- --no-comments && BENCHMARK_SUITE=array node benchmark/index.js",
         "benchmark:object": "npm run transpile:lib -- --no-comments && BENCHMARK_SUITE=object node benchmark/index.js",

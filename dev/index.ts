@@ -1,11 +1,11 @@
-import { moize } from '../src/index.js';
+import { getStats, moize, startCollectingStats } from '../src/index.js';
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
 document.body.style.margin = '0px';
 document.body.style.padding = '0px';
 
-moize.startCollectingStats();
+startCollectingStats();
 
 const div = document.createElement('div');
 const span = document.createElement('span');
@@ -122,5 +122,5 @@ console.log(stats('bar', 'baz'));
 console.log(stats('foo', 'bar'));
 console.log(stats('foo', 'bar'));
 
-console.log(moize.getStats('stats'));
-console.log(moize.getStats());
+console.log(getStats('stats'));
+console.log(getStats());

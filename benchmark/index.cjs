@@ -5,21 +5,19 @@
 const _ = require('lodash');
 const fs = require('fs');
 const { JSDOM } = require('jsdom');
-const React = require('react');
-const { render } = require('react-dom');
 
 const Benchmark = require('benchmark');
 const Table = require('cli-table2');
-const ora = require('ora');
+const ora = require('ora').default;
 
-const addyOsmani = require('./addy-osmani');
+const addyOsmani = require('./addy-osmani.cjs');
 const fastMemoize = require('fast-memoize');
 const lodash = _.memoize;
 const lruMemoize = require('lru-memoize').default;
-const mem = require('mem');
+const mem = require('mem').default;
 const memoizee = require('memoizee');
 const memoizerific = require('memoizerific');
-const moize = require('../dist/moize.cjs');
+const moize = require('../dist/cjs/index.cjs').moize;
 const ramda = require('ramda').memoizeWith;
 const underscore = require('underscore').memoize;
 
@@ -44,7 +42,7 @@ const showResults = (benchmarkResults) => {
             maximumFractionDigits: 0,
         });
         const relativeMarginOferror = `± ${result.target.stats.rme.toFixed(
-            2
+            2,
         )}%`;
         const sampleSize = result.target.stats.sample.length;
 
@@ -148,11 +146,11 @@ const fibonacciMultipleObject = (object, check) => {
     return (
         fibonacciMultipleObject(
             { number: firstValue },
-            { isComplete: firstValue < 2 }
+            { isComplete: firstValue < 2 },
         ) +
         fibonacciMultipleObject(
             { number: secondValue },
-            { isComplete: secondValue < 2 }
+            { isComplete: secondValue < 2 },
         )
     );
 };
@@ -200,7 +198,7 @@ const runSinglePrimitiveSuite = () => {
 
     return new Promise((resolve) => {
         new Benchmark.Suite(
-            getSuiteOptions('single primitive parameter', resolve)
+            getSuiteOptions('single primitive parameter', resolve),
         )
             .add('addy-osmani', () => {
                 mAddyOsmani(fibonacciNumber);
@@ -352,7 +350,7 @@ const runMultiplePrimitiveSuite = () => {
     const mFastMemoize = fastMemoize(fibonacciMultiplePrimitive);
     const mLodash = lodash(
         fibonacciMultiplePrimitive,
-        resolveMultipleArguments
+        resolveMultipleArguments,
     );
     const mLruMemoize = lruMemoize(Infinity)(fibonacciMultiplePrimitive);
     const mMem = mem(fibonacciMultiplePrimitive, {
@@ -364,12 +362,12 @@ const runMultiplePrimitiveSuite = () => {
     const mRamda = ramda(resolveMultipleArguments, fibonacciMultiplePrimitive);
     const mUnderscore = underscore(
         fibonacciMultiplePrimitive,
-        resolveMultipleArguments
+        resolveMultipleArguments,
     );
 
     return new Promise((resolve) => {
         new Benchmark.Suite(
-            getSuiteOptions('multiple primitive parameters', resolve)
+            getSuiteOptions('multiple primitive parameters', resolve),
         )
             .add('addy-osmani', () => {
                 mAddyOsmani(fibonacciNumber, isComplete);
@@ -425,12 +423,12 @@ const runMultipleArraySuite = () => {
     const mRamda = ramda(resolveMultipleArguments, fibonacciMultipleArray);
     const mUnderscore = underscore(
         fibonacciMultipleArray,
-        resolveMultipleArguments
+        resolveMultipleArguments,
     );
 
     return new Promise((resolve) => {
         new Benchmark.Suite(
-            getSuiteOptions('multiple array parameters', resolve)
+            getSuiteOptions('multiple array parameters', resolve),
         )
             .add('addy-osmani', () => {
                 mAddyOsmani(fibonacciNumber, isComplete);
@@ -486,12 +484,12 @@ const runMultipleObjectSuite = () => {
     const mRamda = ramda(resolveMultipleArguments, fibonacciMultipleObject);
     const mUnderscore = underscore(
         fibonacciMultipleObject,
-        resolveMultipleArguments
+        resolveMultipleArguments,
     );
 
     return new Promise((resolve) => {
         new Benchmark.Suite(
-            getSuiteOptions('multiple object parameters', resolve)
+            getSuiteOptions('multiple object parameters', resolve),
         )
             .add('addy-osmani', () => {
                 mAddyOsmani(fibonacciNumber, isComplete);
@@ -530,105 +528,10 @@ const runMultipleObjectSuite = () => {
     });
 };
 
-const runReactSuite = async () => {
-    const props = {
-        foo: {
-            foo: {
-                foo: 'foo',
-            },
-        },
-        bar: {
-            bar: {
-                bar: 'bar',
-            },
-        },
-    };
-
-    const Foo = (props) => {
-        return React.createElement('div', props);
-    };
-
-    Foo.defaultProps = {};
-
-    const { window } = await new JSDOM('<div id="app"></div>', {
-        contentType: 'text/html',
-        url: 'http://www.example.com',
-    });
-
-    global.window = window;
-
-    const div = window.document.getElementById('app');
-
-    render(React.createElement(Foo, {}), div);
-
-    const MoizedReact = moize.react(Foo);
-    const MoizedReactDeep = moize.react(Foo, { isDeepEqual: true });
-    const MoizedReactLodashDeep = moize.react(Foo, { matchesArg: deepEquals });
-
-    return new Promise((resolve) => {
-        new Benchmark.Suite('React', getSuiteOptions('react', resolve))
-            .add('standard react (as reference)', () => {
-                render(
-                    React.createElement(Foo, {
-                        foo: props.foo,
-                        bar: props.bar,
-                    }),
-                    div
-                );
-            })
-            .add('moize react', () => {
-                render(
-                    React.createElement(MoizedReact, {
-                        foo: props.foo,
-                        bar: props.bar,
-                    }),
-                    div
-                );
-            })
-            .add('moize react deep equals', () => {
-                render(
-                    React.createElement(MoizedReactDeep, {
-                        foo: {
-                            foo: {
-                                foo: 'foo',
-                            },
-                        },
-                        bar: {
-                            bar: {
-                                bar: 'bar',
-                            },
-                        },
-                    }),
-                    div
-                );
-            })
-            .add('moize react deep equals (lodash isEqual)', () => {
-                render(
-                    React.createElement(MoizedReactLodashDeep, {
-                        foo: {
-                            foo: {
-                                foo: 'foo',
-                            },
-                        },
-                        bar: {
-                            bar: {
-                                bar: 'bar',
-                            },
-                        },
-                    }),
-                    div
-                );
-            })
-            .run({
-                async: true,
-            });
-    });
-};
-
 const runAlternativeOptionsSuite = async () => {
     const mMoizeDeep = moize.deep(fibonacciMultipleDeepEqual);
-    const mMoizeLodashDeep = moize.matchesArg(deepEquals)(
-        fibonacciMultipleDeepEqual
+    const mMoizeLodashDeep = moize.isKeyItemEqual(deepEquals)(
+        fibonacciMultipleDeepEqual,
     );
     const mMoizeSerialize = moize.serialize(fibonacciMultipleDeepEqual);
 
@@ -658,7 +561,7 @@ const runAlternativeOptionsSuite = async () => {
     return new Promise((resolve) => {
         new Benchmark.Suite(
             'Alternative options',
-            getSuiteOptions('alternative options', resolve)
+            getSuiteOptions('alternative options', resolve),
         )
             .add('moize serialized', () => {
                 mMoizeSerialize({ number: 35 });
@@ -736,7 +639,7 @@ const writeCsv = () => {
                     length: 0,
                     total: 0,
                 },
-            }
+            },
         );
 
         rows[library] = {
@@ -779,7 +682,7 @@ const writeCsv = () => {
             ].concat(values);
         }),
         [1, 2],
-        ['desc', 'desc']
+        ['desc', 'desc'],
     );
 
     const individualCsvText = `${invidualResultsHeaders
@@ -801,7 +704,7 @@ const writeCsv = () => {
         fs.writeFileSync(
             'benchmark/benchmark_results.csv',
             individualCsvText,
-            'utf8'
+            'utf8',
         );
 
         console.log('Benchmarks done! Results saved to benchmark_results.csv');
@@ -817,7 +720,7 @@ function runBenchmark() {
         switch (BENCHMARK_SUITE) {
             case 'primitive':
                 return runSinglePrimitiveSuite().then(
-                    runMultiplePrimitiveSuite
+                    runMultiplePrimitiveSuite,
                 );
 
             case 'array':
@@ -835,7 +738,7 @@ function runBenchmark() {
             default:
                 throw new Error(
                     `Suite ${BENCHMARK_SUITE} not found. Available options: ` +
-                        'primitive, array, object, react, alternative'
+                        'primitive, array, object, react, alternative',
                 );
         }
     }
@@ -848,7 +751,6 @@ function runBenchmark() {
         .then(runMultipleArraySuite)
         .then(runMultipleObjectSuite)
         .then(writeCsv)
-        .then(runReactSuite)
         .then(runAlternativeOptionsSuite);
 }
 
