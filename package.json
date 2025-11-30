@@ -127,6 +127,6 @@
     },
     "sideEffects": false,
     "types": "./index.d.ts",
-    "version": "6.1.6",
+    "version": "6.1.7",
     "packageManager": "yarn@4.10.2"
 }
