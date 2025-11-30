@@ -1,5 +1,5 @@
 > [!CAUTION]
-> This library has been deprecated in favor of `micro-memoize`, which as-of version 5 incorporates most of the functionality that this library offers at nearly half the size and better speed. It is recommended to migrate to `micro-memoize@latest`.
+> This library has been deprecated in favor of `micro-memoize`, which as-of version 5 incorporates most of the functionality that this library offers at nearly half the size and better speed. It is recommended to migrate to `micro-memoize@latest`, and you can use the [migration guide](./MIGRATION.md) to help with any specific changes to your codebase.
 
 > moize
 
