@@ -1,5 +1,8 @@
 > moize
 
+> [!CAUTION]
+> This library has been deprecated in favor of `micro-memoize`, which as-of version 5 incorporates most of the functionality that this library offers at nearly half the size and better speed. It is recommended to migrate to `micro-memoize@latest`.
+
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/license-MIT-blue.svg"/>
@@ -7,68 +10,68 @@
 `moize` is a [consistently blazing fast](#benchmarks) memoization library for JavaScript. It handles multiple parameters (including default values) without any additional configuration, and offers a large number of options to satisfy any number of potential use-cases.
 
 - [Importing](#importing)
-  - [ESM in browsers](#esm-in-browsers)
-  - [ESM in NodeJS](#esm-in-nodejs)
-  - [CommonJS](#commonjs)
+    - [ESM in browsers](#esm-in-browsers)
+    - [ESM in NodeJS](#esm-in-nodejs)
+    - [CommonJS](#commonjs)
 - [Usage](#usage)
 - [Configuration options](#configuration-options)
-  - [isDeepEqual](#isdeepequal)
-  - [isPromise](#ispromise)
-  - [isReact](#isreact)
-  - [isSerialized](#isserialized)
-  - [isShallowEqual](#isshallowequal)
-  - [matchesArg](#matchesarg)
-  - [matchesKey](#matcheskey)
-  - [maxAge](#maxage)
-  - [maxArgs](#maxargs)
-  - [maxSize](#maxsize)
-  - [onCacheAdd](#oncacheadd)
-  - [onCacheChange](#oncachechange)
-  - [onCacheHit](#oncachehit)
-  - [onExpire](#onexpire)
-  - [profileName](#profilename)
-  - [serializer](#serializer)
-  - [transformArgs](#transformargs)
-  - [updateCacheForKey](#updatecacheforkey)
-  - [updateExpire](#updateexpire)
+    - [isDeepEqual](#isdeepequal)
+    - [isPromise](#ispromise)
+    - [isReact](#isreact)
+    - [isSerialized](#isserialized)
+    - [isShallowEqual](#isshallowequal)
+    - [matchesArg](#matchesarg)
+    - [matchesKey](#matcheskey)
+    - [maxAge](#maxage)
+    - [maxArgs](#maxargs)
+    - [maxSize](#maxsize)
+    - [onCacheAdd](#oncacheadd)
+    - [onCacheChange](#oncachechange)
+    - [onCacheHit](#oncachehit)
+    - [onExpire](#onexpire)
+    - [profileName](#profilename)
+    - [serializer](#serializer)
+    - [transformArgs](#transformargs)
+    - [updateCacheForKey](#updatecacheforkey)
+    - [updateExpire](#updateexpire)
 - [Usage with shortcut methods](#usage-with-shortcut-methods)
-  - [moize.deep](#moizedeep)
-  - [moize.infinite](#moizeinfinite)
-  - [moize.matchesArg](#moizematchesarg)
-  - [moize.matchesKey](#moizematcheskey)
-  - [moize.maxAge](#moizemaxage)
-  - [moize.maxArgs](#moizemaxargs)
-  - [moize.maxSize](#moizemaxsize)
-  - [moize.profile](#moizeprofile)
-  - [moize.promise](#moizepromise)
-  - [moize.react](#moizereact)
-  - [moize.serialize](#moizeserialize)
-  - [moize.serializeWith](#moizeserializewith)
-  - [moize.shallow](#moizeshallow)
-  - [moize.transformArgs](#moizetransformargs)
-  - [moize.updateCacheForKey](#moizeupdatecacheforkey)
+    - [moize.deep](#moizedeep)
+    - [moize.infinite](#moizeinfinite)
+    - [moize.matchesArg](#moizematchesarg)
+    - [moize.matchesKey](#moizematcheskey)
+    - [moize.maxAge](#moizemaxage)
+    - [moize.maxArgs](#moizemaxargs)
+    - [moize.maxSize](#moizemaxsize)
+    - [moize.profile](#moizeprofile)
+    - [moize.promise](#moizepromise)
+    - [moize.react](#moizereact)
+    - [moize.serialize](#moizeserialize)
+    - [moize.serializeWith](#moizeserializewith)
+    - [moize.shallow](#moizeshallow)
+    - [moize.transformArgs](#moizetransformargs)
+    - [moize.updateCacheForKey](#moizeupdatecacheforkey)
 - [useMoize hook](#usemoize-hook)
 - [Composition](#composition)
 - [Collecting statistics](#collecting-statistics)
-  - [Stats methods](#stats-methods)
-  - [clearStats](#clearstats)
-  - [collectStats](#collectstats)
-  - [getStats([profileName])](#getstatsprofilename)
+    - [Stats methods](#stats-methods)
+    - [clearStats](#clearstats)
+    - [collectStats](#collectstats)
+    - [getStats([profileName])](#getstatsprofilename)
 - [Introspection](#introspection)
-  - [isCollectingStats](#iscollectingstats)
-  - [isMoized](#ismoized)
+    - [isCollectingStats](#iscollectingstats)
+    - [isMoized](#ismoized)
 - [Direct cache manipulation](#direct-cache-manipulation)
-  - [cache](#cache)
-  - [cacheSnapshot](#cachesnapshot)
-  - [add(key, value)](#addkey-value)
-  - [clear()](#clear)
-  - [get(key)](#getkey)
-  - [getStats()](#getstats)
-  - [has(key)](#haskey)
-  - [keys()](#keys)
-  - [remove(key)](#removekey)
-  - [update(key, value)](#updatekey-value)
-  - [values()](#values)
+    - [cache](#cache)
+    - [cacheSnapshot](#cachesnapshot)
+    - [add(key, value)](#addkey-value)
+    - [clear()](#clear)
+    - [get(key)](#getkey)
+    - [getStats()](#getstats)
+    - [has(key)](#haskey)
+    - [keys()](#keys)
+    - [remove(key)](#removekey)
+    - [update(key, value)](#updatekey-value)
+    - [values()](#values)
 - [Benchmarks](#benchmarks)
 - [Filesize](#filesize)
 - [Browser support](#browser-support)
@@ -963,8 +966,8 @@ Naturally you can tweak as needed for your project (default options, option-spec
 
 **NOTE**: This is very similar to [`useCallback`](https://reactjs.org/docs/hooks-reference.html#usecallback) built-in hook, with two main differences:
 
--   There is a third parameter passed (the [`options`](#configuration-options) passed to `moize`)
--   The second argument array is the list of arguments passed to the memoized function
+- There is a third parameter passed (the [`options`](#configuration-options) passed to `moize`)
+- The second argument array is the list of arguments passed to the memoized function
 
 In both `useCallback` and `useMemo`, the array is a list of _dependencies_ which determine whether the funciton is called. These can be different than the arguments, although in general practice they are equivalent. The decision to use them directly was both for this common use-case reasons, but also because the implementation complexity would have increased substantially if not.
 
@@ -1309,38 +1312,38 @@ All values provided are the number of operations per second calculated by the [B
 
 # Browser support
 
--   Chrome (all versions)
--   Firefox (all versions)
--   Edge (all versions)
--   Opera 15+
--   IE 9+
--   Safari 6+
--   iOS 8+
--   Android 4+
+- Chrome (all versions)
+- Firefox (all versions)
+- Edge (all versions)
+- Opera 15+
+- IE 9+
+- Safari 6+
+- iOS 8+
+- Android 4+
 
 # Development
 
 Standard stuff, clone the repo and `npm install` dependencies. The npm scripts available:
 
--   `benchmark` => run the benchmark suite pitting `moize` against other libraries in common use-cases
--   `benchmark:alternative` => run the benchmark suite for alternative forms of caching
--   `benchmark:array` => run the benchmark suite for memoized methods using single and multiple `array` parameters
--   `benchmark:object` => run the benchmark suite for memoized methods using single and multiple `object` parameters
--   `benchmark:primitive` => run the benchmark suite for memoized methods using single and multiple `object` parameters
--   `benchmark:react` => run the benchmark suite for memoized React components
--   `build` => run rollup to build the distributed files in `dist`
--   `clean:dist` => run `rimraf` on the `dist` folder
--   `clean:docs` => run `rimraf` on the `docs` folder
--   `clean:mjs` => run `rimraf` on the `mjs` folder
--   `copy:mjs` => run `clean:mjs` and the `es-to-mjs` script
--   `copy:types` => copy internal types to be available for consumer
--   `dev` => run webpack dev server to run example app (playground!)
--   `dist` => runs `clean:dist` and `build`
--   `docs` => runs `clean:docs` and builds the docs via `jsdoc`
--   `flow` => runs `flow check` on the files in `src`
--   `lint` => runs ESLint against all files in the `src` folder
--   `lint:fix` => runs `lint`, fixing any errors if possible
--   `test` => run `jest` test functions with `NODE_ENV=test`
--   `test:coverage` => run `test` but with code coverage
--   `test:watch` => run `test`, but with persistent watcher
--   `typecheck` => run `tsc` against source code to validate TypeScript
+- `benchmark` => run the benchmark suite pitting `moize` against other libraries in common use-cases
+- `benchmark:alternative` => run the benchmark suite for alternative forms of caching
+- `benchmark:array` => run the benchmark suite for memoized methods using single and multiple `array` parameters
+- `benchmark:object` => run the benchmark suite for memoized methods using single and multiple `object` parameters
+- `benchmark:primitive` => run the benchmark suite for memoized methods using single and multiple `object` parameters
+- `benchmark:react` => run the benchmark suite for memoized React components
+- `build` => run rollup to build the distributed files in `dist`
+- `clean:dist` => run `rimraf` on the `dist` folder
+- `clean:docs` => run `rimraf` on the `docs` folder
+- `clean:mjs` => run `rimraf` on the `mjs` folder
+- `copy:mjs` => run `clean:mjs` and the `es-to-mjs` script
+- `copy:types` => copy internal types to be available for consumer
+- `dev` => run webpack dev server to run example app (playground!)
+- `dist` => runs `clean:dist` and `build`
+- `docs` => runs `clean:docs` and builds the docs via `jsdoc`
+- `flow` => runs `flow check` on the files in `src`
+- `lint` => runs ESLint against all files in the `src` folder
+- `lint:fix` => runs `lint`, fixing any errors if possible
+- `test` => run `jest` test functions with `NODE_ENV=test`
+- `test:coverage` => run `test` but with code coverage
+- `test:watch` => run `test`, but with persistent watcher
+- `typecheck` => run `tsc` against source code to validate TypeScript
