@@ -1,7 +1,7 @@
-> moize
-
 > [!CAUTION]
 > This library has been deprecated in favor of `micro-memoize`, which as-of version 5 incorporates most of the functionality that this library offers at nearly half the size and better speed. It is recommended to migrate to `micro-memoize@latest`.
+
+> moize
 
 <img src="https://img.shields.io/badge/build-passing-brightgreen.svg"/>
 <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg"/>
