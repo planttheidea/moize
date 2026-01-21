@@ -2747,13 +2747,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "@types/lodash@npm:4.17.21"
-  checksum: 10c0/73cb006e047d8871e9d63f3a165543bf16c44a5b6fe3f9f6299e37cb8d67a7b1d55ac730959a81f9def510fd07232ff7e30e05413e5d5a12793baad84ebe36c3
-  languageName: node
-  linkType: hard
-
 "@types/markdown-it@npm:^14.1.1":
   version: 14.1.2
   resolution: "@types/markdown-it@npm:14.1.2"
@@ -9264,7 +9257,6 @@ __metadata:
     "@types/bluebird": "npm:^3.5.42"
     "@types/eslint": "npm:^8.56.12"
     "@types/jest": "npm:^29.5.14"
-    "@types/lodash": "npm:^4.17.21"
     "@types/memoizee": "npm:^0.4.12"
     "@types/react": "npm:^18.3.27"
     "@types/react-dom": "npm:^18.3.7"
@@ -9289,7 +9281,6 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     jsdoc: "npm:^4.0.5"
     jsdoc-babel: "npm:^0.5.0"
-    lodash: "npm:^4.17.21"
     lru-memoize: "npm:^1.1.0"
     mem: "npm:^8.1.1"
     memoizee: "npm:^0.4.17"
