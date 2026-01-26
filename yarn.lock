@@ -2747,6 +2747,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.17.21":
+  version: 4.17.23
+  resolution: "@types/lodash@npm:4.17.23"
+  checksum: 10c0/9d9cbfb684e064a2b78aab9e220d398c9c2a7d36bc51a07b184ff382fa043a99b3d00c16c7f109b4eb8614118f4869678dbae7d5c6700ed16fb9340e26cc0bf6
+  languageName: node
+  linkType: hard
+
 "@types/markdown-it@npm:^14.1.1":
   version: 14.1.2
   resolution: "@types/markdown-it@npm:14.1.2"
@@ -9257,6 +9264,7 @@ __metadata:
     "@types/bluebird": "npm:^3.5.42"
     "@types/eslint": "npm:^8.56.12"
     "@types/jest": "npm:^29.5.14"
+    "@types/lodash": "npm:^4.17.21"
     "@types/memoizee": "npm:^0.4.12"
     "@types/react": "npm:^18.3.27"
     "@types/react-dom": "npm:^18.3.7"
@@ -9281,6 +9289,7 @@ __metadata:
     jest-environment-jsdom: "npm:^29.7.0"
     jsdoc: "npm:^4.0.5"
     jsdoc-babel: "npm:^0.5.0"
+    lodash: "npm:^4.17.21"
     lru-memoize: "npm:^1.1.0"
     mem: "npm:^8.1.1"
     memoizee: "npm:^0.4.17"
@@ -12406,14 +12415,14 @@ __metadata:
   linkType: hard
 
 "vm2@npm:^3.9.19":
-  version: 3.10.0
-  resolution: "vm2@npm:3.10.0"
+  version: 3.10.3
+  resolution: "vm2@npm:3.10.3"
   dependencies:
     acorn: "npm:^8.14.1"
     acorn-walk: "npm:^8.3.4"
   bin:
     vm2: bin/vm2
-  checksum: 10c0/f454f3bd9560cad82fdbcd8bc331a66672586f84f6a5bbf7151be592192bba0be719237f9a95c49fdbf4383b6960ebaca931e729f02361aabc9518c865409ef9
+  checksum: 10c0/933347f049373ba1dd23af38dd12c789bfbc2e5fbb5c90044df5ec4c10a0f89846e40aca50223092f5c70a40bebc0a559b47a34f2e40a6df94d14cace42a5b48
   languageName: node
   linkType: hard
 
