@@ -78,7 +78,7 @@
         "underscore": "^1.13.8",
         "webpack": "^5.110.2",
         "webpack-cli": "^5.1.4",
-        "webpack-dev-server": "^5.2.1"
+        "webpack-dev-server": "^5.2.6"
     },
     "homepage": "https://github.com/planttheidea/moize#readme",
     "keywords": [

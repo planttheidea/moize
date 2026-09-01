@@ -9033,7 +9033,7 @@ __metadata:
     underscore: "npm:^1.13.8"
     webpack: "npm:^5.110.2"
     webpack-cli: "npm:^5.1.4"
-    webpack-dev-server: "npm:^5.2.1"
+    webpack-dev-server: "npm:^5.2.6"
   languageName: unknown
   linkType: soft
 
@@ -11886,7 +11886,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:^5.2.1":
+"webpack-dev-server@npm:^5.2.6":
   version: 5.2.6
   resolution: "webpack-dev-server@npm:5.2.6"
   dependencies:
