@@ -161,7 +161,7 @@ const FIVE_MINUTES = 300_000;
 const memoized = moize(fn, { maxAge: FIVE_MINUTES });
 
 // after
-const memoized = moize(fn, { expires: FIVE_MINUTES });
+const memoized = memoize(fn, { expires: FIVE_MINUTES });
 ```
 
 This has also merged with [`updateExpire`](#updateexpire), and been expanded to include additional options!
